@@ -119,49 +119,8 @@ Without that last sentence a reviewer always finds something, even when the work
 it produces exactly what we are trying to avoid: extra abstraction layers, defensive code, and tests
 for cases that cannot happen.
 
-## 8. Working with the assistant
 
-Collaboration protocol, learned the expensive way during this project's framing.
-
-### Short constraints that recalibrate everything
-
-Say them early rather than correcting afterwards.
-
-| Constraint | Effect |
-|---|---|
-| **decide** | Stop asking, pick, explain in one line, move. Unanswered decisions are the most expensive failure mode. |
-| **sourced** | No number without a link in the same paragraph. Cite or delete. |
-| **short** | The default runs long. One word halves it. |
-| **draft** | Write fast and rough, we iterate. Without it, everything gets polished, which wastes effort on two thirds of the work. |
-| **no research** | Work with what we already have rather than spawning agents. |
-| **answer, do not act** | Opinion wanted, not modified files. |
-
-### Non-linear discussion
-
-**The file as shared surface**, the best form for reviewing any artifact. Read the document and leave
-annotations in place where something is wrong: `<!-- ? why Postgres here -->`, `<!-- disagree, too
-complex -->`. Then one message: "I annotated it." Everything gets handled in one pass, and each remark
-stays attached to the exact place it concerns.
-
-**Grouped messages** for unrelated topics: "three independent things: (1)... (2)... (3)...". Far
-better than three separate messages.
-
-**Separate sessions** for genuinely separate threads.
-
-Messages sent mid-turn corrupt nothing, but they degrade that turn's answer, because attention splits
-between tool results and the new question. If a message is self-contained, send it. If it depends on
-what is currently running, let the turn close.
-
-### What costs time
-
-One-line-at-a-time iteration on text. Batch the objections instead: "here are my five problems with
-this" resolves in two exchanges what otherwise takes fifteen.
-
-Re-opening settled questions. When a criterion has been agreed, apply the criterion rather than asking
-again. The doubt loop consumed a real share of the framing sessions and led to rejecting facts that
-were true.
-
-## 9. Cost model
+## 8. Cost model
 
 Four levels, and the discipline is spending nothing where nothing needs spending.
 
@@ -179,7 +138,7 @@ regression and algorithmic efficiency need reasoning.
 Cloud verified review is reserved for auth, payments, schema migrations and session handling, once or
 twice a month, with a stated reason. Its free runs are a one-time allocation, not a renewing one.
 
-## 10. Subagents or agent teams
+## 9. Subagents or agent teams
 
 Subagents report to the lead only. Teammates talk to each other, self-claim from a shared task list,
 and cost roughly seven times a standard session.
@@ -197,7 +156,7 @@ Worktrees isolate files; subagents and teams coordinate work. They compose rathe
 Agent teams are experimental: no session resume, task status lags, no nested teams. Nothing critical
 is built on them.
 
-## 11. Hooks
+## 10. Hooks
 
 `Stop` and `SubagentStop` are the ones that matter for solo work. `TeammateIdle` only fires inside an
 agent team.
@@ -210,20 +169,3 @@ since a hook launching a nested session would trigger its own hook forever.
 Keep hooks deterministic. A hook running a linter is free and catches most agent regressions. A hook
 running an agent is expensive and loops.
 
-## 12. Why this is an artifact rather than a claim
-
-Not "I orchestrated five agents." Anyone can launch five agents. What reads as senior:
-
-**The guardrails live in the repository, not in someone's head.** `AGENTS.md`, `REVIEW.md`, four
-reviewers, the hook, boundaries in CI. A reader sees the system rather than a description of it.
-
-**The deterministic and probabilistic layers are explicitly separated**, and the reason is stated.
-
-**The review protocol is adversarial and documented**, which shows the anchoring problem was
-understood rather than that tools were acquired.
-
-**The limits are named** rather than glossed.
-
-And the part checkable in sixty seconds: the git history. If this document says structural and
-behavioural changes never share a commit, `git log` will be read against it. Treat it as a contract
-that will be audited. If it holds, it is more differentiating than the code.

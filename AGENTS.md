@@ -20,6 +20,7 @@ pnpm typecheck
 pnpm lint
 pnpm arch                  module boundary check
 pnpm knip                  dead code
+pnpm check:docs            documentation discipline
 pnpm verify                everything above, in one command
 ```
 

@@ -16,6 +16,9 @@ Map of the documentation, how to read it before writing code, and how to operate
 | [`workflow.md`](workflow.md) | How work is done with coding agents, and why that method | humans |
 | [`agent-log.md`](agent-log.md) | Dated record of where the agent was overruled | humans |
 
+`pnpm check:docs` enforces the discipline these documents are held to, so it does not depend on
+anyone remembering it.
+
 **The audience column is load-bearing.** Only `AGENTS.md` and `CLAUDE.md` load automatically; everything
 else is read on demand. The three marked "humans" describe how a person operates the project and are
 pure context cost to an agent implementing a feature, so an agent does not open them unless the task is
