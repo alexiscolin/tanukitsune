@@ -10,3 +10,7 @@ coverage/
 CLAUDE.local.md
 .DS_Store
 *.tsbuildinfo
+
+# Human-only material: personal notes, learning references, working protocol.
+# Not part of the project. Never committed.
+info/
