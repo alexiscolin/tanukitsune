@@ -7,8 +7,10 @@ before writing code, and `docs/decisions/` before proposing any architectural ch
 the current spec is out of scope, and adding it is a scope violation rather than initiative.
 
 Three documents are written for a human operating the project and are context cost to you:
-`docs/workflow.md`, `docs/agent-log.md`, `docs/sources.md`. Do not open them
-unless the task is about the documentation itself.
+`docs/workflow.md`, `docs/agent-log.md`, `docs/sources.md`. Do not open them unless the task is about
+the documentation itself.
+
+`info/` is human-only, gitignored, and not part of the project. Never read it and never write to it.
 
 ## Commands
 

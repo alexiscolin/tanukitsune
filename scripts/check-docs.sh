@@ -24,10 +24,12 @@ learning='cheat ?sheet|: a course|learned the expensive way|written to be learne
 scan() {
   local pattern="$1" label="$2"
   local hits
-  # Excluded: the two places provenance legitimately lives, and the two that
-  # state the rule, which have to name the patterns in order to forbid them.
+  # Excluded: info/, which is human-only and gitignored by design; the two places
+  # provenance legitimately lives; and the two that state the rule, which have to
+  # name the patterns in order to forbid them.
   hits=$(grep -rniE "$pattern" --include='*.md' . \
     | grep -v '^\./\.git/' \
+    | grep -v '^\./info/' \
     | grep -v '^\./docs/agent-log\.md:' \
     | grep -v '^\./docs/decisions/' \
     | grep -v '^\./AGENTS\.md:' \
