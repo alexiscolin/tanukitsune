@@ -78,6 +78,21 @@ writes.
 
 ## Architecture
 
+**This is a client-side application with a server attached, not a server-rendered one.** The
+distinction decides most of what follows and an earlier draft had it backwards.
+
+The corpus, the judge and the demo deck are genuinely server-shaped: shared, cacheable, generated
+once. The review loop, which is the product, is not. It reads from IndexedDB, writes to a durable
+local queue, and syncs to a third-party API. Browser-only APIs force it into client components by
+rule, so server components buy it nothing.
+
+The consequence, decided rather than discovered: **the review session is a single client-rendered
+route, not a sequence of framework navigations.** That collapses the service worker's hardest problem,
+since it then caches one document plus static assets rather than negotiating between HTML and
+server-component payloads for the same URL. It also removes an entire class of bug from the routing
+model's state preservation, whose effects re-run on every hide and reveal and would silently disturb a
+timed loop.
+
 ```
 core/       pure, no I/O, fully unit tested
 data/       WaniKani client, corpus, db

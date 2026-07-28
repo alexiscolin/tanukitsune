@@ -60,3 +60,18 @@ in a Japanese typing app where Enter confirms a conversion before it submits any
 on composition state, every review on mobile submits a half-typed answer, and the judge calibration
 would have been measured against truncated input. And a review timer would fall under a Level A
 accessibility criterion requiring it to be adjustable, which is a data model change if discovered late.
+
+The consolidated architecture review added one reframing that changes more than any individual fix.
+The framing described a server-rendered application; Kaeru is a client-side application with a server
+attached. The corpus, the judge and the demo are server-shaped, but the review loop reads from the
+browser's database and writes to a local queue, so the framework's rendering model buys it nothing.
+Deciding that the review session is a single client route rather than a sequence of framework
+navigations collapses the service worker's hardest problem and removes a class of bug from the routing
+model's state preservation. That is one decision replacing several workarounds, which is the shape a
+good architectural correction takes.
+
+Three concrete errors alongside it. The TypeScript pin was written as a version that will not resolve,
+because the 6 line now ships under a different package name. The accessibility gate cannot run as
+specified, since the standard lint plugin does not support the linter version we committed to. And a
+claim about dead-code detection was asserted without being checked; it is now marked to verify rather
+than left to look authoritative.

@@ -7,7 +7,7 @@ the arguments do not get re-litigated.
 
 | Debate | Choice | Why for us |
 |---|---|---|
-| TS 6 vs 7 | **TypeScript 6.0.3** | TS 7 shipped without a compiler API, which breaks `typescript-eslint` (peer `<6.1.0`) and `dependency-cruiser` (devDep `^6.0.3`, support announced for TS 7.1 only). Those are our two most important gates. Losing `no-floating-promises` and boundary enforcement to gain compile speed on a single app is a bad trade. Migrate at TS 7.1. |
+| TS 6 vs 7 | **TypeScript 6, installed as `npm:@typescript/typescript6`** | `typescript@latest` is now 7.x, so `"typescript": "6.0.3"` does not resolve; the 6 line ships under its own package name. TS 7 shipped without a compiler API, which breaks `typescript-eslint` (peer `<6.1.0`) and `dependency-cruiser`. Those are our two most important gates, and losing `no-floating-promises` and boundary enforcement to gain compile speed on a single app is a bad trade. **Re-evaluation trigger, not a permanent position:** typescript-eslint declaring TS 7 support, or dependency-cruiser shipping it. The ecosystem is leaving this line faster than "migrate at 7.1" implies. |
 | ESLint vs oxlint / Biome | **ESLint 10 + typescript-eslint** | `eslint-config-next` bundles `eslint-plugin-react-hooks@7`, which surfaces React Compiler diagnostics. No equivalent elsewhere. oxlint has 23 Next rules and `exhaustive-deps`, but its JS-plugin performance cliff falls exactly on the React Compiler plugin. Add oxlint as a pre-pass later, if lint exceeds 30 seconds. |
 | dependency-cruiser vs ESLint boundary plugins | **Both, distinct roles** | dependency-cruiser is the CI gate: the only one catching all four evasion vectors including dynamic `import()`. Core `no-restricted-imports` is the editor hint, instant feedback, leaky by design. `import 'server-only'` is the third layer and fails the bundle rather than the linter. |
 | `eslint-plugin-import` vs `import-x` | **Neither** | The debate does not apply: `no-restricted-paths` is already covered by dependency-cruiser. Avoiding a dependency in an unresolved ecosystem is itself a decision. |
@@ -73,7 +73,20 @@ preset on team proficiency and declare it unstable under semver.
 Skip the AI-slop plugins entirely. `eslint-plugin-ai-guard` has under a thousand weekly downloads.
 Shipping one signals credulity, not currency.
 
-## The gate that must not be forgotten
+## Two conflicts to resolve before the first commit
 
-`knip` has no handling for `"use server"`, so Server Actions get reported as unused exports. Exclude
-them explicitly or the tool gets disabled within two days.
+**The accessibility gate as specified will not run.** `eslint-plugin-jsx-a11y` last shipped in October
+2024, its peer range stops at ESLint 9, and its ESLint 10 support issue is open. We committed to
+ESLint 10. Either pin ESLint 9, contradicting the reason we chose 10, or run Biome for the
+accessibility rules and keep ESLint solely for the React hooks plugin, which does declare 10. The
+second is the better trade and needs deciding rather than discovering.
+
+**Node and the AI SDK disagree.** The AI SDK is at v7, ESM-only, requiring Node 22, while Next's own
+floor is Node 20.9. Pin Node 22 or the corpus generator breaks. The v7 migration also renamed `system`
+to `instructions` and moved telemetry to a separate package.
+
+## To verify rather than assert
+
+`knip` is believed to have no handling for `"use server"`, which would make it report every Server
+Action as an unused export. This was not confirmed against its documentation. Check it before writing
+the exclusion into a gate, and delete this paragraph either way.
