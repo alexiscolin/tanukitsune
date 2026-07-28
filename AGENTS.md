@@ -2,9 +2,13 @@
 
 A WaniKani client for non-English speakers, French first.
 
-Start at `docs/README.md`, which maps every document. Read `docs/specs/v0.1.md` before writing code,
-and `docs/decisions/` before proposing any architectural change. Anything not in the current spec is
-out of scope, and adding it is a scope violation rather than initiative.
+Start at `docs/README.md`, which maps every document and marks its audience. Read `docs/specs/v0.1.md`
+before writing code, and `docs/decisions/` before proposing any architectural change. Anything not in
+the current spec is out of scope, and adding it is a scope violation rather than initiative.
+
+Four documents are written for a human operating the project and are context cost to you:
+`docs/cheatsheet.md`, `docs/workflow.md`, `docs/agent-log.md`, `docs/sources.md`. Do not open them
+unless the task is about the documentation itself.
 
 ## Commands
 

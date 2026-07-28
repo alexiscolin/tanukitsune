@@ -4,18 +4,23 @@ Map of the documentation, how to read it before writing code, and how to operate
 
 ## 1. What exists
 
-| Document | Answers |
-|---|---|
-| [`framing.md`](framing.md) | What we build and why, the principles, the architecture, the obligations |
-| [`backlog.md`](backlog.md) | Every feature considered, whether it needs a model, which version, and what was rejected with the reason |
-| [`specs/v0.1.md`](specs/v0.1.md) | The only version specified in detail, with acceptance criteria |
-| [`stack.md`](stack.md) | Every contested tooling choice and the argument that settled it |
-| [`ai-engineering.md`](ai-engineering.md) | Models, prompts, structured output, evals, caching, observability, error analysis |
-| [`sources.md`](sources.md) | Every load-bearing claim, with where it comes from |
-| [`workflow.md`](workflow.md) | How work is done with coding agents, and why that method |
-| [`cheatsheet.md`](cheatsheet.md) | A course on agent-assisted engineering and AI product engineering: the mental model, the loop, communication, review, cost, artifacts, evidence |
-| [`decisions/`](decisions/) | Architecture decision records, append-only |
-| [`agent-log.md`](agent-log.md) | Dated record of where the agent was overruled |
+| Document | Answers | For |
+|---|---|---|
+| [`specs/v0.1.md`](specs/v0.1.md) | The only version specified in detail, with acceptance criteria | both |
+| [`framing.md`](framing.md) | What we build and why, the principles, the architecture, the obligations | both |
+| [`stack.md`](stack.md) | Every contested tooling choice and the argument that settled it | both |
+| [`ai-engineering.md`](ai-engineering.md) | Models, prompts, structured output, evals, caching, observability, error analysis | both |
+| [`decisions/`](decisions/) | Architecture decision records, append-only | both |
+| [`backlog.md`](backlog.md) | Every feature considered, whether it needs a model, which version, and what was rejected with the reason | both |
+| [`sources.md`](sources.md) | Every load-bearing claim, with where it comes from | humans |
+| [`workflow.md`](workflow.md) | How work is done with coding agents, and why that method | humans |
+| [`cheatsheet.md`](cheatsheet.md) | A course on agent-assisted engineering and AI product engineering | humans |
+| [`agent-log.md`](agent-log.md) | Dated record of where the agent was overruled | humans |
+
+**The audience column is load-bearing.** Only `AGENTS.md` and `CLAUDE.md` load automatically; everything
+else is read on demand. The four marked "humans" describe how a person operates the project and are
+pure context cost to an agent implementing a feature, so an agent does not open them unless the task is
+about the documentation itself.
 
 Agent configuration lives at the repository root: `AGENTS.md` is canonical and under 150 lines, and
 `CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: four reviewers
