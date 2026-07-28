@@ -1,32 +1,11 @@
-# How work gets done
+# How this project is built
 
-**What this is.** How work gets done with coding agents, and why that method.
+**What this is.** The process every change goes through, and why the agent configuration in `.claude/`
+is shaped the way it is. Each section explains something present in this repository.
 
-It is part of the deliverable, not a preface to it. For tooling and quality gates see [`stack.md`](stack.md).
+The general engineering standard this derives from is not part of the project.
 
-## 1. The division of labour
-
-Measured usage data puts it at roughly 70 percent of planning decisions taken by the human and 80
-percent of execution decisions taken by the agent. The predictor of success is not coding proficiency
-but domain expertise: experts trigger about 12 actions per prompt against 5 for novices, verified
-success runs 28 to 33 percent against 15, and when things go wrong novices abandon three times more
-often.
-
-The consequence is the whole thesis: the value is not in using an agent, it is in having the judgement
-that makes one productive.
-
-## 2. The highest-leverage rule
-
-**Review the plan, not the diff.**
-
-One bad line of plan produces hundreds of bad lines of code. One misunderstanding of the codebase
-produces thousands. The damage hierarchy is wrong information, then missing information, then noise.
-
-So human attention goes into the research and plan artifacts. The diff gets checked by a fresh-context
-agent against that plan. This inverts the usual reflex, and it is the single change that most affects
-output quality.
-
-## 3. The per-task cycle
+## 1. The per-task cycle
 
 1. Fresh session. One task per session, clear between unrelated tasks.
 2. Spec by interview rather than by writing it yourself, with an explicit out-of-scope section.
@@ -46,7 +25,7 @@ output quality.
 Context discipline: aim for 40 to 60 percent utilisation and compact before being forced to. Quality
 degrades as the window fills.
 
-## 4. Deep review, beyond the tests
+## 2. Deep review, beyond the tests
 
 Tests prove the code does what the test says. They do not catch duplication, dead code, a regression
 in a feature nobody wrote a test for, a leaked boundary, or a security hole.
@@ -71,7 +50,7 @@ Three standing rules the reviews enforce and the gates back up:
 
 `/simplify` and `/code-review` cannot be model-invoked reliably, so `/pre-pr` ends by naming them.
 
-## 5. Stop conditions
+## 3. Stop conditions
 
 Discard the session and restart with a better prompt when:
 
@@ -82,81 +61,12 @@ Discard the session and restart with a better prompt when:
 
 A clean session with a better prompt almost always beats a long session carrying failed attempts.
 
-## 6. Written by hand, not delegated
+## 4. Written by hand, not delegated
 
 README, the entry point, `core/srs` and `core/grading`. A reviewer opens three to five files and those
 are the ones. If a file cannot be explained without rereading it, it is rewritten before merge.
 
-## 7. Prompts worth reusing
-
-**Framing, instead of writing the spec yourself:**
-
-> I want to build X. Interview me in detail. Ask about technical implementation, UX, edge cases,
-> concerns and trade-offs. Keep going until we have covered everything, then write a complete spec to
-> SPEC.md with an explicit out-of-scope section.
-
-**Style, the version that actually works:**
-
-> Read `core/grading/normalize.ts` and match its structure, naming and error handling exactly.
-
-Pointing at code beats any written description of conventions. Agents imitate local examples far
-better than they apply abstract rules.
-
-**Verification, never "make sure it passes":**
-
-> Run `pnpm verify` and show me the full output.
-
-**Scope review:**
-
-> Compare this diff to the plan. Check every requirement is implemented, the listed edge cases have
-> tests, and nothing outside the task's scope changed. Report gaps, not style preferences.
-
-**Adversarial review, with the leash that matters:**
-
-> Look for flaws. Only report what affects correctness or a stated requirement.
-
-Without that last sentence a reviewer always finds something, even when the work is sound, and chasing
-it produces exactly what we are trying to avoid: extra abstraction layers, defensive code, and tests
-for cases that cannot happen.
-
-
-## 8. Cost model
-
-Four levels, and the discipline is spending nothing where nothing needs spending.
-
-| Level | When | Cost |
-|---|---|---|
-| Stop hook | every agent turn | zero tokens |
-| Deterministic CI | every push | zero tokens |
-| Local subagent review | before a PR | subscription |
-| Cloud verified review | changes where a bug is expensive | real money per run |
-
-**Four of the seven things people want from review should never cost a token.** Duplication and dead
-code come from static analysis, conventions and best practice from the linter. Only security,
-regression and algorithmic efficiency need reasoning.
-
-Cloud verified review is reserved for auth, payments, schema migrations and session handling, once or
-twice a month, with a stated reason. Its free runs are a one-time allocation, not a renewing one.
-
-## 9. Subagents or agent teams
-
-Subagents report to the lead only. Teammates talk to each other, self-claim from a shared task list,
-and cost roughly seven times a standard session.
-
-**Subagents** when only the result matters: multi-lens review, research, parallel work on disjoint
-files. That covers almost everything here, because the four reviewers have nothing to say to each
-other.
-
-**An agent team** only when agents need to contradict each other: a bug whose cause is unknown, a
-structural architecture decision. Three teammates, not five. Read-only. Explicit shutdown. Twice a
-month at most.
-
-Worktrees isolate files; subagents and teams coordinate work. They compose rather than compete.
-
-Agent teams are experimental: no session resume, task status lags, no nested teams. Nothing critical
-is built on them.
-
-## 10. Hooks
+## 5. Hooks
 
 `Stop` and `SubagentStop` are the ones that matter for solo work. `TeammateIdle` only fires inside an
 agent team.

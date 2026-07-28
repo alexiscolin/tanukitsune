@@ -10,17 +10,18 @@ Map of the documentation, how to read it before writing code, and how to operate
 | [`framing.md`](framing.md) | What we build and why, the principles, the architecture, the obligations | both |
 | [`stack.md`](stack.md) | Every contested tooling choice and the argument that settled it | both |
 | [`ai-engineering.md`](ai-engineering.md) | Models, prompts, structured output, evals, caching, observability, error analysis | both |
+| [`workflow.md`](workflow.md) | The process every change goes through, and why `.claude/` is configured as it is | both |
 | [`decisions/`](decisions/) | Architecture decision records, append-only | both |
 | [`backlog.md`](backlog.md) | Every feature considered, whether it needs a model, which version, and what was rejected with the reason | both |
 | [`sources.md`](sources.md) | Every load-bearing claim, with where it comes from | humans |
-| [`workflow.md`](workflow.md) | How work is done with coding agents, and why that method | humans |
+
 | [`agent-log.md`](agent-log.md) | Dated record of where the agent was overruled | humans |
 
 `pnpm check:docs` enforces the discipline these documents are held to, so it does not depend on
 anyone remembering it.
 
 **The audience column is load-bearing.** Only `AGENTS.md` and `CLAUDE.md` load automatically; everything
-else is read on demand. The three marked "humans" describe how a person operates the project and are
+else is read on demand. The two marked "humans" describe how a person operates the project and are
 pure context cost to an agent implementing a feature, so an agent does not open them unless the task is
 about the documentation itself.
 
