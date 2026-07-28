@@ -13,7 +13,7 @@ Map of the documentation, how to read it before writing code, and how to operate
 | [`ai-engineering.md`](ai-engineering.md) | Models, prompts, structured output, evals, caching, observability, error analysis |
 | [`sources.md`](sources.md) | Every load-bearing claim, with where it comes from |
 | [`workflow.md`](workflow.md) | How work is done with coding agents, and why that method |
-| [`cheatsheet.md`](cheatsheet.md) | The daily-use version of the above: what to say, when to stop, what never to delegate |
+| [`cheatsheet.md`](cheatsheet.md) | A course on agent-assisted engineering and AI product engineering: the mental model, the loop, communication, review, cost, artifacts, evidence |
 | [`decisions/`](decisions/) | Architecture decision records, append-only |
 | [`agent-log.md`](agent-log.md) | Dated record of where the agent was overruled |
 
