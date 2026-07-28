@@ -59,20 +59,27 @@ jobs:
       - run: pnpm db:migrate
       - run: pnpm test:e2e
 
-  pr-title:
+  # One convention, one script, two places it is checked. Nothing blocks a commit
+  # locally: an agent stopped mid-loop by a message check loses more than the
+  # check is worth, so the gate is here.
+  subjects:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      # We squash merge, so this title becomes the commit subject.
-      - name: The title is a conventional commit subject under 72 characters
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+      - name: The title reads as a conventional subject under 72 characters
         env:
           TITLE: ${{ github.event.pull_request.title }}
+        run: bash scripts/check-subject.sh "$TITLE"
+      - name: Every commit on the branch does too
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
-          if [ "${#TITLE}" -gt 72 ]; then
-            echo "Title is ${#TITLE} characters, the limit is 72." >&2
-            exit 1
-          fi
-          if ! printf '%s' "$TITLE" | grep -qE '^(feat|fix|docs|refactor|test|chore|perf|build|ci)(\([a-z0-9-]+\))?!?: [a-z]'; then
-            echo "Title must read: type(scope): imperative subject starting lowercase." >&2
-            exit 1
-          fi
+          fail=0
+          while IFS= read -r subject; do
+            bash scripts/check-subject.sh "$subject" || fail=1
+          done < <(git log --format=%s "$BASE..$HEAD")
+          exit "$fail"

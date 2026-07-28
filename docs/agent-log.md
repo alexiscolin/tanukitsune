@@ -109,17 +109,38 @@ endpoint a CDN was free to cache, a connection helper that memoised its own fail
 transient outage into a permanent one, and a Postgres pool with no bounds. All four are the kind that
 only appear in production, and all four cost minutes to fix before any data existed.
 
-**One convention where there had been two.** The arbitration said conventional commits on the pull
-request title only, and the reason held: linting every commit blocks an agent mid-loop. What it missed
-is that a squash merge takes the commit subject when a pull request has exactly one commit, so a
-uniform history depended on a host setting rather than on what was written. The style now applies to
-both and the gate still applies to one. The twenty-four subjects written before that were rewritten in
-place, thirty minutes after the first push and before branch protection existed, which was the last
-moment it cost nothing.
-
 **Three factual claims did not match their sources.** Web push was said not to reach an Apple Watch
 when the WebKit post announcing the feature says it does. A self-preference figure of 4 to 8 points was
 attributed to a paper that publishes no effect size. And a METR result was described as retired by its
 authors when the linked follow-up retires nothing and changes the experiment design. All three read as
 confident, all three came from a model, and all three were in the file whose entire purpose is to make
 claims checkable.
+
+## 2026-07-29
+
+**The documentation was reframed around the model rather than the language.** The entry point led with
+the French layer, which reads as a localisation project with a model attached. It now leads with what
+the model does, five surfaces against nine refusals, and the ratio is the argument. The project was
+renamed Tanukitsune in the same pass.
+
+**A five-lens deep review held fifty-seven findings and refuted eleven.** Two were blocking and both
+were the same shape as everything else recorded here. The headline ratio did not survive counting its
+own paragraph: nine refusals announced over a list of seven, five model surfaces over eight bullets of
+which four are deterministic, nine arbitrations over a table of ten, four enforced rules over a
+configuration of five. And the boundary rule that the framing calls the one that leaks secrets matched
+no module at all, because a bare package name cannot match a path that resolves inside `node_modules`,
+so a `ui/` file importing `server-only` passed the gate clean. Reproduced by probe before being
+believed, then repaired, and `scripts/check-boundaries.sh` now writes a probe for each rule and fails
+if either passes.
+
+**One convention where there had been two.** The arbitration said conventional commits on the pull
+request title only, and its reason held: linting every commit blocks an agent mid-loop. What it missed
+is that a squash merge takes the commit subject when a pull request has exactly one commit, so a
+uniform history depended on a host setting rather than on what was written. The style now applies to
+both and the gate still applies to one. The twenty-four subjects written before it were rewritten in
+place, half an hour after the first push and before branch protection existed, which was the last
+moment that cost nothing.
+
+**The first push made the method real.** Until it, every gate claim rested on a workflow file nobody
+had executed. The first run passed, and its end-to-end job ran against a server Postgres, which turned
+the database decision from an argument into an observation.
