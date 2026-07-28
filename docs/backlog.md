@@ -1,5 +1,7 @@
 # Feature inventory
 
+**What this is.** Every feature considered, whether it needs a model, which version it belongs to, and what was rejected with the reason. Consult it before proposing something new, in case it was already decided against.
+
 Every feature considered, where it came from, whether it needs a model, and which version it belongs
 to. Most entries started as a real frustration with WaniKani rather than an idea about what to build.
 

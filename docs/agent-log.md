@@ -1,5 +1,7 @@
 # Agent log
 
+**What this is.** A dated record of where the agent was overruled and why, written as it happens. Provenance belongs here, never in the documents that describe the system.
+
 Dated notes on building this with coding agents: what was delegated, what was overruled, and why.
 Written as it happens, because it cannot be reconstructed afterwards.
 

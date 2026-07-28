@@ -1,6 +1,8 @@
 # What we build, and why
 
-Product thesis, principles, architecture. For the feature inventory see [`backlog.md`](backlog.md),
+**What this is.** The product thesis, the engineering principles, and the architecture. Read the first two sections before writing any code; the principles override every other document.
+
+For the feature inventory see [`backlog.md`](backlog.md),
 for what is being built right now see [`specs/v0.1.md`](specs/v0.1.md), for tooling and gates see
 [`stack.md`](stack.md), for how work gets done see [`workflow.md`](workflow.md).
 

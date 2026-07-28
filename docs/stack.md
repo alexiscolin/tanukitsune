@@ -1,5 +1,7 @@
 # Stack decisions
 
+**What this is.** Every contested tooling choice and the argument that settled it. Consult it when a tooling question arises, not before.
+
 Every contested choice, with the reason it went that way for this project. Written as a reference so
 the arguments do not get re-litigated.
 

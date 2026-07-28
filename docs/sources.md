@@ -1,5 +1,7 @@
 # Sources
 
+**What this is.** Every load-bearing claim in this documentation, with where it comes from. A claim without an entry here does not belong in an argument.
+
 Every load-bearing claim in this documentation, with where it comes from. Verified July 2026.
 
 The rule: a number that carries an argument has its source in the same paragraph as the claim, or it

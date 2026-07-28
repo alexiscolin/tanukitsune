@@ -1,7 +1,8 @@
 # How work gets done
 
-The method used to build this project, with agents. It is part of the deliverable, not a preface to
-it. For tooling and quality gates see [`stack.md`](stack.md).
+**What this is.** How work gets done with coding agents, and why that method. The condensed daily-use version is [`cheatsheet.md`](cheatsheet.md).
+
+It is part of the deliverable, not a preface to it. For tooling and quality gates see [`stack.md`](stack.md).
 
 ## 1. The division of labour
 
