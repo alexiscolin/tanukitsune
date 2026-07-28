@@ -245,7 +245,42 @@ Messages sent while work is running corrupt nothing, but they degrade that turn'
 attention splits between the running work and the new question. Self-contained: send it. Dependent on
 what is running: let the turn close.
 
-## 14. What costs you time
+## 14. Getting an honest answer rather than an agreeable one
+
+An assistant has a real bias toward agreement. It shows up as adopting your framing before evaluating
+it, finding merit in your suggestion because you made it, and softening a disagreement into a
+qualified yes.
+
+**Instructing it away works weakly.** "Be critical" produces performed criticism: objections
+manufactured to satisfy the instruction, which is the same failure mode as a reviewer that invents
+findings. "Never just agree with me" is worse, because it produces contrarianism, which is agreement
+wearing a different coat. In both cases you still cannot distinguish the response from judgement.
+
+What works is structural.
+
+**Fresh context is the main lever.** An assistant that watched you argue for something is anchored on
+it. One that receives the artifact without knowing who wrote it or what you think evaluates the
+artifact. In practice this catches an order of magnitude more than any instruction: false claims,
+broken mechanisms, and internal contradictions that survived every self-review.
+
+**Do not reveal your preference in the question.** "Is X a good idea here?" invites agreement. "Three
+strongest arguments against X, three for, then which wins and why" invites analysis.
+
+**Ask for the mechanism, not the verdict.** "What breaks first?" beats "is this good?". A verdict is
+an opinion; a mechanism is checkable.
+
+**Ask for the cost of being wrong**, not the probability of being right. "If this choice is wrong,
+what does it cost and when do I find out?" leaves the register of approval entirely.
+
+**Require the citation.** An agreement that has to point at a file and line, or a source, becomes
+verifiable. This is the same rule as section 38, applied to conversation.
+
+**Separate proposing from evaluating.** Whoever proposed an option should not be the one scoring it.
+That applies to you as much as to the assistant.
+
+The instruction is still worth giving, and it costs one line. Just do not mistake it for the control.
+
+## 15. What costs you time
 
 - **One line at a time.** Batching objections resolves in two exchanges what otherwise takes fifteen.
 - **Re-opening settled questions.** Once a criterion is agreed, apply it rather than asking again.
@@ -258,7 +293,7 @@ what is running: let the turn close.
 
 # Part IV. Control
 
-## 15. Stop conditions
+## 16. Stop conditions
 
 Discard the session and restart with a better prompt when any of these appear. Do not push through:
 each signals that the context is now working against you.
@@ -277,7 +312,7 @@ rewritten.
 **The diff is three times the planned size.** Do not review eleven files when the plan said three.
 Re-plan.
 
-## 16. Verification
+## 17. Verification
 
 The governing sentence: **an agent stops when the work looks done, and without a check it can run,
 "looks done" is the only signal available.** Provide one, or you are the verification loop.
@@ -290,7 +325,7 @@ trying to refute the result).
 In all four: **ask for evidence rather than assertion.** The command and its output, not a summary of
 what the output presumably was.
 
-## 17. What never to delegate
+## 18. What never to delegate
 
 The README and the entry point. The core domain model. Anything a reviewer opens in the first five
 minutes. The final call on any architectural decision.
@@ -303,7 +338,7 @@ tooling protects against.
 
 # Part V. Review
 
-## 18. Why the author is the worst reviewer
+## 19. Why the author is the worst reviewer
 
 An agent that just wrote code is anchored on its intent rather than its output. It reviews the plan it
 had, not the diff it made.
@@ -315,7 +350,7 @@ evaluates the code.
 This is also why review must not continue the implementation conversation. Same window, same
 anchoring.
 
-## 19. Disjoint lenses
+## 20. Disjoint lenses
 
 Do not ask one reviewer to find everything; you get a shallow pass over each concern. Give each
 reviewer one question: regression (does anything that worked behave differently, and was that asked
@@ -333,7 +368,7 @@ name is not a finding. Without this, half the report is speculation you must dis
 **Permission to find nothing.** State explicitly that finding nothing is valid. Otherwise the reviewer
 manufactures findings to appear useful and you spend the afternoon rejecting them.
 
-## 20. Deterministic first, probabilistic second
+## 21. Deterministic first, probabilistic second
 
 Never pay a model for what a linter does.
 
@@ -349,7 +384,7 @@ the probabilistic layer never blocks is a stronger signal than any configuration
 
 # Part VI. Scale and cost
 
-## 21. Subagents or a team
+## 22. Subagents or a team
 
 A **subagent** reports to the parent and has its own context window. A **teammate** talks to other
 teammates and self-claims from a shared task list, at roughly seven times the cost of a standard
@@ -366,7 +401,7 @@ still consumes.
 The failure to avoid: parallel agents editing the same files. Sequencing two tasks costs less than
 debugging a merge that silently changed behaviour.
 
-## 22. The cost ladder
+## 23. The cost ladder
 
 | Level | When | Cost |
 |---|---|---|
@@ -379,7 +414,7 @@ Cloud verified review earns its price on authentication, payments, schema migrat
 handling. It does not earn it as a habit, and reserving it with a stated reason is itself the
 judgement being demonstrated.
 
-## 23. Hooks
+## 24. Hooks
 
 The highest-return setup available: a hook that runs typecheck and lint when a turn tries to end and
 blocks it if either fails. Thirty minutes to write, zero tokens to run, and it makes it structurally
@@ -401,7 +436,7 @@ Everything above is about using agents to build software. This part is about the
 model is *in* the product. The detailed project-specific version is in
 [`ai-engineering.md`](ai-engineering.md).
 
-## 24. The first question is always where not to use one
+## 25. The first question is always where not to use one
 
 The distinguishing habit of the role is refusing the model where something cheaper is correct. A
 scheduling algorithm, a rules engine, a data table, an aggregation, a retrieval from an open corpus: each
@@ -411,7 +446,7 @@ Write the refusals down with the cheaper thing named. It is the fastest way to d
 from someone who wraps everything in a model, and hiring processes in this market are saturated with
 the latter.
 
-## 25. Generated once versus generated per interaction
+## 26. Generated once versus generated per interaction
 
 The economic question that decides an AI product's viability: **is this output the same for every
 user?**
@@ -425,7 +460,7 @@ spend cap around it.
 
 Getting this split right matters more than any model choice.
 
-## 26. Cascades before models
+## 27. Cascades before models
 
 Put the cheapest deterministic tier first, escalate only when it cannot decide. Exact match, then
 fuzzy match, then a model. On classification-shaped tasks this resolves most traffic before any model
@@ -434,7 +469,7 @@ call.
 That is simultaneously the cost story and the reliability story, and it is why the cascade design
 matters far more than which model sits at the end of it.
 
-## 27. Structured output, and why parsing is not the hard part
+## 28. Structured output, and why parsing is not the hard part
 
 Use the provider's native structured-output path with a schema, and keep schemas **flat and shallow**:
 deep nesting is the most common cause of structured-output failure, and some providers do not support
@@ -447,7 +482,7 @@ logged, counted, never silently coerced to null.
 And a refusal is not an exception. Newer models return a safety decline as a successful response with
 a distinct stop reason, so code reading the first content block unconditionally breaks.
 
-## 28. Verify, do not trust the constraint
+## 29. Verify, do not trust the constraint
 
 When you need a model to obey a rule, do not ask it to obey and hope. Generate, then check
 deterministically, then regenerate on failure with the validation error fed back.
@@ -455,7 +490,7 @@ deterministically, then regenerate on failure with the validation error fed back
 This is stronger than prompting for compliance, it is measurable, and the retry-count distribution
 becomes a free quality metric for that surface.
 
-## 29. Evals
+## 30. Evals
 
 Tiered and hybrid: deterministic assertions wherever a property is checkable, model grading only where
 judgement is genuinely required, human review for the small fraction either layer flags.
@@ -475,7 +510,7 @@ measuring it.
 
 **A score that only ever rises is a suite being overfitted.** Track dataset growth alongside it.
 
-## 30. Judging with a model, and calibrating the judge
+## 31. Judging with a model, and calibrating the judge
 
 Where a model grades output, four rules separate a measurement from a demo.
 
@@ -498,7 +533,7 @@ statistic alongside and say why.
 **Measure the two error directions separately.** They are almost never equally costly, and a single
 accuracy figure hides the one that matters.
 
-## 31. Cost engineering
+## 32. Cost engineering
 
 Three caching mechanisms, commonly confused.
 
@@ -519,7 +554,7 @@ cost dashboard that reads it alone under-reports once caching is on.
 Track two numbers: cost per active user per day, and marginal cost per interaction. The second decides
 whether the product is viable.
 
-## 32. Observability and drift
+## 33. Observability and drift
 
 Emit spans with the user, the feature, the prompt version, the model identifier and full token usage
 including cache fields. Compute cost server-side from a versioned price table in code rather than
@@ -532,7 +567,7 @@ Alert on escalation rate, parse-failure rate, refusal rate, retry distribution, 
 rate. Those double as the drift monitor: a judge calibrated once would otherwise never be measured
 again, and a model version change silently shifts what its scores mean.
 
-## 33. Guardrails that are architectural, not declarative
+## 34. Guardrails that are architectural, not declarative
 
 Prompt injection is not solved, acknowledged by every major provider. Instructions telling a model to
 ignore instructions are hygiene, not defence.
@@ -542,7 +577,7 @@ deterministic validation of anything produced, and never rendering model output 
 with no tools and a closed enum output cannot exfiltrate or act, and that is a real property you can
 state precisely rather than a control you hope holds.
 
-## 34. The feedback loop most products throw away
+## 35. The feedback loop most products throw away
 
 Any place a user corrects the system is a labelled human disagreement, produced free and continuously,
 drawn from exactly the hard distribution a calibration set struggles to sample by hand.
@@ -555,7 +590,7 @@ recoverable retroactively.
 
 # Part VIII. Artifacts
 
-## 35. Documents state what is true, never how they got there
+## 36. Documents state what is true, never how they got there
 
 A document describes the current state of a system. It never narrates its own revision history.
 
@@ -568,7 +603,7 @@ had a yesterday? If not, delete it or move it.
 Provenance has two legitimate homes: a dated agent log, and decision records. Both exist precisely so
 it can be removed from everywhere else without being lost.
 
-## 36. Comments
+## 37. Comments
 
 Default to none. Write one only when deleting it would lose information not recoverable from the code:
 why this approach rather than the obvious one, a non-obvious constraint, a workaround with its
@@ -578,7 +613,7 @@ Never a comment restating the line below it. Never section banners or step scaff
 documentation on a private, self-evident function. Uniform comment density across every file is itself
 a signal of machine authorship, because humans comment unevenly.
 
-## 37. Decision records, and expiry
+## 38. Decision records, and expiry
 
 Write the record **when the decision is taken.** A retroactive one always lies slightly, because the
 decision is remembered and the rejected options are not.
@@ -602,7 +637,7 @@ A version pin, a workaround for an upstream gap, or a choice made because someth
 becomes debt the moment its reason expires. Debt with no trigger is invisible. Naming the condition
 and the page converts it into a scheduled decision.
 
-## 38. Numbers
+## 39. Numbers
 
 **Any number carrying an argument has its source in the same paragraph, or it is deleted.**
 
@@ -614,7 +649,7 @@ Two corollaries. **Round down, never up:** a smaller verifiable number beats a l
 one. And **prefer a figure you produced:** a measurement from your own system, however modest, is
 worth more than a benchmark you are repeating.
 
-## 39. The agent log
+## 40. The agent log
 
 A dated record of where you overruled the agent and why, written as it happens.
 
@@ -626,7 +661,7 @@ demonstrates judgement rather than describing it.
 
 # Part IX. The evidence
 
-## 40. What the research supports
+## 41. What the research supports
 
 **Review is the variable.** Model-written code merged without review runs measurably higher defect
 rates; the same code under mandatory human review runs lower defect rates than purely human code. This
@@ -644,7 +679,7 @@ occupies.
 percent slower with AI while believing they were faster was retired by its own authors in early 2026
 and revised toward a speedup on current tooling. Citing it as current is a tell.
 
-## 41. What is genuinely contested
+## 42. What is genuinely contested
 
 Say these as contested, because they are, and because knowing which is which is the skill.
 
@@ -657,7 +692,7 @@ work. Adoption depth of newer agent protocols, where organisation counts are ven
 Treat any specific performance multiplier for one tool over another as unverified until measured on
 your own workload. That query space is dominated by content recycling invented figures.
 
-## 42. Answering "how do you use AI" in an interview
+## 43. Answering "how do you use AI" in an interview
 
 The failure mode is enthusiasm. The prevailing hiring view is explicit: **fluency is a green flag,
 dependency is a red flag.** So the answer demonstrates judgement, not tooling.
@@ -680,7 +715,7 @@ merge.
 why. The single most convincing thing available, and it cannot be improvised well, which is why
 section 39 exists.
 
-## 43. The one-paragraph version
+## 44. The one-paragraph version
 
 Writing code got cheap, so the scarce resources became deciding what to build, verifying what was
 built, and understanding the result. You keep planning and verification; you delegate execution. You
