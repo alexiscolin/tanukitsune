@@ -8,26 +8,31 @@ to. Most entries started as a real frustration with WaniKani rather than an idea
 Tier meanings: **none** is deterministic and costs nothing. **once** is generated one time, shared by
 every user, marginal cost zero. **live** runs per interaction and needs a cost story.
 
+A **live** entry needs a guardrail story before it ships, and that is the harder half. None of it is
+retrofittable, which is why the first live feature sits in v0.1.1 rather than v0.1: shipping the
+deterministic tiers first makes the guardrails a design constraint instead of a patch. What they are is
+in [`ai-engineering.md`](ai-engineering.md).
+
 ## v0.1
 
 | Feature | Tier | Notes |
 |---|---|---|
-| French corpus: meanings, nuances, mnemonics | once | The product thesis. Mnemonics are regenerated with French sound associations, never translated, and never derived from WaniKani's own mnemonics, which keeps it clear of their content. Levels 1 to 10 only, about 800 items. |
+| French corpus: meanings, nuances, mnemonics | once | The product thesis. Mnemonics are regenerated with French sound associations, never translated, and never derived from WaniKani's own mnemonics, which keeps it clear of their content. Levels 1 to 10 only; the item count is read from the API at generation time rather than assumed. |
 | Review flow, offline first | none | |
 | Answer judge, tiers 1 and 2 | none | Exact match on normalised input, then fuzzy: case fold, accent fold, edit distance, article tolerance. Anything they cannot decide falls to self-grade in v0.1. |
 | Typo tolerance and self-grade | none | WaniKani has no undo. The single most requested thing in the userscript ecosystem. |
 | Item card shown on wrong answer | none | |
-| JLPT level shown | none | Data mapping. |
+| JLPT level shown | none | Data mapping, and the mapping needs a source that can be redistributed. There is no official per-item list, only community compilations of varying provenance, so this follows the pitch accent rule: named and licensed, or not shipped. |
 | Dark mode | none | |
 | `review_events` capture | none | Load-bearing. WaniKani stopped persisting review history in April 2023, so we are the system of record. Everything in later versions depends on data that only exists if collected from the first answer. |
 | Demo mode, no token | none | Seeded read-only deck. Without it a reviewer never sees the product. Ranked the highest-value artifact in the project. |
 
-## v0.1.1 and v0.1.2
+## v0.1.1
 
 | Feature | Tier | Notes |
 |---|---|---|
-| LLM judge, tier 3 | live | With the full calibration: labelled set, kappa against human majority, false accept and false reject measured separately. Cached globally, keyed by item, normalised answer, judge model, prompt version and corpus version. |
-| Multi-user | none | Auth, token encryption, subscription gating on `max_level_granted`, deletion path. Cut from v0.1 because it makes everything else about 40 percent harder. |
+| LLM judge, tier 3 | live | With the full calibration: labelled set, kappa against a single expert reference whose own reliability ceiling is measured first, false accept and false reject reported separately. Cached globally, keyed by item, normalised answer, locale, judge model, prompt version and corpus version. |
+| Multi-user | none | Auth, token encryption, subscription gating on `max_level_granted`, a deletion path, and per-user scoping on every read. Cut from v0.1 because each of those five touches code the single-user version does not have to write at all. |
 
 ## v0.2
 
@@ -42,12 +47,13 @@ every user, marginal cost zero. **live** runs per interaction and needs a cost s
 | Learning order control | none | The Reorder userscript exists because WaniKani refuses this. |
 | Conjugation tables | none | Japanese conjugation is entirely regular, so a rules engine is more correct and free. A model would only help to explain a form, never to produce one. |
 | Example sentences as exercise | none then once | Retrieved from the open Tatoeba corpus, filtered to known vocabulary. Generation only as a fallback when the corpus has no match, and then validated deterministically: tokenise the output, check every token against the known set, regenerate on failure. The retry rate is the quality metric and it costs nothing. |
+| French corpus, levels 11 to 60 | once | The same job re-run per level band, after the first ten levels have been used by real people long enough to know whether the prompt holds. Nothing new is built, so it is a cost and a review effort rather than a feature. |
 
 ## v0.3
 
 | Feature | Tier | Notes |
 |---|---|---|
-| Push notifications carrying the question | none | The notification body is the prompt, so recall happens in the second before the app opens. Turns the app-opening delay into retrieval practice. Web push works for installed PWAs on iOS 16.4+. It does not reach Apple Watch, which is why that idea is dead without a native app. |
+| Push notifications carrying the question | none | The notification body is the prompt, so recall happens in the second before the app opens. Turns the app-opening delay into retrieval practice. Web push works for installed PWAs on iOS 16.4+ and the notification does mirror to a paired Apple Watch. What does not exist without a native app is answering from the watch, so the watch is a reminder surface and not a review surface. |
 | Scheduler | live, cheaply | Chooses which item, in which format, when. Timing is statistics: response rate by hour, back off after three ignored. Only the choice of item and format benefits from reasoning. |
 | Voice mode | none | Web Speech API, supported on iOS Safari 14.5+. Scoped to what it is good at: reading practice, French to Japanese production, sentence shadowing. **Not** distinguishing homophones, since はし is 橋, 箸 and 端 and voice structurally cannot separate them. Requires network, so it degrades rather than being a default. Also an accessibility feature. |
 | Confusion detector | live | Pairs confused systematically, from real error data, then targeted drills. |
@@ -58,6 +64,7 @@ every user, marginal cost zero. **live** runs per interaction and needs a cost s
 |---|---|---|
 | MCP server | none, it is plumbing | Exposes vocabulary, grammar and learner progress so any assistant can query the study state. Four good tools beat twenty. Ships only if the consumer can be named and demonstrated, otherwise it joins A2A in the rejected list. |
 | Tutor agent | live | The one genuine RAG use in the product: open-ended questions over a grammar corpus, where retrieval grounds the answer and prevents invention. Rate limited. Guardrails matter here because user text reaches a prompt. |
+| A second locale | once | The generation job re-run with a different target language. What makes it possible is not the model, it is a deterministic gate that does not need to speak the language: the generated mnemonic is checked mechanically against the reading it must evoke and the components it must use, and what fails is regenerated rather than shipped. Same shape as the sentence validator. Without it, adding a language means finding someone who will read nine thousand items, which is what caps every competitor at one. The check itself is unspecified and is the open question. |
 | Photo import | none | Photograph a sign or a menu, extract the kanji, see which are already known. Tesseract compiled to WebAssembly runs entirely in the browser: no server, no cost, works offline, private. A vision model would be the expensive way to solve a solved problem. Accuracy on real signage needs testing before committing. |
 
 ## Rejected, with reasons
@@ -72,9 +79,9 @@ instantly and free. A vector store would be a more impressive answer to a questi
 **RAG for sentence generation.** Retrieving the user's known vocabulary is a `SELECT`, not semantic
 search. The real problem is verification, not retrieval.
 
-**Semantic caching of verdicts.** "chien" and "chienne" sit around 0.95 cosine similarity and have
-opposite verdicts. Trading accuracy for cost is fine for a support chatbot and unacceptable when the
-cached value is a correctness judgement.
+**Semantic caching of verdicts.** "chien" and "chienne" sit close enough together in embedding space
+that no threshold separates them, and they have opposite verdicts. Trading accuracy for cost is fine
+for a support chatbot and unacceptable when the cached value is a correctness judgement.
 
 **Native app.** A link a reviewer can click beats an app they must install, and React Native would
 demonstrate a skill nobody is asking for while putting an unfamiliar platform on the critical path.
@@ -94,12 +101,6 @@ granted.
 
 ## Constraints that shape everything
 
-- WaniKani has not persisted review history since April 2023. We are the system of record.
-- Review submission is not idempotent, there is no idempotency key, and the rate limit is sixty
-  requests per minute per token shared between reads and writes.
-- Free accounts are granted three levels, paid sixty. Reads are not server-filtered while writes are,
-  so hiding what a user is not entitled to is our job.
-- Safari deletes an origin's storage after seven days without interaction, all at once. The offline
-  queue must be designed so eviction is recoverable rather than data-losing, and `review_events` needs
-  a server-side backup because it is the only local state that cannot be reconstructed.
-- Async Server Components cannot be unit tested, so data fetching lives in plain functions.
+What WaniKani's API does and does not give us, and what the browser takes away, decides more of this
+inventory than any preference does. Those constraints are stated once, in
+[`framing.md`](framing.md), and sourced in [`sources.md`](sources.md).

@@ -24,6 +24,12 @@ Charge and risk it. Ask for permission. Or be free.
 
 Free, permanently. And write to Tofugu anyway, then publish their answer.
 
+This includes the shape that looks like a compromise: a free version without the model features and a
+paid tier for them. That was the freemium design, it is what the developer in February 2026 was asking
+about, and the answer was that approval requires the app to be completely free to use. Charging only
+for the model features is still charging for an application built on their content, so it is not
+available either.
+
 ## Consequences
 
 Live model features are rate limited rather than paywalled, and the cost architecture, generate once

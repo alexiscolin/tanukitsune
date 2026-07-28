@@ -21,7 +21,8 @@ amended in February 2026 to state that it is based on simulation results. The
 [public benchmark](https://github.com/open-spaced-repetition/srs-benchmark) measures prediction
 accuracy only, never review counts.
 
-**The benchmark corpus** is roughly 350M reviews from 10,000 users, excluding same-day reviews.
+**The benchmark corpus** is roughly 350M reviews from 10,000 users, excluding same-day reviews:
+[srs-benchmark](https://github.com/open-spaced-repetition/srs-benchmark).
 
 **FSRS generalisation caveat**, relevant when we measure it ourselves:
 [srs-benchmark#166](https://github.com/open-spaced-repetition/srs-benchmark/issues/166) reports that
@@ -55,11 +56,18 @@ requires the app to be completely free:
 docs: [Testing with Vitest](https://nextjs.org/docs/app/guides/testing/vitest) recommends end-to-end
 tests for async components.
 
-**Safari deletes an origin's storage after seven days without interaction**, all at once, and
-`navigator.storage.persist()` is auto-decided from engagement heuristics with no user prompt:
+**Safari deletes an origin's storage after seven days without interaction**, all at once. On Safari and
+on Chromium, `navigator.storage.persist()` is auto-decided from engagement heuristics with no user
+prompt; Firefox shows a permission prompt instead, so the returned boolean is read rather than assumed
+on every engine:
 [MDN, storage quotas and eviction criteria](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria).
 
-**Web push reaches installed PWAs on iOS but not Apple Watch.**
+**Web push reaches installed web apps on iOS from 16.4**, and the notification mirrors to a paired
+Apple Watch. What no web API provides is answering from the watch:
+[WebKit, web push for web apps on iOS and iPadOS](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/).
+
+**The Web Speech API is available in Safari on iOS from 14.5**:
+[caniuse, speech recognition](https://caniuse.com/speech-recognition).
 
 ## Regulation
 
@@ -80,9 +88,12 @@ harmonised through EN 301 549:
 
 ## Judging and evaluation
 
-**Self-preference bias is measurable at 4 to 8 points** on equivalent content, which is why the judge
-comes from a different model family than the generator:
-[arXiv 2410.21819](https://arxiv.org/pdf/2410.21819).
+**Self-preference bias exists and is measurable**, which is why the judge comes from a different model
+family than the generator: [arXiv 2410.21819](https://arxiv.org/pdf/2410.21819). The paper defines the
+effect as a difference in conditional probabilities and publishes no effect size in points, so no
+figure is quoted from it. The setting also differs from ours: that literature measures judges grading
+model-authored text, while this judge grades a learner's answer against a model-authored reference. The
+design rule rests on the direction of the effect, which transfers, not on its size, which does not.
 
 **Position bias affects pointwise rubric grading**, not only pairwise comparison, which is a 2026
 finding contradicting earlier assumptions: [arXiv 2602.02219](https://arxiv.org/pdf/2602.02219).
@@ -124,8 +135,11 @@ predicts success.
 **Throughput and instability rise together with AI adoption**:
 [DORA 2025](https://dora.dev/dora-report-2025/).
 
-**The 19 percent slowdown result was retired by its own authors** in February 2026, revised to roughly
-an 18 percent speedup on current tooling:
+**The 19 percent slowdown result stands, and its authors are changing the experiment design.** The
+original study reports a 19 percent slowdown with a confidence interval from +2 to +39 percent. The
+February 2026 follow-up does not retire it: it announces a design change, and the roughly 18 percent
+speedup it mentions applies only to returning participants and is described there as very weak
+evidence.
 [METR original](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/),
 [METR update](https://metr.org/blog/2026-02-24-uplift-update/).
 

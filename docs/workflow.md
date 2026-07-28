@@ -22,6 +22,11 @@ The general engineering standard this derives from is not part of the project.
    exports deleted, naming unified.
 10. Structural and behavioural changes never share a commit.
 
+**The plan lives in the pull request description**, and nowhere else. It is where the attention goes,
+so it needs to be visible and reviewable, and it is working material rather than a description of the
+system, so it must not become a committed document that later contradicts the code. What survives a
+merged plan is the decision record and the agent log.
+
 Context discipline: aim for 40 to 60 percent utilisation and compact before being forced to. Quality
 degrades as the window fills.
 
@@ -71,10 +76,19 @@ are the ones. If a file cannot be explained without rereading it, it is rewritte
 `Stop` and `SubagentStop` are the ones that matter for solo work. `TeammateIdle` only fires inside an
 agent team.
 
-The Stop hook running typecheck and lint is the highest return in this method: thirty minutes of
-setup, zero tokens, and it makes it impossible for an agent to declare done on code that does not
-compile. Exit code 2 sends the error back and the agent keeps working. It needs a recursion guard,
-since a hook launching a nested session would trigger its own hook forever.
+The Stop hook is the highest return in this method: thirty minutes of setup, zero tokens, and it makes
+it impossible for an agent to declare done on code that does not compile. Exit code 2 sends the error
+back and the agent keeps working. It needs a recursion guard, since a hook launching a nested session
+would trigger its own hook forever.
+
+It runs `pnpm gate`, which is typecheck, lint and the boundary check, and deliberately not
+`pnpm verify`. The full suite needs a database and browser runs, which do not fit a hook timeout, and a
+hook killed on timeout blocks nothing while appearing to guard everything. The rest is caught by
+`/pre-pr` and by CI, where there is time for it.
+
+A `PreToolUse` hook refuses any read, write or shell command touching `info/`. The rule is in
+`AGENTS.md`, and a rule an agent can only remember is one it forgets on the fiftieth turn without
+anyone noticing which turn.
 
 Keep hooks deterministic. A hook running a linter is free and catches most agent regressions. A hook
 running an agent is expensive and loops.

@@ -37,3 +37,11 @@ cleanly; this does not.
 
 Every day it is not collected is a day that never comes back, which is why it stayed in v0.1 while
 FSRS itself was pushed to v0.2.
+
+An installable web app can hold it, with one precaution. A review event is a handful of small fields,
+so a year of daily study is well under what IndexedDB grants without asking. The risk is not size, it
+is eviction: Safari clears an origin's storage after seven days without interaction, all at once, and
+an installed app has a separate storage partition from the browser it was installed from. So the write
+is durable before the interface advances, persistence is requested and its refusal is surfaced, the
+queue is flushed before an install, and the server-side backup exists precisely because none of those
+three precautions is a guarantee.
