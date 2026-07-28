@@ -109,6 +109,14 @@ endpoint a CDN was free to cache, a connection helper that memoised its own fail
 transient outage into a permanent one, and a Postgres pool with no bounds. All four are the kind that
 only appear in production, and all four cost minutes to fix before any data existed.
 
+**One convention where there had been two.** The arbitration said conventional commits on the pull
+request title only, and the reason held: linting every commit blocks an agent mid-loop. What it missed
+is that a squash merge takes the commit subject when a pull request has exactly one commit, so a
+uniform history depended on a host setting rather than on what was written. The style now applies to
+both and the gate still applies to one. The twenty-four subjects written before that were rewritten in
+place, thirty minutes after the first push and before branch protection existed, which was the last
+moment it cost nothing.
+
 **Three factual claims did not match their sources.** Web push was said not to reach an Apple Watch
 when the WebKit post announcing the feature says it does. A self-preference figure of 4 to 8 points was
 attributed to a paper that publishes no effect size. And a METR result was described as retired by its
