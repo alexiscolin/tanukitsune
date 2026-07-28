@@ -3,7 +3,7 @@ name: pre-pr
 description: Runs the full pre-PR review sequence: deterministic gates, then four fresh-context reviewers in parallel, then synthesis. Use before opening any pull request.
 disable-model-invocation: true
 argument-hint: "[base-branch]"
-allowed-tools: Bash(pnpm verify) Bash(git diff:*) Bash(git merge-base:*)
+allowed-tools: Bash(pnpm verify), Bash(git diff:*), Bash(git merge-base:*), Write, Task, SlashCommand
 ---
 
 # Pre-PR review

@@ -1,0 +1,78 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Nothing here writes to the repository, so nothing here needs to be able to.
+# Actions are pinned to commit SHAs: a mutable tag is a third party's decision
+# about what runs in this repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm verify
+      # next build rewrites tsconfig.json when it dislikes it, and strict is what it turns off.
+      - name: The build left tsconfig.json alone
+        run: git diff --exit-code tsconfig.json
+
+  e2e:
+    runs-on: ubuntu-latest
+    # Against a server Postgres, not the local file-backed one, so the driver
+    # that runs in production is the driver a merge is gated on.
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: tanukitsune
+          POSTGRES_DB: tanukitsune
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgres://postgres:tanukitsune@127.0.0.1:5432/tanukitsune
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm db:migrate
+      - run: pnpm test:e2e
+
+  pr-title:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      # We squash merge, so this title becomes the commit subject.
+      - name: The title is a conventional commit subject under 72 characters
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if [ "${#TITLE}" -gt 72 ]; then
+            echo "Title is ${#TITLE} characters, the limit is 72." >&2
+            exit 1
+          fi
+          if ! printf '%s' "$TITLE" | grep -qE '^(feat|fix|docs|refactor|test|chore|perf|build|ci)(\([a-z0-9-]+\))?!?: [a-z]'; then
+            echo "Title must read: type(scope): imperative subject starting lowercase." >&2
+            exit 1
+          fi

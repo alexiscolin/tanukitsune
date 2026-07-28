@@ -1,7 +1,7 @@
 ---
 name: security-check
 description: Reviews a diff for untrusted input paths, secret handling, authorisation gaps and client boundary leaks.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 model: opus
 effort: high
 permissionMode: plan

@@ -1,7 +1,7 @@
 ---
 name: performance-check
 description: Reviews a diff for performance regressions and unnecessarily expensive algorithms.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 model: sonnet
 effort: medium
 permissionMode: plan

@@ -13,7 +13,9 @@
     ],
     "deny": [
       "Read(./.env)",
-      "Read(./.env.*)"
+      "Read(./.env.local)",
+      "Read(./.env.*.local)",
+      "Read(./info/**)"
     ],
     "ask": [
       "Bash(git push:*)"
@@ -26,8 +28,39 @@
           {
             "type": "command",
             "command": "bash",
-            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/verify.sh"],
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/verify.sh"
+            ],
             "timeout": 120
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/verify.sh"
+            ],
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Glob|Grep|Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/no-info.sh"
+            ],
+            "timeout": 5
           }
         ]
       }

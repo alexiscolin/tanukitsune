@@ -14,3 +14,10 @@ CLAUDE.local.md
 # Human-only material: personal notes, learning references, working protocol.
 # Not part of the project. Never committed.
 info/
+
+# Local file-backed Postgres, created by pnpm bootstrap.
+.postgres/
+
+# Playwright output.
+test-results/
+playwright-report/

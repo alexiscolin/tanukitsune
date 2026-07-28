@@ -1,7 +1,7 @@
 ---
 name: regression-check
 description: Reviews a diff for behaviour that worked before and behaves differently now.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 model: opus
 effort: high
 permissionMode: plan

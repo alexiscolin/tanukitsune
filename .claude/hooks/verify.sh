@@ -1,6 +1,7 @@
 #!/bin/bash
 # Blocks a turn ending on code that does not compile or lint.
 # Exit 2 makes the agent keep working, with stderr as the reason it receives.
+# Runs pnpm gate, not pnpm verify: a hook killed on its timeout blocks nothing.
 
 input=$(cat)
 
@@ -18,7 +19,7 @@ command -v pnpm >/dev/null 2>&1 || exit 0
 # Capture output rather than merging it into stdout: exit 2 discards stdout and
 # shows only stderr to the agent, so merging would block the turn while
 # withholding the errors needed to unblock it.
-if ! out=$(pnpm verify 2>&1); then
+if ! out=$(pnpm gate 2>&1); then
   printf 'Verification failed. Fix this before concluding.\n\n%s\n' "$out" >&2
   exit 2
 fi

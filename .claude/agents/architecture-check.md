@@ -1,7 +1,7 @@
 ---
 name: architecture-check
 description: Reviews a diff for boundary violations, logic duplicated from existing code, and premature abstraction.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 model: sonnet
 effort: medium
 permissionMode: plan
