@@ -70,12 +70,12 @@ in a repository built this way, and it cannot be reconstructed afterwards.
 
 ## 4. The rule that matters most
 
-An adversarial review of the framing document found three false numbers in it, two of them in the
-opening thesis. They came from a model, and they looked solid.
+**Any number carrying an argument has its source in the same paragraph, or it is deleted.** Every one
+of them is listed in [`sources.md`](sources.md).
 
-So: **any number carrying an argument has its source in the same paragraph, or it is deleted.** On a
-repository whose method claims evidence over assertion, that is the first place a skeptical reader
-will push, and it is the cheapest thing to make bulletproof.
+On a repository whose method claims evidence over assertion, an unsourced figure is the first place a
+skeptical reader pushes, and it is the cheapest thing to make bulletproof. A confident number that
+turns out to be wrong costs more credibility than three good arguments earn.
 
-The same rule applies to claims about the method itself. If this documentation says structural and
+The same applies to claims about the method itself. If this documentation says structural and
 behavioural changes never share a commit, `git log` will be read against it.
