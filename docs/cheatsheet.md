@@ -1,12 +1,15 @@
-# Working with coding agents: a course
+# Engineering handbook: building with agents
 
-**What this is.** A complete treatment of agent-assisted engineering from the human side: the mental
-model, the loop, how to phrase things, how to keep control, how to review, what it costs, and what the
-evidence supports. Written to be learned from once and consulted afterwards.
+**What this is.** The standard this project is built to, and the reasoning behind it: how work is
+divided, how instructions are phrased, when to stop, how review is structured, what each level costs,
+and the discipline that applies when a model is inside the product rather than around it.
 
-[`workflow.md`](workflow.md) is how this project applies it. [`ai-engineering.md`](ai-engineering.md)
-covers the model-facing engineering. This document is the general version and explains why each rule
-exists rather than only stating it.
+[`workflow.md`](workflow.md) is the project-specific application. [`ai-engineering.md`](ai-engineering.md)
+covers the model-facing implementation. This document states the general rules and why each one exists,
+so that a rule can be argued with rather than merely followed.
+
+Claims that carry an argument are listed with their sources in [`sources.md`](sources.md), and the
+section on contested findings marks what the evidence does not settle.
 
 ---
 
@@ -692,30 +695,8 @@ work. Adoption depth of newer agent protocols, where organisation counts are ven
 Treat any specific performance multiplier for one tool over another as unverified until measured on
 your own workload. That query space is dominated by content recycling invented figures.
 
-## 43. Answering "how do you use AI" in an interview
 
-The failure mode is enthusiasm. The prevailing hiring view is explicit: **fluency is a green flag,
-dependency is a red flag.** So the answer demonstrates judgement, not tooling.
-
-Lead with the division of labour: you own planning and verification, the agent owns execution.
-
-**Name what you refused.** Where a model was considered and rejected, and the cheaper deterministic
-thing used instead.
-
-**Show the system, not the habits.** Guardrails living in the repository: instruction files, reviewers
-with an evidence bar, a hook blocking on non-compiling code, boundaries enforced in CI. A reader can
-inspect a system; they cannot inspect a description of your discipline.
-
-**Separate deterministic from probabilistic**, and explain why the probabilistic layer never blocks a
-merge.
-
-**Name the limits.** What does not work is what makes the rest credible.
-
-**Have one concrete override ready.** A specific case where you rejected what the agent proposed, and
-why. The single most convincing thing available, and it cannot be improvised well, which is why
-section 39 exists.
-
-## 44. The one-paragraph version
+## 43. The one-paragraph version
 
 Writing code got cheap, so the scarce resources became deciding what to build, verifying what was
 built, and understanding the result. You keep planning and verification; you delegate execution. You
