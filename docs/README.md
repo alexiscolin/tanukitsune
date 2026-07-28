@@ -10,6 +10,7 @@ Map of the documentation, how to read it before writing code, and how to operate
 | [`backlog.md`](backlog.md) | Every feature considered, whether it needs a model, which version, and what was rejected with the reason |
 | [`specs/v0.1.md`](specs/v0.1.md) | The only version specified in detail, with acceptance criteria |
 | [`stack.md`](stack.md) | Every contested tooling choice and the argument that settled it |
+| [`sources.md`](sources.md) | Every load-bearing claim, with where it comes from |
 | [`workflow.md`](workflow.md) | How work is done with coding agents, and why that method |
 | [`decisions/`](decisions/) | Architecture decision records, append-only |
 | [`agent-log.md`](agent-log.md) | Dated record of where the agent was overruled |

@@ -15,14 +15,21 @@ regenerated in the target language with that language's own sounds, which no alg
 machine translation solves. That is the reason this product needs a model at all.
 
 Second thesis: WaniKani schedules every learner on the same fixed intervals. FSRS models difficulty,
-stability and retrievability per card per person. It has shipped in Anki since 23.10, October 2023, as
-an **opt-in** scheduler, still opt-in today, and it beats SM-2 on prediction accuracy across a public
-benchmark of roughly 350M reviews from 10,000 users.
+stability and retrievability per card per person. It has shipped in
+[Anki since 23.10](https://github.com/ankitects/anki/releases/tag/23.10), October 2023, as an
+**opt-in** scheduler, [still opt-in today](https://github.com/ankitects/anki/issues/3616), and it
+beats SM-2 on prediction accuracy across a
+[public benchmark](https://github.com/open-spaced-repetition/srs-benchmark) of roughly 350M reviews
+from 10,000 users.
 
 The widely repeated "20 to 30 percent fewer reviews" figure is a **simulation result, not a
-measurement**: the FSRS wiki was amended in February 2026 to say so, and the public benchmark measures
-prediction accuracy only, never review counts. So we do not repeat it. We measure it, on our own data,
-and publish the number. That is a more interesting project than citing the claim.
+measurement**: the [FSRS wiki](https://github.com/open-spaced-repetition/awesome-fsrs/wiki/ABC-of-FSRS)
+was amended in February 2026 to say so, and the benchmark measures prediction accuracy only, never
+review counts. So we do not repeat it. We measure it, on our own data, and publish the number. That is
+a more interesting project than citing the claim.
+
+Every load-bearing claim in this documentation is listed with its source in
+[`sources.md`](sources.md).
 
 *WaniKani in your language, scheduled on your memory.*
 
@@ -56,7 +63,8 @@ app.
 Three facts that shape the architecture and are expensive to discover late.
 
 **No review history since April 2023.** `GET /reviews` returns an empty array and `POST /reviews`
-returns an unpersisted review whose id is always zero. **We are the system of record.** Everything
+returns an unpersisted review whose id is always zero, per the
+[API reference](https://docs.api.wanikani.com/20170710/). **We are the system of record.** Everything
 FSRS needs, every statistic, every comparison against their fixed intervals exists only if we capture
 it. See [ADR 0005](decisions/0005-system-of-record-for-reviews.md).
 
@@ -64,8 +72,9 @@ it. See [ADR 0005](decisions/0005-system-of-record-for-reviews.md).
 not server-filtered while writes are. A free user's token returns the whole corpus and hiding what
 they are not entitled to falls to us.
 
-**Submission is not idempotent**, there is no idempotency key, and the rate limit is sixty requests
-per minute per token shared between reads and writes.
+**Submission is not idempotent**, there is no idempotency key, and the rate limit is
+[sixty requests per minute per token](https://community.wanikani.com/t/32851) shared between reads and
+writes.
 
 ## Architecture
 
@@ -110,14 +119,28 @@ offline and both sync.
   replays the log, and replaying twice must be safe.
 - Server state wins on conflict. FSRS scheduling is ours and is recomputed from the log, so it never
   needs merging.
-- An uncertain failure is resolved by re-reading the assignment state, never by resubmitting blind.
-  A 422 means drop and resync rather than retry.
+- **An uncertain failure is resolved by re-reading the assignment state, never by resubmitting.** A
+  422 means drop and resync rather than retry. This rule has no exception: submission has no
+  idempotency key and the response carries an id that is always zero, so there is nothing to
+  deduplicate against. A blind retry on a lost acknowledgement advances the SRS stage twice and
+  silently corrupts the user's progression. An earlier draft of this document contained the opposite
+  rule alongside this one; the contradiction is recorded in the agent log.
 - Storage limits are handled explicitly. Safari deletes an origin's storage after seven days without
   interaction, all at once, so corpus and assignments are treated as refetchable caches and
   `review_events` is backed up server-side, because it is the only local state that cannot be
-  reconstructed.
+  reconstructed. Installing to the home screen exempts the app from that cap, and requesting
+  persistence does too.
+- **An installed web app has its own storage partition, isolated from the browser's.** A user who
+  reviews in Safari, accumulates a queue, then installs, opens the installed app to an empty database.
+  So the queue is flushed before the install prompt appears, and if it cannot be, the prompt says so.
+- **Background Sync does not exist on iOS and never has**, so the flush is an in-page paced drain
+  triggered on reconnect and on visibility change. Treating the browser's sync event as anything other
+  than a bonus on Chromium would promise behaviour the platform cannot deliver.
 - Multi-tab is a week-one case, not an edge case. A single sync leader elected through the Web Locks
   API.
+- The flush is a route handler taking a batch, not a server action. Server actions dispatch
+  sequentially from the client, their identifiers rotate on deploy so a queued call from a stale
+  client becomes unresumable, and an offline-first client is by definition a stale client.
 
 ## Where AI is used, and where it is refused
 

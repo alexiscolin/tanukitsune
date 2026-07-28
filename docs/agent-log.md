@@ -40,3 +40,23 @@ stdout, which a blocking exit discards, meaning it would have blocked a turn whi
 errors needed to unblock it, then looped. None of this was discovered by running it, because with no
 `package.json` the hook had never executed. Documentation that describes infrastructure which does not
 exist is the specific gap a senior reader is calibrated to find.
+
+An architecture review then found the worst defect so far, and it was a contradiction rather than an
+omission. Two sections of the framing document gave opposite rules for the same case: one said an
+uncertain submission is resolved by re-reading the assignment state, the other said an unknown result
+is retried. The second corrupts data. Submission has no idempotency key and the response carries an id
+that is always zero, so a blind retry on a lost acknowledgement advances the SRS stage twice and
+silently damages the user's progression. Both sentences read as reasonable in isolation, which is why
+neither had been questioned.
+
+The same review found that the document described a directory layout and called it an architecture. It
+was silent on the rendering and caching model, the mutation transport, the server and client boundary,
+the service worker, local state and CSS, for an application whose stated hard problem is frontend
+reconciliation. Eleven decisions are now listed as owed in the decisions index rather than discovered
+during implementation.
+
+Two of those are existential rather than architectural. Input method composition was never mentioned,
+in a Japanese typing app where Enter confirms a conversion before it submits anything: without gating
+on composition state, every review on mobile submits a half-typed answer, and the judge calibration
+would have been measured against truncated input. And a review timer would fall under a Level A
+accessibility criterion requiring it to be adjustable, which is a data model change if discovered late.
