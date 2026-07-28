@@ -14,11 +14,10 @@ Map of the documentation, how to read it before writing code, and how to operate
 | [`backlog.md`](backlog.md) | Every feature considered, whether it needs a model, which version, and what was rejected with the reason | both |
 | [`sources.md`](sources.md) | Every load-bearing claim, with where it comes from | humans |
 | [`workflow.md`](workflow.md) | How work is done with coding agents, and why that method | humans |
-| [`handbook.md`](handbook.md) | The engineering standard this project is built to, and the reasoning behind it | humans |
 | [`agent-log.md`](agent-log.md) | Dated record of where the agent was overruled | humans |
 
 **The audience column is load-bearing.** Only `AGENTS.md` and `CLAUDE.md` load automatically; everything
-else is read on demand. The four marked "humans" describe how a person operates the project and are
+else is read on demand. The three marked "humans" describe how a person operates the project and are
 pure context cost to an agent implementing a feature, so an agent does not open them unless the task is
 about the documentation itself.
 

@@ -6,8 +6,8 @@ Start at `docs/README.md`, which maps every document and marks its audience. Rea
 before writing code, and `docs/decisions/` before proposing any architectural change. Anything not in
 the current spec is out of scope, and adding it is a scope violation rather than initiative.
 
-Four documents are written for a human operating the project and are context cost to you:
-`docs/handbook.md`, `docs/workflow.md`, `docs/agent-log.md`, `docs/sources.md`. Do not open them
+Three documents are written for a human operating the project and are context cost to you:
+`docs/workflow.md`, `docs/agent-log.md`, `docs/sources.md`. Do not open them
 unless the task is about the documentation itself.
 
 ## Commands

@@ -1,6 +1,6 @@
 # How work gets done
 
-**What this is.** How work gets done with coding agents, and why that method. The general standard behind it is [`handbook.md`](handbook.md).
+**What this is.** How work gets done with coding agents, and why that method.
 
 It is part of the deliverable, not a preface to it. For tooling and quality gates see [`stack.md`](stack.md).
 
