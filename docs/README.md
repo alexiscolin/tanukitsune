@@ -14,7 +14,6 @@ Map of the documentation, how to read it before writing code, and how to operate
 | [`decisions/`](decisions/) | Architecture decision records, append-only | both |
 | [`backlog.md`](backlog.md) | Every feature considered, whether it needs a model, which version, and what was rejected with the reason | both |
 | [`sources.md`](sources.md) | Every load-bearing claim, with where it comes from | humans |
-
 | [`agent-log.md`](agent-log.md) | Dated record of where the agent was overruled | humans |
 
 `pnpm check:docs` enforces the discipline these documents are held to, so it does not depend on
