@@ -1,6 +1,8 @@
 ---
 status: accepted
 date: 2026-07-28
+revisit-when: typescript-eslint declares support for TypeScript 7, or dependency-cruiser ships it
+revisit-where: https://typescript-eslint.io/users/dependency-versions and the dependency-cruiser release notes
 ---
 
 # Pin TypeScript 6 rather than adopt 7
@@ -22,7 +24,12 @@ keep them. Or run both through npm aliasing, compiling with 7 while tooling read
 
 ## Decision
 
-Pin TypeScript 6.0.3. Revisit at 7.1.
+Stay on the TypeScript 6 line, installed as `npm:@typescript/typescript6`, since `typescript@latest`
+is now 7.x and the 6 line ships under its own package name.
+
+**This decision has an expiry condition, in the front matter above.** Next already ships fixes to
+support TypeScript 7 and other tools in the stack have moved, so the window is narrower than the 7.1
+milestone suggests. A pin without a stated revisit condition is invisible debt.
 
 Type-aware linting and boundary enforcement are our two most important gates: `no-floating-promises`
 alone catches the failure mode where an agent drops an `await` on a database write, which passes every

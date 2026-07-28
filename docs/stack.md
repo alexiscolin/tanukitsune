@@ -85,8 +85,7 @@ second is the better trade and needs deciding rather than discovering.
 floor is Node 20.9. Pin Node 22 or the corpus generator breaks. The v7 migration also renamed `system`
 to `instructions` and moved telemetry to a separate package.
 
-## To verify rather than assert
+## Unverified
 
-`knip` is believed to have no handling for `"use server"`, which would make it report every Server
-Action as an unused export. This was not confirmed against its documentation. Check it before writing
-the exclusion into a gate, and delete this paragraph either way.
+`knip` may have no handling for `"use server"`, which would make it report every Server Action as an
+unused export. Verify against its documentation before relying on an exclusion rule.

@@ -51,6 +51,21 @@ commit.
 - You are about to add a dependency, an abstraction with fewer than three call sites, or a file
   nothing imports yet
 
+## Documents state what is true, never how they got there
+
+A document describes the current state of the system. It never narrates its own revision history.
+
+Banned in any document, code comment or commit body: references to an earlier draft, to a review or
+audit, to what was previously wrong, to a conversation, or to the process that produced the text.
+"An earlier version said X" and "a review found Y" are provenance, and provenance belongs in
+`docs/agent-log.md` or in an ADR, which exist for exactly that.
+
+The test: would this sentence still make sense to someone who joined today and has no idea the project
+had a yesterday. If not, delete it or move it.
+
+This is the same rule as the comment policy below. A comment explains a constraint, not the history of
+the change that introduced it.
+
 ## Style
 
 Everything a linter can catch is enforced by the linter and is not repeated here. What it cannot:

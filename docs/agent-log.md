@@ -75,3 +75,10 @@ because the 6 line now ships under a different package name. The accessibility g
 specified, since the standard lint plugin does not support the linter version we committed to. And a
 claim about dead-code detection was asserted without being checked; it is now marked to verify rather
 than left to look authoritative.
+
+Corrected a discipline failure in the documentation itself: several documents narrated their own
+revision history, referring to earlier drafts and to the reviews that produced them. That is
+conversation leaking into artifacts meant to describe the current state of a system, and it pollutes a
+wider scope than the exchange it came from. A reader joining today should not need to know the project
+had a yesterday. Provenance now lives here and in the decision records only, and the rule is in
+AGENTS.md and in the architecture reviewer's scope so it is caught mechanically rather than noticed.

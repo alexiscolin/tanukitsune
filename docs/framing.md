@@ -79,7 +79,7 @@ writes.
 ## Architecture
 
 **This is a client-side application with a server attached, not a server-rendered one.** The
-distinction decides most of what follows and an earlier draft had it backwards.
+distinction decides most of what follows.
 
 The corpus, the judge and the demo deck are genuinely server-shaped: shared, cacheable, generated
 once. The review loop, which is the product, is not. It reads from IndexedDB, writes to a durable
@@ -138,8 +138,7 @@ offline and both sync.
   422 means drop and resync rather than retry. This rule has no exception: submission has no
   idempotency key and the response carries an id that is always zero, so there is nothing to
   deduplicate against. A blind retry on a lost acknowledgement advances the SRS stage twice and
-  silently corrupts the user's progression. An earlier draft of this document contained the opposite
-  rule alongside this one; the contradiction is recorded in the agent log.
+  silently corrupts the user's progression.
 - Storage limits are handled explicitly. Safari deletes an origin's storage after seven days without
   interaction, all at once, so corpus and assignments are treated as refetchable caches and
   `review_events` is backed up server-side, because it is the only local state that cannot be
@@ -156,6 +155,138 @@ offline and both sync.
 - The flush is a route handler taking a batch, not a server action. Server actions dispatch
   sequentially from the client, their identifiers rotate on deploy so a queued call from a stale
   client becomes unresumable, and an offline-first client is by definition a stale client.
+
+### Rendering and caching
+
+The framework's caching is opt-in and, once enabled, becomes a build-time constraint rather than a
+tuning knob: uncached data accessed outside a suspense boundary fails the build.
+
+Enabled. The corpus is the textbook case, since it is identical for every user, keyed by item and
+locale, and invalidated only by a corpus version. Cached with a tag per locale and an indefinite
+lifetime, expired explicitly after a regeneration so the change is visible immediately rather than
+eventually. On a serverless host the cache must be the durable variant, because in-memory does not
+survive between invocations.
+
+The private, browser-memory cache scope is not used: it is experimental and reads request-time inputs
+we do not have.
+
+Enabling this also changes navigation semantics, since routes are hidden rather than unmounted and
+effects re-run on every reveal. That is one more reason the review session is a single client route:
+it opts the part of the product that would suffer out of the mechanism entirely.
+
+### Mutation transport
+
+**The queue flush is a route handler taking a batch. Server actions are for forms only.**
+
+Server actions dispatch one at a time per client, so forty queued answers become forty serialised
+round trips. Their identifiers rotate on deploy, and a client that has been offline is by definition
+running an old build, so a queued call becomes unresumable rather than merely slow. They also carry a
+body size limit and an opaque payload a service worker cannot inspect or replay.
+
+Server actions remain correct for the genuinely form-shaped mutations: reporting a bad mnemonic,
+submitting a self-grade override, changing a setting. Those get progressive enhancement and pending
+state for free, which is the reason the mechanism exists.
+
+Derived work after a write, such as recomputing scheduling state or telemetry, runs after the response
+is sent. The durable review event itself does not: it is the system of record and is written inside
+the request.
+
+### The server and client boundary
+
+This is the boundary that leaks secrets, and it is not the same as the module boundaries above.
+
+`data/` is a data access layer in the strict sense: server-only, performing its own authorisation,
+returning minimal shapes rather than rows. Only it reads the environment. A fifth enforced rule
+follows from this: **`ui/` may not import a module that imports `server-only`**, which the dependency
+graph can check because type-only imports are already visible to it.
+
+Two rules that matter from the moment a second user exists, and are cheaper to hold from the start.
+A page-level authorisation check does not extend to the mutations defined on that page, so every
+mutation re-verifies. And schema validation checks shape, not ownership: a well-formed identifier can
+still name a row belonging to someone else, so identity comes from the session and lookups are scoped
+by it rather than trusting an identifier from the client.
+
+Return values from server mutations are serialised to the client, so they are constrained the same way
+any other response would be.
+
+### Errors
+
+Expected failures are return values, not exceptions. A wrong answer, a rejected submission, a
+malformed corpus entry: all of these are outcomes the caller handles, and modelling them as thrown
+errors both loses type information and takes down a segment, since a throw inside a transition reaches
+the nearest boundary.
+
+Unexpected failures propagate, per the fail-loudly principle. Route boundaries handle segment
+failures, and a component-level boundary wraps the judge cascade and the flush, because neither should
+take down a page.
+
+Error boundaries do not catch failures in event handlers or asynchronous code, and the typing loop is
+entirely event handlers. Those need explicit handling at the call site or they vanish silently.
+
+The global error page renders without application styles, so a dark-first product shows a light error
+page unless the boundary applies the theme itself.
+
+### Local state
+
+An append-only outbox in the browser's database, exposed to the interface through the standard
+external-store subscription, with ordinary component state for ephemeral interface concerns. One
+dependency for the database wrapper. No state library.
+
+Three stores: subjects and assignments as caches of server truth, replaced wholesale and never merged,
+and the outbox, appended with client-generated identifiers so a duplicate throws rather than silently
+overwriting. Status is the only mutable field on an entry; the answer payload is never touched.
+
+The flush is strictly serial and oldest first, because scheduling is order dependent, paced from the
+rate-limit headers rather than a fixed sleep since reads and writes share one budget, and holds a
+single-flusher lock so two tabs cannot double-send. It runs in the page rather than the service
+worker.
+
+This is the transactional outbox pattern, whose usual mitigation for at-least-once delivery is an
+idempotent consumer. That mitigation is unavailable here, which is why an ambiguous outcome is
+resolved by reading back the assignment state rather than by retrying.
+
+### The service worker
+
+Hand-written, not generated by a plugin. The established plugin has not shipped since 2022 and cannot
+run under the current bundler; its successor has an open crash in exactly the combination this project
+would use, and is maintained by one person who does not use the host we deploy to.
+
+The caching surface is small enough that this is not a sacrifice: one application shell, the static
+assets, and nothing else, precisely because the review session is a single client route rather than a
+series of navigations. Requests are discriminated on headers rather than URL, since the same address
+serves different representations.
+
+Update timing matters more than it usually does: activating a new worker mid-session is visible in a
+timed loop, so a waiting worker is held until the session ends or the application is backgrounded.
+
+Deployment skew protection returns a 404 to clients pinned to an expired build, and an offline-first
+client is a long-lived one, so its maximum age is raised well beyond the deploy cadence and a 404 on a
+static asset is treated as a signal to purge and reload.
+
+### Styling
+
+Utility-first for tokens, module-scoped stylesheets for component internals, no runtime CSS-in-JS. The
+bundler decides this: a custom bundler configuration now fails the build, module-scoped stylesheets
+are native, and the main compile-to-CSS alternative ships only a plugin for the previous bundler.
+
+Design tokens live in one file in the community standard format, compiled into custom properties.
+Anything intended to animate is registered as a typed custom property, since an unregistered one
+cannot be interpolated.
+
+Theme switching is a small inline script that sets both the theme attribute and the colour scheme in
+the same tick. The second is what prevents form controls, scrollbars and the page background from
+flashing, and it is the part most implementations omit.
+
+Accessibility primitives come from a library; visual design, tokens, variants and the component API do
+not. What a primitive library provides is specification compliance, focus management and screen reader
+behaviour that no automated test catches. Rebuilding that is not building a design system, it is
+rebuilding a specification.
+
+### Routing and locales
+
+The route tree carries a locale segment from the first commit, even while only one locale exists. It
+changes the service worker scope, the manifest entry point and every route's identity, so adding it
+later is a restructure rather than a feature.
 
 ## Where AI is used, and where it is refused
 

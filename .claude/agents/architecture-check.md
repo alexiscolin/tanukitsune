@@ -26,6 +26,11 @@ noticing the pattern.
 forwards, any abstraction with fewer than three call sites, any parameter added for a caller that does
 not exist, and any file nothing imports.
 
+**Documents and comments that narrate their own history.** Any text referring to an earlier draft, a
+review, an audit, what was previously wrong, or the conversation that produced it. Provenance belongs
+in the agent log or an ADR, never in a document that describes the current state. Applies to markdown,
+code comments and commit bodies alike.
+
 **Evidence bar.** Cite `file:line`. A claim without a location is not a finding.
 
 **Scope.** Do not comment on formatting, naming style, or anything the linter, `knip` or

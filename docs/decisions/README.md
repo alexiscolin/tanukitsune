@@ -10,6 +10,11 @@ expensive to reverse or that a reader will second-guess.
 Plain markdown in the MADR minimal shape. No tooling: the ADR command line tools are abandoned, and
 installing a dead one is a worse signal than installing none.
 
+**Any decision that depends on the state of the ecosystem carries `revisit-when` and `revisit-where`
+in its front matter.** A version pin, a workaround for an upstream gap, or a choice made because
+something was not ready yet is debt the moment the reason expires, and debt nobody wrote a trigger for
+is invisible. Naming the condition and the page to check turns it into a scheduled decision.
+
 ## Recorded
 
 | ADR | Decision |
@@ -22,8 +27,7 @@ installing a dead one is a worse signal than installing none.
 
 ## Owed, ordered by cost of being wrong
 
-Raised by an architecture review on 2026-07-28 and not yet decided. Written down rather than
-discovered during implementation.
+Open decisions. Each has a consequence that gets expensive once code exists.
 
 1. **IME composition handling.** Enter confirms a conversion before it submits. Gating on composition
    state, as a tested primitive, before any other component. Already in the v0.1 spec; the ADR records
