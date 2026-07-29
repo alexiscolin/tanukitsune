@@ -38,6 +38,14 @@
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/verify.sh"
             ],
             "timeout": 120
+          },
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-conformity.sh"
+            ],
+            "timeout": 15
           }
         ]
       }

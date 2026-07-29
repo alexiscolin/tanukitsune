@@ -96,10 +96,22 @@ and a hook killed on timeout blocks nothing while appearing to guard everything.
 never runs the slow one, which is exactly the session where the documentation rules are the only rules
 that apply.
 
+A second `Stop` hook refuses to end a turn when the markdown has changed since `docs-conformity` last
+read it, digesting the documentation set and comparing against a gitignored marker the reviewer's pass
+writes. The trigger is mechanical because it can be; the reading is not, because no script can tell
+whether two documents still agree.
+
+**Catching it at the turn rather than at the pull request is the whole point.** A contradiction found
+at review time lives in documents belonging to some other slice, so fixing it means a diff that grew
+past what the plan described, and leaving it means shipping it. Found in the turn that created it, it
+is fixed inside the slice that owes it.
+
 A `PreToolUse` hook refuses any read, write or shell command touching `info/`. The rule is in
 `AGENTS.md`, and a rule an agent can only remember is one it forgets on the fiftieth turn without
 anyone noticing which turn.
 
 Keep hooks deterministic. A hook running a linter is free and catches most agent regressions. A hook
-running an agent is expensive and loops.
+running an agent is expensive and loops, which is why the conformity hook demands one rather than
+launching one: the detection is a digest comparison costing milliseconds, and the reading happens in
+the turn the hook refused to end.
 

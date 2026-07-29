@@ -59,7 +59,8 @@ Agent configuration lives at the repository root: `AGENTS.md` is canonical and u
 `CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: four reviewers
 with disjoint lenses, a fifth that reads documentation against itself and runs only when a diff
 touches markdown, the `pre-pr` skill, a hook that blocks a turn ending on code that does not compile,
-and a `PreToolUse` hook that refuses any access to `info/`. The permission deny list covers the file
+a second that blocks a turn ending on documentation the conformity reviewer has not read, and a
+`PreToolUse` hook that refuses any access to `info/`. The permission deny list covers the file
 tools; the hook is what closes the shell, where `cat info/notes.md` is not a narrower hole than the
 one a `Read` rule shuts.
 

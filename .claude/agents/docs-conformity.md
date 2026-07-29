@@ -2,7 +2,7 @@
 name: docs-conformity
 description: Checks a changed document against every other document and against the code, for claims that contradict each other. Run it whenever a diff touches markdown.
 tools: Read, Grep, Glob
-model: opus
+model: sonnet
 effort: high
 permissionMode: plan
 ---
