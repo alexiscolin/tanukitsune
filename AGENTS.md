@@ -112,8 +112,10 @@ Everything a linter can catch is enforced by the linter and is not repeated here
   lowercase`, under 72 characters. Types are `feat`, `fix`, `docs`, `refactor`, `test`, `chore`,
   `perf`, `build`, `ci`. Body only when the reason is not obvious, and as prose rather than a bullet
   list. No AI attribution trailers, no co-author line.
-- **Only the pull request title is gated**, in CI, because linting every commit blocks an agent
-  mid-loop for no gain. The style is the same on both so that the history stays uniform whichever of
-  the two a squash merge happens to take, rather than depending on a host setting staying correct.
+- **Nothing is gated at commit time**, because linting every commit blocks an agent mid-loop for no
+  gain. CI checks the pull request title and every commit subject on the branch, both through one
+  script so the two cannot drift. The style is the same on both so that the history stays uniform
+  whichever of the two a squash merge happens to take, rather than depending on a host setting
+  staying correct.
 - Nothing provisional reaches a merge: no commented-out code, no `TODO`, no placeholder, no defensive
   layer added in case. If it is needed later, it is a backlog entry, not a line in the diff.
