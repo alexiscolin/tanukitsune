@@ -48,8 +48,10 @@ the `stop_hook_active` field the tool places in its own JSON input and exits whe
 since a hook that blocks without reading it wedges the session shut. The consequence is that the
 guarantee is one forced continuation, not a loop until compliance.
 
-**`.claude/hooks/docs-conformity.sh`** digests the content of every tracked and untracked `.md` file,
-excluding `info/` and the two human-facing documents, and compares it to a gitignored marker at
+**`.claude/hooks/docs-conformity.sh`** digests the content of every `.md` file describing this system,
+which is every tracked and untracked one except the two human-facing documents under `docs/` and
+everything under `info/`, plus `info/workflow-explique.md` added back by name because it describes the
+system rather than the person and git never lists it. It compares that digest to a gitignored marker at
 `.claude/.conformity-reviewed`. When the two differ it reads the set with the `docs-conformity`
 reviewer and records the state it reviewed. It is registered with `asyncRewake`, so it runs detached
 and wakes the agent only when it has findings.

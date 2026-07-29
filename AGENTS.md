@@ -117,6 +117,9 @@ Everything a linter can catch is enforced by the linter and is not repeated here
 - Keep a document proportioned. A detail never outweighs what it sits inside, and a paragraph does not
   grow a section for its own exception. If a point needs more room than its section can give it, it
   belongs in the document that owns that subject, with one line here pointing there.
+- A change to a mechanism updates every document describing it, in the same change and not afterwards.
+  A fact lives in one document and the others carry a line pointing there, never a second copy. A total
+  announced in prose carries its list in the same sentence, or it is not announced.
 - Match the two nearest files in the same directory: structure, naming, error handling.
 - Never introduce a second way to do something that already exists here. Find the existing one.
 - No em dashes, no emoji, anywhere. Code, comments, docs, commits, output. This is a ban on two

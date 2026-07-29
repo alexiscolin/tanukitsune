@@ -14,8 +14,9 @@ thing differently, one of them is wrong and a reader has no way to tell which. F
 the whole job.
 
 **Read the set, not only the diff.** `README.md`, `AGENTS.md`, `REVIEW.md`, everything under `docs/`
-except `agent-log.md` and `sources.md`, and the agent configuration under `.claude/`. A contradiction
-lives between two files, so reading one of them tells you nothing.
+except `agent-log.md` and `sources.md`, the agent configuration under `.claude/`, and
+`info/workflow-explique.md`, which is the one file under `info/` describing this system rather than the
+person operating it. A contradiction lives between two files, so reading one of them tells you nothing.
 
 What to look for, in the order that catches the most:
 

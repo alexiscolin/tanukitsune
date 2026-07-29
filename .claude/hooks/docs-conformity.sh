@@ -23,13 +23,21 @@ git rev-parse --git-dir >/dev/null 2>&1 || exit 0
 marker=.claude/.conformity-reviewed
 lock=.claude/.conformity-running
 
-# Tracked and untracked markdown, content-digested in a stable order. info/ is
-# out of the project, and the two human-facing documents record provenance rather
-# than state, so none of the three can put the reviewer to work.
+# Gitignored, so git never lists it, and it describes this system rather than the
+# person operating it. Left out of the set it would be the one document able to
+# contradict the others without anything noticing.
+described=info/workflow-explique.md
+
+# Every markdown file describing this system, content-digested in a stable order.
+# The two human-facing documents under docs/ record provenance rather than state,
+# and info/ describes the person rather than the system, so neither can put the
+# reviewer to work. The one file named above is the exception, and it is added
+# back explicitly because git never lists it.
 digest=$(git ls-files -co --exclude-standard -- '*.md' \
   | grep -v '^info/' \
   | grep -v '^docs/agent-log\.md$' \
   | grep -v '^docs/sources\.md$' \
+  | cat - <(printf '%s\n' "$described") \
   | sort \
   | while IFS= read -r file; do [ -f "$file" ] && shasum "$file"; done \
   | shasum | cut -d' ' -f1)
@@ -61,6 +69,7 @@ settled=$(git ls-files -co --exclude-standard -- '*.md' \
   | grep -v '^info/' \
   | grep -v '^docs/agent-log\.md$' \
   | grep -v '^docs/sources\.md$' \
+  | cat - <(printf '%s\n' "$described") \
   | sort \
   | while IFS= read -r file; do [ -f "$file" ] && shasum "$file"; done \
   | shasum | cut -d' ' -f1)
