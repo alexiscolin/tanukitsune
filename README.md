@@ -162,8 +162,8 @@ disjoint lenses check every diff from a fresh context, a fifth reads the documen
 whenever a diff touches it, and a hook makes it impossible to end a turn on code that does not
 compile.
 
-[`docs/workflow.md`](docs/workflow.md) describes that process: the per-task cycle, the four review
-lenses, and the conditions under which a session is discarded rather than continued.
+[`docs/workflow.md`](docs/workflow.md) describes that process: the per-task cycle, the review lenses,
+and the conditions under which a session is discarded rather than continued.
 [`docs/agent-log.md`](docs/agent-log.md) is the dated record of every point where an agent's output was
 overruled, with the reason, including the cases where it was confidently wrong.
 

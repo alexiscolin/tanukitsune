@@ -50,7 +50,7 @@ changing, change the agent file so the change persists.
 
 ## 4. Synthesise
 
-Merge the four reports into one list, ordered by severity, deduplicated. For each finding keep the
+Merge every report into one list, ordered by severity, deduplicated. For each finding keep the
 `file:line` citation. Drop anything without one: that was the reviewers' instruction and it applies to
 the synthesis too.
 

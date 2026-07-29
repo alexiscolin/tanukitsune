@@ -81,9 +81,9 @@ it.
 
 **4.3 Before every pull request.** Run `/pre-pr` yourself. It is deliberately not automatic: the skill
 declares `disable-model-invocation`, so an agent cannot trigger it, and pre-commit hooks stay advisory
-so an agent is never blocked mid-loop. It runs the free gates, captures the diff once, spawns the four
-reviewers in parallel, synthesises, and hands back by naming `/simplify` and `/code-review`, which it
-cannot invoke itself.
+so an agent is never blocked mid-loop. It runs the free gates, captures the diff once, spawns the
+reviewers in parallel, synthesises, runs `/simplify`, and hands back by naming `/code-review`, which
+is marked so a model cannot invoke it.
 
 **4.4 When an architectural decision is taken.** Write the ADR immediately, not at the end of the
 project. A retroactive ADR always lies a little, because the decision is remembered and the rejected

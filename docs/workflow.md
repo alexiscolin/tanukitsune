@@ -97,9 +97,10 @@ never runs the slow one, which is exactly the session where the documentation ru
 that apply.
 
 A second `Stop` hook refuses to end a turn when the markdown has changed since `docs-conformity` last
-read it, digesting the documentation set and comparing against a gitignored marker the reviewer's pass
-writes. The trigger is mechanical because it can be; the reading is not, because no script can tell
-whether two documents still agree.
+read it, digesting the documentation set and comparing against a gitignored marker. The reviewer is
+read-only like the other four, so the marker is written by the agent that acted on its report, not by
+the reviewer. The trigger is mechanical because it can be; the reading is not, because no script can
+tell whether two documents still agree.
 
 **Catching it at the turn rather than at the pull request is the whole point.** A contradiction found
 at review time lives in documents belonging to some other slice, so fixing it means a diff that grew
