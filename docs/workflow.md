@@ -91,7 +91,7 @@ agent team.
 
 The Stop hook is the highest return in this method: thirty minutes of setup, zero tokens, and it makes
 it impossible for an agent to declare done on code that does not compile. What the two registered hooks
-run, and the three guards that let one of them call a model, are in
+run, and the four guards that let one of them call a model, are in
 [`verification.md`](verification.md#the-two-stop-hooks). The arguments behind them are here.
 
 **The fast gate is what a hook can afford, and that decides its contents.** `pnpm gate` runs from a
