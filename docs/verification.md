@@ -74,7 +74,7 @@ Four guards, each against a different failure:
 | the content digest | a model pass on every turn rather than on every documentation state |
 | `mkdir` on `.claude/.conformity-running`, atomic, holding the pid | a second pass starting on a state the first is still reading, since the marker is only written minutes later when that first pass returns. A lock whose pid is gone is a corpse and is cleared: a pass killed on the hook timeout never runs its trap, and the lock it leaves would otherwise disable the reviewer permanently and in silence |
 | `TANUKITSUNE_NESTED_REVIEW`, an exported variable | the nested non-interactive session running this same hook again, which `stop_hook_active` cannot prevent because it is scoped to one process. One name for both nested sessions, since `verify.sh` has to recognise either of them and two names would drift |
-| the digest taken again after the reading | a pass reporting findings about text the agent edited while it read, which is dropped instead |
+| the marker written on every completed pass, findings or none | a standing contradiction costing a full reading of the set at every turn end, to repeat a report already delivered |
 
 **`.claude/hooks/code-review.sh`** fires on `PostToolUse` when `HEAD` has moved since the previous
 shell call, asks `scripts/check-review-coverage.sh` what is still unread, and runs the five code lenses
