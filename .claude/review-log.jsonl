@@ -106,3 +106,26 @@
 {"date":"2026-07-30","branch":"feat/answer-input","reviewer":"docs-conformity","file":"scripts/check-review-coverage-probe.sh","line":118,"outcome":"fixed"}
 {"date":"2026-07-30","branch":"feat/answer-input","reviewer":"performance-check","file":"scripts/check-docs.sh","line":95,"outcome":"dismissed","reason":"measured at 3 anchor links over 2 target files, with the whole script running in 0.97s; grouping by target would add machinery for a saving below noise"}
 {"date":"2026-07-30","branch":"feat/answer-input","kind":"pass","base":"a985d8f97c11112c2bab46024de926dba7ee5929","head":"7323443519e215fd3d19694464c04a9d0dbd9826"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":".claude/hooks/pre-pr-gate.sh","line":32,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-review-coverage.sh","line":98,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-docs.sh","line":101,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-docs.sh","line":102,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":".claude/skills/pre-pr/SKILL.md","line":98,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-review-coverage.sh","line":117,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-review-coverage.sh","line":103,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-docs.sh","line":108,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"docs/verification.md","line":75,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"scripts/check-review-coverage-probe.sh","line":182,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"info/workflow-explique.md","line":206,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"scripts/check-docs.sh","line":71,"outcome":"dismissed","reason":"a report string saying what the check does, corrected in passing while the surrounding block was rewritten; no behaviour attached"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"scripts/check-review-coverage-probe.sh","line":33,"outcome":"dismissed","reason":"the helper merge came from the cleanup pass over the same range, which is where a duplicate helper is meant to be caught"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"docs/README.md","line":63,"outcome":"dismissed","reason":"a short line where a clause was removed, cosmetic, and reflowing it would touch a paragraph nothing else in this range needs"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"docs/workflow.md","line":29,"outcome":"dismissed","reason":"three behaviours in nine files, past one slice; the reader was told before the work continued and the call was theirs"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"architecture-check","file":"docs/verification.md","line":60,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"architecture-check","file":"scripts/check-docs.sh","line":121,"outcome":"dismissed","reason":"one stream leaves a subshell, so tagging and splitting is the only way to get two reports from one walk without a temp file; the lens reached the same conclusion"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"architecture-check","file":"scripts/check-docs.sh","line":124,"outcome":"dismissed","reason":"both cases under that label are a link target the scan could not use, and the mislabelling predates this range"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"docs-conformity","file":"info/workflow-explique.md","line":191,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"performance-check","file":"scripts/check-review-coverage.sh","line":105,"outcome":"dismissed","reason":"three forks per commit became ten, a constant factor in a script that runs once per pull request and never in the per-turn gate"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"performance-check","file":"scripts/check-docs.sh","line":108,"outcome":"dismissed","reason":"one subshell per anchor link, three links in the corpus, and it scales with anchor count rather than document count"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"regression-check","file":"scripts/check-docs.sh","line":121,"outcome":"dismissed","reason":"no lens found a case where the tagged output loses or mislabels a report, and the two tags are stripped by an anchored sed"}
+{"date":"2026-07-30","branch":"feat/answer-input","kind":"pass","base":"fcce7463b611273ba89569abfcc27d0283d8bafb","head":"f76e0a6116c80c7e07c16edf65c78aaf3a088208"}
