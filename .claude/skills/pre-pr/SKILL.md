@@ -45,7 +45,7 @@ and report independently. Pass each one the diff path and the task's plan or spe
 `requirement-check` needs the requirement more than it needs the diff, so give it the plan and the spec
 first and the diff path second, in that order.
 
-Add `docs-conformity` as a fifth **only when the documentation set has moved since it last read it**.
+Add `docs-conformity` as a sixth **only when the documentation set has moved since it last read it**.
 The `Stop` hook writes the digest it reviewed to `.claude/.conformity-reviewed`; recompute that digest
 and compare. Equal means this exact state has already been read, and spawning the reviewer again pays
 for the same reading twice. Unequal, or no marker at all, means it runs, and it reads the whole set

@@ -60,8 +60,8 @@ Agent configuration lives at the repository root: `AGENTS.md` is canonical and u
 `CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: five reviewers
 with disjoint lenses, one of which reads intent rather than code, a sixth that reads documentation
 against itself and runs only when the digest of that set has moved since it last read it, the `pre-pr`
-skill, a hook that blocks a turn ending on code that does not compile, and a second that runs the
-conformity reviewer on that same condition.
+skill, and three hooks: one blocking a turn ending on code that does not compile, one running the
+conformity reviewer when that digest moves, and one demanding the five code lenses when `HEAD` moves.
 Alongside them, `review-log.jsonl` records what each lens found and whether it survived, which
 `scripts/review-stats.sh` reports.
 
@@ -81,8 +81,9 @@ matters most. Read and edit the plan by hand, then let a fresh-context reviewer 
 it.
 
 **4.3 Before every pull request.** Run `/pre-pr` yourself. It is deliberately not automatic: the skill
-declares `disable-model-invocation`, so an agent cannot trigger it, and nothing runs at commit time at
-all, so an agent is never blocked mid-loop. It runs the free gates, captures the diff once, spawns the
+declares `disable-model-invocation`, so an agent cannot trigger the skill. A commit does demand the
+five code lenses, which is a demand rather than a run: nothing at commit time blocks on a command an
+agent cannot satisfy. It runs the free gates, captures the diff once, spawns the
 reviewers in parallel, synthesises, runs `/simplify`, and hands back by naming `/code-review`, which
 is marked so a model cannot invoke it.
 

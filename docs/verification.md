@@ -73,8 +73,8 @@ Four guards, each against a different failure:
 | `TANUKITSUNE_CONFORMITY_RUNNING`, an exported variable | the nested non-interactive session running this same hook again, which `stop_hook_active` cannot prevent because it is scoped to one process |
 | the digest taken again after the reading | a pass reporting findings about text the agent edited while it read, which is dropped instead |
 
-**`.claude/hooks/code-review.sh`** fires on `PostToolUse` when the shell command contained `git commit`,
-and demands the five code lenses over the range between `.claude/.review-reviewed` and `HEAD`. Three
+**`.claude/hooks/code-review.sh`** fires on `PostToolUse` when `HEAD` has moved since the
+previous shell call, and demands the five code lenses over the range between `.claude/.review-reviewed` and `HEAD`. Three
 things shape it. The trigger is the commit rather than a turn boundary, because a commit is a
 deliberate unit and a turn is not. The range is accumulated rather than per-commit, since a red test
 read without its implementation is a reading of half a slice. And markdown is excluded, because
@@ -164,6 +164,9 @@ production is the driver a merge is gated on.
   pushed from a machine without the `Stop` hook reaches a pull request whose documents no model has
   read against each other.
 - Three of the five boundary rules have no probe.
+- Commits made directly on `main` are reviewed by nothing: the commit hook computes its range from the
+  merge base, which on `main` collapses to `HEAD`.
+- No dependency advisory check runs anywhere, although `security-check` delegates advisories to one.
 - Nothing measures the quality of a plan, which `workflow.md` names as where attention matters most.
 - The conformity reviewer reads the whole documentation set on every pass, so its cost grows with the
   documentation rather than with the change.

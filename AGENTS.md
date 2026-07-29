@@ -68,6 +68,10 @@ changes nothing but documentation would otherwise end without a single documenta
 One task per session: one slice, about five files, one behaviour, one PR. Structural changes and
 behavioural changes never share a commit.
 
+**A commit is a finished step, not a checkpoint.** Commit when a step is done and verified, never after
+each edit. The review lenses fire on every commit touching code, so a commit made as a save point buys
+five readings of half a slice, and a stream of one-line commits buries the four that carry the work.
+
 Red before green. The failing test is committed before the implementation, and it is never edited to
 reach green. A test that has to change to pass means the plan was wrong, which is a re-plan and not an
 implementation detail.
