@@ -69,7 +69,7 @@ Four guards, each against a different failure:
 | Guard | Stops |
 |---|---|
 | the content digest | a model pass on every turn rather than on every documentation state |
-| `mkdir` on `.claude/.conformity-running`, atomic | a second pass starting on a state the first is still reading, since the marker is only written minutes later when that first pass returns |
+| `mkdir` on `.claude/.conformity-running`, atomic, holding the pid | a second pass starting on a state the first is still reading, since the marker is only written minutes later when that first pass returns. A lock whose pid is gone is a corpse and is cleared: a pass killed on the hook timeout never runs its trap, and the lock it leaves would otherwise disable the reviewer permanently and in silence |
 | `TANUKITSUNE_CONFORMITY_RUNNING`, an exported variable | the nested non-interactive session running this same hook again, which `stop_hook_active` cannot prevent because it is scoped to one process |
 | the digest taken again after the reading | a pass reporting findings about text the agent edited while it read, which is dropped instead |
 

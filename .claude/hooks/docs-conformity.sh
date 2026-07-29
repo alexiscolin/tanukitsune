@@ -55,15 +55,23 @@ before=$(digest)
 
 # One review per documentation state. mkdir is the atomic primitive here: two
 # turns touching documentation in a row would otherwise read the same set twice.
-# A pass killed on the hook timeout never runs its trap, so a lock older than the
-# longest possible pass is a corpse rather than a running review, and leaving it
-# would disable the reviewer permanently and silently.
-if [ -d "$lock" ] && [ -z "$(find "$lock" -maxdepth 0 -mmin +15 2>/dev/null)" ]; then
-  exit 0
+#
+# The lock records the pid holding it, and a lock whose pid is gone is a corpse.
+# A pass killed on the hook timeout never runs its trap, and a lock left behind by
+# one would otherwise make every later turn exit silently and disable the reviewer
+# for good. Liveness is tested rather than guessed from an age: a real pass runs
+# for minutes, so any window wide enough to be safe is wide enough to hide a
+# corpse for that long.
+if [ -d "$lock" ]; then
+  held=$(cat "$lock/pid" 2>/dev/null || true)
+  if [ -n "$held" ] && kill -0 "$held" 2>/dev/null; then
+    exit 0
+  fi
+  rm -rf "$lock" 2>/dev/null
 fi
-rm -rf "$lock" 2>/dev/null
 mkdir "$lock" 2>/dev/null || exit 0
-trap 'rmdir "$lock" 2>/dev/null' EXIT
+printf '%s' "$$" > "$lock/pid"
+trap 'rm -rf "$lock" 2>/dev/null' EXIT
 
 report=$(TANUKITSUNE_CONFORMITY_RUNNING=1 claude -p \
   "Read .claude/agents/docs-conformity.md and follow it exactly as your instructions.
