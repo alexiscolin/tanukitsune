@@ -17,7 +17,8 @@ if [ ! -s "$log" ]; then
 fi
 
 jq -rs '
-  group_by(.reviewer)
+  map(select((.kind // "finding") != "pass"))
+  | group_by(.reviewer)
   | map({
       reviewer: .[0].reviewer,
       found: length,
@@ -28,6 +29,9 @@ jq -rs '
   | "\(.reviewer | .[0:20])  found \(.found)  fixed \(.fixed)  kept \(if .found == 0 then 0 else (.fixed * 100 / .found | floor) end)%"
 ' "$log"
 
-printf '\n%s findings over %s branches\n' \
-  "$(grep -c '' "$log")" \
+# Passes are the denominator. Findings alone cannot say whether a lens is quiet
+# because the code is clean or because it ran once and never again.
+printf '\n%s findings over %s passes, on %s branches\n' \
+  "$(jq -rs 'map(select((.kind // "finding") != "pass")) | length' "$log")" \
+  "$(jq -rs 'map(select(.kind == "pass")) | length' "$log")" \
   "$(jq -rs 'map(.branch) | unique | length' "$log")"

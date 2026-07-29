@@ -86,13 +86,14 @@ are the ones. If a file cannot be explained without rereading it, it is rewritte
 
 ## 5. Hooks
 
-`Stop`, `SubagentStop` and `PostToolUse` are the ones that matter for solo work. `TeammateIdle` only
-fires inside an agent team.
+Of the events the tool offers, `Stop`, `PreToolUse` and `PostToolUse` are the ones that carry weight
+for solo work, and they are the three this repository registers on. `SubagentStop` fires per reviewer,
+which is a grain nothing here needs, and `TeammateIdle` only fires inside an agent team.
 
 The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
-makes it impossible for an agent to declare done on code that does not compile. What the three
+makes it impossible for an agent to declare done on code that does not compile. What the four
 registered hooks run, and the guards that let two of them call a model, are in
-[`verification.md`](verification.md#the-three-hooks). The arguments behind them are here.
+[`verification.md`](verification.md#the-four-hooks). The arguments behind them are here.
 
 **The fast gate is what a hook can afford, and that decides its contents.** `pnpm gate` runs from a
 hook because it needs no database and finishes in seconds. `pnpm verify` does not, because a hook

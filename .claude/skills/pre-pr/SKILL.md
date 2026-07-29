@@ -73,10 +73,26 @@ Once each finding has been fixed or dismissed, append one line per finding to
 {"date":"2026-07-29","branch":"feat/x","reviewer":"security-check","file":"src/a.ts","line":42,"outcome":"fixed"}
 ```
 
-`outcome` is `fixed` or `dismissed`. A review that found nothing records nothing, which is itself the
-measurement: `scripts/review-stats.sh` reports what each lens produces and how much of it survives, and
-a lens that never produces anything is a lens to fix or delete. Without this the reviewers are the only
-part of this repository that is asserted rather than measured.
+`outcome` is `fixed` or `dismissed`, and a finding left without one refuses the merge, since a finding
+with no sort is a review that has not finished. The commit hook writes its own findings with no
+`outcome` at all: those are disposed of by setting the field on the line that is already there, which
+is the only edit this log accepts. Everything else about it is append-only.
+
+Then append one pass line, whether or not anything was found, naming the range the lenses read:
+
+```
+{"date":"2026-07-29","branch":"feat/x","kind":"pass","base":"9a1c2f0e","head":"3b7d4e21"}
+```
+
+`base` and `head` are real shas, from `git merge-base main HEAD` and `git rev-parse HEAD`. A pass naming
+anything that does not resolve counts as no pass at all, so a placeholder left unfilled refuses the
+merge rather than opening it.
+
+This line is what `scripts/check-review-coverage.sh` reads to decide whether a commit of code has been
+looked at, so omitting it refuses the pull request at `gh pr create` and again at the merge. It is also
+the denominator `scripts/review-stats.sh` needs: findings alone cannot say whether a quiet lens met
+clean code or ran once and never again. Without both lines the reviewers are the only part of this
+repository that is asserted rather than measured.
 
 ## 6. Cleanup, then hand back
 

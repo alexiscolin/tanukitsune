@@ -59,6 +59,22 @@ jobs:
       - run: pnpm db:migrate
       - run: pnpm test:e2e
 
+  # The five lenses are demanded by a hook and spawned by a human, so nothing but
+  # this refuses a merge they never read. Same script as the pre-PR hook, so the
+  # verdict cannot differ between the two.
+  review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          # The default is the merge commit, whose history holds the base branch
+          # too, and every commit of it would then need a pass of its own.
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: A review pass has read every commit of code on this branch
+        run: bash scripts/check-review-coverage.sh origin/${{ github.event.pull_request.base.ref }}
+
   # One convention, one script, two places it is checked. Nothing blocks a commit
   # locally: an agent stopped mid-loop by a message check loses more than the
   # check is worth, so the gate is here.

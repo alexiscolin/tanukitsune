@@ -1,11 +1,11 @@
 #!/bin/bash
 # Reads the documentation set with the conformity reviewer when its digest moves.
-# Why it exists and what it costs: docs/verification.md, the three hooks.
+# Why it exists and what it costs: docs/verification.md, the four hooks.
 
 set -uo pipefail
 
 # The nested session inherits this environment; stop_hook_active does not reach it.
-[ -n "${TANUKITSUNE_CONFORMITY_RUNNING:-}" ] && exit 0
+[ -n "${TANUKITSUNE_NESTED_REVIEW:-}" ] && exit 0
 
 cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
 command -v git >/dev/null 2>&1 || exit 0
@@ -55,7 +55,7 @@ mkdir "$lock" 2>/dev/null || exit 0
 printf '%s' "$$" > "$lock/pid"
 trap 'rm -rf "$lock" 2>/dev/null' EXIT
 
-report=$(TANUKITSUNE_CONFORMITY_RUNNING=1 claude -p \
+report=$(TANUKITSUNE_NESTED_REVIEW=1 claude -p \
   "Read .claude/agents/docs-conformity.md and follow it exactly as your instructions.
 Repository root is the working directory. Review the whole documentation set.
 Answer with the single word CLEAN on the first line if you find nothing, and

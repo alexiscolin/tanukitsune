@@ -5,7 +5,7 @@
 
 # The nested reviewer holds Read, Grep and Glob, so it cannot have broken a build,
 # and a gate failure it cannot fix would become the report the parent reads.
-[ -n "${TANUKITSUNE_CONFORMITY_RUNNING:-}" ] && exit 0
+[ -n "${TANUKITSUNE_NESTED_REVIEW:-}" ] && exit 0
 
 input=$(cat)
 
