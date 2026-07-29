@@ -14,7 +14,7 @@ never blocks a merge on its own judgement except where nothing deterministic can
 | `verify.sh`, the compile hook | end of every turn | zero tokens | the turn, once |
 | `docs-conformity.sh`, the documentation hook | end of a turn where markdown moved | one Sonnet pass per documentation state | the turn, once |
 | `pnpm verify` | before a pull request, and in CI | zero tokens | the merge |
-| Five reviewers through `/pre-pr` | when a human asks | subscription | nothing, advisory |
+| Four reviewers through `/pre-pr`, five when the diff touches markdown | when a human asks | subscription | nothing, advisory |
 | `conformity` in CI | pull request touching markdown | one Sonnet pass | the merge |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
 
