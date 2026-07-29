@@ -18,7 +18,7 @@ the arguments do not get re-litigated.
 | Server store | Postgres through Drizzle, migrations by drizzle-kit |
 | Local database | PGlite, a file-backed Postgres opened in process, nothing to install or start |
 | Models | Pinned dated snapshots, batch API for the corpus, cached cascade for grading |
-| Tests | Vitest on `core/` with no DOM, jsdom added with the first component, Playwright with axe, real Postgres, MSW for third-party HTTP only |
+| Tests | Vitest in two projects, `core/` in Node with no DOM and components in jsdom through Testing Library, Playwright with axe, real Postgres, MSW for third-party HTTP only |
 | Gates | ESLint 10, dependency-cruiser, knip, jscpd, `check:docs`, all in `pnpm verify` and in CI |
 | Hosting | Not decided |
 
