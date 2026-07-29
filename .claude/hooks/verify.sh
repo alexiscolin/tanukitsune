@@ -3,6 +3,12 @@
 # Exit 2 makes the agent keep working, with stderr as the reason it receives.
 # Runs pnpm gate, not pnpm verify: a hook killed on its timeout blocks nothing.
 
+# The documentation reviewer runs as a nested non-interactive session that loads
+# this configuration. It holds Read, Grep and Glob, so it cannot have broken a
+# build, and a gate failure it cannot fix would consume its one continuation and
+# turn its reply into the report the parent then reads as a finding.
+[ -n "${TANUKITSUNE_CONFORMITY_RUNNING:-}" ] && exit 0
+
 input=$(cat)
 
 # Claude Code sets stop_hook_active when this hook already caused a block.

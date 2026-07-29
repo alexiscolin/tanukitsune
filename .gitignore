@@ -23,3 +23,5 @@ info/
 test-results/
 playwright-report/
 .claude/.review-reviewed
+.claude/.conformity-running
+.claude/.review-head
