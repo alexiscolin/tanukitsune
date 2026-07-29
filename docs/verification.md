@@ -14,7 +14,7 @@ never blocks a merge on its own judgement except where nothing deterministic can
 | `verify.sh`, the compile hook | end of every turn | zero tokens | the turn, once |
 | `docs-conformity.sh`, the documentation hook | end of a turn where markdown moved | one Sonnet pass per documentation state | the turn, once |
 | `pnpm verify` | before a pull request, and in CI | zero tokens | the merge |
-| Four reviewers through `/pre-pr`, five when the documentation set has moved | when a human asks | subscription | nothing, advisory |
+| Five reviewers through `/pre-pr`, six when the documentation set has moved | when a human asks | subscription | nothing, advisory |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
 
 **No model runs in CI, and that is a cost decision with a stated consequence.** The documentation
@@ -71,20 +71,26 @@ Four guards, each against a different failure:
 | `TANUKITSUNE_CONFORMITY_RUNNING`, an exported variable | the nested non-interactive session running this same hook again, which `stop_hook_active` cannot prevent because it is scoped to one process |
 | the digest taken again after the reading | a pass reporting findings about text the agent edited while it read, which is dropped instead |
 
-## The five reviewers
+## The six reviewers
 
 Defined in `.claude/agents/`, each restricted to `Read`, `Grep` and `Glob` so they report rather than
 fix, and each held to the evidence bar stated in [`workflow.md`](workflow.md).
 
 | Reviewer | Lens | Model | Why that tier |
 |---|---|---|---|
+| `requirement-check` | work nobody asked for, work asked for and missing, intent that drifted | opus | a miss costs the whole slice |
 | `regression-check` | behaviour that worked and changed unasked | opus | a miss costs data |
-| `security-check` | untrusted input, secrets, client boundary, authorisation | opus | a miss costs data |
+| `security-check` | untrusted input, secrets, secret comparison, cache poisoning, replay safety | opus | a miss costs data |
 | `architecture-check` | boundaries, logic repeating an existing function, premature abstraction | sonnet | a miss costs legibility |
 | `performance-check` | N+1 queries, complexity, sequential awaits | sonnet | a miss costs latency |
 | `docs-conformity` | documents that no longer agree with each other or with the code | sonnet | a miss costs trust |
 
-The first four are spawned by `/pre-pr`, which declares `disable-model-invocation` so a model cannot
+`requirement-check` is the only lens that reads intent. It is given the requirement before the diff and
+in that order, since reading the diff first anchors it on what exists and it then reconstructs a
+requirement that fits. The other four code lenses judge how the work was done; this one judges whether
+it was the work.
+
+The first five are spawned by `/pre-pr`, which declares `disable-model-invocation` so a model cannot
 trigger it. `docs-conformity` joins them only when the digest of the documentation set differs from the
 marker at `.claude/.conformity-reviewed`, since an equal digest means this exact state has already been
 read. It is also the only one that runs unprompted, from the hook above, on the same condition.
@@ -141,7 +147,7 @@ production is the driver a merge is gated on.
 ## What is not covered
 
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
-- Four of the five reviewers run only when a human asks.
+- Five of the six reviewers run only when a human asks.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but a change
   pushed from a machine without the `Stop` hook reaches a pull request whose documents no model has
   read against each other.

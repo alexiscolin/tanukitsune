@@ -1,6 +1,6 @@
 ---
 name: pre-pr
-description: Runs the full pre-PR review sequence: deterministic gates, then four fresh-context reviewers in parallel, then synthesis. Use before opening any pull request.
+description: Runs the full pre-PR review sequence: deterministic gates, then five fresh-context reviewers in parallel, then synthesis. Use before opening any pull request.
 disable-model-invocation: true
 argument-hint: "[base-branch]"
 allowed-tools: Bash(pnpm verify), Bash(git diff:*), Bash(git merge-base:*), Read, Write, Edit, Task, SlashCommand
@@ -30,16 +30,20 @@ Nobody reviews the whole repository.
 If the diff exceeds roughly 800 lines, say so and recommend splitting the PR before reviewing. A
 review of an oversized diff produces shallow findings and false confidence.
 
-## 3. Four reviewers, in parallel, fresh context
+## 3. Five reviewers, in parallel, fresh context
 
-Spawn all four at once, and **not in the background**: synthesis in step 4 needs their results, so
+Spawn all five at once, and **not in the background**: synthesis in step 4 needs their results, so
 they run synchronously. They do not talk to each other: they apply disjoint lenses to the same diff
 and report independently. Pass each one the diff path and the task's plan or spec.
 
+- `requirement-check`, whether the diff is what was asked for, no more and no less
 - `regression-check`, behaviour that worked and now behaves differently
 - `architecture-check`, boundaries, duplication against existing code, premature abstraction
 - `security-check`, untrusted input, secrets, client boundary, authorisation
 - `performance-check`, N+1 queries, complexity, missing pagination, sequential awaits
+
+`requirement-check` needs the requirement more than it needs the diff, so give it the plan and the spec
+first and the diff path second, in that order.
 
 Add `docs-conformity` as a fifth **only when the documentation set has moved since it last read it**.
 The `Stop` hook writes the digest it reviewed to `.claude/.conformity-reviewed`; recompute that digest
