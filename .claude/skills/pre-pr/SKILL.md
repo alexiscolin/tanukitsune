@@ -3,7 +3,7 @@ name: pre-pr
 description: Runs the full pre-PR review sequence: deterministic gates, then four fresh-context reviewers in parallel, then synthesis. Use before opening any pull request.
 disable-model-invocation: true
 argument-hint: "[base-branch]"
-allowed-tools: Bash(pnpm verify), Bash(git diff:*), Bash(git merge-base:*), Write, Task, SlashCommand
+allowed-tools: Bash(pnpm verify), Bash(git diff:*), Bash(git merge-base:*), Read, Write, Edit, Task, SlashCommand
 ---
 
 # Pre-PR review
@@ -58,7 +58,21 @@ Then state plainly what the reviewers did not cover, so the gap is visible rathe
 they read a diff, so they cannot see a regression whose cause lies in unchanged code, and they do not
 run anything.
 
-## 5. Cleanup, then hand back
+## 5. Record what the reviewers produced
+
+Once each finding has been fixed or dismissed, append one line per finding to
+`.claude/review-log.jsonl`:
+
+```
+{"date":"2026-07-29","branch":"feat/x","reviewer":"security-check","file":"src/a.ts","line":42,"outcome":"fixed"}
+```
+
+`outcome` is `fixed` or `dismissed`. A review that found nothing records nothing, which is itself the
+measurement: `scripts/review-stats.sh` reports what each lens produces and how much of it survives, and
+a lens that never produces anything is a lens to fix or delete. Without this the reviewers are the only
+part of this repository that is asserted rather than measured.
+
+## 6. Cleanup, then hand back
 
 Run `/simplify` for reuse and cleanup. It is model-invocable, so it runs from here.
 

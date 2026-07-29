@@ -13,6 +13,11 @@ target=$(printf '%s' "$input" | jq -r '
   | map(select(. != null)) | join(" ")
 ')
 
+# An anchored regex naming info/ is a pattern, not a path: the conformity hook
+# excludes the directory with exactly that expression, and refusing it would
+# make the rule block its own enforcement.
+target=${target//^info/}
+
 case " $target " in
   *info/*|*[\ /]info[\ /]*|*[\ /]info)
     printf 'info/ is human-only and is not part of the project. Do not read or write it.\n' >&2

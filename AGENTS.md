@@ -49,8 +49,9 @@ changes nothing but documentation would otherwise end without a single documenta
 - MSW mocks third-party HTTP only, never our own data layer.
 - Async Server Components cannot be unit tested. Data fetching lives in a plain function that is
   tested directly; the component is a shell that awaits it.
-- `core/` imports nothing from `data/`, `ai/`, `app/` or `ui/`. `ui/` imports nothing from `data/`
-  or `ai/`.
+- `pnpm arch` enforces the layer graph, reachability included, so the rule left to you is what to do
+  when an algorithm spans two layers: the dependency inverts. `core/` declares the port and `ai/`
+  implements it. A boundary exception is never the answer.
 - No barrel files. Import from the source file.
 - Interfaces are frozen once committed. If a type signature needs to change, stop and say so
   instead of changing it.

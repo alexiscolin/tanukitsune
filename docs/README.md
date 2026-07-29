@@ -59,8 +59,9 @@ Agent configuration lives at the repository root: `AGENTS.md` is canonical and u
 `CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: four reviewers
 with disjoint lenses, a fifth that reads documentation against itself and runs only when a diff
 touches markdown, the `pre-pr` skill, a hook that blocks a turn ending on code that does not compile,
-a second that blocks a turn ending on documentation the conformity reviewer has not read, and a
-`PreToolUse` hook that refuses any access to `info/`. The permission deny list covers the file
+a second that reads the documentation with the conformity reviewer whenever its digest moves, and a
+`PreToolUse` hook that refuses any access to `info/`. Alongside them, `review-log.jsonl` records what
+each lens found and whether it survived, which `scripts/review-stats.sh` reports. The permission deny list covers the file
 tools; the hook is what closes the shell, where `cat info/notes.md` is not a narrower hole than the
 one a `Read` rule shuts.
 
@@ -80,8 +81,8 @@ matters most. Read and edit the plan by hand, then let a fresh-context reviewer 
 it.
 
 **4.3 Before every pull request.** Run `/pre-pr` yourself. It is deliberately not automatic: the skill
-declares `disable-model-invocation`, so an agent cannot trigger it, and pre-commit hooks stay advisory
-so an agent is never blocked mid-loop. It runs the free gates, captures the diff once, spawns the
+declares `disable-model-invocation`, so an agent cannot trigger it, and nothing runs at commit time at
+all, so an agent is never blocked mid-loop. It runs the free gates, captures the diff once, spawns the
 reviewers in parallel, synthesises, runs `/simplify`, and hands back by naming `/code-review`, which
 is marked so a model cannot invoke it.
 

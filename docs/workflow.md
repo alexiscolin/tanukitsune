@@ -58,6 +58,12 @@ Three standing rules the reviews enforce and the gates back up:
 - **No silent regression.** A change that alters existing behaviour says so in the commit, or it was
   not intentional and gets reverted.
 
+**The reviewers are measured, not trusted.** Every finding is appended to `.claude/review-log.jsonl`
+with the lens that produced it and whether it was fixed or dismissed, and `scripts/review-stats.sh`
+reports what each lens yields and how much of it survives. A reviewer that reports nothing is
+otherwise indistinguishable from a reviewer that is broken, and this repository holds its own product
+to measuring exactly that kind of disagreement.
+
 `/pre-pr` runs `/simplify` itself. `/code-review` is marked so a model cannot invoke it, so `/pre-pr`
 ends by naming it rather than pretending it ran.
 
@@ -96,11 +102,15 @@ and a hook killed on timeout blocks nothing while appearing to guard everything.
 never runs the slow one, which is exactly the session where the documentation rules are the only rules
 that apply.
 
-A second `Stop` hook refuses to end a turn when the markdown has changed since `docs-conformity` last
-read it, digesting the documentation set and comparing against a gitignored marker. The reviewer is
-read-only like the other four, so the marker is written by the agent that acted on its report, not by
-the reviewer. The trigger is mechanical because it can be; the reading is not, because no script can
-tell whether two documents still agree.
+A second `Stop` hook digests the documentation set, compares it against a gitignored marker, and when
+the two differ reads the set with `docs-conformity` before recording the state it reviewed. It is
+registered with `asyncRewake`, so it runs detached and wakes the agent only when it has something to
+say. The trigger is mechanical because it can be; the reading is not, because no script can tell
+whether two documents still agree.
+
+Two things make it safe to run a model from a hook here. The digest means it fires once per
+documentation state rather than once per turn, and an exported variable stops the nested session from
+running the same hook again, which is what `stop_hook_active` cannot do across processes.
 
 **Catching it at the turn rather than at the pull request is the whole point.** A contradiction found
 at review time lives in documents belonging to some other slice, so fixing it means a diff that grew
@@ -111,8 +121,8 @@ A `PreToolUse` hook refuses any read, write or shell command touching `info/`. T
 `AGENTS.md`, and a rule an agent can only remember is one it forgets on the fiftieth turn without
 anyone noticing which turn.
 
-Keep hooks deterministic. A hook running a linter is free and catches most agent regressions. A hook
-running an agent is expensive and loops, which is why the conformity hook demands one rather than
-launching one: the detection is a digest comparison costing milliseconds, and the reading happens in
-the turn the hook refused to end.
+Keep the trigger deterministic even where the work is not. A hook running a linter is free and catches
+most agent regressions. A hook running a model is neither free nor bounded, so it earns its place only
+behind a deterministic filter that decides whether it runs at all, detached so it costs no waiting, and
+guarded so it cannot invoke itself.
 

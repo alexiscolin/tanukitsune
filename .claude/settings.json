@@ -45,7 +45,8 @@
             "args": [
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-conformity.sh"
             ],
-            "timeout": 15
+            "asyncRewake": true,
+            "timeout": 600
           }
         ]
       }
