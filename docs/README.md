@@ -58,9 +58,9 @@ considered. `decisions/` before proposing an architectural change.
 
 Agent configuration lives at the repository root: `AGENTS.md` is canonical and under 150 lines, and
 `CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: four reviewers
-with disjoint lenses, a fifth that reads documentation against itself and runs only when a diff
-touches markdown, the `pre-pr` skill, a hook that blocks a turn ending on code that does not compile,
-and a second that reads the documentation with the conformity reviewer whenever its digest moves.
+with disjoint lenses, a fifth that reads documentation against itself and runs only when the digest of
+that set has moved since it last read it, the `pre-pr` skill, a hook that blocks a turn ending on code
+that does not compile, and a second that runs the conformity reviewer on that same condition.
 Alongside them, `review-log.jsonl` records what each lens found and whether it survived, which
 `scripts/review-stats.sh` reports.
 

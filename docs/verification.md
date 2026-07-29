@@ -20,8 +20,9 @@ never blocks a merge on its own judgement except where nothing deterministic can
 **No model runs in CI, and that is a cost decision with a stated consequence.** The documentation
 reviewer would have read the same set the `Stop` hook had already read minutes earlier, at a metered
 price, so it runs once, locally, where the subscription already covers it. What CI gates is therefore
-entirely deterministic, and the documentation check depends on a turn having happened on a machine
-with the hook installed.
+entirely deterministic, which still includes `check:docs`: the mechanical documentation rules run at
+merge inside `pnpm verify`. Only the semantic reading, the part no script can perform, depends on a
+turn having happened on a machine with the hook installed.
 
 ## The commands
 
@@ -84,8 +85,9 @@ fix, and each held to the evidence bar stated in [`workflow.md`](workflow.md).
 | `docs-conformity` | documents that no longer agree with each other or with the code | sonnet | a miss costs trust |
 
 The first four are spawned by `/pre-pr`, which declares `disable-model-invocation` so a model cannot
-trigger it. `docs-conformity` joins them when the diff touches markdown, and is the only one that also
-runs unprompted, from the hook above.
+trigger it. `docs-conformity` joins them only when the digest of the documentation set differs from the
+marker at `.claude/.conformity-reviewed`, since an equal digest means this exact state has already been
+read. It is also the only one that runs unprompted, from the hook above, on the same condition.
 
 ## Measurement
 
@@ -140,8 +142,9 @@ production is the driver a merge is gated on.
 
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - Four of the five reviewers run only when a human asks.
-- No reviewer runs at merge. Every documentation check is local, so a change pushed from a machine
-  without the `Stop` hook reaches a pull request unread by any model.
+- No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but a change
+  pushed from a machine without the `Stop` hook reaches a pull request whose documents no model has
+  read against each other.
 - Three of the five boundary rules have no probe.
 - Nothing measures the quality of a plan, which `workflow.md` names as where attention matters most.
 - The conformity reviewer reads the whole documentation set on every pass, so its cost grows with the
