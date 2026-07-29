@@ -31,9 +31,9 @@ recorded so it does not get re-litigated.
 |---|---|---|
 | TS 6 vs 7 | **TypeScript 6, installed as `npm:@typescript/typescript6`** | `typescript@latest` is now 7.x, so `"typescript": "6.0.3"` does not resolve; the 6 line ships under its own package name. TS 7 shipped without a compiler API, which breaks `typescript-eslint` (peer `<6.1.0`) and `dependency-cruiser`. Those are our two most important gates, and losing `no-floating-promises` and boundary enforcement to gain compile speed on a single app is a bad trade. **Re-evaluation trigger, not a permanent position:** typescript-eslint declaring TS 7 support, or dependency-cruiser shipping it. The ecosystem is leaving this line faster than "migrate at 7.1" implies. |
 | ESLint vs oxlint / Biome | **ESLint 10 + typescript-eslint, with the Next plugins taken directly** | `eslint-plugin-react-hooks` surfaces React Compiler diagnostics and has no equivalent elsewhere, and `@next/eslint-plugin-next` carries the framework rules. Both declare ESLint 10 and both work. `eslint-config-next`, the usual way to get them, crashes the linter outright with `scopeManager.addGlobals is not a function`, and it would have pulled in two more plugins we do not want: `eslint-plugin-import`, refused by the row below, and `eslint-plugin-jsx-a11y`, which cannot run on ESLint 10 at all. Taking the two plugins directly is not a workaround, it is the arbitration we had already made, minus an aggregate that contradicted it. The Next rules are promoted to error, since half ship as warnings and an agent reports a warning as passing. oxlint carries a subset of the Next rules and `exhaustive-deps`, but its JS-plugin performance cliff falls exactly on the React Compiler plugin. Add oxlint as a pre-pass later, if lint exceeds 30 seconds. |
-| dependency-cruiser vs ESLint boundary plugins | **Both, distinct roles** | dependency-cruiser is the CI gate: the only one catching all four evasion vectors including dynamic `import()`. Core `no-restricted-imports` is the editor hint, instant feedback, leaky by design. `import 'server-only'` is the third layer and fails the bundle rather than the linter. |
+| dependency-cruiser vs ESLint boundary plugins | **dependency-cruiser, plus `server-only` at runtime** | dependency-cruiser is the CI gate: the only one catching all four evasion vectors including dynamic `import()`. `import 'server-only'` is the second layer and fails the bundle rather than the linter, which is what keeps a secret out of a client component even where the graph rule is satisfied. Core `no-restricted-imports` would add an editor hint with instant feedback, and is not configured: it is leaky by design, so it would be a third statement of a rule two layers already hold, and a third place it can drift. |
 | `eslint-plugin-import` vs `import-x` | **Neither** | The debate does not apply: `no-restricted-paths` is already covered by dependency-cruiser. Avoiding a dependency in an unresolved ecosystem is itself a decision. |
-| Pre-commit hooks | **Advisory only, formatter, `exit 0`** | The Angular pattern. An agent that commits must never be blocked mid-loop. CI is the gate. |
+| Pre-commit hooks | **None installed** | An agent that commits must never be blocked mid-loop, and a hook that cannot block is a hook that earns nothing. CI is the gate. If one is ever added it is advisory and exits zero, which is the Angular pattern. |
 | Coverage gating | **Patch only, never a required check** | `patch: 80%, threshold 5%`; `project: auto, threshold 1%`. No global threshold: deleting a well-tested module would fail an unrelated PR. Never required, because you do not want to negotiate with a coverage tool at 2am. Alternative with no tool: Vitest `coverage.thresholds` with `autoUpdate: true`, a pure ratchet with no number to pick. |
 | Copy-paste detection | **jscpd, loose ratchet** | 70 tokens, 8 lines, 5 percent threshold, tests and generated code excluded, `mode: weak`. The default of 50 tokens is far too sensitive for TSX, where every JSX attribute is tokens. **Never gate at zero**: it will fire on App Router scaffolding within a week and get disabled, which is worse than not having it. Our case, solo plus agents, is exactly the population where the duplication research holds. |
 | Conventional Commits | **Written on both, gated in CI on the title and on every commit of the branch** | Linting every commit blocks an agent mid-loop for no gain, so nothing runs at commit time. CI checks the pull request title and every commit subject on the branch, both through one script so the two cannot drift. The style applies to commits as well, because a squash merge takes the commit subject when a pull request has exactly one commit: leaving the two conventions different would make a uniform history depend on a host setting rather than on what was written. |
@@ -95,8 +95,9 @@ as a warning and agents ignore warnings while producing stale-closure bugs that 
 
 Then the volume limits, which almost nobody enables and which catch the real failure mode, an agent
 writing 300 lines instead of decomposing: `complexity` 15, `max-lines` 400, `max-lines-per-function`
-120, `max-depth` 4, `max-params` 4. Set them loose as tripwires, not as design guidance, and turn them
-off in test files.
+120, `max-depth` 4, `max-params` 4. Set them loose as tripwires, not as design guidance, and turn the
+two line-count limits off in test files, where a long table of cases is the point. The other three
+cost nothing to keep on.
 
 Plus `no-console` for debugging leftovers.
 
@@ -184,11 +185,13 @@ Secrets live in the host environment, are read by `data/` and by the corpus gene
 at build time. Model spend is capped per user and globally, as configuration rather than as a code
 change. What gets traced, evaluated and alerted on is in [`ai-engineering.md`](ai-engineering.md).
 
-## One conflict to resolve before the first commit
+## The Node floor
 
-**Node and the AI SDK disagree.** The AI SDK is at v7, ESM-only, requiring Node 22, while Next's own
-floor is Node 20.9. Pin Node 22 or the corpus generator breaks. The v7 migration also renamed `system`
-to `instructions` and moved telemetry to a separate package.
+**Node and the AI SDK disagree, and the higher floor wins.** The AI SDK is at v7, ESM-only, requiring
+Node 22, while Next's own floor is Node 20.9. `engines` and `.nvmrc` both say 22.12.0, because the
+corpus generator breaks below it and a floor that only one of the two files carries is a floor that
+holds on one machine. The v7 migration also renamed `system` to `instructions` and moved telemetry to
+a separate package.
 
 ## Unverified
 

@@ -4,9 +4,15 @@
   "permissions": {
     "allow": [
       "Bash(pnpm verify)",
+      "Bash(pnpm gate)",
+      "Bash(pnpm build)",
       "Bash(pnpm test:*)",
       "Bash(pnpm typecheck)",
       "Bash(pnpm lint)",
+      "Bash(pnpm arch)",
+      "Bash(pnpm knip)",
+      "Bash(pnpm dupes)",
+      "Bash(pnpm check:docs)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
       "Bash(git status)"
@@ -14,10 +20,10 @@
     "deny": [
       "Read(./.env)",
       "Read(./.env.local)",
-      "Read(./.env.*.local)",
-      "Read(./info/**)"
+      "Read(./.env.*.local)"
     ],
     "ask": [
+      "Bash(git commit:*)",
       "Bash(git push:*)"
     ]
   },
@@ -32,35 +38,30 @@
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/verify.sh"
             ],
             "timeout": 120
+          },
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-conformity.sh"
+            ],
+            "asyncRewake": true,
+            "timeout": 600
           }
         ]
       }
     ],
-    "SubagentStop": [
+    "PostToolUse": [
       {
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
             "command": "bash",
             "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/verify.sh"
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/code-review.sh"
             ],
-            "timeout": 120
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Read|Glob|Grep|Edit|Write|Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/no-info.sh"
-            ],
-            "timeout": 5
+            "timeout": 15
           }
         ]
       }

@@ -11,6 +11,7 @@ Map of the documentation, how to read it before writing code, and how to operate
 | [`stack.md`](stack.md) | The stack, every contested tooling choice, and the argument that settled it | both |
 | [`ai-engineering.md`](ai-engineering.md) | Models, prompts, structured output, evals, caching, observability, error analysis | both |
 | [`workflow.md`](workflow.md) | The process every change goes through, and why `.claude/` is configured as it is | both |
+| [`verification.md`](verification.md) | The inventory of every check: what runs, when, what it catches, what it costs | both |
 | [`decisions/`](decisions/) | Architecture decision records, append-only | both |
 | [`backlog.md`](backlog.md) | Every feature considered, whether it needs a model, which version, and what was rejected with the reason | both |
 | [`sources.md`](sources.md) | Every load-bearing claim, with where it comes from | humans |
@@ -24,8 +25,10 @@ open them unless the task is about the documentation itself.
 `pnpm check:docs` enforces the discipline these documents are held to, so it does not depend on anyone
 remembering it. It runs inside `pnpm verify`, which a human runs before a pull request and which CI
 runs on pushes to main and on pull requests. The `Stop` hook at the end of every agent turn runs
-`pnpm gate`, which is typecheck, lint and the boundary check: the full suite needs a database and a
-browser, and a hook killed on its timeout blocks nothing while appearing to guard everything.
+`pnpm gate`, which is typecheck, lint, the boundary check and `check:docs`: the full suite needs a
+database and a browser, and a hook killed on its timeout blocks nothing while appearing to guard
+everything. `check:docs` belongs in the fast gate because a session that changes only documentation
+never reaches the slow one.
 
 ## 2. How to read this before implementing
 
@@ -54,15 +57,18 @@ considered. `decisions/` before proposing an architectural change.
 ## 3. The agent configuration
 
 Agent configuration lives at the repository root: `AGENTS.md` is canonical and under 150 lines, and
-`CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: four reviewers
-with disjoint lenses, the `pre-pr` skill, a hook that blocks a turn ending on code that does not
-compile, and a `PreToolUse` hook that refuses any access to `info/`, which is the only thing enforcing
-that rule rather than restating it.
+`CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: five reviewers
+with disjoint lenses, one of which reads intent rather than code, a sixth that reads documentation
+against itself and runs only when the digest of that set has moved since it last read it, the `pre-pr`
+skill, and three hooks: one blocking a turn ending on code that does not compile, one running the
+conformity reviewer when that digest moves, and one demanding the five code lenses when `HEAD` moves.
+Alongside them, `review-log.jsonl` records what each lens found and whether it survived, which
+`scripts/review-stats.sh` reports.
 
 `REVIEW.md` at the root is the calibration for the hosted Code Review GitHub App, which reads it and
-posts on pull requests. Nothing else reads it: the local reviewers carry their own copies of the same
-rules, and `/code-review` explicitly skips it. It is committed so the App behaves correctly the day it
-is connected, not because it governs anything today.
+posts on pull requests. Nothing else reads it: the local reviewers hold the same evidence bar in their
+own files, and `/code-review` explicitly skips it. It is committed so the App behaves correctly the
+day it is connected, not because it governs anything today.
 
 ## 4. How to operate it
 
@@ -75,10 +81,11 @@ matters most. Read and edit the plan by hand, then let a fresh-context reviewer 
 it.
 
 **4.3 Before every pull request.** Run `/pre-pr` yourself. It is deliberately not automatic: the skill
-declares `disable-model-invocation`, so an agent cannot trigger it, and pre-commit hooks stay advisory
-so an agent is never blocked mid-loop. It runs the free gates, captures the diff once, spawns the four
-reviewers in parallel, synthesises, and hands back by naming `/simplify` and `/code-review`, which it
-cannot invoke itself.
+declares `disable-model-invocation`, so an agent cannot trigger the skill. A commit does demand the
+five code lenses, which is a demand rather than a run: nothing at commit time blocks on a command an
+agent cannot satisfy. It runs the free gates, captures the diff once, spawns the
+reviewers in parallel, synthesises, runs `/simplify`, and hands back by naming `/code-review`, which
+is marked so a model cannot invoke it.
 
 **4.4 When an architectural decision is taken.** Write the ADR immediately, not at the end of the
 project. A retroactive ADR always lies a little, because the decision is remembered and the rejected

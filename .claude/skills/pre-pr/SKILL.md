@@ -1,9 +1,9 @@
 ---
 name: pre-pr
-description: Runs the full pre-PR review sequence: deterministic gates, then four fresh-context reviewers in parallel, then synthesis. Use before opening any pull request.
+description: Runs the full pre-PR review sequence: deterministic gates, then five fresh-context reviewers in parallel, then synthesis. Use before opening any pull request.
 disable-model-invocation: true
 argument-hint: "[base-branch]"
-allowed-tools: Bash(pnpm verify), Bash(git diff:*), Bash(git merge-base:*), Write, Task, SlashCommand
+allowed-tools: Bash(pnpm verify), Bash(git diff:*), Bash(git merge-base:*), Read, Write, Edit, Task, SlashCommand
 ---
 
 # Pre-PR review
@@ -30,23 +30,33 @@ Nobody reviews the whole repository.
 If the diff exceeds roughly 800 lines, say so and recommend splitting the PR before reviewing. A
 review of an oversized diff produces shallow findings and false confidence.
 
-## 3. Four reviewers, in parallel, fresh context
+## 3. Five reviewers, in parallel, fresh context
 
-Spawn all four at once, and **not in the background**: synthesis in step 4 needs their results, so
+Spawn all five at once, and **not in the background**: synthesis in step 4 needs their results, so
 they run synchronously. They do not talk to each other: they apply disjoint lenses to the same diff
 and report independently. Pass each one the diff path and the task's plan or spec.
 
+- `requirement-check`, whether the diff is what was asked for, no more and no less
 - `regression-check`, behaviour that worked and now behaves differently
 - `architecture-check`, boundaries, duplication against existing code, premature abstraction
 - `security-check`, untrusted input, secrets, client boundary, authorisation
 - `performance-check`, N+1 queries, complexity, missing pagination, sequential awaits
+
+`requirement-check` needs the requirement more than it needs the diff, so give it the plan and the spec
+first and the diff path second, in that order.
+
+Add `docs-conformity` as a sixth **only when the documentation set has moved since it last read it**.
+The `Stop` hook writes the digest it reviewed to `.claude/.conformity-reviewed`; recompute that digest
+and compare. Equal means this exact state has already been read, and spawning the reviewer again pays
+for the same reading twice. Unequal, or no marker at all, means it runs, and it reads the whole set
+rather than the diff.
 
 They are defined in `.claude/agents/`. Do not restate their instructions here; if a lens needs
 changing, change the agent file so the change persists.
 
 ## 4. Synthesise
 
-Merge the four reports into one list, ordered by severity, deduplicated. For each finding keep the
+Merge every report into one list, ordered by severity, deduplicated. For each finding keep the
 `file:line` citation. Drop anything without one: that was the reviewers' instruction and it applies to
 the synthesis too.
 
@@ -54,7 +64,21 @@ Then state plainly what the reviewers did not cover, so the gap is visible rathe
 they read a diff, so they cannot see a regression whose cause lies in unchanged code, and they do not
 run anything.
 
-## 5. Cleanup, then hand back
+## 5. Record what the reviewers produced
+
+Once each finding has been fixed or dismissed, append one line per finding to
+`.claude/review-log.jsonl`:
+
+```
+{"date":"2026-07-29","branch":"feat/x","reviewer":"security-check","file":"src/a.ts","line":42,"outcome":"fixed"}
+```
+
+`outcome` is `fixed` or `dismissed`. A review that found nothing records nothing, which is itself the
+measurement: `scripts/review-stats.sh` reports what each lens produces and how much of it survives, and
+a lens that never produces anything is a lens to fix or delete. Without this the reviewers are the only
+part of this repository that is asserted rather than measured.
+
+## 6. Cleanup, then hand back
 
 Run `/simplify` for reuse and cleanup. It is model-invocable, so it runs from here.
 

@@ -11,7 +11,10 @@ Two documents are written for a human operating the project and are context cost
 `docs/agent-log.md` and `docs/sources.md`. Do not open them unless the task is about
 the documentation itself.
 
-`info/` is human-only, gitignored, and not part of the project. Never read it and never write to it.
+`info/` is gitignored and never committed. Nothing there is read on your own initiative and nothing
+there is evidence for a claim about this repository, with one named exception: `workflow-explique.md`
+describes this system rather than the person, so the conformity reviewer reads it and holds it to the
+same agreement as everything under `docs/`. Read and write the rest when asked.
 
 ## Commands
 
@@ -30,8 +33,8 @@ pnpm arch                  dependency-cruiser, plus a probe proving the rules fi
 pnpm knip                  unused exports, files and dependencies
 pnpm dupes                 jscpd, copy-paste ratchet
 pnpm check:docs            documentation discipline
-pnpm gate                  typecheck, lint, arch: seconds, needs no database
-pnpm verify                gate, build, test, knip, dupes, check:docs
+pnpm gate                  typecheck, lint, arch, check:docs: seconds, needs no database
+pnpm verify                gate, build, test, knip, dupes
 ```
 
 Run `pnpm verify` and show its output before saying work is done. Do not assert that something
@@ -40,7 +43,8 @@ passes.
 The `Stop` hook runs `pnpm gate`, not `pnpm verify`: the full suite needs a database and end-to-end
 runs, which do not fit inside a hook timeout, and a hook killed on timeout does not block anything. So
 the hook catches code that does not compile, and `pnpm verify` catches the rest, before the pull
-request and in CI.
+request and in CI. `check:docs` sits inside `gate` rather than only in `verify`, because a session that
+changes nothing but documentation would otherwise end without a single documentation rule running.
 
 ## Constraints a linter cannot catch
 
@@ -48,8 +52,9 @@ request and in CI.
 - MSW mocks third-party HTTP only, never our own data layer.
 - Async Server Components cannot be unit tested. Data fetching lives in a plain function that is
   tested directly; the component is a shell that awaits it.
-- `core/` imports nothing from `data/`, `ai/`, `app/` or `ui/`. `ui/` imports nothing from `data/`
-  or `ai/`.
+- `pnpm arch` enforces the layer graph, reachability included, so the rule left to you is what to do
+  when an algorithm spans two layers: the dependency inverts. `core/` declares the port and `ai/`
+  implements it. A boundary exception is never the answer.
 - No barrel files. Import from the source file.
 - Interfaces are frozen once committed. If a type signature needs to change, stop and say so
   instead of changing it.
@@ -64,9 +69,25 @@ request and in CI.
 One task per session: one slice, about five files, one behaviour, one PR. Structural changes and
 behavioural changes never share a commit.
 
+**A commit is a finished step, and the reader decides it is finished.** Verified means the gates pass
+and the reader has then said so, in that order. Ask before every commit and every push. The review
+lenses fire on each commit touching code, so a commit made as a save point buys five readings of half a
+slice, and a stream of one-line commits buries the few that carry the work.
+
 Red before green. The failing test is committed before the implementation, and it is never edited to
 reach green. A test that has to change to pass means the plan was wrong, which is a re-plan and not an
 implementation detail.
+
+## Reporting to the reader
+
+Report top down, in replies as much as in documents: what changed for the system, then the mechanism,
+then the file, the function, the flag. The reader works at the level of decisions and you at the level
+of exit codes, so a detail with no attachment point cannot be judged, and what cannot be judged cannot
+be relied on.
+
+Every name carries its referent on first appearance, functions, variables, fields, scripts and packages
+included. A recursion guard names what recurses, a flag names who sets it, and two things of a kind are
+named by their file rather than by an ordinal. This changes the order and adds a clause, not the length.
 
 ## Stop and ask
 
@@ -102,6 +123,9 @@ Everything a linter can catch is enforced by the linter and is not repeated here
 - Keep a document proportioned. A detail never outweighs what it sits inside, and a paragraph does not
   grow a section for its own exception. If a point needs more room than its section can give it, it
   belongs in the document that owns that subject, with one line here pointing there.
+- A change to a mechanism updates every document describing it, in the same change and not afterwards.
+  A fact lives in one document and the others carry a line pointing there, never a second copy. A total
+  announced in prose carries its list in the same sentence, or it is not announced.
 - Match the two nearest files in the same directory: structure, naming, error handling.
 - Never introduce a second way to do something that already exists here. Find the existing one.
 - No em dashes, no emoji, anywhere. Code, comments, docs, commits, output. This is a ban on two
@@ -112,8 +136,10 @@ Everything a linter can catch is enforced by the linter and is not repeated here
   lowercase`, under 72 characters. Types are `feat`, `fix`, `docs`, `refactor`, `test`, `chore`,
   `perf`, `build`, `ci`. Body only when the reason is not obvious, and as prose rather than a bullet
   list. No AI attribution trailers, no co-author line.
-- **Only the pull request title is gated**, in CI, because linting every commit blocks an agent
-  mid-loop for no gain. The style is the same on both so that the history stays uniform whichever of
-  the two a squash merge happens to take, rather than depending on a host setting staying correct.
+- **Nothing is gated at commit time**, because linting every commit blocks an agent mid-loop for no
+  gain. CI checks the pull request title and every commit subject on the branch, both through one
+  script so the two cannot drift. The style is the same on both so that the history stays uniform
+  whichever of the two a squash merge happens to take, rather than depending on a host setting
+  staying correct.
 - Nothing provisional reaches a merge: no commented-out code, no `TODO`, no placeholder, no defensive
   layer added in case. If it is needed later, it is a backlog entry, not a line in the diff.

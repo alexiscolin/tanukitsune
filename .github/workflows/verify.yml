@@ -83,3 +83,13 @@ jobs:
             bash scripts/check-subject.sh "$subject" || fail=1
           done < <(git log --format=%s "$BASE..$HEAD")
           exit "$fail"
+      # The plan lives in the description and nowhere else, which makes an empty
+      # description a lost plan rather than a formatting lapse.
+      - name: The description carries the plan
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          lines=$(printf '%s\n' "$BODY" | grep -c '[^[:space:]]' || true)
+          [ "${lines:-0}" -ge 5 ] && exit 0
+          echo "The description holds ${lines:-0} non-empty lines. The plan goes here." >&2
+          exit 1

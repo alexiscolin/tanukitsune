@@ -34,8 +34,11 @@ a more interesting project than citing the claim.
 
 **Where the model earns its place.** Both theses point at the same gap: one curriculum, applied
 identically to everyone, in one language, with no memory of what happened. Five surfaces follow from
-it, and no others. They share four model choices, which is why
-[`ai-engineering.md`](ai-engineering.md) counts four.
+it, and no others. They collapse to three model choices, because the confusion detector and the choice
+of what to present next both run on the judge's model rather than selecting their own. The fourth
+choice [`ai-engineering.md`](ai-engineering.md) makes is not a surface: it is the constrained
+generation that fills a gap the retrieved sentence corpus cannot, and whose output ships only if a
+deterministic validator accepts it.
 
 **It writes the content layer**, meanings, nuances, mnemonics and thematic tags across the item set,
 generated once through the batch API and shared, so a user costs nothing at the margin and a locale
@@ -148,7 +151,7 @@ app/        Next routes, thin shells
 ui/         components
 ```
 
-Five rules, all enforced by `pnpm arch` and each proven to fire rather than assumed:
+Five rules, all enforced by `pnpm arch`, two of them proven to fire rather than assumed:
 
 - `core/` imports nothing from the other layers, and may declare ports but never import an
   implementation
@@ -304,9 +307,9 @@ compete, and the client can only arbitrate between them if it is told what is le
 This is the boundary that leaks secrets, and it is not the same as the module boundaries above.
 
 `data/` is a data access layer in the strict sense: server-only, performing its own authorisation,
-returning minimal shapes rather than rows. Only it reads the environment. A fifth enforced rule
-follows from this: **`ui/` may not import a module that imports `server-only`**, which the dependency
-graph can check because type-only imports are already visible to it.
+returning minimal shapes rather than rows. Only it reads the environment. The third of the five rules
+above follows from this: **`ui/` may not import a module that imports `server-only`**, which the
+dependency graph can check because type-only imports are already visible to it.
 
 Two rules that matter from the moment a second user exists, and are cheaper to hold from the start.
 A page-level authorisation check does not extend to the mutations defined on that page, so every
@@ -346,7 +349,7 @@ never merged, the corpus keyed by subject and locale and warmed alongside the as
 the item card never waits on a network; and the outbox, appended with client-generated identifiers so
 a duplicate throws rather than silently overwriting.
 
-After an entry is appended, exactly three fields are writable: its status, `synced_at`, and
+After an entry is appended, exactly three fields are writable: `synced_at`, `applied_upstream`, and
 `srs_stage_after`, which cannot exist before the flush because the stage comes back in WaniKani's
 response and is never computed locally. The answer payload and the verdict are never touched.
 
@@ -425,9 +428,9 @@ later is a restructure rather than a feature.
 
 **Refused, with the cheaper answer named.** FSRS for scheduling, rules for conjugation, statistics for
 notification timing, Tesseract in the browser for OCR, data for JLPT and stroke order, retrieval from
-an open corpus for example sentences, a tagged Postgres column rather than a vector store, and
-deterministic validation rather than trusting a model to obey a constraint. The README enumerates the
-same nine. Knowing where not to use a model is the point of the project.
+an open corpus for example sentences, a tagged Postgres column rather than a vector store, a filtered
+query for situational study, and deterministic validation rather than trusting a model to obey a
+constraint. The README enumerates the same nine. Knowing where not to use a model is the point of the project.
 
 **Generated once, shared, amortised.** French meanings, nuances, mnemonics, theme tags, contrastive
 notes. Same output for every user, so generated once through the batch API, halving cost and stacking

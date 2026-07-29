@@ -19,8 +19,8 @@
 - **Point your camera at a menu** and see which kanji you already know. *(v0.4)*
 
 Five of those nine run on a model: the mnemonics, the grading, the confusion pairs, the choice of what
-comes next, and the tutor. The other four do not, and nine further things were refused a model
-outright. Knowing which is which is the whole design.
+comes next, and the tutor. The other four do not, and the section below names them beside five more
+places a model was refused outright. Knowing which is which is the whole design.
 
 > **Status: the toolchain and the shell run, the product does not.** No review flow, no corpus and no
 > judge exist yet.
@@ -78,7 +78,7 @@ hand, and a verdict a learner will believe. That work is the list below, and it 
 | **Prompt versioning** | Typed modules in git with a version constant, stamped on every trace and every generated row, and part of the judge cache key. A snapshot test fails a prompt edited without a version bump. |
 | **LLM as judge** | Reference-based, closed enum plus a short reason, never a numeric score. Drawn from a different model family than the generator, because a model scores its own family's output higher. |
 | **Model cascade** | Exact match, then fuzzy matching, then the model, escalating on deterministic conditions only. Most answers never reach a model at all. |
-| **Evals** | Two sets, stratified for diagnosis and representative for the headline number, because stratifying engineers away the imbalance the number needs. Golden cases grow from production failures. CI gates on end-to-end false-reject rate, not on judge agreement alone. |
+| **Evals** | Two sets, stratified for diagnosis and representative for the headline number, because stratifying engineers away the imbalance the number needs. Golden cases grow from production failures. The CI gate arrives with the first eval set and reads the end-to-end false-reject rate, not judge agreement alone. |
 | **Calibration** | 150 to 250 hand-labelled cases, Cohen's kappa reported with Gwet's AC1 because class imbalance depresses kappa, gated on the interval's lower bound. False accepts and false rejects measured separately. |
 | **Acceptance sampling** | The corpus quality gate. Written defect rubric, sample size and accept number fixed before the first run, plus a coverage gate and a report path for the bad tail it knowingly ships. |
 | **Semantic-free caching** | Verdicts keyed by item, normalised answer, locale, model, prompt version and corpus version. A user override point-deletes its own key, so a poisoned verdict cannot spread. |
@@ -157,12 +157,13 @@ architecture decision records.
 ## Built with coding agents
 
 This repository is built primarily with AI coding agents, and the method is part of the work.
-`AGENTS.md` carries the constraints a linter cannot express, four read-only review agents with
-disjoint lenses check every diff from a fresh context, and a hook makes it impossible to end a turn on
-code that does not compile.
+`AGENTS.md` carries the constraints a linter cannot express, five read-only review agents with
+disjoint lenses check every diff from a fresh context, one of them asking only whether the diff is
+what was asked for, a sixth reads the documentation against itself whenever it moves, and a hook makes
+it impossible to end a turn on code that does not compile.
 
-[`docs/workflow.md`](docs/workflow.md) describes that process: the per-task cycle, the four review
-lenses, and the conditions under which a session is discarded rather than continued.
+[`docs/workflow.md`](docs/workflow.md) describes that process: the per-task cycle, the review lenses,
+and the conditions under which a session is discarded rather than continued.
 [`docs/agent-log.md`](docs/agent-log.md) is the dated record of every point where an agent's output was
 overruled, with the reason, including the cases where it was confidently wrong.
 

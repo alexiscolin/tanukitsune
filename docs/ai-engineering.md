@@ -6,9 +6,11 @@ The product decisions about where a model is used at all are in [`framing.md`](f
 
 ## Model selection, per surface
 
-Not one model. Four model choices to make, which is fewer than the five surfaces in
-[`framing.md`](framing.md): the confusion detector and the choice of what to present next both run on
-the judge's model, so they inherit its selection rather than making their own.
+Not one model. Four model choices to make, and they do not map one to one onto the five surfaces in
+[`framing.md`](framing.md). Three come from those surfaces, since the confusion detector and the choice
+of what to present next both run on the judge's model rather than making their own selection. The
+fourth belongs to constrained generation, which is a fallback behind a refusal rather than a surface of
+its own.
 
 **Corpus generation.** The strongest model available, and no cost optimisation. It runs a handful of
 times, the output is permanent and shared by every user, and a mediocre mnemonic is a defect that
@@ -53,8 +55,9 @@ forms part of the judge cache key so a bump invalidates cached verdicts, and is 
 suite. Version history, rollback and eval linkage, with no runtime dependency.
 
 **A version constant nobody bumps is worse than no version constant.** So a snapshot test hashes each
-prompt module's compiled text and fails when the hash changes without the version changing, and it runs
-inside `pnpm verify`. This one bites in v0.1 rather than later: `prompt_version` is a column on every
+prompt module's compiled text and fails when the hash changes without the version changing, and it
+lands inside `pnpm verify` in the same commit as the first prompt module. This one bites in v0.1
+rather than later: `prompt_version` is a column on every
 corpus row, the prompt is expected to change between the budgeted runs, and two runs sharing a version
 make the provenance requirement false while looking satisfied.
 
@@ -154,8 +157,9 @@ regenerate" is not a decision anyone can take without them. Across the budgeted 
 diffed between runs, which is what catches a prompt revision that fixes the sampled tail and breaks
 something that was already right.
 
-**In CI:** full suite nightly and on the main branch, a fast subset on pull requests, verdicts cached
-by prompt version. Fail the build on a drop below threshold, and post the before-and-after difference.
+**In CI, from the version that ships the first eval set:** full suite nightly and on the main branch, a
+fast subset on pull requests, verdicts cached by prompt version. Fail the build on a drop below
+threshold, and post the before-and-after difference.
 Gate on the **end-to-end false-reject rate**, not on judge agreement alone: a judge that agrees with
 humans behind a fuzzy matcher that wrongly rejects three percent of answers is still a bad product.
 
