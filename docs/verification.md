@@ -44,7 +44,7 @@ browser and a database.
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `build` | Next | anything only the server compilation sees |
-| `test` | Vitest | logic in `core/`, six tests over three modules |
+| `test` | Vitest | logic in `core/` in Node and components in jsdom, nineteen tests over five modules |
 | `knip` | knip | unused exports, files and dependencies |
 | `dupes` | jscpd | literal copy-paste, 70 tokens and 8 lines at weak mode |
 
