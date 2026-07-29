@@ -8,6 +8,9 @@
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
+# Physical, so link containment below compares like with like.
+root=$(pwd -P)
+
 fail=0
 report() { printf '%s\n' "$1" >&2; fail=1; }
 
@@ -50,10 +53,22 @@ scan "$positioning" "Documentation addresses a reader evaluating the author rath
 scan "$learning"    "Documentation frames itself as study material rather than an authored standard:"
 
 # Matched on UTF-8 bytes under LC_ALL=C, because BSD grep has no \x{} escapes.
-typography=$(LC_ALL=C grep -rn -e '—' -e $'\xf0\x9f' -e $'\xe2\x9c' -e $'\xe2\x9d' --include='*.md' "${EXCLUDED[@]}" . \
+BANNED=(-e '—' -e $'\xf0\x9f' -e $'\xe2\x9c' -e $'\xe2\x9d')
+
+typography=$(LC_ALL=C grep -rn "${BANNED[@]}" --include='*.md' "${EXCLUDED[@]}" . \
   | grep -v '^\./info/' \
   | grep -v '^\./scripts/' || true)
-[ -n "$typography" ] && report "Em dash or emoji, which the style rule bans everywhere:"$'\n'"$typography"$'\n'
+
+# Named back in because AGENTS.md holds it to the same agreement as everything under
+# docs/ while git never lists it, being gitignored. Naming it here
+# is the difference between a rule it is held to and a rule it is checked against.
+described=info/workflow-explique.md
+if [ -f "$described" ]; then
+  in_described=$(LC_ALL=C grep -n "${BANNED[@]}" "$described" \
+    | sed "s|^|$described:|" || true)
+  [ -n "$in_described" ] && typography=$(printf '%s\n%s' "$typography" "$in_described")
+fi
+[ -n "$typography" ] && report "Em dash or emoji, which the style rule bans in every document:"$'\n'"$typography"$'\n'
 
 # Claims the documentation makes about itself.
 
@@ -67,15 +82,73 @@ uncharted=$(markdown ./docs -maxdepth 1 | while IFS= read -r f; do
 done)
 [ -n "$uncharted" ] && report "The documentation map does not list these, and claims to list everything:"$'\n'"$uncharted"$'\n'
 
-broken=$(markdown . | while IFS= read -r file; do
-  dir=$(dirname "$file")
+# One walk for both link checks. The anchor pattern matches a subset of the link
+# pattern and the path check already splits the fragment off, so a second traversal
+# would re-read every document to recover the half the first one discards. An anchor
+# the target no longer carries still resolves, to the top of the file, so a renamed
+# section leaves every cross-reference to it pointing at nothing in silence. The slug
+# is GitHub's: lowercased, punctuation dropped, spaces hyphenated.
+links=$(markdown . | while IFS= read -r file; do
+  dir=${file%/*}
   grep -oE '\]\([^)]+\)' "$file" | sed 's/^](//;s/)$//' \
-    | grep -vE '^(https?:|mailto:|#)' | while IFS= read -r target; do
-    target=${target%%#*}
-    [ -n "$target" ] && [ ! -e "$dir/$target" ] && printf '  %s -> %s\n' "$file" "$target"
+    | grep -vE '^(https?:|mailto:)' | while IFS= read -r target; do
+    path=${target%%#*}
+    [ -n "$path" ] && [ ! -e "$dir/$path" ] && { printf 'B  %s -> %s\n' "$file" "$path"; continue; }
+    [ "${target#*#}" = "$target" ] && continue
+    anchor=${target#*#}
+    if [ -z "$path" ]; then resolved=$file; else resolved=$dir/$path; fi
+    [ -f "$resolved" ] || continue
+    # Containment is judged on the resolved path, not on the text: a link may climb
+    # legitimately inside the tree, and `../framing.md` is one this repository already
+    # writes. What must not happen is the scan reading a file outside the repository.
+    #
+    # Both sides are physical. Comparing a resolved path against a logical one reports
+    # every link as outside the moment the checkout is reached through a symlink, which
+    # on this platform is what a clone under /tmp is.
+    #
+    # A symlink is refused rather than followed. `pwd -P` resolves the directory chain
+    # and the last component is appended to it verbatim, so a link whose final segment
+    # is itself a symlink lands inside the tree by name while pointing anywhere, and
+    # the heading scan below would read that file. No document here links through one.
+    real=$(cd "${resolved%/*}" 2>/dev/null && pwd -P)/${resolved##*/}
+    if [ -L "$resolved" ] || [ "${real#"$root"/}" = "$real" ]; then
+      printf 'A  %s -> %s, which resolves outside the repository\n' "$file" "$target"
+      continue
+    fi
+    # [:alnum:] rather than a-z0-9: the product is written in French and teaches
+    # Japanese, and an accented heading keeps its accents in the slug GitHub builds,
+    # so stripping them here would report a link that resolves as one that does not.
+    grep -hoE '^#{1,6} .*' "$resolved" | sed 's/^#\{1,6\} //' \
+      | tr '[:upper:]' '[:lower:]' | sed 's/[^[:alnum:] -]//g; s/ /-/g' \
+      | grep -qxF "$anchor" || printf 'A  %s -> #%s\n' "$file" "$anchor"
   done
 done)
+broken=$(printf '%s\n' "$links" | sed -n 's/^B //p')
+anchors=$(printf '%s\n' "$links" | sed -n 's/^A //p')
 [ -n "$broken" ] && report "Relative links that resolve to nothing:"$'\n'"$broken"$'\n'
+[ -n "$anchors" ] && report "Link anchors matching no heading in the file they point at:"$'\n'"$anchors"$'\n'
+
+# A document naming a file that is not there describes some other repository. Paths
+# are matched inside backticks and must carry a directory, so a bare filename in prose
+# is not mistaken for one.
+absent=$(grep -rhoE '`[A-Za-z0-9_./-]+\.(sh|ts|tsx|json|yml|jsonl)`' --include='*.md' "${EXCLUDED[@]}" . \
+  | tr -d '`' | sort -u | while IFS= read -r path; do
+    [ "${path#*/}" = "$path" ] && continue
+    [ -e "$path" ] || printf '  %s\n' "$path"
+  done)
+[ -n "$absent" ] && report "Paths the documentation names that do not exist:"$'\n'"$absent"$'\n'
+
+# A hook file nothing registers runs never; a registration naming a file that is gone
+# runs nothing and says nothing. Both read as a guard that is in place.
+if [ -f .claude/settings.json ] && command -v jq >/dev/null 2>&1; then
+  registered=$(jq -r '[.hooks // {} | .[][]? | .hooks[]? | .args[]?] | .[]' .claude/settings.json 2>/dev/null \
+    | grep -oE '[^/]+\.sh$' | sort -u)
+  present=$(ls .claude/hooks/*.sh 2>/dev/null | while IFS= read -r f; do basename "$f"; done | sort -u)
+  orphans=$(comm -23 <(printf '%s\n' "$present") <(printf '%s\n' "$registered") | grep -v '^$' || true)
+  ghosts=$(comm -13 <(printf '%s\n' "$present") <(printf '%s\n' "$registered") | grep -v '^$' || true)
+  [ -n "$orphans" ] && report "Hook scripts nothing in settings.json registers:"$'\n'"$orphans"$'\n'
+  [ -n "$ghosts" ] && report "Hooks settings.json registers that are not in .claude/hooks:"$'\n'"$ghosts"$'\n'
+fi
 
 # A claim with no link is a claim nobody checked.
 unlinked=$(awk 'BEGIN{RS="";FS="\n"} /^\*\*/ && !/http/ && !/^\*\*What this is/ {print "  " $1}' docs/sources.md)

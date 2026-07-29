@@ -38,30 +38,6 @@
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/verify.sh"
             ],
             "timeout": 120
-          },
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-conformity.sh"
-            ],
-            "asyncRewake": true,
-            "timeout": 600
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/code-review.sh"
-            ],
-            "timeout": 15
           }
         ]
       }

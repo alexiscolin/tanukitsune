@@ -6,6 +6,13 @@ of what each check actually runs and costs, see [`verification.md`](verification
 
 The general engineering standard this derives from is not part of the project.
 
+**The governing rule, from which the rest follows: deterministic first, cheapest first, and the
+probabilistic layer never blocks a merge on its own judgement except where nothing deterministic can
+see the problem.** A linter does not argue and costs nothing; a model argues and costs money. So every
+defect is caught by the cheapest mechanism that can see it, and the next layer up is reached for only
+where the one below is blind. Where a model does run, what it produces is a finding for someone to
+answer, not a verdict that closes a branch by itself.
+
 ## 1. The per-task cycle
 
 1. Fresh session. One task per session, clear between unrelated tasks.
@@ -86,13 +93,23 @@ are the ones. If a file cannot be explained without rereading it, it is rewritte
 
 ## 5. Hooks
 
-`Stop`, `SubagentStop` and `PostToolUse` are the ones that matter for solo work. `TeammateIdle` only
-fires inside an agent team.
+Of the events the tool offers, `Stop` is the one that carries weight for solo work, and it is the one
+this repository registers on. `PostToolUse` fires after every shell command and `PreToolUse` before
+one, a grain too fine for anything but a check that costs nothing and, worse, a grain that describes a
+tool call rather than an intention. `SubagentStop` fires per reviewer, which nothing here needs, and
+`TeammateIdle` only fires inside an agent team.
 
 The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
-makes it impossible for an agent to declare done on code that does not compile. What the three
-registered hooks run, and the guards that let two of them call a model, are in
-[`verification.md`](verification.md#the-three-hooks). The arguments behind them are here.
+makes it impossible for an agent to declare done on code that does not compile. What it runs is in
+[`verification.md`](verification.md#the-one-hook). The arguments behind it are here.
+
+**An event is not an intention, and a hook that has to guess which one it is looking at is not a
+guard.** A hook can see that a shell command ran; it cannot see that the command was about to open a
+pull request without recognising it from its text, and that text carries quoting, heredocs, aliases,
+environment prefixes and newlines that are separators. Every one of those is a way to match what should
+have been ignored or to ignore what should have matched, and each fix moves the failure rather than
+removing it. Where the question is a property of the branch instead, a required check answers it
+exactly: whether a pass is on record does not depend on parsing anything.
 
 **The fast gate is what a hook can afford, and that decides its contents.** `pnpm gate` runs from a
 hook because it needs no database and finishes in seconds. `pnpm verify` does not, because a hook
@@ -107,10 +124,12 @@ the whole of the red phase, which is a deliberate and correct state. That exclus
 terms rather than on a timing one, since the first test needing a database could not run from a hook
 anyway.
 
-**Catching it at the turn rather than at the pull request is the whole point.** A contradiction found
-at review time lives in documents belonging to some other slice, so fixing it means a diff that grew
-past what the plan described, and leaving it means shipping it. Found in the turn that created it, it
-is fixed inside the slice that owes it.
+**Finding a contradiction at the pull request rather than in the turn that made it has a price, and
+the price is accepted.** A contradiction surfaced at review time can sit in documents belonging to an
+earlier slice, so fixing it grows the diff past what the plan described, and leaving it ships it. The
+turn boundary would catch it sooner, at the cost of reading the whole documentation set again every
+time a document moves, which in a session that edits documentation is most turns. The slice pays the
+larger fix rather than the session paying the repeated reading.
 
 `info/` carries no hook, because the requirement is that it must not reach the remote and `.gitignore`
 is the whole of that. What `AGENTS.md` adds is a matter of judgement rather than of access: nothing
@@ -118,18 +137,21 @@ there is read unprompted, and nothing there is evidence for a claim about this r
 refusing every path that names the directory would enforce a stricter rule than the one wanted, and
 would refuse a search pattern that merely mentions it.
 
-**The commit is a better trigger for reviewing code than the end of a turn.** A turn ends wherever the
-conversation happens to pause; a commit is a unit somebody decided was coherent. So the review lenses
-hang off `PostToolUse` rather than `Stop`, and they read the range accumulated since they last ran
-rather than one commit, because the failing test committed before the implementation is half a slice
-and reading it alone produces findings about work that has not happened yet.
+**No hook spends a model pass, and the reason is that a trigger nobody chose spends without a budget.**
+A hook running a linter is free and catches most agent regressions, so it belongs on an event. A hook
+running a model is neither free nor bounded, and the events available are coarser than the work: the
+closest thing to a commit an event can see is `HEAD` moving, which a rebase, a reset or a checkout does
+too, each time arming a nested session and five reviewers over a range that has grown back to the whole
+branch. Two such hooks fire over the same change without knowing about each other. The bill arrives
+without anyone having asked for the reading.
 
-The cost is the tradeoff that was taken knowingly: five lenses per code commit rather than five per
-pull request. What it buys is that reaching a pull request with unreviewed code stops depending on
-anyone remembering.
+**So the reviewers run once per pull request, through `/pre-pr`, when somebody asks.** The pull request
+is the grain the lenses want anyway: the failing test committed before the implementation is half a
+slice, and reading it alone produces findings about work that has not happened yet. `requirement-check`
+in particular cannot judge a slice that is not finished.
 
-Keep the trigger deterministic even where the work is not. A hook running a linter is free and catches
-most agent regressions. A hook running a model is neither free nor bounded, so it earns its place only
-behind a deterministic filter that decides whether it runs at all, detached so it costs no waiting, and
-guarded so it cannot invoke itself.
+**What replaces the automatic trigger is the merge button, not a reminder.** Reaching a pull request
+with unread code stops depending on anyone remembering, because `check-review-coverage.sh` runs as a
+required check and refuses the merge until a pass is on record. The demand moves from a hook that
+interrupts to a gate that will not open, which costs nothing until it fires and cannot fire twice.
 

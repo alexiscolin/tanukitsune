@@ -45,11 +45,11 @@ and report independently. Pass each one the diff path and the task's plan or spe
 `requirement-check` needs the requirement more than it needs the diff, so give it the plan and the spec
 first and the diff path second, in that order.
 
-Add `docs-conformity` as a sixth **only when the documentation set has moved since it last read it**.
-The `Stop` hook writes the digest it reviewed to `.claude/.conformity-reviewed`; recompute that digest
-and compare. Equal means this exact state has already been read, and spawning the reviewer again pays
-for the same reading twice. Unequal, or no marker at all, means it runs, and it reads the whole set
-rather than the diff.
+Add `docs-conformity` as a sixth **only when the branch touches markdown**, which
+`git diff --name-only <base>..HEAD | grep '\.md$'` answers. A branch that changed no document cannot
+have introduced a contradiction between documents, and reading the set again would pay for the same
+reading twice. When it does run it reads the whole set rather than the diff, since a contradiction has
+two sides and only one of them is in the change.
 
 They are defined in `.claude/agents/`. Do not restate their instructions here; if a lens needs
 changing, change the agent file so the change persists.
@@ -73,10 +73,33 @@ Once each finding has been fixed or dismissed, append one line per finding to
 {"date":"2026-07-29","branch":"feat/x","reviewer":"security-check","file":"src/a.ts","line":42,"outcome":"fixed"}
 ```
 
-`outcome` is `fixed` or `dismissed`. A review that found nothing records nothing, which is itself the
-measurement: `scripts/review-stats.sh` reports what each lens produces and how much of it survives, and
-a lens that never produces anything is a lens to fix or delete. Without this the reviewers are the only
-part of this repository that is asserted rather than measured.
+`outcome` is `fixed` or `dismissed`, and a finding left without one refuses the merge, since a finding
+with no sort is a review that has not finished. A `dismissed` line carries a `reason` besides, and the
+merge is refused without it: a dismissal with nothing said cannot be told apart from a finding nobody
+answered. Nothing writes to this log but this step, and it writes each finding already disposed of, so
+the file is append-only throughout, its formatting included: a line rewritten in passing is a record
+altered with nothing recording that it was.
+
+Unsorted findings are counted for the current branch only, so a line left waiting on another branch
+does not refuse this one. A detached head names no branch and the whole log answers instead, which is
+what the pull request job reads.
+
+Then append one pass line, whether or not anything was found, naming the range the lenses read:
+
+```
+{"date":"2026-07-29","branch":"feat/x","kind":"pass","base":"9a1c2f0e","head":"3b7d4e21"}
+```
+
+`base` and `head` are real shas, from `git merge-base main HEAD` and `git rev-parse HEAD`. A pass naming
+anything that does not resolve counts as no pass at all, so a placeholder left unfilled refuses the
+merge rather than opening it.
+
+This line is what `scripts/check-review-coverage.sh` reads to decide whether a commit of code has been
+looked at, so omitting it refuses the merge, in a required check nothing local warns you about first.
+Run `bash scripts/check-review-coverage.sh` yourself to see the verdict early; it is free. It is also
+the denominator `scripts/review-stats.sh` needs: findings alone cannot say whether a quiet lens met
+clean code or ran once and never again. Without both lines the reviewers are the only part of this
+repository that is asserted rather than measured.
 
 ## 6. Cleanup, then hand back
 
