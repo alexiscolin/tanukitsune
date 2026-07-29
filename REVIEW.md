@@ -14,8 +14,9 @@ Five per review. Beyond that, one line in the summary saying how many similar it
 
 ## Do not report
 
-- Anything CI already enforces: types, lint, dead code, duplication, module boundaries, documentation
-  discipline
+- Anything CI already enforces: types, lint, dead code, copy-paste duplication, module boundaries,
+  documentation discipline. Logic that repeats what an existing function already does is not in that
+  list, because `jscpd` matches tokens rather than intent
 - Generated files and lockfiles
 - Test code that deliberately violates production rules
 

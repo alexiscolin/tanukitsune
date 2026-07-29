@@ -185,11 +185,13 @@ Secrets live in the host environment, are read by `data/` and by the corpus gene
 at build time. Model spend is capped per user and globally, as configuration rather than as a code
 change. What gets traced, evaluated and alerted on is in [`ai-engineering.md`](ai-engineering.md).
 
-## One conflict to resolve before the first commit
+## The Node floor
 
-**Node and the AI SDK disagree.** The AI SDK is at v7, ESM-only, requiring Node 22, while Next's own
-floor is Node 20.9. Pin Node 22 or the corpus generator breaks. The v7 migration also renamed `system`
-to `instructions` and moved telemetry to a separate package.
+**Node and the AI SDK disagree, and the higher floor wins.** The AI SDK is at v7, ESM-only, requiring
+Node 22, while Next's own floor is Node 20.9. `engines` and `.nvmrc` both say 22.12.0, because the
+corpus generator breaks below it and a floor that only one of the two files carries is a floor that
+holds on one machine. The v7 migration also renamed `system` to `instructions` and moved telemetry to
+a separate package.
 
 ## Unverified
 
