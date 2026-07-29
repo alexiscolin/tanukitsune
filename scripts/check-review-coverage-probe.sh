@@ -242,48 +242,5 @@ git -C "$repo" commit -qm 'chore: record the review pass'
 commit_file "$repo" src/b.ts
 expect 'code committed after the pass' "$repo" 1
 
-# The hook that carries the gate to `gh pr create` recognises the invocation by its
-# text, which is the part of this mechanism that has misfired rather than the maths.
-gate=$PWD/.claude/hooks/pre-pr-gate.sh
-opens=$(printf 'gh pr')
-
-# Every case runs against a repository whose code no pass has read, so a recognised
-# invocation exits 2 and an unrecognised one exits 0. Pointing the negative cases at
-# an empty directory instead would make them pass on a pattern matching everything,
-# since a match there exits 0 at the missing-script guard rather than on a verdict:
-# the four cases guarding the recognition would then assert nothing about it.
-carrier=$(scaffold gate-carrier)
-mkdir -p "$carrier/scripts"
-cp "$checker" "$carrier/scripts/check-review-coverage.sh"
-commit_file "$carrier" src/a.ts
-
-gate_probe() {
-  local label=$1 want=$2 payload=$3
-  local got
-  printf '{"tool_input":{"command":%s}}' "$(printf '%s' "$payload" | jq -Rs .)" \
-    | CLAUDE_PROJECT_DIR=$carrier bash "$gate" >/dev/null 2>&1
-  got=$?
-  if [ "$got" != "$want" ]; then
-    printf 'gate probe "%s": expected exit %s, got %s\n' "$label" "$want" "$got" >&2
-    fail=1
-  fi
-}
-
-gate_probe 'an unrelated command' 0 'git status'
-gate_probe 'the invocation quoted in a double-quoted string' 0 "echo \"run $opens create later\""
-gate_probe 'the invocation quoted after an operator' 0 "grep -r 'cd x && $opens create' docs/"
-gate_probe 'a heredoc line naming it' 0 "cat <<'EOF'
-$opens create --fill
-EOF"
-
-gate_probe 'a bare invocation over unread code' 2 "$opens create --fill"
-gate_probe 'an invocation after an operator' 2 "git push && $opens create --fill"
-
-base=$(git -C "$carrier" rev-parse main)
-head=$(git -C "$carrier" rev-parse HEAD)
-printf '{"date":"2026-07-29","branch":"branch","kind":"pass","base":"%s","head":"%s"}\n' \
-  "$base" "$head" > "$carrier/.claude/review-log.jsonl"
-gate_probe 'the same invocation once the range is covered' 0 "$opens create --fill"
-
 [ "$fail" -eq 0 ] && echo "review coverage: proven"
 exit "$fail"

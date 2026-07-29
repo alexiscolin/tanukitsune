@@ -1,20 +1,21 @@
 #!/bin/bash
 # Refuses a range of code that no review pass recorded reading, and a finding left
-# without a sort. Runs from the pre-PR hook and from the pull request job, off one
-# script so the coverage verdict is decided once.
+# without a sort. Runs from the pull request job, and by hand whenever the state is
+# in question. Nothing calls a model from here.
 #
-# The two can still differ on findings, and deliberately: the hook runs on a branch
-# and counts that branch's unsorted lines, the job runs on a detached head and counts
-# the whole log. The job is therefore the stricter of the two, never the looser, so
-# what it refuses the hook may have let through but never the reverse.
+# A run on a branch counts that branch's unsorted findings; a run on a detached head
+# names no branch and counts the whole log. The job runs detached, so it is the
+# stricter of the two readings and never the looser: what it refuses, a run by hand on
+# the branch may have let through, but never the reverse.
 #
-# Exit codes are distinct because the callers want different questions answered:
+# Exit codes are distinct so the probe can tell the refusals apart, and so a person
+# reading `$?` can:
 #   0  every commit of code is covered and nothing is pending
 #   1  code no pass has read
 #   2  a finding with no outcome
 #   3  the environment or the log cannot answer
-# Nothing spawns a model from here. The lenses are run deliberately through /pre-pr,
-# and this is what refuses the merge when nobody has.
+# The lenses are run deliberately through /pre-pr, and this is what refuses the merge
+# when nobody has.
 #
 # Operates on the working directory rather than its own location, so the probe can
 # run it inside a throwaway repository.
@@ -95,7 +96,11 @@ prose='\.md$|^\.claude/review-log\.jsonl$'
 # Stated as the closed set rather than as the open one: every document that is not an
 # instruction is prose, so a file added at the root or a directory added under docs/
 # falls on the safe side by default instead of buying an alternation here.
-instructions='^AGENTS\.md$|^CLAUDE\.md$|^REVIEW\.md$|^\.claude/.*\.md$'
+#
+# Unanchored on the name, because the tool loads a CLAUDE.md from any directory it is
+# working in, so a nested one is live instruction for every later session and not the
+# prose its path would suggest.
+instructions='(^|/)(AGENTS|CLAUDE|REVIEW)\.md$|(^|/)\.claude/.*\.md$'
 
 # One process per commit, asking git for paths by sha rather than parsing a stream
 # where a file named like a sha would read as a commit boundary.
@@ -125,9 +130,9 @@ if [ "${#uncovered[@]}" -gt 0 ]; then
   # the sentence explaining it and leave neither legible.
   printf 'No review pass has read %s commit(s) on this branch:\n' "${#uncovered[@]}" >&2
   for commit in "${uncovered[@]}"; do
-    # Capped, because the pre-PR hook relays this on exit 2 and the tool hands it to
-    # the agent as the reason to keep working. A subject is author-controlled text on
-    # that channel, and the convention already holds it under 72 characters.
+    # Capped, because a subject is author-controlled text and this refusal is read in a
+    # CI log where one long line pushes the sentence that explains it out of view. The
+    # convention already holds a subject under 72 characters.
     subject=$(git log -1 --format=%s "$commit")
     printf '  %s %s\n' "${commit:0:8}" "${subject:0:72}" >&2
   done

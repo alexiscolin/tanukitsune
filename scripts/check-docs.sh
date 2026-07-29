@@ -8,6 +8,9 @@
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
+# Physical, so link containment below compares like with like.
+root=$(pwd -P)
+
 fail=0
 report() { printf '%s\n' "$1" >&2; fail=1; }
 
@@ -98,8 +101,12 @@ links=$(markdown . | while IFS= read -r file; do
     # Containment is judged on the resolved path, not on the text: a link may climb
     # legitimately inside the tree, and `../framing.md` is one this repository already
     # writes. What must not happen is the scan reading a file outside the repository.
+    #
+    # Both sides are physical. Comparing a resolved path against a logical one reports
+    # every link as outside the moment the checkout is reached through a symlink, which
+    # on this platform is what a clone under /tmp is.
     real=$(cd "${resolved%/*}" 2>/dev/null && pwd -P)/${resolved##*/}
-    if [ "${real#"$PWD"/}" = "$real" ]; then
+    if [ "${real#"$root"/}" = "$real" ]; then
       printf 'A  %s -> %s, which resolves outside the repository\n' "$file" "$target"
       continue
     fi

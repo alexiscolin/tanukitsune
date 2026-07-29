@@ -60,9 +60,9 @@ jobs:
       - run: pnpm test:e2e
 
   # The five lenses are spawned by a human and by nothing else, so this job is what
-  # refuses a merge they never read. Same script as the pre-PR hook, and on coverage
-  # the two cannot differ. On unsorted findings this one is the stricter: a detached
-  # head names no branch, so it counts the whole log rather than one branch of it.
+  # refuses a merge they never read. It is the only automatic caller of that script,
+  # and the strictest reading of it: a detached head names no branch, so unsorted
+  # findings are counted over the whole log rather than over one branch of it.
   review:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest

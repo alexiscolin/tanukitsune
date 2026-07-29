@@ -14,7 +14,7 @@ The governing rule everything below arranges itself around is stated and argued 
 | `verify.sh`, the compile hook | end of every turn | zero tokens | the turn, once |
 | `pnpm verify` | before a pull request, and in CI | zero tokens | the merge |
 | Five reviewers through `/pre-pr`, six when the branch touches markdown | when a human asks | subscription | their findings are advisory, their pass record is not |
-| `check-review-coverage.sh`, the coverage gate | `gh pr create`, and every pull request | zero tokens | the pull request, and the merge |
+| `check-review-coverage.sh`, the coverage gate | every pull request | zero tokens | the merge |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
 
 **No model runs in CI, and no model runs on its own anywhere.** A reviewer in CI would be metered for
@@ -48,28 +48,23 @@ browser and a database.
 | `knip` | knip | unused exports, files and dependencies |
 | `dupes` | jscpd | literal copy-paste, 70 tokens and 8 lines at weak mode |
 
-## The two hooks
+## The one hook
 
-Both are registered in `.claude/settings.json`, and neither calls a model. One fires on `Stop`, when
-the agent finishes a turn; the other on `PreToolUse`, before a shell command. Exit code 2 is the only
-code the tool treats as a refusal; exit 1 is ignored.
+**`.claude/hooks/verify.sh`** is registered in `.claude/settings.json`, on `Stop`, when the agent
+finishes a turn. It runs `pnpm gate` and refuses the end of the turn when it fails. Exit code 2 is the
+only code the tool treats as a refusal; exit 1 is ignored. It reads the `stop_hook_active` field the
+tool places in its own JSON input and exits when that field is set, since a hook that blocks without
+reading it wedges the session shut. The consequence is that the guarantee is one forced continuation,
+not a loop until compliance.
 
-A hook is a place for a check that is instant and free. Nothing that spends a model pass is triggered
-from one, because a trigger nobody chose spends without a budget: an event as ordinary as `HEAD`
-moving would arm a nested session and five reviewers, and two such hooks can fire at once over the
-same change. The passes that cost money are run deliberately through `/pre-pr`, once per pull request
-rather than once per commit, and the coverage gate is what makes running them unavoidable.
-
-**`.claude/hooks/verify.sh`** runs `pnpm gate` and refuses the end of the turn when it fails. It reads
-the `stop_hook_active` field the tool places in its own JSON input and exits when that field is set,
-since a hook that blocks without reading it wedges the session shut. The consequence is that the
-guarantee is one forced continuation, not a loop until compliance.
-
-**`.claude/hooks/pre-pr-gate.sh`** fires on `PreToolUse` when the command names `gh pr create`, and
-runs `scripts/check-review-coverage.sh`. A range of code no pass has recorded reading, or a finding
-left without an outcome, refuses the tool call, so the pull request is never opened rather than opened
-and then found wanting. Recognising the command by its text is affordable only because a miss falls
-through to the pull request job, which runs the same script and refuses the merge.
+It calls no model, and nothing else is registered, for two reasons that pull the same way. A trigger
+nobody chose spends without a budget: the closest thing to a commit an event can see is `HEAD` moving,
+which a rebase, a reset and a checkout also do, each arming a reading over a range that has grown back
+to the whole branch. And an event a hook can act on is not the same thing as the intent behind it: a
+hook deciding whether a shell command is about to open a pull request has to recognise it from its
+text, across quoting, heredocs, aliases and line breaks, which is guesswork wearing the shape of a
+guard. What refuses a merge is the coverage gate as a required check, where the question is a property
+of the branch rather than a pattern over a string.
 
 ## The coverage gate
 
@@ -96,9 +91,9 @@ the head alone would let an unresolved base cover the whole branch.
 
 It proves that a range was submitted and that nothing was left pending. It does not prove the lenses
 read well: the log is written by the party under review, so what is checkable is its existence and its
-coverage, not its honesty. `pnpm check:review` runs a probe that builds throwaway repositories and
-expects a verdict for each case, and exercises the `gh pr create` pattern besides, since a coverage
-gate that accepts everything is indistinguishable from a branch that was read.
+coverage, not its honesty. `pnpm check:review` runs a probe that builds a throwaway repository per case
+and expects a verdict for each, since a coverage gate that accepts everything is indistinguishable from
+a branch that was read.
 
 Two things it does not reach. A commit made directly on `main` has no merge base to range from and no
 pull request to refuse, so it is covered by a branch protection rule or by nothing; the gate is honest

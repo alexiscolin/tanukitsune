@@ -93,14 +93,23 @@ are the ones. If a file cannot be explained without rereading it, it is rewritte
 
 ## 5. Hooks
 
-Of the events the tool offers, `Stop` and `PreToolUse` are the ones that carry weight for solo work,
-and they are the two this repository registers on. `PostToolUse` fires after every shell command, a
-grain too fine for anything but a check that costs nothing. `SubagentStop` fires per reviewer, which
-nothing here needs, and `TeammateIdle` only fires inside an agent team.
+Of the events the tool offers, `Stop` is the one that carries weight for solo work, and it is the one
+this repository registers on. `PostToolUse` fires after every shell command and `PreToolUse` before
+one, a grain too fine for anything but a check that costs nothing and, worse, a grain that describes a
+tool call rather than an intention. `SubagentStop` fires per reviewer, which nothing here needs, and
+`TeammateIdle` only fires inside an agent team.
 
 The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
-makes it impossible for an agent to declare done on code that does not compile. What the two registered
-hooks run is in [`verification.md`](verification.md#the-two-hooks). The arguments behind them are here.
+makes it impossible for an agent to declare done on code that does not compile. What it runs is in
+[`verification.md`](verification.md#the-one-hook). The arguments behind it are here.
+
+**An event is not an intention, and a hook that has to guess which one it is looking at is not a
+guard.** A hook can see that a shell command ran; it cannot see that the command was about to open a
+pull request without recognising it from its text, and that text carries quoting, heredocs, aliases,
+environment prefixes and newlines that are separators. Every one of those is a way to match what should
+have been ignored or to ignore what should have matched, and each fix moves the failure rather than
+removing it. Where the question is a property of the branch instead, a required check answers it
+exactly: whether a pass is on record does not depend on parsing anything.
 
 **The fast gate is what a hook can afford, and that decides its contents.** `pnpm gate` runs from a
 hook because it needs no database and finishes in seconds. `pnpm verify` does not, because a hook
