@@ -148,7 +148,7 @@ app/        Next routes, thin shells
 ui/         components
 ```
 
-Five rules, all enforced by `pnpm arch` and each proven to fire rather than assumed:
+Five rules, all enforced by `pnpm arch`, two of them proven to fire rather than assumed:
 
 - `core/` imports nothing from the other layers, and may declare ports but never import an
   implementation
@@ -425,9 +425,9 @@ later is a restructure rather than a feature.
 
 **Refused, with the cheaper answer named.** FSRS for scheduling, rules for conjugation, statistics for
 notification timing, Tesseract in the browser for OCR, data for JLPT and stroke order, retrieval from
-an open corpus for example sentences, a tagged Postgres column rather than a vector store, and
-deterministic validation rather than trusting a model to obey a constraint. The README enumerates the
-same nine. Knowing where not to use a model is the point of the project.
+an open corpus for example sentences, a tagged Postgres column rather than a vector store, a filtered
+query for situational study, and deterministic validation rather than trusting a model to obey a
+constraint. The README enumerates the same nine. Knowing where not to use a model is the point of the project.
 
 **Generated once, shared, amortised.** French meanings, nuances, mnemonics, theme tags, contrastive
 notes. Same output for every user, so generated once through the batch API, halving cost and stacking
