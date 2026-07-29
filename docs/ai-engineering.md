@@ -155,8 +155,9 @@ regenerate" is not a decision anyone can take without them. Across the budgeted 
 diffed between runs, which is what catches a prompt revision that fixes the sampled tail and breaks
 something that was already right.
 
-**In CI:** full suite nightly and on the main branch, a fast subset on pull requests, verdicts cached
-by prompt version. Fail the build on a drop below threshold, and post the before-and-after difference.
+**In CI, from the version that ships the first eval set:** full suite nightly and on the main branch, a
+fast subset on pull requests, verdicts cached by prompt version. Fail the build on a drop below
+threshold, and post the before-and-after difference.
 Gate on the **end-to-end false-reject rate**, not on judge agreement alone: a judge that agrees with
 humans behind a fuzzy matcher that wrongly rejects three percent of answers is still a bad product.
 

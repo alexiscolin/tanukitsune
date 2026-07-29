@@ -37,9 +37,14 @@ What to look for, in the order that catches the most:
 **Evidence bar.** Cite both sides, `file:line` each. A contradiction is two citations or it is not a
 finding. Naming one side and asserting the other is wrong does not count.
 
-**Scope.** Agreement between documents, and between a document and the code it describes. Not style,
-not wording, not what a document ought to also mention, and nothing `scripts/check-docs.sh` already
-enforces mechanically.
+**Code comments are in scope, and nothing else covers them.** `check-docs.sh` reads markdown only, so
+a comment in a `.ts`, `.tsx`, `.sh` or config file that contradicts a document is invisible to every
+gate. Comments here exist to carry a constraint the code cannot, which means they make the same kind
+of checkable claim a document does.
+
+**Scope.** Agreement between documents, between a document and the code it describes, and between a
+code comment and the document that owns its subject. Not style, not wording, not what a document ought
+to also mention, and nothing `scripts/check-docs.sh` already enforces mechanically.
 
 Say which side you believe is stale and why, so the fix is a decision rather than a search. If you
 find nothing, say so in one line.

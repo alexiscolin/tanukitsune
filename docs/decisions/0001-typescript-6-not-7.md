@@ -19,7 +19,7 @@ check at all.
 
 ## Options
 
-Adopt TypeScript 7 and lose type-aware linting and boundary enforcement. Pin TypeScript 6.0.3 and
+Adopt TypeScript 7 and lose type-aware linting and boundary enforcement. Pin the TypeScript 6 line and
 keep them. Or run both through npm aliasing, compiling with 7 while tooling reads the 6 API.
 
 ## Decision
