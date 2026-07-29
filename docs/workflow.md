@@ -1,7 +1,8 @@
 # How this project is built
 
 **What this is.** The process every change goes through, and why the agent configuration in `.claude/`
-is shaped the way it is. Each section explains something present in this repository.
+is shaped the way it is. Each section explains something present in this repository. For the inventory
+of what each check actually runs and costs, see [`verification.md`](verification.md).
 
 The general engineering standard this derives from is not part of the project.
 
@@ -39,16 +40,16 @@ The governing principle: **the agent that wrote the code is the worst reviewer o
 on its intent rather than on what it produced. Three passes by the same agent are worth almost
 nothing; what works is fresh contexts with disjoint lenses.
 
-So `/pre-pr` runs the free gates first, captures the diff once, and spawns four reviewers in parallel:
-regression, architecture, security, performance. They are defined in `.claude/agents/`, each restricted
-to read-only tools so they report rather than "fix", each held to the same evidence bar: a claim about
-behaviour needs a `file:line` citation, an inference from a name is not a finding, and finding nothing
-is a valid result stated in one line.
+So `/pre-pr` runs the free gates first, captures the diff once, and spawns the reviewers in parallel.
+Which lenses exist and which model each one runs on is in
+[`verification.md`](verification.md#the-five-reviewers). What matters here is the bar they share: a
+claim about behaviour needs a `file:line` citation, an inference from a name is not a finding, and
+finding nothing is a valid result stated in one line. A reviewer asked to find problems will find them
+whether or not they exist, and chasing those produces exactly the defensive code this project avoids.
 
-A fifth, documentation conformity, joins them when the diff touches markdown. `check-docs.sh` proves a
-link resolves and a count against `AGENTS.md` holds, and it cannot prove that two documents describing
-the same rule still agree. Nothing in `pnpm verify` can, which is why that one is a reviewer rather
-than a script.
+One of them reads documentation rather than code, because `check-docs.sh` proves a link resolves and a
+count holds, and nothing deterministic can prove that two documents describing the same rule still
+agree. That frontier is the only place a model earns a place inside the loop.
 
 Three standing rules the reviews enforce and the gates back up:
 
@@ -89,31 +90,15 @@ are the ones. If a file cannot be explained without rereading it, it is rewritte
 agent team.
 
 The Stop hook is the highest return in this method: thirty minutes of setup, zero tokens, and it makes
-it impossible for an agent to declare done on code that does not compile. Exit code 2 sends the error
-back and the agent keeps working. It reads `stop_hook_active` from its own input and exits when that is
-set, since a hook that blocks without reading it wedges the session shut.
+it impossible for an agent to declare done on code that does not compile. What the two registered hooks
+run, and the three guards that let one of them call a model, are in
+[`verification.md`](verification.md#the-two-stop-hooks). The arguments behind them are here.
 
-It runs `pnpm gate`, which is typecheck, lint, the boundary check and `check:docs`, and deliberately
-not `pnpm verify`. The full suite needs a database and browser runs, which do not fit a hook timeout,
-and a hook killed on timeout blocks nothing while appearing to guard everything. The rest is caught by
-`/pre-pr` and by CI, where there is time for it.
-
-`check:docs` is in the fast gate rather than only in the slow one because a documentation-only session
-never runs the slow one, which is exactly the session where the documentation rules are the only rules
-that apply.
-
-A second `Stop` hook digests the documentation set, compares it against a gitignored marker, and when
-the two differ reads the set with `docs-conformity` before recording the state it reviewed. It is
-registered with `asyncRewake`, so it runs detached and wakes the agent only when it has something to
-say. The trigger is mechanical because it can be; the reading is not, because no script can tell
-whether two documents still agree.
-
-Three things make it safe to run a model from a hook here. The digest means it fires once per
-documentation state rather than once per turn. An exported variable stops the nested session from
-running the same hook again, which is what `stop_hook_active` cannot do across processes. And the
-digest is taken twice, once before the reading and once after: a review that ran for minutes while the
-agent kept editing holds findings about text that may no longer exist, so a set that moved underneath
-it is dropped rather than reported.
+**The fast gate is what a hook can afford, and that decides its contents.** `pnpm gate` runs from a
+hook because it needs no database and finishes in seconds. `pnpm verify` does not, because a hook
+killed on its timeout blocks nothing while appearing to guard everything. `check:docs` sits in the fast
+one rather than only in the slow one because a documentation-only session never reaches the slow one,
+which is exactly the session where documentation rules are the only rules that apply.
 
 **Catching it at the turn rather than at the pull request is the whole point.** A contradiction found
 at review time lives in documents belonging to some other slice, so fixing it means a diff that grew

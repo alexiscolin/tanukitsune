@@ -74,18 +74,14 @@ implementation detail.
 
 ## Reporting to the reader
 
-Report from the top down: what happened and what it changes for the system, then the mechanism, then
-the file, the function, the flag. The reader works at the level of decisions and you work at the level
-of exit codes, so a detail handed over with no attachment point cannot be judged, and what cannot be
-judged cannot be relied on.
+Report top down, in replies as much as in documents: what changed for the system, then the mechanism,
+then the file, the function, the flag. The reader works at the level of decisions and you at the level
+of exit codes, so a detail with no attachment point cannot be judged, and what cannot be judged cannot
+be relied on.
 
-Every name carries its referent the first time it appears. That covers a function, a variable, a
-constant, a field, a tool, a script and a package, not only prose nouns: say what it is and where it
-lives before building an argument on it. A recursion guard names what recurses. A flag names who sets
-it and what it means. Two things of the same kind are named by their file rather than by an ordinal.
-
-This holds for replies as much as for documents, and it is not a licence to write more. It changes the
-order and adds one clause, nothing else.
+Every name carries its referent on first appearance, functions, variables, fields, scripts and packages
+included. A recursion guard names what recurses, a flag names who sets it, and two things of a kind are
+named by their file rather than by an ordinal. This changes the order and adds a clause, not the length.
 
 ## Stop and ask
 
