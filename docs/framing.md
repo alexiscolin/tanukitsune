@@ -34,8 +34,11 @@ a more interesting project than citing the claim.
 
 **Where the model earns its place.** Both theses point at the same gap: one curriculum, applied
 identically to everyone, in one language, with no memory of what happened. Five surfaces follow from
-it, and no others. They share four model choices, which is why
-[`ai-engineering.md`](ai-engineering.md) counts four.
+it, and no others. They collapse to three model choices, because the confusion detector and the choice
+of what to present next both run on the judge's model rather than selecting their own. The fourth
+choice [`ai-engineering.md`](ai-engineering.md) makes is not a surface: it is the constrained
+generation that fills a gap the retrieved sentence corpus cannot, and whose output ships only if a
+deterministic validator accepts it.
 
 **It writes the content layer**, meanings, nuances, mnemonics and thematic tags across the item set,
 generated once through the batch API and shared, so a user costs nothing at the margin and a locale

@@ -6,9 +6,11 @@ The product decisions about where a model is used at all are in [`framing.md`](f
 
 ## Model selection, per surface
 
-Not one model. Four model choices to make, which is fewer than the five surfaces in
-[`framing.md`](framing.md): the confusion detector and the choice of what to present next both run on
-the judge's model, so they inherit its selection rather than making their own.
+Not one model. Four model choices to make, and they do not map one to one onto the five surfaces in
+[`framing.md`](framing.md). Three come from those surfaces, since the confusion detector and the choice
+of what to present next both run on the judge's model rather than making their own selection. The
+fourth belongs to constrained generation, which is a fallback behind a refusal rather than a surface of
+its own.
 
 **Corpus generation.** The strongest model available, and no cost optimisation. It runs a handful of
 times, the output is permanent and shared by every user, and a mediocre mnemonic is a defect that
