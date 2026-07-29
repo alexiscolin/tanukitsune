@@ -95,7 +95,8 @@ anything that does not resolve counts as no pass at all, so a placeholder left u
 merge rather than opening it.
 
 This line is what `scripts/check-review-coverage.sh` reads to decide whether a commit of code has been
-looked at, so omitting it refuses the pull request at `gh pr create` and again at the merge. It is also
+looked at, so omitting it refuses the merge, in a required check nothing local warns you about first.
+Run `bash scripts/check-review-coverage.sh` yourself to see the verdict early; it is free. It is also
 the denominator `scripts/review-stats.sh` needs: findings alone cannot say whether a quiet lens met
 clean code or ran once and never again. Without both lines the reviewers are the only part of this
 repository that is asserted rather than measured.

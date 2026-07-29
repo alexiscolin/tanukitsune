@@ -183,6 +183,25 @@ repo=$(scaffold instructions-markdown)
 commit_file "$repo" AGENTS.md
 expect 'a commit touching only AGENTS.md' "$repo" 1
 
+# The tool loads a CLAUDE.md from any directory it works in, so a nested one is live
+# instruction and not the prose its path suggests.
+repo=$(scaffold instructions-nested)
+commit_file "$repo" src/core/CLAUDE.md
+expect 'a commit touching only a nested CLAUDE.md' "$repo" 1
+
+# Spelling must not buy the exemption that nesting used to, this platform resolving
+# the name without regard to case.
+repo=$(scaffold instructions-lowercase)
+commit_file "$repo" docs/claude.md
+expect 'a commit touching only a lower-case claude.md' "$repo" 1
+
+# Prose is any markdown that is not an instruction, wherever it sits, so a document
+# added at the root or outside docs/ is exempt without anyone widening a list.
+repo=$(scaffold prose-anywhere)
+commit_file "$repo" NOTES.md
+commit_file "$repo" notes/deep/thought.md
+expect 'markdown at the root and outside docs' "$repo" 0
+
 repo=$(scaffold prose-markdown)
 commit_file "$repo" docs/framing.md
 expect 'a commit touching only prose under docs' "$repo" 0

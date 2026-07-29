@@ -114,7 +114,11 @@ while IFS= read -r commit; do
   # is the conflict resolution, so a clean merge still has nothing to read while a
   # resolved one carries lines that exist in no other commit of the range.
   paths=$(git diff-tree --root --cc --no-commit-id --name-only -r "$commit" 2>/dev/null)
-  read_by_lenses=$(printf '%s\n' "$paths" | grep -Ev "$prose"; printf '%s\n' "$paths" | grep -E "$instructions")
+  # Matched case-insensitively, the platform this is written on having a
+  # case-insensitive filesystem: a committed `docs/claude.md` is loaded as CLAUDE.md by
+  # any later session working under that directory, so spelling it in lower case would
+  # otherwise buy the same exemption that nesting used to.
+  read_by_lenses=$(printf '%s\n' "$paths" | grep -Ev "$prose"; printf '%s\n' "$paths" | grep -Ei "$instructions")
   [ -z "$(printf '%s' "$read_by_lenses" | tr -d '[:space:]')" ] && continue
   uncovered+=("$commit")
 done <<< "$branch_commits"

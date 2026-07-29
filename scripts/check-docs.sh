@@ -105,8 +105,13 @@ links=$(markdown . | while IFS= read -r file; do
     # Both sides are physical. Comparing a resolved path against a logical one reports
     # every link as outside the moment the checkout is reached through a symlink, which
     # on this platform is what a clone under /tmp is.
+    #
+    # A symlink is refused rather than followed. `pwd -P` resolves the directory chain
+    # and the last component is appended to it verbatim, so a link whose final segment
+    # is itself a symlink lands inside the tree by name while pointing anywhere, and
+    # the heading scan below would read that file. No document here links through one.
     real=$(cd "${resolved%/*}" 2>/dev/null && pwd -P)/${resolved##*/}
-    if [ "${real#"$root"/}" = "$real" ]; then
+    if [ -L "$resolved" ] || [ "${real#"$root"/}" = "$real" ]; then
       printf 'A  %s -> %s, which resolves outside the repository\n' "$file" "$target"
       continue
     fi

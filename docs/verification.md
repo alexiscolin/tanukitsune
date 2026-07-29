@@ -57,14 +57,8 @@ tool places in its own JSON input and exits when that field is set, since a hook
 reading it wedges the session shut. The consequence is that the guarantee is one forced continuation,
 not a loop until compliance.
 
-It calls no model, and nothing else is registered, for two reasons that pull the same way. A trigger
-nobody chose spends without a budget: the closest thing to a commit an event can see is `HEAD` moving,
-which a rebase, a reset and a checkout also do, each arming a reading over a range that has grown back
-to the whole branch. And an event a hook can act on is not the same thing as the intent behind it: a
-hook deciding whether a shell command is about to open a pull request has to recognise it from its
-text, across quoting, heredocs, aliases and line breaks, which is guesswork wearing the shape of a
-guard. What refuses a merge is the coverage gate as a required check, where the question is a property
-of the branch rather than a pattern over a string.
+It calls no model, and nothing else is registered. Why an event is the wrong place both for a model pass
+and for a question about intent: [`workflow.md`](workflow.md#5-hooks).
 
 ## The coverage gate
 
@@ -72,8 +66,11 @@ The five lenses are spawned by a human, so whether they ran is a fact about a br
 property of the tooling. `scripts/check-review-coverage.sh` decides that fact, it calls no model, and
 it is the only thing standing between unread code and the merge button.
 
-It walks every commit between the merge base and `HEAD`, skips those touching nothing but markdown and
-the review log itself, and requires each of the rest to fall inside a range some pass recorded. Ranges
+It walks every commit between the merge base and `HEAD`, skips those touching nothing but prose and the
+review log itself, and requires each of the rest to fall inside a range some pass recorded. Prose is any
+markdown except the files that instruct: `AGENTS.md`, `CLAUDE.md`, `REVIEW.md` at any depth and anything
+markdown under `.claude/`. Those are read, since a file able to tell a later session what it may do, or
+tell a lens what to look for, must not be the one file no lens has to see. Ranges
 come from the pass lines in `.claude/review-log.jsonl`; a commit is inside one when it is reachable
 from the head that pass read and not from where that reading started.
 
