@@ -83,3 +83,26 @@
 {"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":".claude/agents/docs-conformity.md","line":41,"summary":"The constraint-as-property rewrite also hands provenance comments to architecture-check's scope, a change beyond restating an existing constraint.","outcome":"dismissed","reason":"architecture-check.md:29-32 already owned comments narrating their own history, and its diff against origin/main is empty, so no scope moved"}
 {"date":"2026-07-30","branch":"feat/answer-input","kind":"pass","base":"f7614c2be0bebd151095f41dfa1cd05709166273","head":"d5ef11c660d49e3ed13bd6e8690d321ae235a7af"}
 {"date":"2026-07-30","branch":"feat/answer-input","kind":"pass","base":"4d680b30cadff8aab7b020d65a67d7b838a57c88","head":"a985d8f97c11112c2bab46024de926dba7ee5929"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-review-coverage.sh","line":92,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-review-coverage.sh","line":82,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-docs.sh","line":105,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-docs.sh","line":101,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-review-coverage.sh","line":107,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"regression-check","file":"scripts/check-review-coverage.sh","line":3,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"regression-check","file":".github/workflows/verify.yml","line":63,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"regression-check","file":".claude/skills/pre-pr/SKILL.md","line":48,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"regression-check","file":"scripts/check-docs.sh","line":104,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"regression-check","file":"scripts/check-docs.sh","line":113,"outcome":"dismissed","reason":"no path under docs/specs names a file that is absent today, and a spec naming one it has not built can write it without backticks"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":".github/workflows/verify.yml","line":62,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"docs/README.md","line":62,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"docs/verification.md","line":155,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"scripts/check-review-coverage.sh","line":41,"outcome":"dismissed","reason":"unrequested and correct on that; the rule is load-bearing and already stated in verification.md and the pre-pr skill, so removing it now is more churn than keeping it"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":".claude/review-log.jsonl","line":9,"outcome":"dismissed","reason":"the reason rule arrived in the same range, so four pre-existing dismissals could not satisfy it without a backfill; the formatting churn that came with it was reverted"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"scripts/check-docs.sh","line":59,"outcome":"dismissed","reason":"AGENTS.md holds workflow-explique.md to the same agreement, and the -f guard makes the scan a no-op wherever the file is absent"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"requirement-check","file":"docs/workflow.md","line":84,"outcome":"dismissed","reason":"the diff is past one slice and the reader was told so before the work continued; the call was theirs"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"architecture-check","file":".claude/skills/pre-pr/SKILL.md","line":78,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"architecture-check","file":"scripts/check-review-coverage-probe.sh","line":84,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"docs-conformity","file":"docs/README.md","line":84,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"docs-conformity","file":"scripts/check-review-coverage-probe.sh","line":118,"outcome":"fixed"}
+{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"performance-check","file":"scripts/check-docs.sh","line":95,"outcome":"dismissed","reason":"measured at 3 anchor links over 2 target files, with the whole script running in 0.97s; grouping by target would add machinery for a saving below noise"}
+{"date":"2026-07-30","branch":"feat/answer-input","kind":"pass","base":"a985d8f97c11112c2bab46024de926dba7ee5929","head":"7323443519e215fd3d19694464c04a9d0dbd9826"}
