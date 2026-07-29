@@ -11,9 +11,10 @@ Two documents are written for a human operating the project and are context cost
 `docs/agent-log.md` and `docs/sources.md`. Do not open them unless the task is about
 the documentation itself.
 
-`info/` is gitignored and never committed. It is not part of the project, so nothing there is read on
-your own initiative and nothing there is evidence for a claim about this repository. Read and write it
-when asked, and nowhere else does it belong in a diff.
+`info/` is gitignored and never committed. Nothing there is read on your own initiative and nothing
+there is evidence for a claim about this repository, with one named exception: `workflow-explique.md`
+describes this system rather than the person, so the conformity reviewer reads it and holds it to the
+same agreement as everything under `docs/`. Read and write the rest when asked.
 
 ## Commands
 
