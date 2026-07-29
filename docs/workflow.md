@@ -69,14 +69,14 @@ ends by naming it rather than pretending it ran.
 
 ## 3. Stop conditions
 
-Discard the session and restart with a better prompt when:
+`AGENTS.md` lists what makes an agent stop and ask. This is the other half: what the answer usually is.
 
-- the same issue has been corrected twice
-- unrequested functionality appears, however reasonable
-- tests are modified or deleted to reach green
-- the diff is three times the size the plan described
+Discarding the session and restarting with a better prompt beats continuing, when the same issue has
+been corrected twice, when unrequested functionality has appeared however reasonable, when a test was
+modified to reach green, or when the diff is several times what the plan described.
 
-A clean session with a better prompt almost always beats a long session carrying failed attempts.
+A clean session with a better prompt almost always beats a long session carrying failed attempts. The
+agent stops and asks because it cannot make that call; the answer is nearly always to restart.
 
 ## 4. Written by hand, not delegated
 
