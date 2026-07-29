@@ -82,16 +82,20 @@ while IFS=' ' read -r pass_base pass_head; do
 "
 done <<< "$(jq -rs 'map(select(.kind == "pass")) | .[] | "\(.base) \(.head)"' "$log" 2>/dev/null || true)"
 
-# Prose under docs/ answers to the conformity reviewer, and the log is how a pass
-# records itself, so a commit touching nothing else is one the code lenses have no
-# reason to read.
-#
-# The instructions are not in that bargain, even though they are markdown too.
+# Prose answers to the conformity reviewer, and the log is how a pass records itself,
+# so a commit touching nothing else is one the code lenses have no reason to read.
+prose='\.md$|^\.claude/review-log\.jsonl$'
+
+# Named back in, because the instructions are prose too and must not be exempt.
 # AGENTS.md, CLAUDE.md and everything under .claude/ tell a later session what it may
 # do and tell each lens what to look for, so exempting them would leave the one file
 # able to disarm a reviewer as the one file no reviewer has to see. Whether the
 # conformity reviewer ran is a judgement; whether these were read is not.
-exempt='^docs/.*\.md$|^README\.md$|^\.claude/review-log\.jsonl$'
+#
+# Stated as the closed set rather than as the open one: every document that is not an
+# instruction is prose, so a file added at the root or a directory added under docs/
+# falls on the safe side by default instead of buying an alternation here.
+instructions='^AGENTS\.md$|^CLAUDE\.md$|^REVIEW\.md$|^\.claude/.*\.md$'
 
 # One process per commit, asking git for paths by sha rather than parsing a stream
 # where a file named like a sha would read as a commit boundary.
@@ -99,13 +103,14 @@ uncovered=()
 while IFS= read -r commit; do
   [ -z "$commit" ] && continue
   case "$covered" in *"$commit"*) continue ;; esac
-  # --root and --cc, since diff-tree reports no path at all for a commit with no
-  # parent and none for a commit with two, so either would pass for one touching
-  # nothing. --cc rather than -m because it names what a merge introduces that is in
-  # neither parent, which is the conflict resolution: a clean merge carries no content
-  # of its own and has nothing to read, a resolved one carries lines that exist in no
-  # other commit of the range.
-  [ -z "$(git diff-tree --root --cc --no-commit-id --name-only -r "$commit" 2>/dev/null | grep -Ev "$exempt")" ] && continue
+  # diff-tree describes a commit against exactly one parent, so it names nothing for
+  # a commit that has none and nothing for one that has two. --root and --cc answer
+  # both arities: --cc names what a merge introduces that is in neither parent, which
+  # is the conflict resolution, so a clean merge still has nothing to read while a
+  # resolved one carries lines that exist in no other commit of the range.
+  paths=$(git diff-tree --root --cc --no-commit-id --name-only -r "$commit" 2>/dev/null)
+  read_by_lenses=$(printf '%s\n' "$paths" | grep -Ev "$prose"; printf '%s\n' "$paths" | grep -E "$instructions")
+  [ -z "$(printf '%s' "$read_by_lenses" | tr -d '[:space:]')" ] && continue
   uncovered+=("$commit")
 done <<< "$branch_commits"
 

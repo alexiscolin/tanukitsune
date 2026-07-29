@@ -13,7 +13,7 @@ The governing rule everything below arranges itself around is stated and argued 
 |---|---|---|---|
 | `verify.sh`, the compile hook | end of every turn | zero tokens | the turn, once |
 | `pnpm verify` | before a pull request, and in CI | zero tokens | the merge |
-| Five reviewers through `/pre-pr`, six when the documentation set has moved | when a human asks | subscription | their findings are advisory, their pass record is not |
+| Five reviewers through `/pre-pr`, six when the branch touches markdown | when a human asks | subscription | their findings are advisory, their pass record is not |
 | `check-review-coverage.sh`, the coverage gate | `gh pr create`, and every pull request | zero tokens | the pull request, and the merge |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
 

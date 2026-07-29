@@ -30,12 +30,14 @@ scaffold() {
   printf '%s' "$repo"
 }
 
+# The content matters only where a case needs two branches to disagree on one file,
+# so it is optional and random otherwise.
 commit_file() {
-  local repo=$1 path=$2
+  local repo=$1 path=$2 content=${3:-content $RANDOM}
   mkdir -p "$repo/$(dirname "$path")"
-  printf 'content %s\n' "$RANDOM" > "$repo/$path"
-  git -C "$repo" add -A
-  git -C "$repo" commit -qm "feat: $path"
+  printf '%s\n' "$content" > "$repo/$path"
+  git -C "$repo" add -A >/dev/null 2>&1
+  git -C "$repo" commit -qm "feat: $path" >/dev/null 2>&1
 }
 
 expect() {
@@ -145,22 +147,14 @@ expect 'a finding on another branch, read from a detached head' "$repo" 2
 # unless asked for the combined diff, and without that the resolution passes for a
 # commit touching nothing. Both parents are covered here, so only the merge is unread
 # and the verdict cannot come from anything else.
-write_commit() {
-  local repo=$1 path=$2 content=$3
-  mkdir -p "$repo/$(dirname "$path")"
-  printf '%s\n' "$content" > "$repo/$path"
-  git -C "$repo" add -A >/dev/null 2>&1
-  git -C "$repo" commit -qm "feat: $path" >/dev/null 2>&1
-}
-
-# Both parents covered, so only the merge itself can produce the verdict.
 two_covered_parents() {
   local repo=$1 side_shared=$2
-  write_commit "$repo" src/shared.ts ours
+  local ours theirs mbase
+  commit_file "$repo" src/shared.ts ours
   ours=$(git -C "$repo" rev-parse HEAD)
   git -C "$repo" checkout -q -b side main >/dev/null 2>&1
-  write_commit "$repo" src/other.ts theirs
-  [ -n "$side_shared" ] && write_commit "$repo" src/shared.ts "$side_shared"
+  commit_file "$repo" src/other.ts theirs
+  [ -n "$side_shared" ] && commit_file "$repo" src/shared.ts "$side_shared"
   theirs=$(git -C "$repo" rev-parse HEAD)
   mbase=$(git -C "$repo" rev-parse main)
   {
@@ -253,38 +247,17 @@ expect 'code committed after the pass' "$repo" 1
 gate=$PWD/.claude/hooks/pre-pr-gate.sh
 opens=$(printf 'gh pr')
 
-matches() {
-  local label=$1 want=$2 payload=$3
-  local got
-  printf '{"tool_input":{"command":%s}}' "$(printf '%s' "$payload" | jq -Rs .)" \
-    | CLAUDE_PROJECT_DIR=$work/nothing bash "$gate" >/dev/null 2>&1
-  got=$?
-  if [ "$got" != "$want" ]; then
-    printf 'gate probe "%s": expected exit %s, got %s\n' "$label" "$want" "$got" >&2
-    fail=1
-  fi
-}
-
-# CLAUDE_PROJECT_DIR points nowhere, so a match exits 0 at the missing-script guard
-# rather than on the verdict. What is under test here is the recognition, not the maths.
-mkdir -p "$work/nothing"
-
-matches 'an unrelated command' 0 'git status'
-matches 'the invocation quoted in a double-quoted string' 0 "echo \"run $opens create later\""
-matches 'the invocation quoted after an operator' 0 "grep -r 'cd x && $opens create' docs/"
-matches 'a heredoc line naming it' 0 "cat <<'EOF'
-$opens create --fill
-EOF"
-
-# A recognised invocation reaches the script, so the verdict must be the script's.
-# Asserting that against this repository would make the probe depend on whether this
-# branch happens to be covered, and fail the moment it is.
+# Every case runs against a repository whose code no pass has read, so a recognised
+# invocation exits 2 and an unrecognised one exits 0. Pointing the negative cases at
+# an empty directory instead would make them pass on a pattern matching everything,
+# since a match there exits 0 at the missing-script guard rather than on a verdict:
+# the four cases guarding the recognition would then assert nothing about it.
 carrier=$(scaffold gate-carrier)
 mkdir -p "$carrier/scripts"
 cp "$checker" "$carrier/scripts/check-review-coverage.sh"
 commit_file "$carrier" src/a.ts
 
-reaches() {
+gate_probe() {
   local label=$1 want=$2 payload=$3
   local got
   printf '{"tool_input":{"command":%s}}' "$(printf '%s' "$payload" | jq -Rs .)" \
@@ -296,14 +269,21 @@ reaches() {
   fi
 }
 
-reaches 'a bare invocation over unread code' 2 "$opens create --fill"
-reaches 'an invocation after an operator' 2 "git push && $opens create --fill"
+gate_probe 'an unrelated command' 0 'git status'
+gate_probe 'the invocation quoted in a double-quoted string' 0 "echo \"run $opens create later\""
+gate_probe 'the invocation quoted after an operator' 0 "grep -r 'cd x && $opens create' docs/"
+gate_probe 'a heredoc line naming it' 0 "cat <<'EOF'
+$opens create --fill
+EOF"
+
+gate_probe 'a bare invocation over unread code' 2 "$opens create --fill"
+gate_probe 'an invocation after an operator' 2 "git push && $opens create --fill"
 
 base=$(git -C "$carrier" rev-parse main)
 head=$(git -C "$carrier" rev-parse HEAD)
 printf '{"date":"2026-07-29","branch":"branch","kind":"pass","base":"%s","head":"%s"}\n' \
   "$base" "$head" > "$carrier/.claude/review-log.jsonl"
-reaches 'the same invocation once the range is covered' 0 "$opens create --fill"
+gate_probe 'the same invocation once the range is covered' 0 "$opens create --fill"
 
 [ "$fail" -eq 0 ] && echo "review coverage: proven"
 exit "$fail"

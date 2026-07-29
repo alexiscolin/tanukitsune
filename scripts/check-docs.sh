@@ -65,7 +65,7 @@ if [ -f "$described" ]; then
     | sed "s|^|$described:|" || true)
   [ -n "$in_described" ] && typography=$(printf '%s\n%s' "$typography" "$in_described")
 fi
-[ -n "$typography" ] && report "Em dash or emoji, which the style rule bans everywhere:"$'\n'"$typography"$'\n'
+[ -n "$typography" ] && report "Em dash or emoji, which the style rule bans in every document:"$'\n'"$typography"$'\n'
 
 # Claims the documentation makes about itself.
 
@@ -79,43 +79,41 @@ uncharted=$(markdown ./docs -maxdepth 1 | while IFS= read -r f; do
 done)
 [ -n "$uncharted" ] && report "The documentation map does not list these, and claims to list everything:"$'\n'"$uncharted"$'\n'
 
-broken=$(markdown . | while IFS= read -r file; do
-  dir=$(dirname "$file")
+# One walk for both link checks. The anchor pattern matches a subset of the link
+# pattern and the path check already splits the fragment off, so a second traversal
+# would re-read every document to recover the half the first one discards. An anchor
+# the target no longer carries still resolves, to the top of the file, so a renamed
+# section leaves every cross-reference to it pointing at nothing in silence. The slug
+# is GitHub's: lowercased, punctuation dropped, spaces hyphenated.
+links=$(markdown . | while IFS= read -r file; do
+  dir=${file%/*}
   grep -oE '\]\([^)]+\)' "$file" | sed 's/^](//;s/)$//' \
-    | grep -vE '^(https?:|mailto:|#)' | while IFS= read -r target; do
-    target=${target%%#*}
-    [ -n "$target" ] && [ ! -e "$dir/$target" ] && printf '  %s -> %s\n' "$file" "$target"
-  done
-done)
-[ -n "$broken" ] && report "Relative links that resolve to nothing:"$'\n'"$broken"$'\n'
-
-# An anchor the target no longer carries still resolves, to the top of the file, so a
-# renamed section leaves every cross-reference to it pointing at nothing in silence.
-# The slug is GitHub's: lowercased, punctuation dropped, spaces hyphenated.
-anchors=$(markdown . | while IFS= read -r file; do
-  dir=$(dirname "$file")
-  grep -oE '\]\([^)]*#[^)]+\)' "$file" | sed 's/^](//;s/)$//' \
     | grep -vE '^(https?:|mailto:)' | while IFS= read -r target; do
-    anchor=${target#*#}
     path=${target%%#*}
-    # A link is repository content, so the anchor is matched with -F and the target
-    # refused if it climbs: as a pattern, `#.*` matches the first heading of any file
-    # and satisfies the very check this performs, and `..` sends the scan outside the
-    # tree it is meant to be reading.
-    if [ "${target#*..}" != "$target" ]; then
-      printf '  %s -> %s, which climbs out of the tree\n' "$file" "$target"
-      continue
-    fi
+    [ -n "$path" ] && [ ! -e "$dir/$path" ] && { printf 'B  %s -> %s\n' "$file" "$path"; continue; }
+    [ "${target#*#}" = "$target" ] && continue
+    anchor=${target#*#}
     if [ -z "$path" ]; then resolved=$file; else resolved=$dir/$path; fi
     [ -f "$resolved" ] || continue
+    # Containment is judged on the resolved path, not on the text: a link may climb
+    # legitimately inside the tree, and `../framing.md` is one this repository already
+    # writes. What must not happen is the scan reading a file outside the repository.
+    real=$(cd "${resolved%/*}" 2>/dev/null && pwd -P)/${resolved##*/}
+    if [ "${real#"$PWD"/}" = "$real" ]; then
+      printf 'A  %s -> %s, which resolves outside the repository\n' "$file" "$target"
+      continue
+    fi
     # [:alnum:] rather than a-z0-9: the product is written in French and teaches
     # Japanese, and an accented heading keeps its accents in the slug GitHub builds,
     # so stripping them here would report a link that resolves as one that does not.
     grep -hoE '^#{1,6} .*' "$resolved" | sed 's/^#\{1,6\} //' \
       | tr '[:upper:]' '[:lower:]' | sed 's/[^[:alnum:] -]//g; s/ /-/g' \
-      | grep -qxF "$anchor" || printf '  %s -> #%s\n' "$file" "$anchor"
+      | grep -qxF "$anchor" || printf 'A  %s -> #%s\n' "$file" "$anchor"
   done
 done)
+broken=$(printf '%s\n' "$links" | sed -n 's/^B //p')
+anchors=$(printf '%s\n' "$links" | sed -n 's/^A //p')
+[ -n "$broken" ] && report "Relative links that resolve to nothing:"$'\n'"$broken"$'\n'
 [ -n "$anchors" ] && report "Link anchors matching no heading in the file they point at:"$'\n'"$anchors"$'\n'
 
 # A document naming a file that is not there describes some other repository. Paths
