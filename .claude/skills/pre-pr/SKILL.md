@@ -45,10 +45,11 @@ and report independently. Pass each one the diff path and the task's plan or spe
 `requirement-check` needs the requirement more than it needs the diff, so give it the plan and the spec
 first and the diff path second, in that order.
 
-Add `docs-conformity` as a sixth **only when the documentation set has moved since it last read it**.
-A run that finds the set unchanged since the previous one pays for the same reading twice. When it does
-run, it reads the whole set rather than the diff, since a contradiction has two sides and only one of
-them is in the change.
+Add `docs-conformity` as a sixth **only when the branch touches markdown**, which
+`git diff --name-only <base>..HEAD | grep '\.md$'` answers. A branch that changed no document cannot
+have introduced a contradiction between documents, and reading the set again would pay for the same
+reading twice. When it does run it reads the whole set rather than the diff, since a contradiction has
+two sides and only one of them is in the change.
 
 They are defined in `.claude/agents/`. Do not restate their instructions here; if a lens needs
 changing, change the agent file so the change persists.
@@ -75,10 +76,9 @@ Once each finding has been fixed or dismissed, append one line per finding to
 `outcome` is `fixed` or `dismissed`, and a finding left without one refuses the merge, since a finding
 with no sort is a review that has not finished. A `dismissed` line carries a `reason` besides, and the
 merge is refused without it: a dismissal with nothing said cannot be told apart from a finding nobody
-answered. The commit hook writes its own findings with no `outcome` at all: those are disposed of by
-setting `outcome`, and `reason` with it on a dismissal, on the line that is already there. That is the
-only edit this log accepts; everything else about the file is append-only, its formatting included,
-since a line rewritten in passing is a record altered with nothing recording that it was.
+answered. Nothing writes to this log but this step, and it writes each finding already disposed of, so
+the file is append-only throughout, its formatting included: a line rewritten in passing is a record
+altered with nothing recording that it was.
 
 Unsorted findings are counted for the current branch only, so a line left waiting on another branch
 does not refuse this one. A detached head names no branch and the whole log answers instead, which is

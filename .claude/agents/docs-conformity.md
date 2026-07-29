@@ -1,6 +1,6 @@
 ---
 name: docs-conformity
-description: Checks a changed document against every other document and against the code, for claims that contradict each other. Run it from /pre-pr when the documentation set has moved since it last read it.
+description: Checks a changed document against every other document and against the code, for claims that contradict each other. Run it from /pre-pr when the branch touches markdown.
 tools: Read, Grep, Glob
 model: sonnet
 effort: high

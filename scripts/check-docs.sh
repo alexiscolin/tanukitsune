@@ -56,8 +56,8 @@ typography=$(LC_ALL=C grep -rn "${BANNED[@]}" --include='*.md' "${EXCLUDED[@]}" 
   | grep -v '^\./info/' \
   | grep -v '^\./scripts/' || true)
 
-# Named back in, as the conformity hook names it, because AGENTS.md holds it to the
-# same agreement as everything under docs/ while git never lists it. Naming it here
+# Named back in because AGENTS.md holds it to the same agreement as everything under
+# docs/ while git never lists it, being gitignored. Naming it here
 # is the difference between a rule it is held to and a rule it is checked against.
 described=info/workflow-explique.md
 if [ -f "$described" ]; then
@@ -98,11 +98,22 @@ anchors=$(markdown . | while IFS= read -r file; do
     | grep -vE '^(https?:|mailto:)' | while IFS= read -r target; do
     anchor=${target#*#}
     path=${target%%#*}
+    # A link is repository content, so the anchor is matched with -F and the target
+    # refused if it climbs: as a pattern, `#.*` matches the first heading of any file
+    # and satisfies the very check this performs, and `..` sends the scan outside the
+    # tree it is meant to be reading.
+    if [ "${target#*..}" != "$target" ]; then
+      printf '  %s -> %s, which climbs out of the tree\n' "$file" "$target"
+      continue
+    fi
     if [ -z "$path" ]; then resolved=$file; else resolved=$dir/$path; fi
     [ -f "$resolved" ] || continue
+    # [:alnum:] rather than a-z0-9: the product is written in French and teaches
+    # Japanese, and an accented heading keeps its accents in the slug GitHub builds,
+    # so stripping them here would report a link that resolves as one that does not.
     grep -hoE '^#{1,6} .*' "$resolved" | sed 's/^#\{1,6\} //' \
-      | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9 -]//g; s/ /-/g' \
-      | grep -qx "$anchor" || printf '  %s -> #%s\n' "$file" "$anchor"
+      | tr '[:upper:]' '[:lower:]' | sed 's/[^[:alnum:] -]//g; s/ /-/g' \
+      | grep -qxF "$anchor" || printf '  %s -> #%s\n' "$file" "$anchor"
   done
 done)
 [ -n "$anchors" ] && report "Link anchors matching no heading in the file they point at:"$'\n'"$anchors"$'\n'

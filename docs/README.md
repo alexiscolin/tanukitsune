@@ -59,7 +59,7 @@ considered. `decisions/` before proposing an architectural change.
 Agent configuration lives at the repository root: `AGENTS.md` is canonical and under 150 lines, and
 `CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: five reviewers
 with disjoint lenses, one of which reads intent rather than code, a sixth that reads documentation
-against itself and runs only when the digest of that set has moved since it last read it, the `pre-pr`
+against itself and runs only when the branch touches markdown, the `pre-pr`
 skill, and two hooks, neither of which calls a model: one blocking a turn ending on code that does not
 compile, and one refusing to open a pull request over code no lens has read. Alongside them, `review-log.jsonl`
 records what each lens found, whether it survived, and which range each pass read, which
@@ -81,9 +81,9 @@ matters most. Read and edit the plan by hand, then let a fresh-context reviewer 
 it.
 
 **4.3 Before every pull request.** Run `/pre-pr` yourself. It is deliberately not automatic: the skill
-declares `disable-model-invocation`, so an agent cannot trigger the skill. A commit runs the five code
-lenses on its own over the accumulated range, detached, and records what they found without disposing
-of it; the skill is what reads the finished slice whole. It runs the free gates, captures the diff once, spawns the
+declares `disable-model-invocation`, so an agent cannot trigger the skill, and nothing else spawns a
+reviewer. What makes running it unavoidable is the coverage gate, a required check that holds the merge
+until a pass is on record. It runs the free gates, captures the diff once, spawns the
 reviewers in parallel, synthesises, runs `/simplify`, and hands back by naming `/code-review`, which
 is marked so a model cannot invoke it.
 

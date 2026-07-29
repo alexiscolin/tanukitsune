@@ -1,7 +1,12 @@
 #!/bin/bash
 # Refuses a range of code that no review pass recorded reading, and a finding left
-# without a sort. Runs from the pre-PR hook and from the pull request job, so what
-# reports locally and what blocks a merge cannot drift apart.
+# without a sort. Runs from the pre-PR hook and from the pull request job, off one
+# script so the coverage verdict is decided once.
+#
+# The two can still differ on findings, and deliberately: the hook runs on a branch
+# and counts that branch's unsorted lines, the job runs on a detached head and counts
+# the whole log. The job is therefore the stricter of the two, never the looser, so
+# what it refuses the hook may have let through but never the reverse.
 #
 # Exit codes are distinct because the callers want different questions answered:
 #   0  every commit of code is covered and nothing is pending
@@ -77,9 +82,16 @@ while IFS=' ' read -r pass_base pass_head; do
 "
 done <<< "$(jq -rs 'map(select(.kind == "pass")) | .[] | "\(.base) \(.head)"' "$log" 2>/dev/null || true)"
 
-# Markdown answers to the conformity reviewer, and the log is how a pass records
-# itself, so a commit touching nothing else is one the lenses have no reason to read.
-exempt='\.md$|^\.claude/review-log\.jsonl$'
+# Prose under docs/ answers to the conformity reviewer, and the log is how a pass
+# records itself, so a commit touching nothing else is one the code lenses have no
+# reason to read.
+#
+# The instructions are not in that bargain, even though they are markdown too.
+# AGENTS.md, CLAUDE.md and everything under .claude/ tell a later session what it may
+# do and tell each lens what to look for, so exempting them would leave the one file
+# able to disarm a reviewer as the one file no reviewer has to see. Whether the
+# conformity reviewer ran is a judgement; whether these were read is not.
+exempt='^docs/.*\.md$|^README\.md$|^\.claude/review-log\.jsonl$'
 
 # One process per commit, asking git for paths by sha rather than parsing a stream
 # where a file named like a sha would read as a commit boundary.
@@ -87,9 +99,13 @@ uncovered=()
 while IFS= read -r commit; do
   [ -z "$commit" ] && continue
   case "$covered" in *"$commit"*) continue ;; esac
-  # --root, since a parentless commit otherwise reports no paths at all and would
-  # pass for one touching nothing, which is the one commit no pass has ever read.
-  [ -z "$(git diff-tree --root --no-commit-id --name-only -r "$commit" 2>/dev/null | grep -Ev "$exempt")" ] && continue
+  # --root and --cc, since diff-tree reports no path at all for a commit with no
+  # parent and none for a commit with two, so either would pass for one touching
+  # nothing. --cc rather than -m because it names what a merge introduces that is in
+  # neither parent, which is the conflict resolution: a clean merge carries no content
+  # of its own and has nothing to read, a resolved one carries lines that exist in no
+  # other commit of the range.
+  [ -z "$(git diff-tree --root --cc --no-commit-id --name-only -r "$commit" 2>/dev/null | grep -Ev "$exempt")" ] && continue
   uncovered+=("$commit")
 done <<< "$branch_commits"
 
@@ -104,7 +120,11 @@ if [ "${#uncovered[@]}" -gt 0 ]; then
   # the sentence explaining it and leave neither legible.
   printf 'No review pass has read %s commit(s) on this branch:\n' "${#uncovered[@]}" >&2
   for commit in "${uncovered[@]}"; do
-    printf '  %s %s\n' "${commit:0:8}" "$(git log -1 --format=%s "$commit")" >&2
+    # Capped, because the pre-PR hook relays this on exit 2 and the tool hands it to
+    # the agent as the reason to keep working. A subject is author-controlled text on
+    # that channel, and the convention already holds it under 72 characters.
+    subject=$(git log -1 --format=%s "$commit")
+    printf '  %s %s\n' "${commit:0:8}" "${subject:0:72}" >&2
   done
   printf '\nThe merge is refused until they have been read. Run /pre-pr over\n' >&2
   printf '%s..%s, record the pass in %s, and push it.\n' "${from:0:8}" "${head:0:8}" "$log" >&2

@@ -127,8 +127,8 @@ it was the work.
 All six are run through `/pre-pr`, which declares `disable-model-invocation` so a model cannot trigger
 the skill itself. It reads the branch before the pull request, which is the grain `requirement-check`
 needs, since a slice judged before it is finished reports as missing the work its next commit carries.
-`docs-conformity` joins the other five only when the documentation set has moved since it last read
-it, an unchanged set meaning this exact state has already been read.
+`docs-conformity` joins the other five only when the branch touches markdown, which the branch diff
+answers: a branch that changed no document cannot have introduced a disagreement between documents.
 
 ## Measurement
 
@@ -161,6 +161,9 @@ Mechanically, so the rules do not depend on anyone remembering them.
 | Budget | `AGENTS.md` over 150 lines, which `docs/README.md` claims it stays under |
 | Map | a document under `docs/` absent from the table in `docs/README.md` |
 | Links | a relative link resolving to nothing |
+| Anchors | a link anchor matching no heading in the file it points at, or a target climbing out of the tree |
+| Paths | a path named inside backticks, carrying a directory, that is not there |
+| Hooks | a script in `.claude/hooks/` that `settings.json` does not register, or a registration whose file is absent |
 | Sources | an entry in `sources.md` with no link |
 | Debt | a decision record that pins a version without declaring a revisit trigger |
 
