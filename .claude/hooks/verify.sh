@@ -3,10 +3,6 @@
 # Exit 2 makes the agent keep working, with stderr as the reason it receives.
 # Runs pnpm gate, not pnpm verify: a hook killed on its timeout blocks nothing.
 
-# The nested reviewer holds Read, Grep and Glob, so it cannot have broken a build,
-# and a gate failure it cannot fix would become the report the parent reads.
-[ -n "${TANUKITSUNE_NESTED_REVIEW:-}" ] && exit 0
-
 input=$(cat)
 
 # Claude Code sets stop_hook_active when this hook already caused a block.

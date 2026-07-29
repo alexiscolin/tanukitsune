@@ -71,9 +71,9 @@ One task per session: one slice, about five files, one behaviour, one PR. Struct
 behavioural changes never share a commit.
 
 **A commit is a finished step, and the reader decides it is finished.** Verified means the gates pass
-and the reader has then said so, in that order. Ask before every commit and every push. The review
-lenses fire on each commit touching code, so a commit made as a save point buys five readings of half a
-slice, and a stream of one-line commits buries the few that carry the work.
+and the reader has then said so, in that order. Ask before every commit and every push. A stream of
+one-line commits buries the few that carry the work, and the review lenses read the branch rather than
+each commit, so a save point costs nothing but makes the history harder to read.
 
 Red before green. The failing test is committed before the implementation, and it is never edited to
 reach green. A test that has to change to pass means the plan was wrong, which is a re-plan and not an

@@ -1,16 +1,15 @@
 #!/bin/bash
 # Refuses a range of code that no review pass recorded reading, and a finding left
-# without a sort. Runs from the commit hook, the pre-PR hook and the pull request
-# job, so what reports locally and what blocks a merge cannot drift apart.
+# without a sort. Runs from the pre-PR hook and from the pull request job, so what
+# reports locally and what blocks a merge cannot drift apart.
 #
 # Exit codes are distinct because the callers want different questions answered:
 #   0  every commit of code is covered and nothing is pending
-#   1  code no pass has read, and stdout carries `range <base> <head>` for it
+#   1  code no pass has read
 #   2  a finding with no outcome
 #   3  the environment or the log cannot answer
-# The commit hook spawns the lenses on 1 alone, over the range it is handed here. A
-# pending finding is work for the reader, and a fresh pass over it would repeat at
-# every commit forever.
+# Nothing spawns a model from here. The lenses are run deliberately through /pre-pr,
+# and this is what refuses the merge when nobody has.
 #
 # Operates on the working directory rather than its own location, so the probe can
 # run it inside a throwaway repository.
@@ -30,10 +29,8 @@ base=$(git merge-base "$base_ref" HEAD 2>/dev/null) || {
 }
 
 # Every branch appends to one log, so a finding left unsorted on another branch is not
-# this branch's merge to refuse, and refusing it here would silence the commit lenses
-# on every branch at once rather than only blocking a merge. A detached head names no
-# branch, and the whole log is then the conservative answer for the job that blocks
-# the merge.
+# this branch's merge to refuse. A detached head names no branch, and the whole log is
+# then the conservative answer for the job that blocks the merge.
 branch=$(git branch --show-current 2>/dev/null || true)
 
 if [ -s "$log" ]; then
@@ -101,13 +98,16 @@ if [ "${#uncovered[@]}" -gt 0 ]; then
   # they have not read rather than at the branch point every time.
   oldest=${uncovered[$((${#uncovered[@]} - 1))]}
   from=$(git rev-parse "${oldest}^" 2>/dev/null) || from=$base
-  printf 'range %s %s\n' "$from" "$head"
 
+  # One stream, because the only reader left is a person: this refuses a merge from
+  # a required job, where a machine-readable line on stdout would interleave with
+  # the sentence explaining it and leave neither legible.
   printf 'No review pass has read %s commit(s) on this branch:\n' "${#uncovered[@]}" >&2
   for commit in "${uncovered[@]}"; do
     printf '  %s %s\n' "${commit:0:8}" "$(git log -1 --format=%s "$commit")" >&2
   done
-  printf '\nRun /pre-pr over %s..%s, then record the pass in %s.\n' "${from:0:8}" "${head:0:8}" "$log" >&2
+  printf '\nThe merge is refused until they have been read. Run /pre-pr over\n' >&2
+  printf '%s..%s, record the pass in %s, and push it.\n' "${from:0:8}" "${head:0:8}" "$log" >&2
   exit 1
 fi
 

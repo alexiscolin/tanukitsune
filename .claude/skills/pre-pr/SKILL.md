@@ -46,10 +46,9 @@ and report independently. Pass each one the diff path and the task's plan or spe
 first and the diff path second, in that order.
 
 Add `docs-conformity` as a sixth **only when the documentation set has moved since it last read it**.
-The `Stop` hook writes the digest it reviewed to `.claude/.conformity-reviewed`; recompute that digest
-and compare. Equal means this exact state has already been read, and spawning the reviewer again pays
-for the same reading twice. Unequal, or no marker at all, means it runs, and it reads the whole set
-rather than the diff.
+A run that finds the set unchanged since the previous one pays for the same reading twice. When it does
+run, it reads the whole set rather than the diff, since a contradiction has two sides and only one of
+them is in the change.
 
 They are defined in `.claude/agents/`. Do not restate their instructions here; if a lens needs
 changing, change the agent file so the change persists.

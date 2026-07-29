@@ -7,7 +7,6 @@ coverage/
 .env.*
 !.env.example
 .claude/settings.local.json
-.claude/.conformity-reviewed
 CLAUDE.local.md
 .DS_Store
 *.tsbuildinfo
@@ -22,6 +21,3 @@ info/
 # Playwright output.
 test-results/
 playwright-report/
-.claude/.conformity-running
-.claude/.review-running
-.claude/.review-head

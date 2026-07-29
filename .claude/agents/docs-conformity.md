@@ -1,6 +1,6 @@
 ---
 name: docs-conformity
-description: Checks a changed document against every other document and against the code, for claims that contradict each other. Run it when the digest of the documentation set differs from the marker at .claude/.conformity-reviewed.
+description: Checks a changed document against every other document and against the code, for claims that contradict each other. Run it from /pre-pr when the documentation set has moved since it last read it.
 tools: Read, Grep, Glob
 model: sonnet
 effort: high

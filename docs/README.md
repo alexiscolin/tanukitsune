@@ -60,9 +60,8 @@ Agent configuration lives at the repository root: `AGENTS.md` is canonical and u
 `CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: five reviewers
 with disjoint lenses, one of which reads intent rather than code, a sixth that reads documentation
 against itself and runs only when the digest of that set has moved since it last read it, the `pre-pr`
-skill, and four hooks: one blocking a turn ending on code that does not compile, one running the
-conformity reviewer when that digest moves, one running the five code lenses when `HEAD` moves, and one
-refusing to open a pull request over code no lens has read. Alongside them, `review-log.jsonl`
+skill, and two hooks, neither of which calls a model: one blocking a turn ending on code that does not
+compile, and one refusing to open a pull request over code no lens has read. Alongside them, `review-log.jsonl`
 records what each lens found, whether it survived, and which range each pass read, which
 `scripts/review-stats.sh` reports and `scripts/check-review-coverage.sh` gates on.
 

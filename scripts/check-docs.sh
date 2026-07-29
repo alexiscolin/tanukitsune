@@ -89,6 +89,46 @@ broken=$(markdown . | while IFS= read -r file; do
 done)
 [ -n "$broken" ] && report "Relative links that resolve to nothing:"$'\n'"$broken"$'\n'
 
+# An anchor the target no longer carries still resolves, to the top of the file, so a
+# renamed section leaves every cross-reference to it pointing at nothing in silence.
+# The slug is GitHub's: lowercased, punctuation dropped, spaces hyphenated.
+anchors=$(markdown . | while IFS= read -r file; do
+  dir=$(dirname "$file")
+  grep -oE '\]\([^)]*#[^)]+\)' "$file" | sed 's/^](//;s/)$//' \
+    | grep -vE '^(https?:|mailto:)' | while IFS= read -r target; do
+    anchor=${target#*#}
+    path=${target%%#*}
+    if [ -z "$path" ]; then resolved=$file; else resolved=$dir/$path; fi
+    [ -f "$resolved" ] || continue
+    grep -hoE '^#{1,6} .*' "$resolved" | sed 's/^#\{1,6\} //' \
+      | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9 -]//g; s/ /-/g' \
+      | grep -qx "$anchor" || printf '  %s -> #%s\n' "$file" "$anchor"
+  done
+done)
+[ -n "$anchors" ] && report "Link anchors matching no heading in the file they point at:"$'\n'"$anchors"$'\n'
+
+# A document naming a file that is not there describes some other repository. Paths
+# are matched inside backticks and must carry a directory, so a bare filename in prose
+# is not mistaken for one.
+absent=$(grep -rhoE '`[A-Za-z0-9_./-]+\.(sh|ts|tsx|json|yml|jsonl)`' --include='*.md' "${EXCLUDED[@]}" . \
+  | tr -d '`' | sort -u | while IFS= read -r path; do
+    [ "${path#*/}" = "$path" ] && continue
+    [ -e "$path" ] || printf '  %s\n' "$path"
+  done)
+[ -n "$absent" ] && report "Paths the documentation names that do not exist:"$'\n'"$absent"$'\n'
+
+# A hook file nothing registers runs never; a registration naming a file that is gone
+# runs nothing and says nothing. Both read as a guard that is in place.
+if [ -f .claude/settings.json ] && command -v jq >/dev/null 2>&1; then
+  registered=$(jq -r '[.hooks // {} | .[][]? | .hooks[]? | .args[]?] | .[]' .claude/settings.json 2>/dev/null \
+    | grep -oE '[^/]+\.sh$' | sort -u)
+  present=$(ls .claude/hooks/*.sh 2>/dev/null | while IFS= read -r f; do basename "$f"; done | sort -u)
+  orphans=$(comm -23 <(printf '%s\n' "$present") <(printf '%s\n' "$registered") | grep -v '^$' || true)
+  ghosts=$(comm -13 <(printf '%s\n' "$present") <(printf '%s\n' "$registered") | grep -v '^$' || true)
+  [ -n "$orphans" ] && report "Hook scripts nothing in settings.json registers:"$'\n'"$orphans"$'\n'
+  [ -n "$ghosts" ] && report "Hooks settings.json registers that are not in .claude/hooks:"$'\n'"$ghosts"$'\n'
+fi
+
 # A claim with no link is a claim nobody checked.
 unlinked=$(awk 'BEGIN{RS="";FS="\n"} /^\*\*/ && !/http/ && !/^\*\*What this is/ {print "  " $1}' docs/sources.md)
 [ -n "$unlinked" ] && report "Entries in sources.md with no source:"$'\n'"$unlinked"$'\n'

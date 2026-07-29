@@ -4,27 +4,28 @@
 what it costs. It carries no argument. Every reason a mechanism is shaped the way it is lives in
 [`workflow.md`](workflow.md), and the two do not repeat each other.
 
-The governing rule, argued there: deterministic first, cheapest first, and the probabilistic layer
-never blocks a merge on its own judgement except where nothing deterministic can see the problem.
+The governing rule everything below arranges itself around is stated and argued in
+[`workflow.md`](workflow.md).
 
 ## The layers, in cost order
 
 | Layer | Runs | Cost | Blocks |
 |---|---|---|---|
 | `verify.sh`, the compile hook | end of every turn | zero tokens | the turn, once |
-| `docs-conformity.sh`, the documentation hook | end of a turn where markdown moved | one Sonnet pass per documentation state | the turn, once |
 | `pnpm verify` | before a pull request, and in CI | zero tokens | the merge |
-| `code-review.sh`, the commit hook | a commit whose accumulated range touches anything but markdown | one nested session and five reviewers on the subscription | the loop, once |
 | Five reviewers through `/pre-pr`, six when the documentation set has moved | when a human asks | subscription | their findings are advisory, their pass record is not |
-| `check-review-coverage.sh`, the coverage gate | every commit of code, `gh pr create`, and every pull request | zero tokens | nothing at the commit, where it only reports; the pull request, and the merge |
+| `check-review-coverage.sh`, the coverage gate | `gh pr create`, and every pull request | zero tokens | the pull request, and the merge |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
 
-**No model runs in CI, and that is a cost decision with a stated consequence.** The documentation
-reviewer would have read the same set the `Stop` hook had already read minutes earlier, at a metered
-price, so it runs once, locally, where the subscription already covers it. What CI gates is therefore
-entirely deterministic, which still includes `check:docs`: the mechanical documentation rules run at
-merge inside `pnpm verify`. Only the semantic reading, the part no script can perform, depends on a
-turn having happened on a machine with the hook installed.
+**No model runs in CI, and no model runs on its own anywhere.** A reviewer in CI would be metered for
+a reading the subscription already covers locally, so every model pass goes through `/pre-pr`, once,
+when someone asks for it. What CI gates is therefore entirely deterministic, which still includes
+`check:docs`: the mechanical documentation rules run at merge inside `pnpm verify`.
+
+What keeps the semantic reading from being optional is the coverage gate rather than a hook. It runs
+as a required check, so a branch reaches the merge button with a pass on record or it does not reach
+it. The consequence that remains is that a pass is a record somebody wrote, not a proof a model ran:
+the gate refuses a merge nobody reviewed, and cannot refuse one somebody only claimed to.
 
 ## The commands
 
@@ -47,60 +48,22 @@ browser and a database.
 | `knip` | knip | unused exports, files and dependencies |
 | `dupes` | jscpd | literal copy-paste, 70 tokens and 8 lines at weak mode |
 
-## The four hooks
+## The two hooks
 
-All four are registered in `.claude/settings.json`. Two fire on `Stop`, when the agent finishes a turn;
-one fires on `PostToolUse`, after a shell command; one on `PreToolUse`, before one. Exit code 2 is the
-only code the tool treats as a refusal; exit 1 is ignored.
+Both are registered in `.claude/settings.json`, and neither calls a model. One fires on `Stop`, when
+the agent finishes a turn; the other on `PreToolUse`, before a shell command. Exit code 2 is the only
+code the tool treats as a refusal; exit 1 is ignored.
+
+A hook is a place for a check that is instant and free. Nothing that spends a model pass is triggered
+from one, because a trigger nobody chose spends without a budget: an event as ordinary as `HEAD`
+moving would arm a nested session and five reviewers, and two such hooks can fire at once over the
+same change. The passes that cost money are run deliberately through `/pre-pr`, once per pull request
+rather than once per commit, and the coverage gate is what makes running them unavoidable.
 
 **`.claude/hooks/verify.sh`** runs `pnpm gate` and refuses the end of the turn when it fails. It reads
 the `stop_hook_active` field the tool places in its own JSON input and exits when that field is set,
 since a hook that blocks without reading it wedges the session shut. The consequence is that the
 guarantee is one forced continuation, not a loop until compliance.
-
-**`.claude/hooks/docs-conformity.sh`** digests the content of every `.md` file describing this system,
-which is every tracked one except the two human-facing documents under `docs/`, plus
-`info/workflow-explique.md` added back by name because it describes the system rather than the person
-and git never lists it. Tracked only, because a file nobody has reviewed would otherwise reach a model
-whose output lands in the agent's instruction channel. It compares that digest to a gitignored marker at
-`.claude/.conformity-reviewed`. When the two differ it reads the set with the `docs-conformity`
-reviewer and records the state it reviewed. It is registered with `asyncRewake`, so it runs detached
-and wakes the agent only when it has findings.
-
-Running detached means a document can move while the pass is reading it, so it digests the set a second
-time when it reports and says so when the two differ. That marks the report as describing a state that
-no longer exists, rather than leaving each claim to be found stale one at a time. The pass is kept
-either way: discarding it would throw a full reading of the set away every time a document is touched
-during it, which in a session that edits documentation is most passes.
-
-Four guards, each against a different failure:
-
-| Guard | Stops |
-|---|---|
-| the content digest | a model pass on every turn rather than on every documentation state |
-| `mkdir` on `.claude/.conformity-running`, atomic, holding the pid | a second pass starting on a state the first is still reading, since the marker is only written minutes later when that first pass returns. A lock whose pid is gone is a corpse and is cleared: a pass killed on the hook timeout never runs its trap, and the lock it leaves would otherwise disable the reviewer permanently and in silence |
-| `TANUKITSUNE_NESTED_REVIEW`, an exported variable | the nested non-interactive session running this same hook again, which `stop_hook_active` cannot prevent because it is scoped to one process. One name for both nested sessions, since `verify.sh` has to recognise either of them and two names would drift |
-| the marker written on every completed pass, findings or none | a standing contradiction costing a full reading of the set at every turn end, to repeat a report already delivered |
-
-**`.claude/hooks/code-review.sh`** fires on `PostToolUse` when `HEAD` has moved since the previous
-shell call, asks `scripts/check-review-coverage.sh` what is still unread, and runs the five code lenses
-over it in a nested session. The range is the one accumulated since the lenses last ran, not the last
-commit alone, and markdown is excluded because `docs-conformity` owns it. Why the commit rather than a
-turn boundary, and why accumulated: [`workflow.md`](workflow.md).
-
-It answers the coverage question by calling the same script the two gates call, rather than deciding it
-a second way, so a range this hook stays quiet about cannot be one the merge refuses.
-
-It carries the same four guards as the documentation hook, over `.claude/.review-running` and the
-range rather than the digest, and registers with `asyncRewake` so five lenses are not held inside a
-hook timeout. Two conditions are its own. Output that does not parse as the expected JSON records no
-pass, since marking a range read on the strength of an unreadable answer is the failure this hook
-exists to remove. And findings are written without an outcome, so detection is automatic while
-disposal stays a decision the gates keep demanding.
-
-One nested session rather than five: a single lock, a single recursion guard, and the five lenses share
-one reading of the diff instead of each fetching it. They still run as separate agents inside it, since
-disjoint fresh contexts are the whole reason there are five.
 
 **`.claude/hooks/pre-pr-gate.sh`** fires on `PreToolUse` when the command names `gh pr create`, and
 runs `scripts/check-review-coverage.sh`. A range of code no pass has recorded reading, or a finding
@@ -110,9 +73,9 @@ through to the pull request job, which runs the same script and refuses the merg
 
 ## The coverage gate
 
-The five lenses are demanded by a hook and spawned by a human, so whether they ran is a fact about a
-branch rather than a property of the tooling. `scripts/check-review-coverage.sh` decides that fact, and
-it calls no model.
+The five lenses are spawned by a human, so whether they ran is a fact about a branch rather than a
+property of the tooling. `scripts/check-review-coverage.sh` decides that fact, it calls no model, and
+it is the only thing standing between unread code and the merge button.
 
 It walks every commit between the merge base and `HEAD`, skips those touching nothing but markdown and
 the review log itself, and requires each of the rest to fall inside a range some pass recorded. Ranges
@@ -123,11 +86,9 @@ Skipping the log is what makes the gate satisfiable at all: recording a pass is 
 gate that counted it would refuse every branch it had just approved.
 
 Unsorted findings are counted for the current branch only. One log serves every branch, so a finding
-left waiting elsewhere is not this branch's merge to refuse, and refusing it here would do more than
-block a merge: the commit hook reads any verdict but "unread code" as nothing to spawn over, so a
-single stale line would silence the five lenses everywhere at once. A detached head names no branch,
-and the whole log answers instead, which is the state the pull request job runs in and the reading that
-has to hold.
+left waiting elsewhere is not this branch's merge to refuse, and counting it would let one stale line
+refuse every branch at once. A detached head names no branch, and the whole log answers instead, which
+is the state the pull request job runs in and the reading that has to hold.
 
 A pass naming a sha that does not resolve, after a rebase or from a template nobody filled in, counts
 as no pass at all rather than as a pass covering half a range. Both halves are checked, since trusting
@@ -163,12 +124,11 @@ in that order, since reading the diff first anchors it on what exists and it the
 requirement that fits. The other four code lenses judge how the work was done; this one judges whether
 it was the work.
 
-The first five are run by the commit hook and by `/pre-pr`, which declares `disable-model-invocation`
-so a model cannot trigger the skill itself. The hook reads the accumulated range at each commit; the
-skill reads the whole branch before the pull request, which is the grain `requirement-check` needs,
-since a slice judged before it is finished reports as missing the work its next commit carries. `docs-conformity` joins them only when the digest of the documentation set differs from the
-marker at `.claude/.conformity-reviewed`, since an equal digest means this exact state has already been
-read. It is also the only one that runs unprompted, from the hook above, on the same condition.
+All six are run through `/pre-pr`, which declares `disable-model-invocation` so a model cannot trigger
+the skill itself. It reads the branch before the pull request, which is the grain `requirement-check`
+needs, since a slice judged before it is finished reports as missing the work its next commit carries.
+`docs-conformity` joins the other five only when the documentation set has moved since it last read
+it, an unchanged set meaning this exact state has already been read.
 
 ## Measurement
 
@@ -176,8 +136,8 @@ read. It is also the only one that runs unprompted, from the hook above, on the 
 and whether it was fixed or dismissed. One per pass, carrying `kind` set to `pass` and the range that
 pass read, written whether or not anything was found.
 
-A finding the commit hook wrote carries no outcome, and acquires one by having the fields set on the
-line already in the log. `fixed` stands alone. `dismissed` carries a `reason`, and the gate refuses
+A finding is recorded without an outcome, and acquires one by having the fields set on the line
+already in the log. `fixed` stands alone. `dismissed` carries a `reason`, and the gate refuses
 without it, since a dismissal with nothing said is the one disposal a log cannot tell apart from a
 finding nobody answered. Both fields are set in that one edit, which is the only edit this file accepts.
 Every other write appends, formatting included: a line rewritten in passing is a record altered with
@@ -232,16 +192,20 @@ needs no secret, and costs nothing beyond runner minutes.
 `e2e` runs against a server Postgres rather than the file-backed local one, so the driver that runs in
 production is the driver a merge is gated on.
 
+All four are required checks on `main`, and administrators are not exempt, so a red job is a closed
+merge button rather than a warning. `review` among them is what makes the model passes unavoidable
+without any of them running unprompted.
+
 ## What is not covered
 
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
-- The five code lenses are demanded at each commit of code, but the demand is one forced continuation, not a loop until they have run.
-- No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but a change
-  pushed from a machine without the `Stop` hook reaches a pull request whose documents no model has
-  read against each other.
+- A pass line is a record somebody wrote, not evidence a model ran. The gate refuses a merge nobody
+  reviewed; it cannot refuse one somebody only claimed to have reviewed.
+- No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the
+  documents were read against each other depends on `docs-conformity` having been asked for.
 - Three of the five boundary rules have no probe.
-- Commits made directly on `main` are reviewed by nothing: the commit hook computes its range from the
-  merge base, which on `main` collapses to `HEAD`.
+- Commits made directly on `main` are reviewed by nothing: the gate computes its range from the merge
+  base, which on `main` collapses to `HEAD`.
 - No dependency advisory check runs anywhere, although `security-check` delegates advisories to one.
 - A path matching no route segment at all, such as `/foo/bar`, renders the framework's implicit root
   layout, which owns no `<html lang>` and pulls no stylesheet, so it fails WCAG 2.0 A on
