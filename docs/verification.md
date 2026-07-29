@@ -14,6 +14,7 @@ never blocks a merge on its own judgement except where nothing deterministic can
 | `verify.sh`, the compile hook | end of every turn | zero tokens | the turn, once |
 | `docs-conformity.sh`, the documentation hook | end of a turn where markdown moved | one Sonnet pass per documentation state | the turn, once |
 | `pnpm verify` | before a pull request, and in CI | zero tokens | the merge |
+| `code-review.sh`, the commit hook | a commit whose accumulated range touches anything but markdown | five reviewers on the subscription | the loop, once |
 | Five reviewers through `/pre-pr`, six when the documentation set has moved | when a human asks | subscription | nothing, advisory |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
 
@@ -44,10 +45,11 @@ browser and a database.
 | `knip` | knip | unused exports, files and dependencies |
 | `dupes` | jscpd | literal copy-paste, 70 tokens and 8 lines at weak mode |
 
-## The two Stop hooks
+## The three hooks
 
-Both are registered in `.claude/settings.json` and run when the agent finishes a turn. Exit code 2 is
-the only code the tool treats as a refusal; exit 1 is ignored.
+All three are registered in `.claude/settings.json`. Two fire on `Stop`, when the agent finishes a
+turn; the third fires on `PostToolUse`, after a shell command. Exit code 2 is the only code the tool
+treats as a refusal; exit 1 is ignored.
 
 **`.claude/hooks/verify.sh`** runs `pnpm gate` and refuses the end of the turn when it fails. It reads
 the `stop_hook_active` field the tool places in its own JSON input and exits when that field is set,
@@ -71,6 +73,16 @@ Four guards, each against a different failure:
 | `TANUKITSUNE_CONFORMITY_RUNNING`, an exported variable | the nested non-interactive session running this same hook again, which `stop_hook_active` cannot prevent because it is scoped to one process |
 | the digest taken again after the reading | a pass reporting findings about text the agent edited while it read, which is dropped instead |
 
+**`.claude/hooks/code-review.sh`** fires on `PostToolUse` when the shell command contained `git commit`,
+and demands the five code lenses over the range between `.claude/.review-reviewed` and `HEAD`. Three
+things shape it. The trigger is the commit rather than a turn boundary, because a commit is a
+deliberate unit and a turn is not. The range is accumulated rather than per-commit, since a red test
+read without its implementation is a reading of half a slice. And markdown is excluded, because
+`docs-conformity` already owns it, which is a rule with no path list to drift out of date.
+
+It demands rather than spawns: `disable-model-invocation` marks the `/pre-pr` skill, not the agents, so
+a hook can require the reviewers and the agent can run them.
+
 ## The six reviewers
 
 Defined in `.claude/agents/`, each restricted to `Read`, `Grep` and `Glob` so they report rather than
@@ -90,8 +102,8 @@ in that order, since reading the diff first anchors it on what exists and it the
 requirement that fits. The other four code lenses judge how the work was done; this one judges whether
 it was the work.
 
-The first five are spawned by `/pre-pr`, which declares `disable-model-invocation` so a model cannot
-trigger it. `docs-conformity` joins them only when the digest of the documentation set differs from the
+The first five are demanded by the commit hook and spawned by `/pre-pr`, which declares
+`disable-model-invocation` so a model cannot trigger the skill itself. `docs-conformity` joins them only when the digest of the documentation set differs from the
 marker at `.claude/.conformity-reviewed`, since an equal digest means this exact state has already been
 read. It is also the only one that runs unprompted, from the hook above, on the same condition.
 
@@ -147,7 +159,7 @@ production is the driver a merge is gated on.
 ## What is not covered
 
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
-- Five of the six reviewers run only when a human asks.
+- The five code lenses are demanded at each commit of code, but the demand is one forced continuation, not a loop until they have run.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but a change
   pushed from a machine without the `Stop` hook reaches a pull request whose documents no model has
   read against each other.

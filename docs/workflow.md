@@ -42,7 +42,7 @@ nothing; what works is fresh contexts with disjoint lenses.
 
 So `/pre-pr` runs the free gates first, captures the diff once, and spawns the reviewers in parallel.
 Which lenses exist and which model each one runs on is in
-[`verification.md`](verification.md#the-five-reviewers). What matters here is the bar they share: a
+[`verification.md`](verification.md#the-six-reviewers). What matters here is the bar they share: a
 claim about behaviour needs a `file:line` citation, an inference from a name is not a finding, and
 finding nothing is a valid result stated in one line. A reviewer asked to find problems will find them
 whether or not they exist, and chasing those produces exactly the defensive code this project avoids.
@@ -86,13 +86,13 @@ are the ones. If a file cannot be explained without rereading it, it is rewritte
 
 ## 5. Hooks
 
-`Stop` and `SubagentStop` are the ones that matter for solo work. `TeammateIdle` only fires inside an
-agent team.
+`Stop`, `SubagentStop` and `PostToolUse` are the ones that matter for solo work. `TeammateIdle` only
+fires inside an agent team.
 
-The Stop hook is the highest return in this method: thirty minutes of setup, zero tokens, and it makes
-it impossible for an agent to declare done on code that does not compile. What the two registered hooks
-run, and the four guards that let one of them call a model, are in
-[`verification.md`](verification.md#the-two-stop-hooks). The arguments behind them are here.
+The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
+makes it impossible for an agent to declare done on code that does not compile. What the three
+registered hooks run, and the guards that let two of them call a model, are in
+[`verification.md`](verification.md#the-three-hooks). The arguments behind them are here.
 
 **The fast gate is what a hook can afford, and that decides its contents.** `pnpm gate` runs from a
 hook because it needs no database and finishes in seconds. `pnpm verify` does not, because a hook
@@ -117,6 +117,16 @@ is the whole of that. What `AGENTS.md` adds is a matter of judgement rather than
 there is read unprompted, and nothing there is evidence for a claim about this repository. A hook
 refusing every path that names the directory would enforce a stricter rule than the one wanted, and
 would refuse a search pattern that merely mentions it.
+
+**The commit is a better trigger for reviewing code than the end of a turn.** A turn ends wherever the
+conversation happens to pause; a commit is a unit somebody decided was coherent. So the review lenses
+hang off `PostToolUse` rather than `Stop`, and they read the range accumulated since they last ran
+rather than one commit, because the failing test committed before the implementation is half a slice
+and reading it alone produces findings about work that has not happened yet.
+
+The cost is the tradeoff that was taken knowingly: five lenses per code commit rather than five per
+pull request. What it buys is that reaching a pull request with unreviewed code stops depending on
+anyone remembering.
 
 Keep the trigger deterministic even where the work is not. A hook running a linter is free and catches
 most agent regressions. A hook running a model is neither free nor bounded, so it earns its place only
