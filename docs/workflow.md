@@ -100,6 +100,13 @@ killed on its timeout blocks nothing while appearing to guard everything. `check
 one rather than only in the slow one because a documentation-only session never reaches the slow one,
 which is exactly the session where documentation rules are the only rules that apply.
 
+**`pnpm test` stays out of the gate for a different reason, and speed is not it.** The unit suite is
+pure and finishes in well under a second, so it would fit. It is excluded because the failing test is
+committed before the implementation: a hook running the suite would refuse the end of every turn for
+the whole of the red phase, which is a deliberate and correct state. That exclusion expires on its own
+terms rather than on a timing one, since the first test needing a database could not run from a hook
+anyway.
+
 **Catching it at the turn rather than at the pull request is the whole point.** A contradiction found
 at review time lives in documents belonging to some other slice, so fixing it means a diff that grew
 past what the plan described, and leaving it means shipping it. Found in the turn that created it, it
