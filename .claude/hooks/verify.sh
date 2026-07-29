@@ -3,10 +3,8 @@
 # Exit 2 makes the agent keep working, with stderr as the reason it receives.
 # Runs pnpm gate, not pnpm verify: a hook killed on its timeout blocks nothing.
 
-# The documentation reviewer runs as a nested non-interactive session that loads
-# this configuration. It holds Read, Grep and Glob, so it cannot have broken a
-# build, and a gate failure it cannot fix would consume its one continuation and
-# turn its reply into the report the parent then reads as a finding.
+# The nested reviewer holds Read, Grep and Glob, so it cannot have broken a build,
+# and a gate failure it cannot fix would become the report the parent reads.
 [ -n "${TANUKITSUNE_CONFORMITY_RUNNING:-}" ] && exit 0
 
 input=$(cat)
@@ -22,9 +20,8 @@ cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
 [ -f package.json ] || exit 0
 command -v pnpm >/dev/null 2>&1 || exit 0
 
-# Capture output rather than merging it into stdout: exit 2 discards stdout and
-# shows only stderr to the agent, so merging would block the turn while
-# withholding the errors needed to unblock it.
+# exit 2 discards stdout, so merging would block the turn while withholding the
+# errors needed to unblock it.
 if ! out=$(pnpm gate 2>&1); then
   printf 'Verification failed. Fix this before concluding.\n\n%s\n' "$out" >&2
   exit 2
