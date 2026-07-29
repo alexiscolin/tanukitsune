@@ -50,7 +50,9 @@ scan "$positioning" "Documentation addresses a reader evaluating the author rath
 scan "$learning"    "Documentation frames itself as study material rather than an authored standard:"
 
 # Matched on UTF-8 bytes under LC_ALL=C, because BSD grep has no \x{} escapes.
-typography=$(LC_ALL=C grep -rn -e '—' -e $'\xf0\x9f' -e $'\xe2\x9c' -e $'\xe2\x9d' --include='*.md' "${EXCLUDED[@]}" . \
+BANNED=(-e '—' -e $'\xf0\x9f' -e $'\xe2\x9c' -e $'\xe2\x9d')
+
+typography=$(LC_ALL=C grep -rn "${BANNED[@]}" --include='*.md' "${EXCLUDED[@]}" . \
   | grep -v '^\./info/' \
   | grep -v '^\./scripts/' || true)
 
@@ -59,7 +61,7 @@ typography=$(LC_ALL=C grep -rn -e '—' -e $'\xf0\x9f' -e $'\xe2\x9c' -e $'\xe2\
 # is the difference between a rule it is held to and a rule it is checked against.
 described=info/workflow-explique.md
 if [ -f "$described" ]; then
-  in_described=$(LC_ALL=C grep -n -e '—' -e $'\xf0\x9f' -e $'\xe2\x9c' -e $'\xe2\x9d' "$described" \
+  in_described=$(LC_ALL=C grep -n "${BANNED[@]}" "$described" \
     | sed "s|^|$described:|" || true)
   [ -n "$in_described" ] && typography=$(printf '%s\n%s' "$typography" "$in_described")
 fi

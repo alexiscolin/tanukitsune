@@ -77,8 +77,13 @@ Once each finding has been fixed or dismissed, append one line per finding to
 with no sort is a review that has not finished. A `dismissed` line carries a `reason` besides, and the
 merge is refused without it: a dismissal with nothing said cannot be told apart from a finding nobody
 answered. The commit hook writes its own findings with no `outcome` at all: those are disposed of by
-setting the fields on the line that is already there, which is the only edit this log accepts.
-Everything else about it is append-only.
+setting `outcome`, and `reason` with it on a dismissal, on the line that is already there. That is the
+only edit this log accepts; everything else about the file is append-only, its formatting included,
+since a line rewritten in passing is a record altered with nothing recording that it was.
+
+Unsorted findings are counted for the current branch only, so a line left waiting on another branch
+does not refuse this one. A detached head names no branch and the whole log answers instead, which is
+what the pull request job reads.
 
 Then append one pass line, whether or not anything was found, naming the range the lenses read:
 

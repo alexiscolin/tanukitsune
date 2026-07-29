@@ -113,6 +113,34 @@ head=$(git -C "$repo" rev-parse HEAD)
 } > "$repo/.claude/review-log.jsonl"
 expect 'a dismissal carrying its reason' "$repo" 0
 
+# One log serves every branch, so a line left unsorted elsewhere is not this branch's
+# merge to refuse. Refusing it here would also silence the commit lenses everywhere at
+# once, the hook reading any code but 1 as nothing to spawn over.
+repo=$(scaffold pending-elsewhere)
+commit_file "$repo" src/a.ts
+base=$(git -C "$repo" rev-parse main)
+head=$(git -C "$repo" rev-parse HEAD)
+{
+  printf '{"date":"2026-07-29","branch":"branch","kind":"pass","base":"%s","head":"%s"}\n' "$base" "$head"
+  printf '{"date":"2026-07-29","branch":"other","reviewer":"security-check","file":"src/z.ts","line":1}\n'
+  printf '{"date":"2026-07-29","branch":"other","reviewer":"security-check","file":"src/z.ts","line":2,"outcome":"dismissed"}\n'
+} > "$repo/.claude/review-log.jsonl"
+expect 'a finding and an unreasoned dismissal on another branch' "$repo" 0
+
+# A detached head names no branch, so the scope cannot be resolved and the whole log
+# answers instead. This is the state the pull request job runs in, where the strict
+# reading is the one that must hold.
+repo=$(scaffold pending-detached)
+commit_file "$repo" src/a.ts
+base=$(git -C "$repo" rev-parse main)
+head=$(git -C "$repo" rev-parse HEAD)
+{
+  printf '{"date":"2026-07-29","branch":"branch","kind":"pass","base":"%s","head":"%s"}\n' "$base" "$head"
+  printf '{"date":"2026-07-29","branch":"other","reviewer":"security-check","file":"src/z.ts","line":1}\n'
+} > "$repo/.claude/review-log.jsonl"
+git -C "$repo" checkout -q --detach
+expect 'a finding on another branch, read from a detached head' "$repo" 2
+
 # A pass naming a sha that does not resolve is no pass. Skipping only the half that
 # fails would let a template nobody filled in cover the whole branch.
 repo=$(scaffold unresolvable-base)

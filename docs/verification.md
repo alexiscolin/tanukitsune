@@ -67,6 +67,12 @@ whose output lands in the agent's instruction channel. It compares that digest t
 reviewer and records the state it reviewed. It is registered with `asyncRewake`, so it runs detached
 and wakes the agent only when it has findings.
 
+Running detached means a document can move while the pass is reading it, so it digests the set a second
+time when it reports and says so when the two differ. That marks the report as describing a state that
+no longer exists, rather than leaving each claim to be found stale one at a time. The pass is kept
+either way: discarding it would throw a full reading of the set away every time a document is touched
+during it, which in a session that edits documentation is most passes.
+
 Four guards, each against a different failure:
 
 | Guard | Stops |
@@ -116,6 +122,13 @@ from the head that pass read and not from where that reading started.
 Skipping the log is what makes the gate satisfiable at all: recording a pass is itself a commit, so a
 gate that counted it would refuse every branch it had just approved.
 
+Unsorted findings are counted for the current branch only. One log serves every branch, so a finding
+left waiting elsewhere is not this branch's merge to refuse, and refusing it here would do more than
+block a merge: the commit hook reads any verdict but "unread code" as nothing to spawn over, so a
+single stale line would silence the five lenses everywhere at once. A detached head names no branch,
+and the whole log answers instead, which is the state the pull request job runs in and the reading that
+has to hold.
+
 A pass naming a sha that does not resolve, after a rebase or from a template nobody filled in, counts
 as no pass at all rather than as a pass covering half a range. Both halves are checked, since trusting
 the head alone would let an unresolved base cover the whole branch.
@@ -163,10 +176,12 @@ read. It is also the only one that runs unprompted, from the hook above, on the 
 and whether it was fixed or dismissed. One per pass, carrying `kind` set to `pass` and the range that
 pass read, written whether or not anything was found.
 
-A finding the commit hook wrote carries no outcome, and acquires one by having the field set on the
-line already in the log. That is the only edit this file accepts; every other write appends. `fixed`
-stands alone. `dismissed` carries a `reason`, and the gate refuses without it, since a dismissal with
-nothing said is the one disposal a log cannot tell apart from a finding nobody answered.
+A finding the commit hook wrote carries no outcome, and acquires one by having the fields set on the
+line already in the log. `fixed` stands alone. `dismissed` carries a `reason`, and the gate refuses
+without it, since a dismissal with nothing said is the one disposal a log cannot tell apart from a
+finding nobody answered. Both fields are set in that one edit, which is the only edit this file accepts.
+Every other write appends, formatting included: a line rewritten in passing is a record altered with
+nothing recording that it was.
 
 `scripts/review-stats.sh` reports what each lens yields and how much of it survives, and the pass lines
 are its denominator: findings alone cannot separate a lens that met clean code from one that ran once

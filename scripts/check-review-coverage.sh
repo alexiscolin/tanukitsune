@@ -29,8 +29,18 @@ base=$(git merge-base "$base_ref" HEAD 2>/dev/null) || {
   exit 3
 }
 
+# Every branch appends to one log, so a finding left unsorted on another branch is not
+# this branch's merge to refuse, and refusing it here would silence the commit lenses
+# on every branch at once rather than only blocking a merge. A detached head names no
+# branch, and the whole log is then the conservative answer for the job that blocks
+# the merge.
+branch=$(git branch --show-current 2>/dev/null || true)
+
 if [ -s "$log" ]; then
-  pending=$(jq -rs 'map(select((.kind // "finding") != "pass" and (.outcome // "") == "")) | length' "$log" 2>/dev/null) || {
+  pending=$(jq -rs --arg branch "$branch" '
+    map(select(($branch == "" or .branch == $branch)
+               and (.kind // "finding") != "pass"
+               and (.outcome // "") == "")) | length' "$log" 2>/dev/null) || {
     printf 'The review log is not readable as JSON lines: %s\n' "$log" >&2
     exit 3
   }
@@ -41,7 +51,10 @@ if [ -s "$log" ]; then
 
   # A dismissal without a stated reason is indistinguishable from a finding nobody
   # answered, which is the one disposal a log cannot tell apart from silence.
-  unreasoned=$(jq -rs 'map(select(.outcome == "dismissed" and (.reason // "") == "")) | length' "$log" 2>/dev/null || printf 0)
+  unreasoned=$(jq -rs --arg branch "$branch" '
+    map(select(($branch == "" or .branch == $branch)
+               and .outcome == "dismissed"
+               and (.reason // "") == "")) | length' "$log" 2>/dev/null || printf 0)
   if [ "$unreasoned" -gt 0 ]; then
     printf '%s dismissal(s) in %s carry no reason. A dismissal states why.\n' "$unreasoned" "$log" >&2
     exit 2
@@ -77,7 +90,9 @@ uncovered=()
 while IFS= read -r commit; do
   [ -z "$commit" ] && continue
   case "$covered" in *"$commit"*) continue ;; esac
-  [ -z "$(git diff-tree --no-commit-id --name-only -r "$commit" 2>/dev/null | grep -Ev "$exempt")" ] && continue
+  # --root, since a parentless commit otherwise reports no paths at all and would
+  # pass for one touching nothing, which is the one commit no pass has ever read.
+  [ -z "$(git diff-tree --root --no-commit-id --name-only -r "$commit" 2>/dev/null | grep -Ev "$exempt")" ] && continue
   uncovered+=("$commit")
 done <<< "$branch_commits"
 
