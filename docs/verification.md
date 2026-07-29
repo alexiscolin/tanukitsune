@@ -167,11 +167,12 @@ production is the driver a merge is gated on.
 - Commits made directly on `main` are reviewed by nothing: the commit hook computes its range from the
   merge base, which on `main` collapses to `HEAD`.
 - No dependency advisory check runs anywhere, although `security-check` delegates advisories to one.
-- A path outside the locale tree renders the framework's implicit root layout, which owns no
-  `<html lang>` and pulls no stylesheet, so it fails WCAG 2.0 A on `html-has-lang`. The axe audit does
-  not see it because it only visits paths inside the tree. Closing it needs a root layout owning
-  `<html>`, which `[locale]/layout.tsx` owns today in order to vary `lang` per locale, so it is a
-  restructure rather than a redirect.
+- A path matching no route segment at all, such as `/foo`, renders the framework's implicit root
+  layout, which owns no `<html lang>` and pulls no stylesheet, so it fails WCAG 2.0 A on
+  `html-has-lang`. `/de` is not that case: it matches `[locale]`, renders inside that layout and calls
+  `notFound()`, which is why the axe audit passes on it. Closing the real one needs a root layout
+  owning `<html>`, which `[locale]/layout.tsx` owns today in order to vary `lang` per locale, so it is
+  a restructure rather than a redirect.
 - Nothing measures the quality of a plan, which `workflow.md` names as where attention matters most.
 - The conformity reviewer reads the whole documentation set on every pass, so its cost grows with the
   documentation rather than with the change.

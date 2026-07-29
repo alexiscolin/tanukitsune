@@ -23,3 +23,4 @@
 {"date":"2026-07-29","branch":"feat/answer-input","reviewer":"performance-check","file":".claude/settings.json","line":53,"outcome":"fixed"}
 {"date":"2026-07-29","branch":"feat/answer-input","reviewer":"security-check","file":".claude/hooks/docs-conformity.sh","line":60,"outcome":"fixed"}
 {"date":"2026-07-29","branch":"feat/answer-input","reviewer":"docs-conformity","file":"AGENTS.md","line":14,"outcome":"fixed"}
+{"date":"2026-07-29","branch":"feat/answer-input","reviewer":"docs-conformity","file":"docs/verification.md","line":170,"outcome":"dismissed"}
