@@ -158,8 +158,9 @@ architecture decision records.
 
 This repository is built primarily with AI coding agents, and the method is part of the work.
 `AGENTS.md` carries the constraints a linter cannot express, four read-only review agents with
-disjoint lenses check every diff from a fresh context, and a hook makes it impossible to end a turn on
-code that does not compile.
+disjoint lenses check every diff from a fresh context, a fifth reads the documentation against itself
+whenever a diff touches it, and a hook makes it impossible to end a turn on code that does not
+compile.
 
 [`docs/workflow.md`](docs/workflow.md) describes that process: the per-task cycle, the four review
 lenses, and the conditions under which a session is discarded rather than continued.

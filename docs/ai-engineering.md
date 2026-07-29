@@ -53,8 +53,9 @@ forms part of the judge cache key so a bump invalidates cached verdicts, and is 
 suite. Version history, rollback and eval linkage, with no runtime dependency.
 
 **A version constant nobody bumps is worse than no version constant.** So a snapshot test hashes each
-prompt module's compiled text and fails when the hash changes without the version changing, and it runs
-inside `pnpm verify`. This one bites in v0.1 rather than later: `prompt_version` is a column on every
+prompt module's compiled text and fails when the hash changes without the version changing, and it
+lands inside `pnpm verify` in the same commit as the first prompt module. This one bites in v0.1
+rather than later: `prompt_version` is a column on every
 corpus row, the prompt is expected to change between the budgeted runs, and two runs sharing a version
 make the provenance requirement false while looking satisfied.
 

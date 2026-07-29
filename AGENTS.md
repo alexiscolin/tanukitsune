@@ -30,8 +30,8 @@ pnpm arch                  dependency-cruiser, plus a probe proving the rules fi
 pnpm knip                  unused exports, files and dependencies
 pnpm dupes                 jscpd, copy-paste ratchet
 pnpm check:docs            documentation discipline
-pnpm gate                  typecheck, lint, arch: seconds, needs no database
-pnpm verify                gate, build, test, knip, dupes, check:docs
+pnpm gate                  typecheck, lint, arch, check:docs: seconds, needs no database
+pnpm verify                gate, build, test, knip, dupes
 ```
 
 Run `pnpm verify` and show its output before saying work is done. Do not assert that something
@@ -40,7 +40,8 @@ passes.
 The `Stop` hook runs `pnpm gate`, not `pnpm verify`: the full suite needs a database and end-to-end
 runs, which do not fit inside a hook timeout, and a hook killed on timeout does not block anything. So
 the hook catches code that does not compile, and `pnpm verify` catches the rest, before the pull
-request and in CI.
+request and in CI. `check:docs` sits inside `gate` rather than only in `verify`, because a session that
+changes nothing but documentation would otherwise end without a single documentation rule running.
 
 ## Constraints a linter cannot catch
 

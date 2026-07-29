@@ -95,8 +95,9 @@ as a warning and agents ignore warnings while producing stale-closure bugs that 
 
 Then the volume limits, which almost nobody enables and which catch the real failure mode, an agent
 writing 300 lines instead of decomposing: `complexity` 15, `max-lines` 400, `max-lines-per-function`
-120, `max-depth` 4, `max-params` 4. Set them loose as tripwires, not as design guidance, and turn them
-off in test files.
+120, `max-depth` 4, `max-params` 4. Set them loose as tripwires, not as design guidance, and turn the
+two line-count limits off in test files, where a long table of cases is the point. The other three
+cost nothing to keep on.
 
 Plus `no-console` for debugging leftovers.
 

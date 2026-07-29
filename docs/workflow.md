@@ -17,7 +17,7 @@ The general engineering standard this derives from is not part of the project.
 6. One task is one vertical slice: about five files, one behaviour, one PR, finished before context
    passes half full.
 7. The agent shows evidence. It does not assert that something passes.
-8. Fresh-context review, section 4.
+8. Fresh-context review, section 2.
 9. Cleanup as its own commit: narration comments removed, single-use abstractions collapsed, dead
    exports deleted, naming unified.
 10. Structural and behavioural changes never share a commit.
@@ -45,6 +45,11 @@ to read-only tools so they report rather than "fix", each held to the same evide
 behaviour needs a `file:line` citation, an inference from a name is not a finding, and finding nothing
 is a valid result stated in one line.
 
+A fifth, documentation conformity, joins them when the diff touches markdown. `check-docs.sh` proves a
+link resolves and a count against `AGENTS.md` holds, and it cannot prove that two documents describing
+the same rule still agree. Nothing in `pnpm verify` can, which is why that one is a reviewer rather
+than a script.
+
 Three standing rules the reviews enforce and the gates back up:
 
 - **No duplication.** Before writing a helper, find the existing one. Rule of three governs
@@ -53,7 +58,8 @@ Three standing rules the reviews enforce and the gates back up:
 - **No silent regression.** A change that alters existing behaviour says so in the commit, or it was
   not intentional and gets reverted.
 
-`/simplify` and `/code-review` cannot be model-invoked reliably, so `/pre-pr` ends by naming them.
+`/pre-pr` runs `/simplify` itself. `/code-review` is marked so a model cannot invoke it, so `/pre-pr`
+ends by naming it rather than pretending it ran.
 
 ## 3. Stop conditions
 
@@ -81,10 +87,14 @@ it impossible for an agent to declare done on code that does not compile. Exit c
 back and the agent keeps working. It needs a recursion guard, since a hook launching a nested session
 would trigger its own hook forever.
 
-It runs `pnpm gate`, which is typecheck, lint and the boundary check, and deliberately not
-`pnpm verify`. The full suite needs a database and browser runs, which do not fit a hook timeout, and a
-hook killed on timeout blocks nothing while appearing to guard everything. The rest is caught by
+It runs `pnpm gate`, which is typecheck, lint, the boundary check and `check:docs`, and deliberately
+not `pnpm verify`. The full suite needs a database and browser runs, which do not fit a hook timeout,
+and a hook killed on timeout blocks nothing while appearing to guard everything. The rest is caught by
 `/pre-pr` and by CI, where there is time for it.
+
+`check:docs` is in the fast gate rather than only in the slow one because a documentation-only session
+never runs the slow one, which is exactly the session where the documentation rules are the only rules
+that apply.
 
 A `PreToolUse` hook refuses any read, write or shell command touching `info/`. The rule is in
 `AGENTS.md`, and a rule an agent can only remember is one it forgets on the fiftieth turn without

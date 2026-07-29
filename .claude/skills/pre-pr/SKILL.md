@@ -41,6 +41,10 @@ and report independently. Pass each one the diff path and the task's plan or spe
 - `security-check`, untrusted input, secrets, client boundary, authorisation
 - `performance-check`, N+1 queries, complexity, missing pagination, sequential awaits
 
+Add `docs-conformity` as a fifth when the diff touches any `.md` file. It reads the changed documents
+against the rest of the set rather than against the diff, so it needs the paths that changed and not
+the diff file.
+
 They are defined in `.claude/agents/`. Do not restate their instructions here; if a lens needs
 changing, change the agent file so the change persists.
 

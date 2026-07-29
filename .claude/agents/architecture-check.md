@@ -13,7 +13,7 @@ for existing implementations, which is the one case where you read wider.
 Three checks, nothing else.
 
 **Boundaries.** `core/` imports nothing from `data/`, `ai/`, `app/` or `ui/`, and may declare ports
-but never import an implementation. `ui/` imports nothing from `data/` or `ai/`. No cycles. No barrel
+but never import an implementation. `ui/` reaches nothing in `data/` or `ai/`, by any number of hops. No cycles. No barrel
 files. Check dynamic imports and type-only imports too, which graph tooling misses when misconfigured.
 
 **Duplication against what already exists.** For every new function, helper, type or constant, search

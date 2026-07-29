@@ -14,7 +14,8 @@ Five per review. Beyond that, one line in the summary saying how many similar it
 
 ## Do not report
 
-- Anything CI already enforces: types, lint, formatting, dead code, module boundaries
+- Anything CI already enforces: types, lint, dead code, duplication, module boundaries, documentation
+  discipline
 - Generated files and lockfiles
 - Test code that deliberately violates production rules
 
@@ -22,7 +23,8 @@ Five per review. Beyond that, one line in the summary saying how many similar it
 
 - Every Server Action validates its input with a schema before touching the database, and checks
   authorisation inside the function rather than relying on routing
-- Nothing in `ui/` imports `data/` or `ai/`, and nothing in `core/` imports any of them
+- Nothing in `ui/` reaches `data/` or `ai/` by any number of hops, and nothing in `core/` reaches any
+  of them
 - Database reads are scoped to the current user
 - No model output is rendered as HTML
 - Nothing user-authored enters the shared verdict cache

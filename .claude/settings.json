@@ -4,9 +4,15 @@
   "permissions": {
     "allow": [
       "Bash(pnpm verify)",
+      "Bash(pnpm gate)",
+      "Bash(pnpm build)",
       "Bash(pnpm test:*)",
       "Bash(pnpm typecheck)",
       "Bash(pnpm lint)",
+      "Bash(pnpm arch)",
+      "Bash(pnpm knip)",
+      "Bash(pnpm dupes)",
+      "Bash(pnpm check:docs)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
       "Bash(git status)"

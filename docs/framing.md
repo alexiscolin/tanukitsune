@@ -304,9 +304,9 @@ compete, and the client can only arbitrate between them if it is told what is le
 This is the boundary that leaks secrets, and it is not the same as the module boundaries above.
 
 `data/` is a data access layer in the strict sense: server-only, performing its own authorisation,
-returning minimal shapes rather than rows. Only it reads the environment. A fifth enforced rule
-follows from this: **`ui/` may not import a module that imports `server-only`**, which the dependency
-graph can check because type-only imports are already visible to it.
+returning minimal shapes rather than rows. Only it reads the environment. The third of the five rules
+above follows from this: **`ui/` may not import a module that imports `server-only`**, which the
+dependency graph can check because type-only imports are already visible to it.
 
 Two rules that matter from the moment a second user exists, and are cheaper to hold from the start.
 A page-level authorisation check does not extend to the mutations defined on that page, so every
@@ -346,7 +346,7 @@ never merged, the corpus keyed by subject and locale and warmed alongside the as
 the item card never waits on a network; and the outbox, appended with client-generated identifiers so
 a duplicate throws rather than silently overwriting.
 
-After an entry is appended, exactly three fields are writable: its status, `synced_at`, and
+After an entry is appended, exactly three fields are writable: `synced_at`, `applied_upstream`, and
 `srs_stage_after`, which cannot exist before the flush because the stage comes back in WaniKani's
 response and is never computed locally. The answer payload and the verdict are never touched.
 
