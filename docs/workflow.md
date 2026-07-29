@@ -90,8 +90,8 @@ agent team.
 
 The Stop hook is the highest return in this method: thirty minutes of setup, zero tokens, and it makes
 it impossible for an agent to declare done on code that does not compile. Exit code 2 sends the error
-back and the agent keeps working. It needs a recursion guard, since a hook launching a nested session
-would trigger its own hook forever.
+back and the agent keeps working. It reads `stop_hook_active` from its own input and exits when that is
+set, since a hook that blocks without reading it wedges the session shut.
 
 It runs `pnpm gate`, which is typecheck, lint, the boundary check and `check:docs`, and deliberately
 not `pnpm verify`. The full suite needs a database and browser runs, which do not fit a hook timeout,
@@ -108,9 +108,12 @@ registered with `asyncRewake`, so it runs detached and wakes the agent only when
 say. The trigger is mechanical because it can be; the reading is not, because no script can tell
 whether two documents still agree.
 
-Two things make it safe to run a model from a hook here. The digest means it fires once per
-documentation state rather than once per turn, and an exported variable stops the nested session from
-running the same hook again, which is what `stop_hook_active` cannot do across processes.
+Three things make it safe to run a model from a hook here. The digest means it fires once per
+documentation state rather than once per turn. An exported variable stops the nested session from
+running the same hook again, which is what `stop_hook_active` cannot do across processes. And the
+digest is taken twice, once before the reading and once after: a review that ran for minutes while the
+agent kept editing holds findings about text that may no longer exist, so a set that moved underneath
+it is dropped rather than reported.
 
 **Catching it at the turn rather than at the pull request is the whole point.** A contradiction found
 at review time lives in documents belonging to some other slice, so fixing it means a diff that grew

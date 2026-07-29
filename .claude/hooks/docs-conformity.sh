@@ -53,6 +53,19 @@ nothing else. Otherwise list each contradiction with file:line on both sides." \
 # the marker on a pass that never happened.
 [ -z "$report" ] && exit 0
 
+# The review runs detached for minutes while the agent keeps editing, so it can
+# finish holding findings about text that no longer exists. Reporting those wastes
+# a turn on a correction already made. If the set moved, drop this pass: the next
+# turn end re-runs it against whatever the documentation settled on.
+settled=$(git ls-files -co --exclude-standard -- '*.md' \
+  | grep -v '^info/' \
+  | grep -v '^docs/agent-log\.md$' \
+  | grep -v '^docs/sources\.md$' \
+  | sort \
+  | while IFS= read -r file; do [ -f "$file" ] && shasum "$file"; done \
+  | shasum | cut -d' ' -f1)
+[ "$settled" = "$digest" ] || exit 0
+
 if [ "$(printf '%s' "$report" | head -n 1 | tr -d '[:space:]')" = "CLEAN" ]; then
   printf '%s' "$digest" > "$marker"
   exit 0
