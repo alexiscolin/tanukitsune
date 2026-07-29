@@ -38,9 +38,10 @@ What to look for, in the order that catches the most:
 **Evidence bar.** Cite both sides, `file:line` each. A contradiction is two citations or it is not a
 finding. Naming one side and asserting the other is wrong does not count.
 
-**Code comments are in scope, and nothing else covers them.** `check-docs.sh` reads markdown only, so
-a comment in a `.ts`, `.tsx`, `.sh` or config file that contradicts a document is invisible to every
-gate. Comments here exist to carry a constraint the code cannot, which means they make the same kind
+**Code comments are in scope, and no gate covers them.** `check-docs.sh` reads markdown only, so a
+comment in a `.ts`, `.tsx`, `.sh` or config file that contradicts a document is invisible to every
+gate. A comment narrating its own history is `architecture-check`, not this lens: the two read the same
+files for different things. Comments here exist to carry a constraint the code cannot, which means they make the same kind
 of checkable claim a document does.
 
 **Scope.** Agreement between documents, between a document and the code it describes, and between a

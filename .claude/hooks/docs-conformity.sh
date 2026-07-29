@@ -55,25 +55,46 @@ mkdir "$lock" 2>/dev/null || exit 0
 printf '%s' "$$" > "$lock/pid"
 trap 'rm -rf "$lock" 2>/dev/null' EXIT
 
+# The allowed tool list is what keeps this session read-only. Plan mode is not
+# usable here: it requires the turn to end through ExitPlanMode, so a session under
+# it answers with that refusal instead of a verdict, and the refusal reads as a
+# report of contradictions it never listed.
 report=$(TANUKITSUNE_NESTED_REVIEW=1 claude -p \
   "Read .claude/agents/docs-conformity.md and follow it exactly as your instructions.
 Repository root is the working directory. Review the whole documentation set.
 Answer with the single word CLEAN on the first line if you find nothing, and
 nothing else. Otherwise list each contradiction with file:line on both sides." \
   --model sonnet \
-  --permission-mode plan \
   --allowed-tools Read,Grep,Glob 2>/dev/null)
 
-# A failed invocation is not a clean review.
-[ -z "$report" ] && exit 0
+# A failed invocation is not a clean review, and it is not a reason to try again at
+# every turn end either: an invocation that fails once on a state fails on it again,
+# at the price of a full pass over the set. Marked as attempted, said out loud, and
+# left for a deliberate rerun.
+if [ -z "$report" ]; then
+  printf '%s' "$before" > "$marker"
+  printf 'The documentation conformity reviewer returned nothing, so this state is\n' >&2
+  printf 'unread. Rerun it yourself if the documents matter to what you are doing.\n' >&2
+  exit 2
+fi
 
-# Findings about text the agent edited while this ran are already stale.
-[ "$(digest)" = "$before" ] || exit 0
-
+# An edit landing while this ran does not invalidate the reading: the report is
+# already given as claims to check against the files, and a claim about text that
+# has since moved fails that check. Discarding instead would throw a full pass over
+# the whole set away every time a document is touched during it, which in a session
+# that edits documentation is most passes. The marker names the state that was read,
+# so a state edited afterwards is still read next.
 if [ "$(printf '%s' "$report" | head -n 1 | tr -d '[:space:]')" = "CLEAN" ]; then
   printf '%s' "$before" > "$marker"
   exit 0
 fi
+
+# One reading per documentation state, findings or none. Writing the marker only on
+# a clean answer makes a standing contradiction cost a full pass over the whole set
+# at every turn end, indefinitely, to repeat a report already delivered. The report
+# below is delivered once per state, and recording each finding in the review log is
+# what keeps it from being forgotten, the same as for the code lenses.
+printf '%s' "$before" > "$marker"
 
 # Free model output arriving on the agent's instruction channel: fenced and capped.
 printf 'The documentation conformity reviewer reported contradictions.\n\n' >&2

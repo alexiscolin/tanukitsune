@@ -53,6 +53,16 @@ scan "$learning"    "Documentation frames itself as study material rather than a
 typography=$(LC_ALL=C grep -rn -e '—' -e $'\xf0\x9f' -e $'\xe2\x9c' -e $'\xe2\x9d' --include='*.md' "${EXCLUDED[@]}" . \
   | grep -v '^\./info/' \
   | grep -v '^\./scripts/' || true)
+
+# Named back in, as the conformity hook names it, because AGENTS.md holds it to the
+# same agreement as everything under docs/ while git never lists it. Naming it here
+# is the difference between a rule it is held to and a rule it is checked against.
+described=info/workflow-explique.md
+if [ -f "$described" ]; then
+  in_described=$(LC_ALL=C grep -n -e '—' -e $'\xf0\x9f' -e $'\xe2\x9c' -e $'\xe2\x9d' "$described" \
+    | sed "s|^|$described:|" || true)
+  [ -n "$in_described" ] && typography=$(printf '%s\n%s' "$typography" "$in_described")
+fi
 [ -n "$typography" ] && report "Em dash or emoji, which the style rule bans everywhere:"$'\n'"$typography"$'\n'
 
 # Claims the documentation makes about itself.

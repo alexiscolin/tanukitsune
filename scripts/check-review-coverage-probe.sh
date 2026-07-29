@@ -92,6 +92,27 @@ head=$(git -C "$repo" rev-parse HEAD)
 } > "$repo/.claude/review-log.jsonl"
 expect 'a finding with no outcome' "$repo" 2
 
+# A dismissal states why, or it is indistinguishable from a finding nobody answered.
+repo=$(scaffold unreasoned-dismissal)
+commit_file "$repo" src/a.ts
+base=$(git -C "$repo" rev-parse main)
+head=$(git -C "$repo" rev-parse HEAD)
+{
+  printf '{"date":"2026-07-29","branch":"branch","kind":"pass","base":"%s","head":"%s"}\n' "$base" "$head"
+  printf '{"date":"2026-07-29","branch":"branch","reviewer":"security-check","file":"src/a.ts","line":1,"outcome":"dismissed"}\n'
+} > "$repo/.claude/review-log.jsonl"
+expect 'a dismissal with no reason' "$repo" 2
+
+repo=$(scaffold reasoned-dismissal)
+commit_file "$repo" src/a.ts
+base=$(git -C "$repo" rev-parse main)
+head=$(git -C "$repo" rev-parse HEAD)
+{
+  printf '{"date":"2026-07-29","branch":"branch","kind":"pass","base":"%s","head":"%s"}\n' "$base" "$head"
+  printf '{"date":"2026-07-29","branch":"branch","reviewer":"security-check","file":"src/a.ts","line":1,"outcome":"dismissed","reason":"the path is unreachable from a request"}\n'
+} > "$repo/.claude/review-log.jsonl"
+expect 'a dismissal carrying its reason' "$repo" 0
+
 # A pass naming a sha that does not resolve is no pass. Skipping only the half that
 # fails would let a template nobody filled in cover the whole branch.
 repo=$(scaffold unresolvable-base)
@@ -115,6 +136,16 @@ repo=$(scaffold malformed)
 commit_file "$repo" src/a.ts
 printf 'not json at all\n' > "$repo/.claude/review-log.jsonl"
 expect 'a log line that is not JSON' "$repo" 3
+
+# A file whose name reads like a sha must not be able to pass for a commit boundary
+# and carry the code beside it out of the range.
+repo=$(scaffold hex-named-file)
+mkdir -p "$repo/src"
+printf 'code\n' > "$repo/src/a.ts"
+printf 'x\n' > "$repo/0000000000000000000000000000000000000001"
+git -C "$repo" add -A
+git -C "$repo" commit -qm 'feat: code beside a file named like a sha'
+expect 'a file named like a sha' "$repo" 1
 
 # A commit mixing code and markdown is a commit of code.
 repo=$(scaffold mixed)
@@ -165,23 +196,34 @@ matches 'a heredoc line naming it' 0 "cat <<'EOF'
 $opens create --fill
 EOF"
 
-# A real invocation reaches the script and stops at the missing-script guard, which
-# is exit 0 too, so recognition is asserted the only way that separates the two: by
-# pointing the hook at this repository, where the script exists and refuses.
-real_reaches() {
-  local label=$1 payload=$2
+# A recognised invocation reaches the script, so the verdict must be the script's.
+# Asserting that against this repository would make the probe depend on whether this
+# branch happens to be covered, and fail the moment it is.
+carrier=$(scaffold gate-carrier)
+mkdir -p "$carrier/scripts"
+cp "$checker" "$carrier/scripts/check-review-coverage.sh"
+commit_file "$carrier" src/a.ts
+
+reaches() {
+  local label=$1 want=$2 payload=$3
   local got
   printf '{"tool_input":{"command":%s}}' "$(printf '%s' "$payload" | jq -Rs .)" \
-    | CLAUDE_PROJECT_DIR=$PWD bash "$gate" >/dev/null 2>&1
+    | CLAUDE_PROJECT_DIR=$carrier bash "$gate" >/dev/null 2>&1
   got=$?
-  if [ "$got" != 2 ]; then
-    printf 'gate probe "%s": expected the gate to refuse, got %s\n' "$label" "$got" >&2
+  if [ "$got" != "$want" ]; then
+    printf 'gate probe "%s": expected exit %s, got %s\n' "$label" "$want" "$got" >&2
     fail=1
   fi
 }
 
-real_reaches 'a bare invocation' "$opens create --fill"
-real_reaches 'an invocation after an operator' "git push && $opens create --fill"
+reaches 'a bare invocation over unread code' 2 "$opens create --fill"
+reaches 'an invocation after an operator' 2 "git push && $opens create --fill"
+
+base=$(git -C "$carrier" rev-parse main)
+head=$(git -C "$carrier" rev-parse HEAD)
+printf '{"date":"2026-07-29","branch":"branch","kind":"pass","base":"%s","head":"%s"}\n' \
+  "$base" "$head" > "$carrier/.claude/review-log.jsonl"
+reaches 'the same invocation once the range is covered' 0 "$opens create --fill"
 
 [ "$fail" -eq 0 ] && echo "review coverage: proven"
 exit "$fail"

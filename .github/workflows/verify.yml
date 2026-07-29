@@ -72,8 +72,12 @@ jobs:
           # The default is the merge commit, whose history holds the base branch
           # too, and every commit of it would then need a pass of its own.
           ref: ${{ github.event.pull_request.head.sha }}
+      # Through the environment, never interpolated into the shell: a ref name is
+      # third-party text and `${{ }}` inside `run:` is substituted before bash sees it.
       - name: A review pass has read every commit of code on this branch
-        run: bash scripts/check-review-coverage.sh origin/${{ github.event.pull_request.base.ref }}
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: bash scripts/check-review-coverage.sh "origin/$BASE_REF"
 
   # One convention, one script, two places it is checked. Nothing blocks a commit
   # locally: an agent stopped mid-loop by a message check loses more than the

@@ -6,6 +6,13 @@ of what each check actually runs and costs, see [`verification.md`](verification
 
 The general engineering standard this derives from is not part of the project.
 
+**The governing rule, from which the rest follows: deterministic first, cheapest first, and the
+probabilistic layer never blocks a merge on its own judgement except where nothing deterministic can
+see the problem.** A linter does not argue and costs nothing; a model argues and costs money. So every
+defect is caught by the cheapest mechanism that can see it, and the next layer up is reached for only
+where the one below is blind. Where a model does run, what it produces is a finding for someone to
+answer, not a verdict that closes a branch by itself.
+
 ## 1. The per-task cycle
 
 1. Fresh session. One task per session, clear between unrelated tasks.

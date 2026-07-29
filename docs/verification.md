@@ -16,7 +16,7 @@ never blocks a merge on its own judgement except where nothing deterministic can
 | `pnpm verify` | before a pull request, and in CI | zero tokens | the merge |
 | `code-review.sh`, the commit hook | a commit whose accumulated range touches anything but markdown | one nested session and five reviewers on the subscription | the loop, once |
 | Five reviewers through `/pre-pr`, six when the documentation set has moved | when a human asks | subscription | their findings are advisory, their pass record is not |
-| `check-review-coverage.sh`, the coverage gate | `gh pr create`, and every pull request | zero tokens | the pull request, and the merge |
+| `check-review-coverage.sh`, the coverage gate | every commit of code, `gh pr create`, and every pull request | zero tokens | nothing at the commit, where it only reports; the pull request, and the merge |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
 
 **No model runs in CI, and that is a cost decision with a stated consequence.** The documentation
@@ -59,9 +59,10 @@ since a hook that blocks without reading it wedges the session shut. The consequ
 guarantee is one forced continuation, not a loop until compliance.
 
 **`.claude/hooks/docs-conformity.sh`** digests the content of every `.md` file describing this system,
-which is every tracked and untracked one except the two human-facing documents under `docs/` and
-everything under `info/`, plus `info/workflow-explique.md` added back by name because it describes the
-system rather than the person and git never lists it. It compares that digest to a gitignored marker at
+which is every tracked one except the two human-facing documents under `docs/`, plus
+`info/workflow-explique.md` added back by name because it describes the system rather than the person
+and git never lists it. Tracked only, because a file nobody has reviewed would otherwise reach a model
+whose output lands in the agent's instruction channel. It compares that digest to a gitignored marker at
 `.claude/.conformity-reviewed`. When the two differ it reads the set with the `docs-conformity`
 reviewer and records the state it reviewed. It is registered with `asyncRewake`, so it runs detached
 and wakes the agent only when it has findings.
@@ -77,11 +78,9 @@ Four guards, each against a different failure:
 
 **`.claude/hooks/code-review.sh`** fires on `PostToolUse` when `HEAD` has moved since the previous
 shell call, asks `scripts/check-review-coverage.sh` what is still unread, and runs the five code lenses
-over it in a nested session. Three things shape it. The trigger is the commit rather than a turn
-boundary, because a commit is a deliberate unit and a turn is not. The range is accumulated rather than
-per-commit, since a red test read without its implementation is a reading of half a slice. And markdown
-is excluded, because `docs-conformity` already owns it, which is a rule with no path list to drift out
-of date.
+over it in a nested session. The range is the one accumulated since the lenses last ran, not the last
+commit alone, and markdown is excluded because `docs-conformity` owns it. Why the commit rather than a
+turn boundary, and why accumulated: [`workflow.md`](workflow.md).
 
 It answers the coverage question by calling the same script the two gates call, rather than deciding it
 a second way, so a range this hook stays quiet about cannot be one the merge refuses.
@@ -165,7 +164,9 @@ and whether it was fixed or dismissed. One per pass, carrying `kind` set to `pas
 pass read, written whether or not anything was found.
 
 A finding the commit hook wrote carries no outcome, and acquires one by having the field set on the
-line already in the log. That is the only edit this file accepts; every other write appends.
+line already in the log. That is the only edit this file accepts; every other write appends. `fixed`
+stands alone. `dismissed` carries a `reason`, and the gate refuses without it, since a dismissal with
+nothing said is the one disposal a log cannot tell apart from a finding nobody answered.
 
 `scripts/review-stats.sh` reports what each lens yields and how much of it survives, and the pass lines
 are its denominator: findings alone cannot separate a lens that met clean code from one that ran once
@@ -181,7 +182,7 @@ Mechanically, so the rules do not depend on anyone remembering them.
 | Provenance | a document narrating its own revision history rather than stating what is true |
 | Audience | a document addressing someone assessing the author rather than someone using the project |
 | Register | a document that reads as material to memorise rather than as an authored standard |
-| Typography | an em dash or an emoji, anywhere in any markdown |
+| Typography | an em dash or an emoji, in any markdown outside `info/` and `scripts/`, plus `info/workflow-explique.md` named back in because `AGENTS.md` holds it to the same agreement |
 | Budget | `AGENTS.md` over 150 lines, which `docs/README.md` claims it stays under |
 | Map | a document under `docs/` absent from the table in `docs/README.md` |
 | Links | a relative link resolving to nothing |
@@ -227,10 +228,10 @@ production is the driver a merge is gated on.
 - Commits made directly on `main` are reviewed by nothing: the commit hook computes its range from the
   merge base, which on `main` collapses to `HEAD`.
 - No dependency advisory check runs anywhere, although `security-check` delegates advisories to one.
-- A path matching no route segment at all, such as `/foo`, renders the framework's implicit root
+- A path matching no route segment at all, such as `/foo/bar`, renders the framework's implicit root
   layout, which owns no `<html lang>` and pulls no stylesheet, so it fails WCAG 2.0 A on
-  `html-has-lang`. `/de` is not that case: it matches `[locale]`, renders inside that layout and calls
-  `notFound()`, which is why the axe audit passes on it. Closing the real one needs a root layout
+  `html-has-lang`. A single segment is not that case: `/foo` matches `[locale]` exactly as `/de` does,
+  renders inside that layout and calls `notFound()`, which is why the axe audit passes on it. Closing the real one needs a root layout
   owning `<html>`, which `[locale]/layout.tsx` owns today in order to vary `lang` per locale, so it is
   a restructure rather than a redirect.
 - Nothing measures the quality of a plan, which `workflow.md` names as where attention matters most.

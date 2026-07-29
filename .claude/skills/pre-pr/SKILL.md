@@ -74,9 +74,11 @@ Once each finding has been fixed or dismissed, append one line per finding to
 ```
 
 `outcome` is `fixed` or `dismissed`, and a finding left without one refuses the merge, since a finding
-with no sort is a review that has not finished. The commit hook writes its own findings with no
-`outcome` at all: those are disposed of by setting the field on the line that is already there, which
-is the only edit this log accepts. Everything else about it is append-only.
+with no sort is a review that has not finished. A `dismissed` line carries a `reason` besides, and the
+merge is refused without it: a dismissal with nothing said cannot be told apart from a finding nobody
+answered. The commit hook writes its own findings with no `outcome` at all: those are disposed of by
+setting the fields on the line that is already there, which is the only edit this log accepts.
+Everything else about it is append-only.
 
 Then append one pass line, whether or not anything was found, naming the range the lenses read:
 

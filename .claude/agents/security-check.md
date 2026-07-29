@@ -44,8 +44,9 @@ place, a server-generated identifier, or a blind retry on an uncertain submissio
 submission carries no idempotency key, so a retry advances the SRS stage twice and corrupts the
 learner's progression.
 
-**Dependency advisories are not yours to find.** `pnpm audit` reports them mechanically. Do not read
-the lockfile hunting for known vulnerabilities, and do not propose adding a dependency.
+**Dependency advisories are not yours to find.** They are read from a registry, not inferred from a
+diff, and nothing in this repository runs that check today. Do not read the lockfile hunting for known
+vulnerabilities, and do not propose adding a dependency.
 
 **Evidence bar.** Report exploitable defects with the path that reaches them, cited `file:line`. Not
 theoretical risk, not hardening suggestions.
