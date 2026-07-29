@@ -117,9 +117,11 @@ at review time lives in documents belonging to some other slice, so fixing it me
 past what the plan described, and leaving it means shipping it. Found in the turn that created it, it
 is fixed inside the slice that owes it.
 
-A `PreToolUse` hook refuses any read, write or shell command touching `info/`. The rule is in
-`AGENTS.md`, and a rule an agent can only remember is one it forgets on the fiftieth turn without
-anyone noticing which turn.
+`info/` carries no hook, because the requirement is that it must not reach the remote and `.gitignore`
+is the whole of that. What `AGENTS.md` adds is a matter of judgement rather than of access: nothing
+there is read unprompted, and nothing there is evidence for a claim about this repository. A hook
+refusing every path that names the directory would enforce a stricter rule than the one wanted, and
+would refuse a search pattern that merely mentions it.
 
 Keep the trigger deterministic even where the work is not. A hook running a linter is free and catches
 most agent regressions. A hook running a model is neither free nor bounded, so it earns its place only

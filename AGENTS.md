@@ -11,7 +11,9 @@ Two documents are written for a human operating the project and are context cost
 `docs/agent-log.md` and `docs/sources.md`. Do not open them unless the task is about
 the documentation itself.
 
-`info/` is human-only, gitignored, and not part of the project. Never read it and never write to it.
+`info/` is gitignored and never committed. It is not part of the project, so nothing there is read on
+your own initiative and nothing there is evidence for a claim about this repository. Read and write it
+when asked, and nowhere else does it belong in a diff.
 
 ## Commands
 

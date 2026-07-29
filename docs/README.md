@@ -59,11 +59,9 @@ Agent configuration lives at the repository root: `AGENTS.md` is canonical and u
 `CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: four reviewers
 with disjoint lenses, a fifth that reads documentation against itself and runs only when a diff
 touches markdown, the `pre-pr` skill, a hook that blocks a turn ending on code that does not compile,
-a second that reads the documentation with the conformity reviewer whenever its digest moves, and a
-`PreToolUse` hook that refuses any access to `info/`. Alongside them, `review-log.jsonl` records what
-each lens found and whether it survived, which `scripts/review-stats.sh` reports. The permission deny list covers the file
-tools; the hook is what closes the shell, where `cat info/notes.md` is not a narrower hole than the
-one a `Read` rule shuts.
+and a second that reads the documentation with the conformity reviewer whenever its digest moves.
+Alongside them, `review-log.jsonl` records what each lens found and whether it survived, which
+`scripts/review-stats.sh` reports.
 
 `REVIEW.md` at the root is the calibration for the hosted Code Review GitHub App, which reads it and
 posts on pull requests. Nothing else reads it: the local reviewers hold the same evidence bar in their
