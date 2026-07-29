@@ -41,9 +41,11 @@ and report independently. Pass each one the diff path and the task's plan or spe
 - `security-check`, untrusted input, secrets, client boundary, authorisation
 - `performance-check`, N+1 queries, complexity, missing pagination, sequential awaits
 
-Add `docs-conformity` as a fifth when the diff touches any `.md` file. It reads the changed documents
-against the rest of the set rather than against the diff, so it needs the paths that changed and not
-the diff file.
+Add `docs-conformity` as a fifth **only when the documentation set has moved since it last read it**.
+The `Stop` hook writes the digest it reviewed to `.claude/.conformity-reviewed`; recompute that digest
+and compare. Equal means this exact state has already been read, and spawning the reviewer again pays
+for the same reading twice. Unequal, or no marker at all, means it runs, and it reads the whole set
+rather than the diff.
 
 They are defined in `.claude/agents/`. Do not restate their instructions here; if a lens needs
 changing, change the agent file so the change persists.

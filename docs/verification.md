@@ -14,9 +14,14 @@ never blocks a merge on its own judgement except where nothing deterministic can
 | `verify.sh`, the compile hook | end of every turn | zero tokens | the turn, once |
 | `docs-conformity.sh`, the documentation hook | end of a turn where markdown moved | one Sonnet pass per documentation state | the turn, once |
 | `pnpm verify` | before a pull request, and in CI | zero tokens | the merge |
-| Four reviewers through `/pre-pr`, five when the diff touches markdown | when a human asks | subscription | nothing, advisory |
-| `conformity` in CI | pull request touching markdown | one Sonnet pass | the merge |
+| Four reviewers through `/pre-pr`, five when the documentation set has moved | when a human asks | subscription | nothing, advisory |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
+
+**No model runs in CI, and that is a cost decision with a stated consequence.** The documentation
+reviewer would have read the same set the `Stop` hook had already read minutes earlier, at a metered
+price, so it runs once, locally, where the subscription already covers it. What CI gates is therefore
+entirely deterministic, and the documentation check depends on a turn having happened on a machine
+with the hook installed.
 
 ## The commands
 
@@ -116,17 +121,17 @@ a bare package name matches nothing once the package resolves inside `node_modul
 adjacency-only rule misses `ui` reaching `data` through `app`. The other three are asserted rather than
 proven, which is the state the first two were in.
 
-## The four CI jobs
+## The three CI jobs
 
 Defined in `.github/workflows/verify.yml`. Every action is pinned to a commit SHA, since a mutable tag
-is a third party's decision about what runs here. The workflow holds `contents: read` and nothing more.
+is a third party's decision about what runs here. The workflow holds `contents: read` and nothing more,
+needs no secret, and costs nothing beyond runner minutes.
 
 | Job | Runs on | Does |
 |---|---|---|
 | `verify` | push to main, pull request | `pnpm verify`, then checks the build left `tsconfig.json` alone |
 | `e2e` | push to main, pull request | Playwright with the axe audit, against the production build and a server Postgres |
 | `subjects` | pull request | the title, every commit subject on the branch, and a description carrying the plan |
-| `conformity` | pull request | the documentation reviewer, skipped and said so when no markdown moved or no key is present |
 
 `e2e` runs against a server Postgres rather than the file-backed local one, so the driver that runs in
 production is the driver a merge is gated on.
@@ -135,6 +140,8 @@ production is the driver a merge is gated on.
 
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - Four of the five reviewers run only when a human asks.
+- No reviewer runs at merge. Every documentation check is local, so a change pushed from a machine
+  without the `Stop` hook reaches a pull request unread by any model.
 - Three of the five boundary rules have no probe.
 - Nothing measures the quality of a plan, which `workflow.md` names as where attention matters most.
 - The conformity reviewer reads the whole documentation set on every pass, so its cost grows with the
