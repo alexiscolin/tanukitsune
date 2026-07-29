@@ -1,13 +1,6 @@
 #!/bin/bash
 # Demands the review lenses on the code committed since they last read it.
-#
-# Fires from PostToolUse on Bash, so the trigger is the commit itself rather
-# than a turn boundary, and the diff it names is the accumulated range since the
-# marker rather than the one commit: a red test read without its implementation
-# is a reading of half a slice.
-#
-# Markdown is excluded because docs-conformity already owns it. Everything else
-# is code, which is a rule with no path list to drift out of date.
+# Why the commit and why the accumulated range: docs/workflow.md, hooks.
 
 set -uo pipefail
 
@@ -19,15 +12,13 @@ marker=.claude/.review-reviewed
 seen=.claude/.review-head
 head=$(git rev-parse HEAD 2>/dev/null) || exit 0
 
-# A commit happened when HEAD moved between two shell calls. Matching the command
-# string instead would miss `git -C . commit` and fire on any command that merely
-# names one, which is a trigger that both under- and over-reports.
+# HEAD moving between two shell calls is the commit. Matching the command string
+# misses `git -C . commit` and fires on any command that merely names one.
 [ "$(cat "$seen" 2>/dev/null || true)" = "$head" ] && exit 0
 printf '%s' "$head" > "$seen"
 base=$(cat "$marker" 2>/dev/null || true)
 
-# No usable marker means nothing on this branch has been read yet, so the range
-# starts where the branch does. On main the two collapse and nothing is demanded.
+# No marker means nothing on this branch was read. On main the two collapse.
 if [ -z "$base" ] || ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
   base=$(git merge-base main HEAD 2>/dev/null) || exit 0
 fi
