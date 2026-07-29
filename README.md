@@ -19,8 +19,8 @@
 - **Point your camera at a menu** and see which kanji you already know. *(v0.4)*
 
 Five of those nine run on a model: the mnemonics, the grading, the confusion pairs, the choice of what
-comes next, and the tutor. The other four do not, and nine further things were refused a model
-outright. Knowing which is which is the whole design.
+comes next, and the tutor. The other four do not, and the section below names them beside five more
+places a model was refused outright. Knowing which is which is the whole design.
 
 > **Status: the toolchain and the shell run, the product does not.** No review flow, no corpus and no
 > judge exist yet.
