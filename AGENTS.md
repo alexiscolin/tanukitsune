@@ -72,6 +72,21 @@ Red before green. The failing test is committed before the implementation, and i
 reach green. A test that has to change to pass means the plan was wrong, which is a re-plan and not an
 implementation detail.
 
+## Reporting to the reader
+
+Report from the top down: what happened and what it changes for the system, then the mechanism, then
+the file, the function, the flag. The reader works at the level of decisions and you work at the level
+of exit codes, so a detail handed over with no attachment point cannot be judged, and what cannot be
+judged cannot be relied on.
+
+Every name carries its referent the first time it appears. That covers a function, a variable, a
+constant, a field, a tool, a script and a package, not only prose nouns: say what it is and where it
+lives before building an argument on it. A recursion guard names what recurses. A flag names who sets
+it and what it means. Two things of the same kind are named by their file rather than by an ordinal.
+
+This holds for replies as much as for documents, and it is not a licence to write more. It changes the
+order and adds one clause, nothing else.
+
 ## Stop and ask
 
 - The same issue has been corrected twice
