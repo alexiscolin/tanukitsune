@@ -37,6 +37,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
       'no-console': 'error',
+      // AGENTS.md refuses anything provisional at merge. A marker naming later work
+      // is a backlog entry, so the rule points at the file that holds them.
+      'no-warning-comments': ['error', { terms: ['todo', 'fixme', 'hack', 'xxx'], location: 'anywhere' }],
 
       complexity: ['error', 15],
       'max-lines': ['error', 400],
