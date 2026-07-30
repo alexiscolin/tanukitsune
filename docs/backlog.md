@@ -70,7 +70,7 @@ in [`ai-engineering.md`](ai-engineering.md).
 |---|---|---|
 | MCP server | none, it is plumbing | Exposes vocabulary, grammar and learner progress so any assistant can query the study state. Four good tools beat twenty. Ships only if the consumer can be named and demonstrated, otherwise it joins A2A in the rejected list. |
 | Tutor agent | live | The one genuine RAG use in the product: open-ended questions over a grammar corpus, where retrieval grounds the answer and prevents invention. Rate limited. Guardrails matter here because user text reaches a prompt. |
-| A second locale | once | The generation job re-run with a different target language. What makes it possible is not the model, it is a deterministic gate that does not need to speak the language: the generated mnemonic is checked mechanically against the reading it must evoke and the components it must use, and what fails is regenerated rather than shipped. Same shape as the sentence validator. Without it, adding a language means finding someone who will read nine thousand items, which is what caps every competitor at one. The check itself is unspecified and is the open question. |
+| A second locale, not English | once | The generation job re-run with a different target language, chosen among those WaniKani does not already serve, since the thesis is a language where the mnemonics do not exist rather than one where they exist and are ours to beat. What makes it possible is not the model, it is a deterministic gate that does not need to speak the language: the generated mnemonic is checked mechanically against the reading it must evoke and the components it must use, and what fails is regenerated rather than shipped. Same shape as the sentence validator. Without it, adding a language means finding someone who will read nine thousand items, which is what caps every competitor at one. The check itself is unspecified and is the open question. |
 | Photo import | none | Photograph a sign or a menu, extract the kanji, see which are already known. Tesseract compiled to WebAssembly runs entirely in the browser: no server, no cost, works offline, private. A vision model would be the expensive way to solve a solved problem. Accuracy on real signage needs testing before committing. |
 
 ## Rejected, with reasons
@@ -104,6 +104,14 @@ licensed source appears.
 **Bunpro integration.** A key exists in user accounts but there is no public documentation and access
 is negotiated case by case. Architected for behind `KnowledgeSource`, implemented only if access is
 granted.
+
+**An English locale.** Generating one is available on the same terms as any other language, since what
+the job produces is ours whatever the target, and reusing WaniKani's own mnemonics is what is refused
+rather than the language. It is rejected on the product instead: in French the mnemonics do not exist,
+which is a gap, while in English they exist and are the incumbent's best asset, so the promise becomes
+that ours are better, made on their ground, to readers who already have theirs. A full generation run
+and its three-run budget buys that promise rather than a missing one. Reopened by evidence that the
+sampling gate clears an English batch at a quality the incumbent does not reach, not by demand.
 
 ## Constraints that shape everything
 
