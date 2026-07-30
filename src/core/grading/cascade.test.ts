@@ -39,7 +39,7 @@ describe('runCascade, a meaning', () => {
     expect(port.judge).not.toHaveBeenCalled()
     expect(decided).toEqual({ verdict: 'correct', decidedBy: 'exact:1' })
 
-    const judged = await runCascade({ kind: 'meaning', answer: "de l'eau", accepted: ['eau'] }, port)
+    const judged = await runCascade({ kind: 'meaning', answer: 'liquide', accepted: ['eau'] }, port)
     expect(port.judge).toHaveBeenCalledTimes(1)
     expect(judged).toEqual({ verdict: 'correct', decidedBy: 'judge:1' })
   })

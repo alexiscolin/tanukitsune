@@ -1,4 +1,3 @@
-import type { AnswerKind } from '../answer-kind'
 import type { GradedAnswer, JudgePort } from './judge-port'
 
 // Travels into every verdict, so a case replayed later can be told apart from one
@@ -30,18 +29,17 @@ export async function runCascade(answer: GradedAnswer, port: JudgePort | null): 
   return { verdict: judged, decidedBy: `judge:${JUDGE_VERSION}` }
 }
 
-function matchesExactly({ kind, answer, accepted }: GradedAnswer): boolean {
-  const typed = normalise(answer, kind)
+function matchesExactly({ answer, accepted }: GradedAnswer): boolean {
+  const typed = normalise(answer)
 
-  return accepted.some((reference) => normalise(reference, kind) === typed)
+  return accepted.some((reference) => normalise(reference) === typed)
 }
 
-function normalise(value: string, kind: AnswerKind): string {
-  // Composed first, so a keyboard emitting a combining mark and one emitting the
-  // single character are the same answer. It composes a dakuten onto its kana and
-  // leaves a small kana alone, which is the distinction a reading rests on.
-  const composed = value.trim().normalize('NFC')
-
-  // Kana carries no case. Folding it would be a no-op that reads as a rule.
-  return kind === 'reading' ? composed : composed.toLowerCase()
+// Trim, compose, fold case, for both kinds. Composing before comparing is what makes
+// a dakuten typed as a combining mark the same answer, and it leaves a small kana
+// alone, which is the distinction a reading rests on. Folding case is a no-op on kana,
+// which carries none, so one path serves both kinds rather than a branch reading as a
+// rule that is not one.
+function normalise(value: string): string {
+  return value.trim().normalize('NFC').toLowerCase()
 }
