@@ -126,6 +126,34 @@ git -C "$repo" commit -q -m 'refactor: fold both' \
   -m 'Assertions-reduced: src/a.test.ts src/b.test.ts covers the rest now'
 expect 'a reason naming a second file' "$repo" 1
 
+# A rename carries its baseline under the name it had: emptying a test while renaming it
+# reached the gate as a deletion plus an addition and passed.
+repo=$(scaffold renamed_away "$three")
+git -C "$repo" mv src/a.test.ts src/a.spec.ts
+printf '%s' "$two" > "$repo/src/a.spec.ts"
+git -C "$repo" add -A >/dev/null 2>&1
+git -C "$repo" commit -qm 'refactor: rename and empty' >/dev/null 2>&1
+expect 'a renamed test file losing an assertion' "$repo" 1
+
+# A non-ASCII path is C-quoted by git unless asked otherwise, and the quoted form
+# resolves to nothing, which dropped the file from the walk.
+repo=$(scaffold accented "$two")
+git -C "$repo" checkout -q main
+printf '%s' "$two" > "$repo/src/révision.test.ts"
+git -C "$repo" add -A >/dev/null 2>&1
+git -C "$repo" commit -qm 'test: an accented name' >/dev/null 2>&1
+git -C "$repo" checkout -q branch
+git -C "$repo" merge -q main -m 'chore: take the accented file' >/dev/null 2>&1
+printf '%s' "$one" > "$repo/src/révision.test.ts"
+git -C "$repo" add -A >/dev/null 2>&1
+git -C "$repo" commit -qm 'refactor: empty it' >/dev/null 2>&1
+expect 'an accented test file losing an assertion' "$repo" 1
+
+# A test file the range introduces carries no baseline, but a marker needs only one side.
+repo=$(scaffold introduced_skip "$two")
+commit_test "$repo" src/b.test.ts "${two/it(/it.skip(}"
+expect 'a new test file carrying a skipped case' "$repo" 2
+
 # A range with no test file in it has nothing to judge.
 repo=$(scaffold untouched "$two")
 commit_test "$repo" src/a.ts 'export const A = 1'

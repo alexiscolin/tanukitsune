@@ -27,6 +27,9 @@ markdown() { find "$@" -name '*.md' -not -path './.git/*' -not -path '*/node_mod
 # holds another checkout of this one: its copies carry the same exemptions under a
 # different prefix, so every path-keyed exemption below would miss them.
 EXCLUDED=(--exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=info --exclude-dir=coverage --exclude-dir=worktrees)
+# `--exclude-dir` matches a directory name at any depth while the `find` above anchors
+# the path, so the two enumerations differ on a directory of that name outside
+# `.claude/`. None exists, and grep offers no anchored form of the flag.
 
 # Narrating the document's own history. Provenance belongs in docs/agent-log.md
 # and docs/decisions/, which are excluded.

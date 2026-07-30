@@ -64,28 +64,45 @@ declared=$(git log --format=%B "$base..$head" \
 weakened=''
 skipped=''
 
-while IFS= read -r f; do
+# `--name-status -M25% -z` rather than `--name-only`: a rename reaches the plain form as
+# a deletion plus an addition, and each half is then skipped for having no counterpart,
+# so renaming a test file while emptying it passed the gate entirely. The threshold is
+# lowered from git's default of 50 percent because that default excludes the case this
+# exists to catch: a test file renamed while it loses half its assertions is under half
+# similar by construction. A quarter still requires the pairing to be evidence. `-z` also turns off
+# the C-quoting git applies to a path holding a non-ASCII byte, and this product is
+# written in French and teaches Japanese, so an accented or kana test name is content
+# rather than an edge case. A quoted path failed `git cat-file` and was dropped, which
+# opened the same hole without a rename.
+while IFS= read -r -d '' status; do
+  case $status in
+    R*) IFS= read -r -d '' was; IFS= read -r -d '' f ;;
+    D*) IFS= read -r -d '' f; continue ;;
+    *)  IFS= read -r -d '' f; was=$f ;;
+  esac
   [ -n "$f" ] || continue
-  # A file the range introduces has no baseline to fall below.
-  git cat-file -e "$base:$f" 2>/dev/null || continue
-  # A file the range removes is out of scope: deleting a test with the module it
-  # covered is a slice, and telling that apart from a deletion that hides a failure
-  # needs the module, which this does not read.
   git cat-file -e "$head:$f" 2>/dev/null || continue
 
   # Read once and held: both checks below read the same blob, and fetching it twice
   # doubles the git round trips per file for nothing.
   current=$(git show "$head:$f")
-  before=$(git show "$base:$f" | assertions)
-  after=$(printf '%s' "$current" | assertions)
-  if [ "$after" -lt "$before" ] && ! printf '%s\n' "$declared" | grep -qxF "$f"; then
-    weakened+=$(printf '  %s: %s assertions, was %s\n' "$f" "$after" "$before")
-  fi
 
+  # Read before the baseline is required, so a test file the range introduces cannot
+  # carry a skipped case through: the count needs two sides, the marker needs one.
   if printf '%s' "$current" | grep -qE '\b(it|test|describe)\.(skip|only|fixme)\b'; then
     skipped+=$(printf '  %s\n' "$f")
   fi
-done < <(git diff --name-only "$base..$head" -- \
+
+  # A file the range introduces has no baseline to fall below. A rename carries its
+  # baseline under the name it had.
+  git cat-file -e "$base:$was" 2>/dev/null || continue
+
+  before=$(git show "$base:$was" | assertions)
+  after=$(printf '%s' "$current" | assertions)
+  if [ "$after" -lt "$before" ] && ! printf '%s\n' "$declared" | grep -qxF -- "$f"; then
+    weakened+=$(printf '  %s: %s assertions, was %s\n' "$f" "$after" "$before")
+  fi
+done < <(git diff --name-status -M25% -z "$base..$head" -- \
   '*.test.ts' '*.test.tsx' '*.spec.ts' '*.spec.tsx')
 
 if [ -n "$weakened" ]; then

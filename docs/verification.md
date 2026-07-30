@@ -42,7 +42,7 @@ because it needs a browser and a database.
 | Command | Tool | Catches |
 |---|---|---|
 | `typecheck` | `tsc6` | type errors, under `strict` and `noUncheckedIndexedAccess` |
-| `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires |
+| `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires, and a marker naming work the backlog should hold |
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
