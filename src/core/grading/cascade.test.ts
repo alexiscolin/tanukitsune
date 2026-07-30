@@ -10,7 +10,7 @@ describe('runCascade, a meaning', () => {
   it('is correct when it matches a reference exactly, and says which tier decided', async () => {
     const outcome = await runCascade({ kind: 'meaning', answer: 'eau', accepted: ['eau'] }, null)
 
-    expect(outcome).toEqual({ verdict: 'correct', decidedBy: 'exact:1' })
+    expect(outcome).toEqual({ verdict: 'correct', decidedBy: 'exact:2' })
   })
 
   it('is correct whatever the case and the surrounding space, which nobody types consistently', async () => {
@@ -26,6 +26,12 @@ describe('runCascade, a meaning', () => {
     expect(outcome.verdict).toBe('correct')
   })
 
+  it('is correct when a full-width keyboard typed it, which is the same word twice over', async () => {
+    const outcome = await runCascade({ kind: 'meaning', answer: 'ｅａｕ', accepted: ['eau'] }, null)
+
+    expect(outcome.verdict).toBe('correct')
+  })
+
   it('is never wrong when the exact tier cannot place it, because the reader is asked instead', async () => {
     const outcome = await runCascade({ kind: 'meaning', answer: 'tache', accepted: ['tâche'] }, null)
 
@@ -37,7 +43,7 @@ describe('runCascade, a meaning', () => {
 
     const decided = await runCascade({ kind: 'meaning', answer: 'eau', accepted: ['eau'] }, port)
     expect(port.judge).not.toHaveBeenCalled()
-    expect(decided).toEqual({ verdict: 'correct', decidedBy: 'exact:1' })
+    expect(decided).toEqual({ verdict: 'correct', decidedBy: 'exact:2' })
 
     const judged = await runCascade({ kind: 'meaning', answer: 'liquide', accepted: ['eau'] }, port)
     expect(port.judge).toHaveBeenCalledTimes(1)
@@ -61,14 +67,14 @@ describe('runCascade, a reading', () => {
   it('is correct when the kana are the ones the item expects', async () => {
     const outcome = await runCascade({ kind: 'reading', answer: 'みず', accepted: ['みず'] }, null)
 
-    expect(outcome).toEqual({ verdict: 'correct', decidedBy: 'exact:1' })
+    expect(outcome).toEqual({ verdict: 'correct', decidedBy: 'exact:2' })
   })
 
   it('is decided at the exact tier alone, so a near miss is wrong and never sent to a judge', async () => {
     const port = judgeAlways('correct')
     const outcome = await runCascade({ kind: 'reading', answer: 'こうえん', accepted: ['こうねん'] }, port)
 
-    expect(outcome).toEqual({ verdict: 'incorrect', decidedBy: 'exact:1' })
+    expect(outcome).toEqual({ verdict: 'incorrect', decidedBy: 'exact:2' })
     expect(port.judge).not.toHaveBeenCalled()
   })
 
@@ -84,6 +90,30 @@ describe('runCascade, a reading', () => {
 
     expect(missing.verdict).toBe('incorrect')
     expect(combining.verdict).toBe('correct')
+  })
+
+  it('accepts the same reading written in katakana, which is a spelling and not another answer', async () => {
+    const outcome = await runCascade({ kind: 'reading', answer: 'ミズ', accepted: ['みず'] }, null)
+
+    expect(outcome.verdict).toBe('correct')
+  })
+
+  it('accepts half-width kana, which a keyboard shortcut produces and no reader intends', async () => {
+    const outcome = await runCascade({ kind: 'reading', answer: 'ﾐｽﾞ', accepted: ['みず'] }, null)
+
+    expect(outcome.verdict).toBe('correct')
+  })
+
+  it('keeps a small kana small through the fold, since it is its own sound', async () => {
+    const outcome = await runCascade({ kind: 'reading', answer: 'キュウ', accepted: ['きゅう'] }, null)
+
+    expect(outcome.verdict).toBe('correct')
+  })
+
+  it('leaves the prolonged sound mark alone, because the reference says which reading the item wants', async () => {
+    const outcome = await runCascade({ kind: 'reading', answer: 'コー', accepted: ['こう'] }, null)
+
+    expect(outcome.verdict).toBe('incorrect')
   })
 
   it('accepts any of the readings the item allows', async () => {

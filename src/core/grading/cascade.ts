@@ -2,7 +2,7 @@ import type { GradedAnswer, JudgePort } from './judge-port'
 
 // One version per tier, because the two change for different reasons: a judge prompt
 // must not relabel a row the exact tier decided, and a change to normalise must.
-const EXACT_TIER = 'exact:1'
+const EXACT_TIER = 'exact:2'
 const JUDGE_TIER = 'judge:1'
 
 type CascadeOutcome =
@@ -34,11 +34,19 @@ function matchesExactly({ answer, accepted }: GradedAnswer): boolean {
   return accepted.some((reference) => normalise(reference) === typed)
 }
 
-// Trim, compose, fold case, for both kinds. Composing before comparing is what makes
-// a dakuten typed as a combining mark the same answer, and it leaves a small kana
-// alone, which is the distinction a reading rests on. Folding case is a no-op on kana,
-// which carries none, so one path serves both kinds rather than a branch reading as a
-// rule that is not one.
+// Bounded at ヶ, the last katakana with a hiragana counterpart one fixed offset below.
+// What that leaves out is deliberate: ヷ and its neighbours have none, and the prolonged
+// sound mark separates two readings rather than two spellings of one.
+const KATAKANA = /[ァ-ヶ]/g
+const TO_HIRAGANA = 0x60
+
+// What may sit here and why is tier 1 in docs/specs/v0.1.md. Case folding is a no-op on
+// kana, so one path serves both answer kinds rather than a branch reading as a rule that
+// is not one.
 function normalise(value: string): string {
-  return value.trim().normalize('NFC').toLowerCase()
+  return value
+    .trim()
+    .normalize('NFKC')
+    .replace(KATAKANA, (kana) => String.fromCharCode(kana.charCodeAt(0) - TO_HIRAGANA))
+    .toLowerCase()
 }
