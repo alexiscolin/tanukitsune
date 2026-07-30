@@ -129,23 +129,44 @@ describe('AnswerInput, converting a reading', () => {
     expect(onSubmit).toHaveBeenCalledWith('eau')
   })
 
-  it('leaves the text to the editor while it is composing, rather than converting under it', () => {
+  it('leaves the text to a Japanese editor while it composes, rather than converting under it', () => {
     const { field } = renderInput('reading')
 
     fireEvent.compositionStart(field)
+    fireEvent.compositionUpdate(field, { data: 'みず' })
     fireEvent.change(field, { target: { value: 'ka' } })
 
     expect(field.value).toBe('ka')
+  })
+
+  it('converts through a Latin composition, which is what an Android keyboard produces', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.compositionStart(field)
+    fireEvent.compositionUpdate(field, { data: 'ka' })
+    fireEvent.change(field, { target: { value: 'ka' } })
+
+    expect(field.value).toBe('か')
   })
 
   it('converts again once the editor has handed the text back', () => {
     const { field } = renderInput('reading')
 
     fireEvent.compositionStart(field)
+    fireEvent.compositionUpdate(field, { data: 'みず' })
     fireEvent.compositionEnd(field)
     fireEvent.change(field, { target: { value: 'ka' } })
 
     expect(field.value).toBe('か')
+  })
+
+  it('leaves a correction made mid-answer as typed, so the caret stays where the reader put it', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'みずうみ' } })
+    fireEvent.change(field, { target: { value: 'みずkaうみ', selectionStart: 5 } })
+
+    expect(field.value).toBe('みずkaうみ')
   })
 })
 
@@ -193,6 +214,18 @@ describe('AnswerInput, refusing a reading that is not kana', () => {
 
     expect(screen.queryByText(UNCONVERTED)).toBeNull()
     expect(field.getAttribute('aria-invalid')).toBeNull()
+  })
+
+  it('refuses punctuation the converter accepts, which would cost an item its stage', () => {
+    const { field, onSubmit } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: '/' } })
+    expect(field.value).toBe('・')
+
+    fireEvent.keyDown(field, { key: 'Enter' })
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(screen.getByText(UNCONVERTED)).toBeDefined()
   })
 
   it('sends the reading once it is kana, and the prolonged sound mark counts as kana', () => {

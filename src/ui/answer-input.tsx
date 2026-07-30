@@ -2,10 +2,19 @@
 
 import { useId, useRef, useState } from 'react'
 import type { ChangeEvent, KeyboardEvent } from 'react'
-import { isKana, toKana } from 'wanakana'
+import { isJapanese, isKana, toKana } from 'wanakana'
 
 import type { AnswerKind } from '@/core/answer-kind'
 import { pressEnter } from '@/core/composition-gate'
+
+const KANA_SYLLABLE = /[ぁ-ゖァ-ヶ]/u
+
+// `isKana` accepts the middle dot and the prolonged sound mark, which the library names
+// apart from kana itself, so a field holding nothing but punctuation would be graded and
+// would cost an item its stage. A reading carries at least one syllable.
+function isReading(answer: string): boolean {
+  return isKana(answer) && KANA_SYLLABLE.test(answer)
+}
 
 export function AnswerInput({
   kind,
@@ -26,16 +35,25 @@ export function AnswerInput({
   // end of a composition happens between two keystrokes of the typing loop.
   const compositionEndedAt = useRef<number | null>(null)
   // A second flag, and not the same question. The one above dates a composition so
-  // the gate can tell which Enter confirmed it; this one says the editor still owns
-  // the text, and converting under it would rewrite what it is composing.
+  // the gate can tell which Enter confirmed it; this one says a Japanese editor owns the
+  // text, and converting under it would rewrite what it is composing. Set from what is
+  // being composed rather than from the event alone, because an Android keyboard composes
+  // ordinary Latin typing too, and holding the field back through that would leave romaji
+  // on screen for the very reader the conversion exists for.
   const composing = useRef(false)
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const typed = event.target.value
+    // Only while the caret sits at the end. Writing a converted string back to a field
+    // drops the caret to the end of it, so converting a correction made mid-answer would
+    // send the next keystroke somewhere the reader is not looking. What is edited in the
+    // middle stays as typed and Enter finalises it.
+    const atEnd = (event.target.selectionStart ?? typed.length) === typed.length
     // IME mode holds a trailing n as it is, because kana and kani are both still
     // possible and the next keystroke is what decides. Kana passes through unchanged,
     // so a reader who keeps a Japanese keyboard is not converted twice.
-    const converted = kind === 'reading' && !composing.current ? toKana(typed, { IMEMode: true }) : typed
+    const converted =
+      kind === 'reading' && !composing.current && atEnd ? toKana(typed, { IMEMode: true }) : typed
 
     setValue(converted)
     setRefused(false)
@@ -60,7 +78,7 @@ export function AnswerInput({
     // What is left over after that cannot become kana at all: a pasted kanji, a digit, a
     // consonant cluster no vowel finished. Refusing it is what keeps a verdict off an
     // answer nobody meant to send, and it is not a wrong reading, so it is not graded.
-    if (kind === 'reading' && !isKana(answer.trim())) {
+    if (kind === 'reading' && !isReading(answer.trim())) {
       setRefused(true)
       return
     }
@@ -83,7 +101,10 @@ export function AnswerInput({
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         onCompositionStart={() => {
-          composing.current = true
+          composing.current = false
+        }}
+        onCompositionUpdate={(event) => {
+          composing.current = isJapanese(event.data)
         }}
         onCompositionEnd={(event) => {
           composing.current = false
