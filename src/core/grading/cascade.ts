@@ -34,11 +34,21 @@ function matchesExactly({ answer, accepted }: GradedAnswer): boolean {
   return accepted.some((reference) => normalise(reference) === typed)
 }
 
-// Trim, compose, fold case, for both kinds. Composing before comparing is what makes
-// a dakuten typed as a combining mark the same answer, and it leaves a small kana
-// alone, which is the distinction a reading rests on. Folding case is a no-op on kana,
-// which carries none, so one path serves both kinds rather than a branch reading as a
-// rule that is not one.
+const KATAKANA = /[ァ-ヶ]/g
+// Katakana sits one fixed offset above hiragana across that whole block, which is what
+// makes the fold a mapping between spellings rather than a judgement about the answer.
+const TO_HIRAGANA = 0x60
+
+// Only what cannot make a wrong answer right. NFKC composes a dakuten onto its kana and
+// pulls half-width kana and full-width Latin onto their canonical forms, leaving a small
+// kana small, which is the distinction a reading rests on. The prolonged sound mark is
+// outside the folded block on purpose: コー and こう are two readings and the reference
+// says which one the item wants. Case folding is a no-op on kana, so one path serves
+// both answer kinds rather than a branch reading as a rule that is not one.
 function normalise(value: string): string {
-  return value.trim().normalize('NFC').toLowerCase()
+  return value
+    .trim()
+    .normalize('NFKC')
+    .replace(KATAKANA, (kana) => String.fromCharCode(kana.charCodeAt(0) - TO_HIRAGANA))
+    .toLowerCase()
 }
