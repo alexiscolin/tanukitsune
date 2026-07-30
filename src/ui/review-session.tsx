@@ -32,18 +32,13 @@ export function ReviewSession({
 }) {
   const [index, setIndex] = useState(0)
   const [answered, setAnswered] = useState<Answered | null>(null)
-  const [correct, setCorrect] = useState(0)
 
   const entry = queue[index]
 
+  // No tally, because v0.1 refuses statistics and a number nothing persists is one the
+  // reader cannot check. What was answered is in the log, once there is a log.
   if (entry === undefined) {
-    return (
-      <section className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">{copy.done}</h1>
-        <p className={MUTED}>{copy.score}</p>
-        <p className="text-2xl">{`${correct} / ${queue.length}`}</p>
-      </section>
-    )
+    return <h1 className="text-3xl font-semibold tracking-tight">{copy.done}</h1>
   }
 
   // What the reader is left with once nothing overrode anything, and null while no tier
@@ -78,7 +73,6 @@ export function ReviewSession({
   }
 
   function advance() {
-    if (verdict === 'correct') setCorrect(correct + 1)
     setAnswered(null)
     setIndex(index + 1)
   }

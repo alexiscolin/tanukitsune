@@ -22,7 +22,6 @@ export type ReviewCopy = {
   readonly gradeIncorrect: string
   readonly next: string
   readonly done: string
-  readonly score: string
 }
 
 export type SiteCopy = {
@@ -56,7 +55,6 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
       gradeIncorrect: "C'était faux",
       next: 'Suivant',
       done: 'Session terminée',
-      score: 'Réponses justes',
     },
   },
 }

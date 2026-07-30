@@ -81,7 +81,7 @@ describe('ReviewSession', () => {
     expect(screen.queryByRole('button', { name: COPY.next })).toBeNull()
   })
 
-  it('counts what the reader graded correct and ends on the score', async () => {
+  it('ends the session once the last entry has been graded and left', async () => {
     render(<ReviewSession queue={[MEANING]} copy={COPY} />)
 
     answer("de l'eau")
@@ -90,7 +90,6 @@ describe('ReviewSession', () => {
     press(COPY.next)
 
     expect(screen.getByText(COPY.done)).toBeTruthy()
-    expect(screen.getByText('1 / 1')).toBeTruthy()
   })
 
   it('keeps self-grade on a verdict the cascade decided, since the override is the labelled disagreement', async () => {
@@ -104,7 +103,7 @@ describe('ReviewSession', () => {
 
     press(COPY.next)
 
-    expect(screen.getByText('0 / 1')).toBeTruthy()
+    expect(screen.getByText(COPY.done)).toBeTruthy()
   })
 
   it('puts the focus on the button that continues once a verdict stands', async () => {
