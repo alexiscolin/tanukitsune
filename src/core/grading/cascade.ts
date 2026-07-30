@@ -1,0 +1,47 @@
+import type { AnswerKind } from '../answer-kind'
+import type { GradedAnswer, JudgePort } from './judge-port'
+
+// Travels into every verdict, so a case replayed later can be told apart from one
+// the same answer would produce today.
+const JUDGE_VERSION = 1
+
+type CascadeOutcome =
+  | { readonly verdict: 'correct' | 'incorrect'; readonly decidedBy: `exact:${number}` | `judge:${number}` }
+  // Nobody decided, so nothing claims to have: the reader grades it and the
+  // interface shows the item card while asking.
+  | { readonly verdict: 'undecided' }
+
+// The stages in cost order, reaching for the port only where the free one cannot
+// decide. A reading never reaches it: an edit of one character accepts こうえん for
+// こうねん, which turns a wrong reading into a correct one and teaches it.
+export async function runCascade(answer: GradedAnswer, port: JudgePort | null): Promise<CascadeOutcome> {
+  const decidedBy = `exact:${JUDGE_VERSION}` as const
+
+  if (matchesExactly(answer)) return { verdict: 'correct', decidedBy }
+  if (answer.kind === 'reading') return { verdict: 'incorrect', decidedBy }
+  if (port === null) return { verdict: 'undecided' }
+
+  const judged = await port.judge(answer)
+
+  // A meaning is never failed by a tier that could not place it, so an unsure
+  // judge is a question for the reader rather than a wrong answer.
+  if (judged === 'unsure') return { verdict: 'undecided' }
+
+  return { verdict: judged, decidedBy: `judge:${JUDGE_VERSION}` }
+}
+
+function matchesExactly({ kind, answer, accepted }: GradedAnswer): boolean {
+  const typed = normalise(answer, kind)
+
+  return accepted.some((reference) => normalise(reference, kind) === typed)
+}
+
+function normalise(value: string, kind: AnswerKind): string {
+  // Composed first, so a keyboard emitting a combining mark and one emitting the
+  // single character are the same answer. It composes a dakuten onto its kana and
+  // leaves a small kana alone, which is the distinction a reading rests on.
+  const composed = value.trim().normalize('NFC')
+
+  // Kana carries no case. Folding it would be a no-op that reads as a rule.
+  return kind === 'reading' ? composed : composed.toLowerCase()
+}
