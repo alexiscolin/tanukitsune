@@ -39,13 +39,24 @@ export function ReviewSession({
 }) {
   const [index, setIndex] = useState(0)
   const [answered, setAnswered] = useState<Answered | null>(null)
+  const end = useRef<HTMLHeadingElement>(null)
 
   const entry = queue[index]
+
+  // The button that ended the session left with the focus on it, so the end takes it like
+  // every other step of the loop does rather than dropping it on the document.
+  useEffect(() => {
+    end.current?.focus()
+  }, [entry])
 
   // No tally, because v0.1 refuses statistics and a number nothing persists is one the
   // reader cannot check. What was answered is in the log, once there is a log.
   if (entry === undefined) {
-    return <h1 className="text-3xl font-semibold tracking-tight">{copy.done}</h1>
+    return (
+      <h1 ref={end} tabIndex={-1} className="text-3xl font-semibold tracking-tight outline-none">
+        {copy.done}
+      </h1>
+    )
   }
 
   // An expression rather than a declaration, which is hoisted and would therefore be read
