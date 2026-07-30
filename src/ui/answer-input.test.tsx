@@ -76,6 +76,15 @@ describe('AnswerInput', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
+  it('lets nothing but the editor change the field, so the verdict grades what was typed', () => {
+    const { field } = renderInput()
+
+    expect(field.getAttribute('autocorrect')).toBe('off')
+    expect(field.getAttribute('autocapitalize')).toBe('off')
+    expect(field.getAttribute('autocomplete')).toBe('off')
+    expect(field.getAttribute('spellcheck')).toBe('false')
+  })
+
   it('declares a reading field Japanese, so a screen reader and a keyboard pick the right language', () => {
     const { field } = renderInput('reading')
 

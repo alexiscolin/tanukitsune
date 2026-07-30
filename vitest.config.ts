@@ -2,9 +2,11 @@ import { fileURLToPath } from 'node:url'
 
 import { defineConfig } from 'vitest/config'
 
-// Two projects rather than one DOM for everything: core/ is pure, and running it
-// under jsdom would let a module there reach a browser global the layer forbids
-// without a single test failing.
+// Two projects rather than one DOM for everything. A test of a component needs a
+// document and a test of core/ must not have one: under jsdom, a pure module could
+// reach a browser global the layer forbids without a single test failing. The line
+// is drawn on the extension, which is the only thing a runner can see before it
+// loads a file, and every component test is a .tsx by the framework's own rule.
 export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },

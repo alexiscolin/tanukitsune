@@ -16,6 +16,7 @@ The governing rule everything below arranges itself around is stated and argued 
 | Five reviewers through `/pre-pr`, six when the branch touches markdown | when a human asks | subscription | their findings are advisory, their pass record is not |
 | `check-review-coverage.sh`, the coverage gate | every pull request | zero tokens | the merge |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
+| The composition pass on one physical iPhone and one physical Android | before each release | a person's time | the release, by agreement, since nothing mechanical can hold it |
 
 **No model runs in CI, and no model runs on its own anywhere.** A reviewer in CI would be metered for
 a reading the subscription already covers locally, so every model pass goes through `/pre-pr`, once,
@@ -44,7 +45,7 @@ browser and a database.
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `build` | Next | anything only the server compilation sees |
-| `test` | Vitest | logic in `core/` in Node and components in jsdom, nineteen tests over five modules |
+| `test` | Vitest | logic in `core/` in Node and components in jsdom, twenty tests over five modules |
 | `knip` | knip | unused exports, files and dependencies |
 | `dupes` | jscpd | literal copy-paste, 70 tokens and 8 lines at weak mode |
 
@@ -208,6 +209,9 @@ without any of them running unprompted.
   renders inside that layout and calls `notFound()`, which is why the axe audit passes on it. Closing the real one needs a root layout
   owning `<html>`, which `[locale]/layout.tsx` owns today in order to vary `lang` per locale, so it is
   a restructure rather than a redirect.
+- No automated driver produces a real conversion, so the component test covers synthetic composition
+  events and the behaviour on a device is covered by the manual pass alone, dated in
+  [`agent-log.md`](agent-log.md) with the devices and the operating system versions.
 - Nothing measures the quality of a plan, which `workflow.md` names as where attention matters most.
 - The conformity reviewer reads the whole documentation set on every pass, so its cost grows with the
   documentation rather than with the change.
