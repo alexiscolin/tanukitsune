@@ -53,17 +53,21 @@ export function AnswerInput({
     compositionEndedAt.current = press.compositionEndedAt
     if (!press.submits || value.trim() === '') return
 
-    // A reading holding anything but kana is not an answer yet: the conversion never
-    // finished, or the text was pasted. Refusing it is what keeps the judge from
-    // grading a verdict on something nobody meant to send.
-    if (kind === 'reading' && !isKana(value.trim())) {
+    // Enter is the keystroke saying none follows, so the editor's held n is decided here
+    // rather than left ambiguous: what it was waiting for cannot arrive any more.
+    const answer = kind === 'reading' ? toKana(value) : value
+
+    // What is left over after that cannot become kana at all: a pasted kanji, a digit, a
+    // consonant cluster no vowel finished. Refusing it is what keeps a verdict off an
+    // answer nobody meant to send, and it is not a wrong reading, so it is not graded.
+    if (kind === 'reading' && !isKana(answer.trim())) {
       setRefused(true)
       return
     }
 
-    // Raw, because what counts as a match is the judge's decision and normalising
-    // here would hand it an answer nobody typed.
-    onSubmit(value)
+    // Otherwise as the reader left it. The field owns the conversion and the judge owns
+    // what counts as a match, so normalising here would hand it an answer nobody typed.
+    onSubmit(answer)
     setValue('')
   }
 
