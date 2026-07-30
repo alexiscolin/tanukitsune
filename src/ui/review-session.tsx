@@ -102,6 +102,8 @@ export function ReviewSession({
           kind={entry.kind}
           label={copy.answerLabel}
           unconverted={copy.unconverted}
+          // Every field but the first one replaced a verdict the reader has just left.
+          autoFocus={index > 0}
           onSubmit={(raw) => {
             void submit(raw)
           }}

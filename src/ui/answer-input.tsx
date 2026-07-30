@@ -49,21 +49,20 @@ function convertReading(buffer: string, next: string, shown: string, atEnd: bool
 // Enter would send the answer and dismiss the verdict it produced. Only the paths that act
 // consume it, which leaves an editor the Enter it is confirming a conversion with.
 //
-// The field takes the focus as it mounts, and one is mounted per question, so the key that
-// moved the session on lands in the answer to the next one. Without it the focus falls on
-// nothing when the control that advanced leaves, and every question has to be clicked
-// before it can be typed.
-export function AnswerInput({
-  kind,
-  label,
-  unconverted,
-  onSubmit,
-}: {
+// The field takes the focus as it mounts when it replaced another one, so the key that moved
+// the session on lands in the answer to the next question. Without it the focus falls on
+// nothing when the control that advanced leaves, and every question has to be clicked before
+// it can be typed. The caller decides, because the first field of a session replaced nothing
+// and taking the focus there reads the field out before the question it answers.
+type AnswerInputProps = {
   kind: AnswerKind
   label: string
   unconverted: string
+  autoFocus: boolean
   onSubmit: (raw: string) => void
-}) {
+}
+
+export function AnswerInput({ kind, label, unconverted, autoFocus, onSubmit }: AnswerInputProps) {
   const fieldId = useId()
   const messageId = useId()
   const [value, setValue] = useState('')
@@ -148,7 +147,7 @@ export function AnswerInput({
           composing.current = false
           compositionEndedAt.current = event.nativeEvent.timeStamp
         }}
-        autoFocus
+        autoFocus={autoFocus}
         aria-invalid={refusals > 0 || undefined}
         aria-describedby={refusals > 0 ? messageId : undefined}
         // A reading is typed in Japanese; a meaning is typed in whichever language
