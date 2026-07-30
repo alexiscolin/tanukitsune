@@ -15,9 +15,17 @@ function type(field: HTMLInputElement, romaji: string) {
   for (const key of romaji) fireEvent.change(field, { target: { value: field.value + key } })
 }
 
-function renderInput(kind: AnswerKind) {
+function renderInput(kind: AnswerKind, { autoFocus = false } = {}) {
   const onSubmit = vi.fn()
-  render(<AnswerInput kind={kind} label="Réponse" unconverted={UNCONVERTED} onSubmit={onSubmit} />)
+  render(
+    <AnswerInput
+      kind={kind}
+      label="Réponse"
+      unconverted={UNCONVERTED}
+      autoFocus={autoFocus}
+      onSubmit={onSubmit}
+    />,
+  )
 
   return { field: screen.getByLabelText<HTMLInputElement>('Réponse'), onSubmit }
 }
@@ -75,10 +83,18 @@ describe('AnswerInput', () => {
     expect(onSubmit).toHaveBeenCalledWith('みず')
   })
 
-  it('takes the focus as it appears, since one field is mounted per question', () => {
-    const { field } = renderInput('reading')
+  it('takes the focus as it appears when it replaced another field', () => {
+    const { field } = renderInput('reading', { autoFocus: true })
 
     expect(document.activeElement).toBe(field)
+  })
+
+  // The first field of a session is not a field that replaced anything, and taking the
+  // focus there reads the field to a screen reader before the question it answers.
+  it('leaves the focus alone otherwise', () => {
+    renderInput('reading')
+
+    expect(document.activeElement).toBe(document.body)
   })
 
   // `fireEvent` returns false when the handler prevented the default, which is the only

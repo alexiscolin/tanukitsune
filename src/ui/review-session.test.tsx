@@ -46,6 +46,14 @@ describe('ReviewSession', () => {
     expect(screen.getByText(COPY.prompt.reading)).toBeTruthy()
   })
 
+  // Read before it is offered: the first field of a session replaced nothing, so a reader
+  // using a screen reader hears the subject and what is wanted rather than a text field.
+  it('leaves the focus alone on the first entry', () => {
+    render(<ReviewSession queue={[READING, MEANING]} copy={COPY} />)
+
+    expect(document.activeElement).toBe(document.body)
+  })
+
   it('decides an exact reading and asks the next entry', async () => {
     render(<ReviewSession queue={[READING, MEANING]} copy={COPY} />)
 
