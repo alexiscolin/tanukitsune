@@ -4,7 +4,7 @@ import { useId, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 
 import type { AnswerKind } from '@/core/answer-kind'
-import { enterSubmits } from '@/core/composition-gate'
+import { pressEnter } from '@/core/composition-gate'
 
 export function AnswerInput({
   kind,
@@ -26,15 +26,12 @@ export function AnswerInput({
     // so this is also what keeps a keycode of 229 from ever reaching the gate.
     if (event.key !== 'Enter') return
 
-    const submits = enterSubmits({
-      isComposing: event.nativeEvent.isComposing,
-      pressedAt: event.nativeEvent.timeStamp,
-      compositionEndedAt: compositionEndedAt.current,
-    })
-    // Cleared whichever way the gate decided: one confirmation swallows exactly
-    // one Enter, which leaves the window to cover a conversion committed by a tap.
-    compositionEndedAt.current = null
-    if (!submits || value.trim() === '') return
+    const press = pressEnter(
+      { isComposing: event.nativeEvent.isComposing, pressedAt: event.nativeEvent.timeStamp },
+      compositionEndedAt.current,
+    )
+    compositionEndedAt.current = press.compositionEndedAt
+    if (!press.submits || value.trim() === '') return
 
     // Raw, because what counts as a match is the judge's decision and normalising
     // here would hand it an answer nobody typed.
