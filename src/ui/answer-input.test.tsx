@@ -7,9 +7,11 @@ import { AnswerInput } from './answer-input'
 
 afterEach(cleanup)
 
+const UNCONVERTED = "La conversion n'est pas terminée."
+
 function renderInput(kind: AnswerKind) {
   const onSubmit = vi.fn()
-  render(<AnswerInput kind={kind} label="Réponse" onSubmit={onSubmit} />)
+  render(<AnswerInput kind={kind} label="Réponse" unconverted={UNCONVERTED} onSubmit={onSubmit} />)
 
   return { field: screen.getByLabelText<HTMLInputElement>('Réponse'), onSubmit }
 }
@@ -95,5 +97,99 @@ describe('AnswerInput', () => {
     const { field } = renderInput('meaning')
 
     expect(field.hasAttribute('lang')).toBe(false)
+  })
+})
+
+describe('AnswerInput, converting a reading', () => {
+  it('turns romaji into kana as it is typed, so no Japanese keyboard is needed', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'mizu' } })
+
+    expect(field.value).toBe('みず')
+  })
+
+  it('holds an ambiguous n until the next keystroke decides it', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'kan' } })
+    expect(field.value).toBe('かn')
+
+    fireEvent.change(field, { target: { value: 'かni' } })
+    expect(field.value).toBe('かに')
+  })
+
+  it('leaves a meaning alone, since it is typed in the language of the interface', () => {
+    const { field, onSubmit } = renderInput('meaning')
+
+    fireEvent.change(field, { target: { value: 'eau' } })
+    fireEvent.keyDown(field, { key: 'Enter' })
+
+    expect(field.value).toBe('')
+    expect(onSubmit).toHaveBeenCalledWith('eau')
+  })
+
+  it('leaves the text to the editor while it is composing, rather than converting under it', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.compositionStart(field)
+    fireEvent.change(field, { target: { value: 'ka' } })
+
+    expect(field.value).toBe('ka')
+  })
+
+  it('converts again once the editor has handed the text back', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.compositionStart(field)
+    fireEvent.compositionEnd(field)
+    fireEvent.change(field, { target: { value: 'ka' } })
+
+    expect(field.value).toBe('か')
+  })
+})
+
+describe('AnswerInput, refusing a reading that is not kana', () => {
+  it('sends nothing, keeps the text, and says what is missing', () => {
+    const { field, onSubmit } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'kan' } })
+    fireEvent.keyDown(field, { key: 'Enter' })
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(field.value).toBe('かn')
+    expect(screen.getByText(UNCONVERTED)).toBeDefined()
+  })
+
+  it('marks the field invalid and points it at the message, for a reader who cannot see it', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'kan' } })
+    fireEvent.keyDown(field, { key: 'Enter' })
+
+    expect(field.getAttribute('aria-invalid')).toBe('true')
+    const describedBy = field.getAttribute('aria-describedby')
+    expect(describedBy).not.toBeNull()
+    expect(document.getElementById(describedBy ?? '')?.textContent).toBe(UNCONVERTED)
+  })
+
+  it('drops the message as soon as the reader types again', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'kan' } })
+    fireEvent.keyDown(field, { key: 'Enter' })
+    fireEvent.change(field, { target: { value: 'かんじ' } })
+
+    expect(screen.queryByText(UNCONVERTED)).toBeNull()
+    expect(field.getAttribute('aria-invalid')).toBeNull()
+  })
+
+  it('sends the reading once it is kana, and the prolonged sound mark counts as kana', () => {
+    const { field, onSubmit } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'こー' } })
+    fireEvent.keyDown(field, { key: 'Enter' })
+
+    expect(onSubmit).toHaveBeenCalledWith('こー')
   })
 })
