@@ -34,7 +34,7 @@ pnpm knip                  unused exports, files and dependencies
 pnpm dupes                 jscpd, copy-paste ratchet
 pnpm check:docs            documentation discipline
 pnpm check:review          a probe proving the review coverage gate refuses what it claims to
-pnpm check:tests           a probe proving the test strength gate refuses a lost assertion
+pnpm check:tests           a probe proving the test strength gate refuses a weakened test
 pnpm gate                  typecheck, check:docs, arch, lint, cheapest first: needs no database
 pnpm verify                gate, check:review, check:tests, build, test, knip, dupes
 ```

@@ -159,14 +159,29 @@ repo=$(scaffold conditional "$two")
 commit_test "$repo" src/a.test.ts "${two/it(/it.skipIf(true)(}"
 expect 'a test made conditional' "$repo" 2
 
-# A Playwright spec guarding a browser it cannot serve is correct work, and the same
-# trailer lifts the marker refusal as it lifts the count.
+# A conditional guard belongs in an e2e spec, which the marker refusal does not read:
+# scope answers the Playwright case rather than a declaration that would also lift a
+# marker a later commit adds.
 repo=$(scaffold guarded "$two")
-printf '%s' "${two/it(/it.skip(}" > "$repo/src/a.test.ts"
+mkdir -p "$repo/e2e"
+printf '%s' "${two/it(/it.skip(}" > "$repo/e2e/shell.spec.ts"
 git -C "$repo" add -A >/dev/null 2>&1
-git -C "$repo" commit -q -m 'test: guard the case' \
-  -m 'Test-weakened: src/a.test.ts the runner cannot serve this browser'
-expect 'a disabled test the range declares' "$repo" 0
+git -C "$repo" commit -qm 'test: guard a browser' >/dev/null 2>&1
+expect 'a conditional guard in an e2e spec' "$repo" 0
+
+# `todo` keeps the body too, so the count cannot see it either.
+repo=$(scaffold todo "$two")
+commit_test "$repo" src/a.test.ts "${two/it(/it.todo(}"
+expect 'a test marked todo' "$repo" 2
+
+# A declaration lifts the count and not the marker, since one is a delta and the other
+# a state: declaring a reduction must not license disabling the file later.
+repo=$(scaffold marker_not_lifted "$two")
+printf '%s' "${one/it(/it.skip(}" > "$repo/src/a.test.ts"
+git -C "$repo" add -A >/dev/null 2>&1
+git -C "$repo" commit -q -m 'refactor: fold and disable' \
+  -m 'Test-weakened: src/a.test.ts one toEqual asserts more'
+expect 'a declared reduction that also disables' "$repo" 2
 
 # A range with no test file in it has nothing to judge.
 repo=$(scaffold untouched "$two")

@@ -16,7 +16,7 @@
 # Exit codes are distinct so the probe can tell the refusals apart:
 #   0  no test file lost an assertion, and none is skipped
 #   1  a test file that still exists holds fewer assertions than it did
-#   2  a test is disabled, focused, or made conditional, and nothing declares it
+#   2  a unit test is disabled, focused, or made conditional
 #   3  the environment cannot answer
 #
 # A lint rule disabled in the range is deliberately not read: `eslint-disable` has
@@ -47,11 +47,10 @@ head=$(git rev-parse HEAD)
 # sharing a line would then hide the loss of one.
 assertions() { grep -o 'expect(' 2>/dev/null | wc -l | tr -d ' ' || true; }
 
-# Weakening is sometimes the right change: two assertions folded into one `toEqual`
-# assert more than they did, and a Playwright spec guarding one browser needs a
-# conditional skip. Refusing those would block correct work, which is worse than not
-# gating at all. So both refusals below are lifted when a commit in the range names the
-# file in a `Test-weakened:` trailer. Same shape as a dismissed finding in the
+# A reduction is sometimes the right change: two assertions folded into one `toEqual`
+# assert more than they did, and refusing that would block correct work, which is worse
+# than not gating at all. So the count below is lifted when a commit in the range names
+# the file in a `Test-weakened:` trailer. The marker refusal is not: see its own note. Same shape as a dismissed finding in the
 # review log, and for the same reason: what cannot be told from silence is not a
 # decision. The trailer is read from the whole range, since the commit that reduces and
 # the commit that explains need not be the same one.
@@ -89,13 +88,24 @@ while IFS= read -r -d '' status; do
 
   # Read before the baseline is required, so a test file the range introduces cannot
   # carry a skipped case through: the count needs two sides, the marker needs one.
-  # `skipIf` and `runIf` keep the body, so the count below cannot see them, and one
-  # `describe.skipIf(true)` neutralises a whole file. Lifted by the same trailer as the
-  # count, because a Playwright spec skipping a browser it cannot serve is correct work.
-  if printf '%s' "$current" | grep -qE '\b(it|test|describe)\.(skip|only|fixme|skipIf|runIf)\b' \
-    && ! printf '%s\n' "$declared" | grep -qxF -- "$f"; then
-    skipped+=$(printf '  %s\n' "$f")
-  fi
+  # `skipIf`, `runIf` and `todo` keep the body, so the count below cannot see them, and
+  # one `describe.skipIf(true)` neutralises a whole file.
+  #
+  # Absolute, and scoped to `*.test.*` rather than lifted by the trailer. The two
+  # refusals have different shapes: the count is a delta between two sides, so declaring
+  # it waives a bounded amount and the reduced count becomes the next baseline. A marker
+  # is a state read of the file at head, so one declaration would also lift a marker a
+  # later commit adds, and would be demanded again by every range that touches the file
+  # afterwards. A Playwright spec guarding a browser it cannot serve is the case that
+  # asked for an escape, and `e2e/*.spec.*` is where those live, so scope answers it
+  # without coupling the two. `.only` there is refused by `playwright.config.ts:17`.
+  case $f in
+    *.test.ts|*.test.tsx)
+      if printf '%s' "$current" | grep -qE '\b(it|test|describe)\.(skip|only|fixme|skipIf|runIf|todo)\b'; then
+        skipped+=$(printf '  %s\n' "$f")
+      fi
+      ;;
+  esac
 
   # A file the range introduces has no baseline to fall below. A rename carries its
   # baseline under the name it had.
@@ -117,8 +127,8 @@ if [ -n "$weakened" ]; then
 fi
 
 if [ -n "$skipped" ]; then
-  printf 'A test is disabled, focused, or made conditional:\n%s\n' "$skipped" >&2
-  printf 'If that is the right change, say so in a commit: `Test-weakened: <path> <reason>`.\n' >&2
+  printf 'A unit test is disabled, focused, or made conditional:\n%s\n' "$skipped" >&2
+  printf 'A conditional guard belongs in an e2e spec, which this does not read.\n' >&2
   exit 2
 fi
 
