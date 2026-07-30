@@ -100,8 +100,9 @@ tool call rather than an intention. `SubagentStop` fires per reviewer, which not
 `TeammateIdle` only fires inside an agent team.
 
 The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
-makes it impossible for an agent to declare done on code that does not compile. What it runs is in
-[`verification.md`](verification.md#the-one-hook). The arguments behind it are here.
+refuses the end of a turn on code that does not compile. What it runs, and what bounds that refusal to
+one forced continuation, is in [`verification.md`](verification.md#the-one-hook). The arguments behind it
+are here.
 
 **An event is not an intention, and a hook that has to guess which one it is looking at is not a
 guard.** A hook can see that a shell command ran; it cannot see that the command was about to open a
