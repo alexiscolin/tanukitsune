@@ -63,11 +63,14 @@ typos is therefore not available, and the eval sets in `ai/evals/` measure kana 
 `review_event.answer` holds the answer as submitted rather than a normalised form, for a reason that
 stands on its own and is stated in [`../specs/v0.1.md`](../specs/v0.1.md): a normalised answer freezes
 the rule that produced it, and the table is append-only. The judge cache keeps its own obligation
-unchanged, keying on the normalised answer and discarding the original.
+unchanged, in [`../framing.md`](../framing.md) under obligations.
 
 A reading that still holds anything but kana is refused with a message rather than graded, which is a
 product rule the predicate makes cheap: pasted romaji, a keyboard left in Latin mode and a conversion
-that never completed all land there.
+that never completed all land there. **The refusal gates the field, before the cascade**, which has no
+outcome for an answer that is not gradable and must not acquire one: a verdict is what it exists to
+produce. Both land with the slice that installs the dependency, so until then a reading holding romaji
+reaches no gate and would be graded as any other miss.
 
 The dependency is installed with the slice that imports it, not now, because a dependency nothing
 imports is one the dead-code gate is right to reject. It is MIT, has no runtime dependencies of its own
