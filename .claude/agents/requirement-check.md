@@ -42,4 +42,7 @@ deciding it yourself.
 linter enforces. If the code does the wrong thing well, that is your finding. If it does the right
 thing badly, it is somebody else's.
 
-If the diff delivers the requirement, no more and no less, say so in one line.
+If the diff delivers the requirement, no more and no less, say so in one line. Report only what affects
+correctness or a stated requirement and treat the rest as optional: a reviewer asked for gaps reports some
+whether or not they exist, and inventing a missing requirement is the failure mode of this lens in
+particular.
