@@ -3,12 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { runCascade } from '@/core/grading/cascade'
+import type { Verdict } from '@/core/grading/judge-port'
 import type { ReviewEntry } from '@/core/review-entry'
 import type { ReviewCopy } from '@/core/site-copy'
 
 import { AnswerInput } from './answer-input'
-
-type Verdict = 'correct' | 'incorrect'
 
 // The two are kept apart rather than one overwriting the other: what the cascade produced
 // and what the reader said instead are the labelled disagreement a review event carries,
@@ -16,6 +15,14 @@ type Verdict = 'correct' | 'incorrect'
 type Answered = {
   readonly decided: Verdict | null
   readonly overridden: Verdict | null
+}
+
+const GRADES = ['correct', 'incorrect'] as const
+
+// The one place the override wins, so the message and the buttons cannot come to disagree
+// about the same answer. Null while no tier decided and the reader has not either.
+function verdictOf({ decided, overridden }: Answered): Verdict | null {
+  return overridden ?? decided
 }
 
 const BUTTON =
@@ -40,10 +47,6 @@ export function ReviewSession({
   if (entry === undefined) {
     return <h1 className="text-3xl font-semibold tracking-tight">{copy.done}</h1>
   }
-
-  // What the reader is left with once nothing overrode anything, and null while no tier
-  // decided: the session owns no verdict then, so there is nothing to move on from.
-  const verdict = answered === null ? null : (answered.overridden ?? answered.decided)
 
   // An expression rather than a declaration, which is hoisted and would therefore be read
   // as able to run before the entry above it was found.
@@ -94,7 +97,7 @@ export function ReviewSession({
           the document before its content changes: one inserted with its text already in it
           is the case a screen reader routinely says nothing about. */}
       <p role="status" className="text-lg">
-        {answered === null ? '' : verdictMessage(verdict, copy)}
+        {answered === null ? '' : verdictMessage(verdictOf(answered), copy)}
       </p>
 
       {answered === null ? (
@@ -122,9 +125,7 @@ export function ReviewSession({
 }
 
 function verdictMessage(verdict: Verdict | null, copy: ReviewCopy): string {
-  if (verdict === null) return copy.askSelfGrade
-
-  return verdict === 'correct' ? copy.correct : copy.incorrect
+  return verdict === null ? copy.askSelfGrade : copy.verdict[verdict]
 }
 
 function VerdictPanel({
@@ -140,7 +141,7 @@ function VerdictPanel({
   onGrade: (said: Verdict) => void
   onAdvance: () => void
 }) {
-  const verdict = answered.overridden ?? answered.decided
+  const verdict = verdictOf(answered)
   const panel = useRef<HTMLDivElement>(null)
   const next = useRef<HTMLButtonElement>(null)
 
@@ -166,19 +167,14 @@ function VerdictPanel({
         </div>
       )}
 
-      {/* One pair of labels for the three states: undecided offers both, and a decided
+      {/* Every verdict the standing one is not: undecided offers both, and a decided
           verdict offers the other one, which is the override. */}
       <div className="flex flex-wrap gap-2">
-        {verdict === 'correct' ? null : (
-          <button type="button" onClick={() => onGrade('correct')} className={BUTTON}>
-            {copy.gradeCorrect}
+        {GRADES.filter((said) => said !== verdict).map((said) => (
+          <button key={said} type="button" onClick={() => onGrade(said)} className={BUTTON}>
+            {copy.grade[said]}
           </button>
-        )}
-        {verdict === 'incorrect' ? null : (
-          <button type="button" onClick={() => onGrade('incorrect')} className={BUTTON}>
-            {copy.gradeIncorrect}
-          </button>
-        )}
+        ))}
         {/* An answer no tier decided has no button here at all: it is graded first. */}
         {verdict === null ? null : (
           <button ref={next} type="button" onClick={onAdvance} className={BUTTON}>

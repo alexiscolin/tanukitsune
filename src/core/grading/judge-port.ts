@@ -13,9 +13,14 @@ export type GradedAnswer = {
   readonly accepted: AcceptedAnswers
 }
 
+// What a tier concludes about an answer. Named beside the port for the reason the tuple
+// above is: the cascade that produces one and the screen that holds it until the reader
+// disagrees must not spell it apart.
+export type Verdict = 'correct' | 'incorrect'
+
 // Declared here rather than in ai/, so core/ never learns that a model exists.
 // ai/ implements it, app/ wires the two, and the cascade is tested with a fake.
 // A judge that cannot tell says so, and the reader decides instead.
 export type JudgePort = {
-  readonly judge: (answer: GradedAnswer) => Promise<'correct' | 'incorrect' | 'unsure'>
+  readonly judge: (answer: GradedAnswer) => Promise<Verdict | 'unsure'>
 }

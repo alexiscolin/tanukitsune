@@ -59,7 +59,7 @@ describe('ReviewSession', () => {
 
     answer('mizu')
 
-    expect(await screen.findByText(COPY.correct)).toBeTruthy()
+    expect(await screen.findByText(COPY.verdict.correct)).toBeTruthy()
 
     press(COPY.next)
 
@@ -74,7 +74,7 @@ describe('ReviewSession', () => {
 
     answer('mizo')
 
-    expect(await screen.findByText(COPY.incorrect)).toBeTruthy()
+    expect(await screen.findByText(COPY.verdict.incorrect)).toBeTruthy()
     expect(screen.getByText('みず')).toBeTruthy()
   })
 
@@ -84,7 +84,7 @@ describe('ReviewSession', () => {
     answer("de l'eau")
 
     expect(await screen.findByText(COPY.askSelfGrade)).toBeTruthy()
-    expect(screen.queryByText(COPY.incorrect)).toBeNull()
+    expect(screen.queryByText(COPY.verdict.incorrect)).toBeNull()
     // Nothing to move on to: an answer nobody decided is not an answer the session owns.
     expect(screen.queryByRole('button', { name: COPY.next })).toBeNull()
   })
@@ -94,7 +94,7 @@ describe('ReviewSession', () => {
 
     answer("de l'eau")
     expect(await screen.findByText(COPY.askSelfGrade)).toBeTruthy()
-    press(COPY.gradeCorrect)
+    press(COPY.grade.correct)
     press(COPY.next)
 
     expect(screen.getByText(COPY.done)).toBeTruthy()
@@ -104,10 +104,10 @@ describe('ReviewSession', () => {
     render(<ReviewSession queue={[READING]} copy={COPY} />)
 
     answer('mizu')
-    expect(await screen.findByText(COPY.correct)).toBeTruthy()
-    press(COPY.gradeIncorrect)
+    expect(await screen.findByText(COPY.verdict.correct)).toBeTruthy()
+    press(COPY.grade.incorrect)
 
-    expect(screen.getByText(COPY.incorrect)).toBeTruthy()
+    expect(screen.getByText(COPY.verdict.incorrect)).toBeTruthy()
 
     press(COPY.next)
 
@@ -118,7 +118,7 @@ describe('ReviewSession', () => {
     render(<ReviewSession queue={[READING]} copy={COPY} />)
 
     answer('mizu')
-    expect(await screen.findByText(COPY.correct)).toBeTruthy()
+    expect(await screen.findByText(COPY.verdict.correct)).toBeTruthy()
 
     expect(document.activeElement).toBe(screen.getByRole('button', { name: COPY.next }))
   })
@@ -133,7 +133,7 @@ describe('ReviewSession', () => {
     // question takes the focus rather than letting it fall to the document.
     expect(document.activeElement).not.toBe(document.body)
     expect(
-      document.activeElement?.contains(screen.getByRole('button', { name: COPY.gradeCorrect })),
+      document.activeElement?.contains(screen.getByRole('button', { name: COPY.grade.correct })),
     ).toBe(true)
   })
 
@@ -141,10 +141,10 @@ describe('ReviewSession', () => {
     render(<ReviewSession queue={[READING]} copy={COPY} />)
 
     answer('mizo')
-    expect(await screen.findByText(COPY.incorrect)).toBeTruthy()
-    press(COPY.gradeCorrect)
+    expect(await screen.findByText(COPY.verdict.incorrect)).toBeTruthy()
+    press(COPY.grade.correct)
 
-    expect(screen.getByText(COPY.correct)).toBeTruthy()
+    expect(screen.getByText(COPY.verdict.correct)).toBeTruthy()
     expect(screen.getByText('みず')).toBeTruthy()
   })
 
@@ -154,6 +154,6 @@ describe('ReviewSession', () => {
     answer('123')
 
     expect(await screen.findByText(COPY.unconverted)).toBeTruthy()
-    expect(screen.queryByText(COPY.incorrect)).toBeNull()
+    expect(screen.queryByText(COPY.verdict.incorrect)).toBeNull()
   })
 })

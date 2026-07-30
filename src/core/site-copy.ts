@@ -1,4 +1,5 @@
 import type { AnswerKind } from './answer-kind'
+import type { Verdict } from './grading/judge-port'
 import { DEFAULT_LOCALE, isLocale } from './locales'
 import type { Locale } from './locales'
 
@@ -12,14 +13,14 @@ export type ReviewCopy = {
   readonly prompt: Record<AnswerKind, string>
   readonly answerLabel: string
   readonly unconverted: string
-  readonly correct: string
-  readonly incorrect: string
+  // Keyed by the verdict for the reason the question is keyed by the kind: a verdict added
+  // without its word is a type error rather than a blank line where the answer was judged.
+  readonly verdict: Record<Verdict, string>
   readonly expected: string
   readonly askSelfGrade: string
-  // One pair of labels for the three states, because each of them asks the same question:
-  // say what the answer was. Undecided offers both, a decided verdict offers the other one.
-  readonly gradeCorrect: string
-  readonly gradeIncorrect: string
+  // One label per verdict for the three states, because each asks the same question: say
+  // what the answer was. Undecided offers both, a decided verdict offers the other one.
+  readonly grade: Record<Verdict, string>
   readonly next: string
   readonly done: string
 }
@@ -47,12 +48,10 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
       prompt: { meaning: 'Sens', reading: 'Lecture' },
       answerLabel: 'Réponse',
       unconverted: "Cette réponse n'est pas une lecture en kana.",
-      correct: 'Juste',
-      incorrect: 'Faux',
+      verdict: { correct: 'Juste', incorrect: 'Faux' },
       expected: 'Attendu',
       askSelfGrade: "Rien n'a pu trancher. C'était juste ?",
-      gradeCorrect: "C'était juste",
-      gradeIncorrect: "C'était faux",
+      grade: { correct: "C'était juste", incorrect: "C'était faux" },
       next: 'Suivant',
       done: 'Session terminée',
     },
