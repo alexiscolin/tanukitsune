@@ -30,8 +30,10 @@ the gate refuses a merge nobody reviewed, and cannot refuse one somebody only cl
 
 ## The commands
 
-`pnpm gate` is `typecheck`, `lint`, `arch` and `check:docs`. Seconds, no database, which is what makes
-it usable from a hook that runs at every turn.
+`pnpm gate` is `typecheck`, `check:docs`, `arch` and `lint`, in that order because `&&` stops at the
+first failure and the four cost 0.9, 0.9, 1.2 and 4.0 seconds: a boundary or documentation failure is
+reported in about two seconds rather than after the type-aware lint has run. Seven seconds in all, no
+database, which is what makes it usable from a hook that runs at every turn.
 
 `pnpm verify` is `gate` plus `check:review`, `check:tests`, `build`, `test`, `knip` and `dupes`. `build`
 is the only gate that evaluates server modules. `test:e2e` sits outside both and runs in its own CI job,
