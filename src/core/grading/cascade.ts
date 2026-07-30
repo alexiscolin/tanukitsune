@@ -2,7 +2,7 @@ import type { GradedAnswer, JudgePort } from './judge-port'
 
 // One version per tier, because the two change for different reasons: a judge prompt
 // must not relabel a row the exact tier decided, and a change to normalise must.
-const EXACT_TIER = 'exact:1'
+const EXACT_TIER = 'exact:2'
 const JUDGE_TIER = 'judge:1'
 
 type CascadeOutcome =
@@ -34,9 +34,10 @@ function matchesExactly({ answer, accepted }: GradedAnswer): boolean {
   return accepted.some((reference) => normalise(reference) === typed)
 }
 
+// Bounded at ヶ, the last katakana with a hiragana counterpart one fixed offset below.
+// What that leaves out is deliberate: ヷ and its neighbours have no counterpart, and the
+// prolonged sound mark is a difference between two readings rather than two spellings.
 const KATAKANA = /[ァ-ヶ]/g
-// Katakana sits one fixed offset above hiragana across that whole block, which is what
-// makes the fold a mapping between spellings rather than a judgement about the answer.
 const TO_HIRAGANA = 0x60
 
 // Only what cannot make a wrong answer right. NFKC composes a dakuten onto its kana and
