@@ -155,9 +155,7 @@ adds: the behaviour from the user's side, the layer the work sits in, each file 
 the call site of every key function. It reports no defect, writes nothing, and appends no line to the
 review log, so it changes nothing about what a pass records or what the coverage gate counts. It rides
 along with the lenses because it reads the same diff, and it earns its place on the one question the
-diff cannot answer on its own: where a new symbol is plugged in, or whether anything calls it yet. That
-is why it appears in this document and not in [`verification.md`](verification.md), which is about what
-refuses a merge, and a description refuses nothing.
+diff cannot answer on its own: where a new symbol is plugged in, or whether anything calls it yet.
 
 **What replaces the automatic trigger is the merge button, not a reminder.** Reaching a pull request
 with unread code stops depending on anyone remembering, because `check-review-coverage.sh` runs as a

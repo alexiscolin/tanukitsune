@@ -59,13 +59,9 @@ cost a second wait for nothing.
 
 ## 4. The walkthrough, above the findings
 
-`change-walkthrough` returns five sections: what the user can now do, the layer the work sits in, the
-files and what each is for, every key function with the `file:line` it is called from, and what a reader
-would assume is present and is not.
-
-Report it **above** the findings and keep it separate from them. It answers a different question: the
-lenses say whether the change is sound, the walkthrough says what the change is. Merging the two costs
-the reader the only summary they have before opening the diff.
+Report the walkthrough **above** the findings and keep it separate from them. It answers a different
+question: the lenses say whether the change is sound, the walkthrough says what the change is. Merging
+the two costs the reader the only summary they have before opening the diff.
 
 Its output is the material for the pull request description, which the `subjects` job requires to carry
 the plan. Use it there rather than rewriting it.
