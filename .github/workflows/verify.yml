@@ -79,6 +79,13 @@ jobs:
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: bash scripts/check-review-coverage.sh "origin/$BASE_REF"
+      # Here rather than in a job of its own, so it refuses a merge from the day it is
+      # written: a fifth job would need adding to the required set before it gated
+      # anything, and a check that blocks nothing reads as a guard that is in place.
+      - name: No commit on this branch took an assertion away
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: bash scripts/check-test-strength.sh "origin/$BASE_REF"
 
   # One convention, one script, two places it is checked. Nothing blocks a commit
   # locally: an agent stopped mid-loop by a message check loses more than the

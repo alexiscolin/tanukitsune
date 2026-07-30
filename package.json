@@ -19,8 +19,9 @@
     "dupes": "jscpd src",
     "check:docs": "bash scripts/check-docs.sh",
     "check:review": "bash scripts/check-review-coverage-probe.sh",
+    "check:tests": "bash scripts/check-test-strength-probe.sh",
     "gate": "pnpm typecheck && pnpm lint && pnpm arch && pnpm check:docs",
-    "verify": "pnpm gate && pnpm check:review && pnpm build && pnpm test && pnpm knip && pnpm dupes",
+    "verify": "pnpm gate && pnpm check:review && pnpm check:tests && pnpm build && pnpm test && pnpm knip && pnpm dupes",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "test:e2e": "playwright test"

@@ -1,0 +1,85 @@
+#!/bin/bash
+# Refuses a range that weakens its own tests. Runs from the pull request job, and by
+# hand whenever the state is in question. Nothing calls a model from here.
+#
+# `red before green` is the rule this repository holds best and outallows least: the
+# failing test is committed before the implementation and never edited to reach green.
+# A commit that edits a test alongside the code it covers is allowed, because a rename
+# carried by a refactor is that, and four commits on the branch this was written
+# against do exactly it. What is never allowed is the same edit taking an assertion
+# away, and no linter can tell the two apart.
+#
+# The published detection signal for the same failure, only test files changed
+# alongside a failing check, does not apply here: tests change with their
+# implementation as a matter of course. Assertion count does apply, and it is the
+# discriminator this reads.
+#
+# Exit codes are distinct so the probe can tell the refusals apart:
+#   0  no test file lost an assertion, and none is skipped
+#   1  a test file that still exists holds fewer assertions than it did
+#   2  a test is skipped, focused, or marked fixme
+#   3  the environment cannot answer
+#
+# A lint rule disabled in the range is deliberately not read: `eslint-disable` has
+# legitimate uses, none occurs in this repository today, and refusing a pattern that
+# does not occur buys a false sense of coverage.
+#
+# Operates on the working directory rather than its own location, so the probe can run
+# it inside a throwaway repository. Reads committed state through `git show` rather
+# than the worktree, so what it judges is what a merge would take.
+
+set -uo pipefail
+
+base_ref=${1:-main}
+
+git rev-parse --git-dir >/dev/null 2>&1 || { printf 'Not a git repository.\n' >&2; exit 3; }
+git rev-parse HEAD >/dev/null 2>&1 || exit 3
+base=$(git merge-base "$base_ref" HEAD 2>/dev/null) || {
+  printf 'No merge base between %s and HEAD.\n' "$base_ref" >&2
+  exit 3
+}
+head=$(git rev-parse HEAD)
+
+[ "$base" = "$head" ] && { printf 'test strength: no commits over %s\n' "$base_ref"; exit 0; }
+
+# Counted on the assertion call rather than on the test case, because a case can lose
+# every assertion and still be a case, which is the shape this refuses. Counted per
+# occurrence and not per line: `grep -c` counts matching lines, and two assertions
+# sharing a line would then hide the loss of one.
+assertions() { grep -o 'expect(' 2>/dev/null | wc -l | tr -d ' ' || true; }
+
+weakened=''
+skipped=''
+
+while IFS= read -r f; do
+  [ -n "$f" ] || continue
+  # A file the range introduces has no baseline to fall below.
+  git cat-file -e "$base:$f" 2>/dev/null || continue
+  # A file the range removes is out of scope: deleting a test with the module it
+  # covered is a slice, and telling that apart from a deletion that hides a failure
+  # needs the module, which this does not read.
+  git cat-file -e "$head:$f" 2>/dev/null || continue
+
+  before=$(git show "$base:$f" | assertions)
+  after=$(git show "$head:$f" | assertions)
+  [ "$after" -lt "$before" ] &&
+    weakened+=$(printf '  %s: %s assertions, was %s\n' "$f" "$after" "$before")
+
+  if git show "$head:$f" | grep -qE '\b(it|test|describe)\.(skip|only|fixme)\b'; then
+    skipped+=$(printf '  %s\n' "$f")
+  fi
+done < <(git diff --name-only "$base..$head" -- \
+  '*.test.ts' '*.test.tsx' '*.spec.ts' '*.spec.tsx')
+
+if [ -n "$weakened" ]; then
+  printf 'A test file lost assertions in this range:\n%s\n' "$weakened" >&2
+  printf 'A test that has to change to pass means the plan was wrong.\n' >&2
+  exit 1
+fi
+
+if [ -n "$skipped" ]; then
+  printf 'A test is skipped, focused, or marked fixme:\n%s\n' "$skipped" >&2
+  exit 2
+fi
+
+echo "test strength: no assertion lost"

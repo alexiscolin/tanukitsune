@@ -34,8 +34,9 @@ pnpm knip                  unused exports, files and dependencies
 pnpm dupes                 jscpd, copy-paste ratchet
 pnpm check:docs            documentation discipline
 pnpm check:review          a probe proving the review coverage gate refuses what it claims to
+pnpm check:tests           a probe proving the test strength gate refuses a lost assertion
 pnpm gate                  typecheck, lint, arch, check:docs: seconds, needs no database
-pnpm verify                gate, check:review, build, test, knip, dupes
+pnpm verify                gate, check:review, check:tests, build, test, knip, dupes
 ```
 
 Run `pnpm verify` and show its output before saying work is done. Do not assert that something
