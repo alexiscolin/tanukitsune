@@ -79,10 +79,17 @@ repo=$(scaffold skipped "$two")
 commit_test "$repo" src/a.test.ts "${two/it(/it.skip(}"
 expect 'a skipped test' "$repo" 2
 
-# Focusing hides every other case in the file while the count holds.
+# Focusing hides every other case in the file while the count holds. Kept alongside the
+# skip case although both reach the same alternation: one hides a case and the other
+# hides every other, so a change narrowing the pattern to one of them has to fail here.
 repo=$(scaffold focused "$two")
 commit_test "$repo" src/a.test.ts "${two/it(/it.only(}"
 expect 'a focused test' "$repo" 2
+
+# The third alternative the pattern carries, untested until now.
+repo=$(scaffold fixme "$two")
+commit_test "$repo" src/a.test.ts "${two/it(/it.fixme(}"
+expect 'a test marked fixme' "$repo" 2
 
 # A reduction the range explains is a decision rather than a loss, and the trailer is
 # what tells the two apart.

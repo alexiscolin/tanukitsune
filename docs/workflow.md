@@ -151,9 +151,9 @@ is the grain the lenses want anyway: the failing test committed before the imple
 slice, and reading it alone produces findings about work that has not happened yet. `requirement-check`
 in particular cannot judge a slice that is not finished.
 
-**`change-walkthrough` runs in that same batch, and it is not a lens.** It describes what the branch
-adds: the behaviour from the user's side, the layer the work sits in, each file and what it is for, and
-the call site of every key function. It reports no defect, writes nothing, and appends no line to the
+**`change-walkthrough` runs in that same batch, and it is not a lens.** What it describes, and in which
+sections, is stated once in `.claude/agents/change-walkthrough.md`; restating it here is how the two
+drift. It reports no defect, writes nothing, and appends no line to the
 review log, so it changes nothing about what a pass records or what the coverage gate counts. It rides
 along with the lenses because it reads the same diff, and it earns its place on the one question the
 diff cannot answer on its own: where a new symbol is plugged in, or whether anything calls it yet.

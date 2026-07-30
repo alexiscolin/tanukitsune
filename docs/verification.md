@@ -46,7 +46,7 @@ because it needs a browser and a database.
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
-| `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, and still allows a declared one |
+| `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, a skipped, focused or fixme test, and still allows a declared reduction |
 | `build` | Next | anything only the server compilation sees |
 | `test` | Vitest | logic in `core/` in Node, and a component's own behaviour in jsdom |
 | `knip` | knip | unused exports, files and dependencies |
