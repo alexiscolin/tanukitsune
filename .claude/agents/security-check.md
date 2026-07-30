@@ -51,6 +51,6 @@ vulnerabilities, and do not propose adding a dependency.
 **Evidence bar.** Report exploitable defects with the path that reaches them, cited `file:line`. Not
 theoretical risk, not hardening suggestions.
 
-If you find nothing, say so in one line. Report only what affects correctness or a stated requirement and
-treat the rest as optional: a reviewer asked for gaps reports some whether or not they exist, and a
-defence added for an attack nobody can reach costs more than it buys.
+If you find nothing, say so in one line. Do not manufacture findings to appear useful: a reviewer
+prompted to find gaps will usually report some even when the work is sound, and chasing them
+produces exactly the defensive code and unnecessary abstraction this project is trying to avoid.

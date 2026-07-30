@@ -25,6 +25,7 @@ trip, or grows what ships to the browser.
 **Evidence bar.** Every claim needs a `file:line` citation. An inference from a name is not a finding.
 If you cannot point at the line, do not report it.
 
-If you find nothing, say so in one line. Do not fill the space. Report only what affects correctness or a
-stated requirement and treat the rest as optional: a reviewer asked for gaps reports some whether or not
-they exist, and an optimisation for a load nobody has measured is the same waste in another form.
+If you find nothing, say so in one line. Do not fill the space. Do not manufacture findings to
+appear useful: a reviewer prompted to find gaps will usually report some even when the work is
+sound, and chasing them produces exactly the defensive code and unnecessary abstraction this project
+is trying to avoid.
