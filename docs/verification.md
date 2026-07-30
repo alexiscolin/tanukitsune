@@ -16,7 +16,7 @@ The governing rule everything below arranges itself around is stated and argued 
 | Five reviewers through `/pre-pr`, six when the branch touches markdown | when a human asks | subscription | their findings are advisory, their pass record is not |
 | `check-review-coverage.sh`, the coverage gate | every pull request | zero tokens | the merge |
 | `/code-review ultra` | human decision, expensive changes | metered | nothing, advisory |
-| The composition pass on one physical iPhone and one physical Android | before each release | a person's time | the release, by agreement, since nothing mechanical can hold it |
+| A manual pass on one physical iPhone and one physical Android | before each release | a person's time | the release, by agreement, since nothing mechanical can hold it |
 
 **No model runs in CI, and no model runs on its own anywhere.** A reviewer in CI would be metered for
 a reading the subscription already covers locally, so every model pass goes through `/pre-pr`, once,

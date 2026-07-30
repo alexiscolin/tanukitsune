@@ -7,7 +7,7 @@ import { AnswerInput } from './answer-input'
 
 afterEach(cleanup)
 
-function renderInput(kind: AnswerKind = 'meaning') {
+function renderInput(kind: AnswerKind) {
   const onSubmit = vi.fn()
   render(<AnswerInput kind={kind} label="Réponse" onSubmit={onSubmit} />)
 
@@ -16,7 +16,7 @@ function renderInput(kind: AnswerKind = 'meaning') {
 
 describe('AnswerInput', () => {
   it('sends what was typed and empties the field for the next question', () => {
-    const { field, onSubmit } = renderInput()
+    const { field, onSubmit } = renderInput('meaning')
 
     fireEvent.change(field, { target: { value: 'eau' } })
     fireEvent.keyDown(field, { key: 'Enter' })
@@ -26,7 +26,7 @@ describe('AnswerInput', () => {
   })
 
   it('sends the answer unnormalised, because the judge is what decides what a match is', () => {
-    const { field, onSubmit } = renderInput()
+    const { field, onSubmit } = renderInput('meaning')
 
     fireEvent.change(field, { target: { value: '  Eau ' } })
     fireEvent.keyDown(field, { key: 'Enter' })
@@ -35,7 +35,7 @@ describe('AnswerInput', () => {
   })
 
   it('sends nothing from a field holding only whitespace, which is not an answer', () => {
-    const { field, onSubmit } = renderInput()
+    const { field, onSubmit } = renderInput('meaning')
 
     fireEvent.change(field, { target: { value: '   ' } })
     fireEvent.keyDown(field, { key: 'Enter' })
@@ -68,7 +68,7 @@ describe('AnswerInput', () => {
   })
 
   it('ignores a key that is not Enter, so the answer is still being typed', () => {
-    const { field, onSubmit } = renderInput()
+    const { field, onSubmit } = renderInput('meaning')
 
     fireEvent.change(field, { target: { value: 'ea' } })
     fireEvent.keyDown(field, { key: 'u' })
@@ -77,7 +77,7 @@ describe('AnswerInput', () => {
   })
 
   it('lets nothing but the editor change the field, so the verdict grades what was typed', () => {
-    const { field } = renderInput()
+    const { field } = renderInput('meaning')
 
     expect(field.getAttribute('autocorrect')).toBe('off')
     expect(field.getAttribute('autocapitalize')).toBe('off')

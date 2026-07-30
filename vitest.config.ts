@@ -1,5 +1,3 @@
-import { fileURLToPath } from 'node:url'
-
 import { defineConfig } from 'vitest/config'
 
 // Two projects rather than one DOM for everything. A test of a component needs a
@@ -9,7 +7,7 @@ import { defineConfig } from 'vitest/config'
 // loads a file, and every component test is a .tsx by the framework's own rule.
 export default defineConfig({
   resolve: {
-    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+    alias: { '@': `${import.meta.dirname}/src` },
   },
   test: {
     projects: [

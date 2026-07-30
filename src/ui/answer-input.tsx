@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, useRef, useState } from 'react'
-import type { CompositionEvent, KeyboardEvent } from 'react'
+import type { KeyboardEvent } from 'react'
 
 import type { AnswerKind } from '@/core/answer-kind'
 import { enterSubmits } from '@/core/composition-gate'
@@ -11,9 +11,9 @@ export function AnswerInput({
   label,
   onSubmit,
 }: {
-  readonly kind: AnswerKind
-  readonly label: string
-  readonly onSubmit: (raw: string) => void
+  kind: AnswerKind
+  label: string
+  onSubmit: (raw: string) => void
 }) {
   const fieldId = useId()
   const [value, setValue] = useState('')
@@ -42,10 +42,6 @@ export function AnswerInput({
     setValue('')
   }
 
-  function handleCompositionEnd(event: CompositionEvent<HTMLInputElement>) {
-    compositionEndedAt.current = event.nativeEvent.timeStamp
-  }
-
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={fieldId} className="text-sm text-[var(--color-ink-muted)]">
@@ -57,7 +53,9 @@ export function AnswerInput({
         value={value}
         onChange={(event) => setValue(event.target.value)}
         onKeyDown={handleKeyDown}
-        onCompositionEnd={handleCompositionEnd}
+        onCompositionEnd={(event) => {
+          compositionEndedAt.current = event.nativeEvent.timeStamp
+        }}
         // A reading is typed in Japanese; a meaning is typed in whichever language
         // the locale segment already declared on the document.
         lang={kind === 'reading' ? 'ja' : undefined}
