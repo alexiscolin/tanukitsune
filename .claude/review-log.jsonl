@@ -221,3 +221,7 @@
 {"date": "2026-07-30", "branch": "worktree-feat+kana-input", "reviewer": "code-review", "file": "src/core/demo-queue.ts", "line": 1, "outcome": "dismissed", "reason": "the open decision blocks publishing the corpus and committing the demo seed before either is public, and nothing here is public; the deck carries no generated content and no text from WaniKani, and the reader ruled that the licence question falls with the slice that deploys"}
 {"date": "2026-07-30", "branch": "worktree-feat+kana-input", "reviewer": "code-review", "file": "src/ui/answer-input.tsx", "line": 151, "outcome": "fixed"}
 {"date": "2026-07-30", "branch": "worktree-feat+kana-input", "kind": "pass", "base": "df5f8adc3afea2cbb2dc1e08bfe9ba27e503f75a", "head": "ad6ee1a50edc824ba487e2cf280c172c28a73bc3"}
+{"date": "2026-07-31", "branch": "worktree-feat+kana-input", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 42, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "worktree-feat+kana-input", "reviewer": "docs-conformity", "file": "docs/framing.md", "line": 44, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "worktree-feat+kana-input", "reviewer": "docs-conformity", "file": "docs/specs/v0.1.md", "line": 46, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "worktree-feat+kana-input", "kind": "pass", "base": "0b6c2732013aaa4f25c9563cc6853384a5d2cd1d", "head": "0425b94c77b55e5cdb3d7f697508c5b0c3868b37"}
