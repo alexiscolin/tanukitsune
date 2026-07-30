@@ -46,7 +46,7 @@ because it needs a browser and a database.
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
-| `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion |
+| `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, and still allows a declared one |
 | `build` | Next | anything only the server compilation sees |
 | `test` | Vitest | logic in `core/` in Node, and a component's own behaviour in jsdom |
 | `knip` | knip | unused exports, files and dependencies |
@@ -185,7 +185,7 @@ needs no secret, and costs nothing beyond runner minutes.
 |---|---|---|
 | `verify` | push to main, pull request | `pnpm verify`, then checks the build left `tsconfig.json` alone |
 | `e2e` | push to main, pull request | Playwright with the axe audit, against the production build and a server Postgres |
-| `review` | pull request | `check-review-coverage.sh` and `check-test-strength.sh`, over the head commit rather than the merge commit |
+| `review` | pull request | `check-review-coverage.sh` and `check-test-strength.sh`, over the head commit rather than the merge commit. A test file may lose assertions when a commit in the range says so in an `Assertions-reduced:` trailer naming it |
 | `subjects` | pull request | the title, every commit subject on the branch, and a description carrying the plan |
 
 `e2e` runs against a server Postgres rather than the file-backed local one, so the driver that runs in

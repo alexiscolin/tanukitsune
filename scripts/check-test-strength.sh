@@ -48,6 +48,15 @@ head=$(git rev-parse HEAD)
 # sharing a line would then hide the loss of one.
 assertions() { grep -o 'expect(' 2>/dev/null | wc -l | tr -d ' ' || true; }
 
+# A reduction is sometimes the right change: two assertions folded into one `toEqual`
+# assert more than they did, and refusing that would block correct work, which is worse
+# than not gating at all. So a reduction is allowed when a commit in the range names the
+# file in an `Assertions-reduced:` trailer. Same shape as a dismissed finding in the
+# review log, and for the same reason: what cannot be told from silence is not a
+# decision. The trailer is read from the whole range, since the commit that reduces and
+# the commit that explains need not be the same one.
+declared=$(git log --format=%B "$base..$head" | sed -n 's/^Assertions-reduced:[[:space:]]*//p')
+
 weakened=''
 skipped=''
 
@@ -62,8 +71,9 @@ while IFS= read -r f; do
 
   before=$(git show "$base:$f" | assertions)
   after=$(git show "$head:$f" | assertions)
-  [ "$after" -lt "$before" ] &&
+  if [ "$after" -lt "$before" ] && ! printf '%s\n' "$declared" | grep -qF "$f"; then
     weakened+=$(printf '  %s: %s assertions, was %s\n' "$f" "$after" "$before")
+  fi
 
   if git show "$head:$f" | grep -qE '\b(it|test|describe)\.(skip|only|fixme)\b'; then
     skipped+=$(printf '  %s\n' "$f")
@@ -73,7 +83,8 @@ done < <(git diff --name-only "$base..$head" -- \
 
 if [ -n "$weakened" ]; then
   printf 'A test file lost assertions in this range:\n%s\n' "$weakened" >&2
-  printf 'A test that has to change to pass means the plan was wrong.\n' >&2
+  printf 'A test that has to change to pass means the plan was wrong. If the reduction is the\n' >&2
+  printf 'right change, say so in a commit: `Assertions-reduced: <path> <reason>`.\n' >&2
   exit 1
 fi
 

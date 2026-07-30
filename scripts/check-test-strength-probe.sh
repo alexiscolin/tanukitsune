@@ -84,6 +84,23 @@ repo=$(scaffold focused "$two")
 commit_test "$repo" src/a.test.ts "${two/it(/it.only(}"
 expect 'a focused test' "$repo" 2
 
+# A reduction the range explains is a decision rather than a loss, and the trailer is
+# what tells the two apart.
+repo=$(scaffold declared "$two")
+printf '%s' "$one" > "$repo/src/a.test.ts"
+git -C "$repo" add -A >/dev/null 2>&1
+git -C "$repo" commit -q -m 'refactor: assert the object once' \
+  -m 'Assertions-reduced: src/a.test.ts one toEqual asserts more than two toBe'
+expect 'a reduction the range declares' "$repo" 0
+
+# A trailer naming another file does not cover this one.
+repo=$(scaffold misdeclared "$two")
+printf '%s' "$one" > "$repo/src/a.test.ts"
+git -C "$repo" add -A >/dev/null 2>&1
+git -C "$repo" commit -q -m 'refactor: assert the object once' \
+  -m 'Assertions-reduced: src/other.test.ts unrelated'
+expect 'a reduction declared for another file' "$repo" 1
+
 # A range with no test file in it has nothing to judge.
 repo=$(scaffold untouched "$two")
 commit_test "$repo" src/a.ts 'export const A = 1'
