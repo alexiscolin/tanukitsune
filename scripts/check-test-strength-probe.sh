@@ -108,6 +108,24 @@ git -C "$repo" commit -q -m 'refactor: assert the object once' \
   -m 'Assertions-reduced: src/other.test.ts unrelated'
 expect 'a reduction declared for another file' "$repo" 1
 
+# A reason naming a second test file does not open it: only the first field is the
+# path. Both files need a baseline on main, so this case seeds its own repository.
+repo=$work/reasoned
+rm -rf "$repo"; mkdir -p "$repo/src"
+git -C "$repo" init -q -b main
+git -C "$repo" config user.email probe@example.com
+git -C "$repo" config user.name probe
+printf '%s' "$two" > "$repo/src/a.test.ts"
+printf '%s' "$two" > "$repo/src/b.test.ts"
+git -C "$repo" add -A && git -C "$repo" commit -qm 'test: base'
+git -C "$repo" checkout -q -b branch
+printf '%s' "$one" > "$repo/src/a.test.ts"
+printf '%s' "$one" > "$repo/src/b.test.ts"
+git -C "$repo" add -A >/dev/null 2>&1
+git -C "$repo" commit -q -m 'refactor: fold both' \
+  -m 'Assertions-reduced: src/a.test.ts src/b.test.ts covers the rest now'
+expect 'a reason naming a second file' "$repo" 1
+
 # A range with no test file in it has nothing to judge.
 repo=$(scaffold untouched "$two")
 commit_test "$repo" src/a.ts 'export const A = 1'

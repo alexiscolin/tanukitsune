@@ -55,7 +55,11 @@ assertions() { grep -o 'expect(' 2>/dev/null | wc -l | tr -d ' ' || true; }
 # review log, and for the same reason: what cannot be told from silence is not a
 # decision. The trailer is read from the whole range, since the commit that reduces and
 # the commit that explains need not be the same one.
-declared=$(git log --format=%B "$base..$head" | sed -n 's/^Assertions-reduced:[[:space:]]*//p')
+# Only the first field is read as the path, and it is matched whole: the rest of the
+# line is the reason, free text, and a reason naming a second test file would
+# otherwise open that file too.
+declared=$(git log --format=%B "$base..$head" \
+  | sed -n 's/^Assertions-reduced:[[:space:]]*//p' | awk '{print $1}')
 
 weakened=''
 skipped=''
@@ -69,13 +73,16 @@ while IFS= read -r f; do
   # needs the module, which this does not read.
   git cat-file -e "$head:$f" 2>/dev/null || continue
 
+  # Read once and held: both checks below read the same blob, and fetching it twice
+  # doubles the git round trips per file for nothing.
+  current=$(git show "$head:$f")
   before=$(git show "$base:$f" | assertions)
-  after=$(git show "$head:$f" | assertions)
-  if [ "$after" -lt "$before" ] && ! printf '%s\n' "$declared" | grep -qF "$f"; then
+  after=$(printf '%s' "$current" | assertions)
+  if [ "$after" -lt "$before" ] && ! printf '%s\n' "$declared" | grep -qxF "$f"; then
     weakened+=$(printf '  %s: %s assertions, was %s\n' "$f" "$after" "$before")
   fi
 
-  if git show "$head:$f" | grep -qE '\b(it|test|describe)\.(skip|only|fixme)\b'; then
+  if printf '%s' "$current" | grep -qE '\b(it|test|describe)\.(skip|only|fixme)\b'; then
     skipped+=$(printf '  %s\n' "$f")
   fi
 done < <(git diff --name-only "$base..$head" -- \
