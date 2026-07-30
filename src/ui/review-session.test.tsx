@@ -98,6 +98,9 @@ describe('ReviewSession', () => {
     press(COPY.next)
 
     expect(screen.getByText(COPY.done)).toBeTruthy()
+    // The button that ended the session left with the focus on it, so the end of the
+    // session takes it like every other step of the loop does.
+    expect(document.activeElement).toBe(screen.getByText(COPY.done))
   })
 
   it('keeps self-grade on a verdict the cascade decided, since the override is the labelled disagreement', async () => {
