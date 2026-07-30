@@ -1,6 +1,6 @@
 ---
 name: pre-pr
-description: Runs the full pre-PR review sequence: deterministic gates, then five fresh-context reviewers in parallel, then synthesis. Use before opening any pull request.
+description: Runs the full pre-PR review sequence: deterministic gates, then five fresh-context reviewers and one walkthrough in parallel, then synthesis. Use before opening any pull request.
 disable-model-invocation: true
 argument-hint: "[base-branch]"
 allowed-tools: Bash(pnpm verify), Bash(git diff:*), Bash(git merge-base:*), Read, Write, Edit, Task, SlashCommand
@@ -22,17 +22,16 @@ Report the actual output. Do not summarise a pass you did not see.
 ## 2. Capture the diff once
 
 Write the diff against the base branch to a file, and pass every reviewer the **path**, not the
-content. Four prompts each carrying an 800-line diff costs four times the diff in tokens, and the
-reviewers all have `Read`.
+content. Every prompt carrying an 800-line diff pays for the diff again, and they all have `Read`.
 
 Nobody reviews the whole repository.
 
 If the diff exceeds roughly 800 lines, say so and recommend splitting the PR before reviewing. A
 review of an oversized diff produces shallow findings and false confidence.
 
-## 3. Five reviewers, in parallel, fresh context
+## 3. Five lenses and one walkthrough, in parallel, fresh context
 
-Spawn all five at once, and **not in the background**: synthesis in step 4 needs their results, so
+Spawn all five at once, and **not in the background**: synthesis in step 5 needs their results, so
 they run synchronously. They do not talk to each other: they apply disjoint lenses to the same diff
 and report independently. Pass each one the diff path and the task's plan or spec.
 
@@ -54,7 +53,29 @@ two sides and only one of them is in the change.
 They are defined in `.claude/agents/`. Do not restate their instructions here; if a lens needs
 changing, change the agent file so the change persists.
 
-## 4. Synthesise
+Spawn `change-walkthrough` in the same batch, on the same diff path. It is not a lens: it reports shape
+rather than defects, so it is spawned with them only because it reads the same diff and would otherwise
+cost a second wait for nothing.
+
+## 4. The walkthrough, above the findings
+
+`change-walkthrough` returns five sections: what the user can now do, the layer the work sits in, the
+files and what each is for, every key function with the `file:line` it is called from, and what a reader
+would assume is present and is not.
+
+Report it **above** the findings and keep it separate from them. It answers a different question: the
+lenses say whether the change is sound, the walkthrough says what the change is. Merging the two costs
+the reader the only summary they have before opening the diff.
+
+Its output is the material for the pull request description, which the `subjects` job requires to carry
+the plan. Use it there rather than rewriting it.
+
+It writes nothing. **It produces no finding, so it appends no line to `.claude/review-log.jsonl` and it
+does not count among the lenses a pass records.** A description that entered the log would inflate the
+denominator `scripts/review-stats.sh` divides by, and the coverage gate counts findings without a sort,
+which a description can never have.
+
+## 5. Synthesise
 
 Merge every report into one list, ordered by severity, deduplicated. For each finding keep the
 `file:line` citation. Drop anything without one: that was the reviewers' instruction and it applies to
@@ -64,7 +85,7 @@ Then state plainly what the reviewers did not cover, so the gap is visible rathe
 they read a diff, so they cannot see a regression whose cause lies in unchanged code, and they do not
 run anything.
 
-## 5. Record what the reviewers produced
+## 6. Record what the reviewers produced
 
 Once each finding has been fixed or dismissed, append one line per finding to
 `.claude/review-log.jsonl`:
@@ -101,7 +122,7 @@ the denominator `scripts/review-stats.sh` needs: findings alone cannot say wheth
 clean code or ran once and never again. Without both lines the reviewers are the only part of this
 repository that is asserted rather than measured.
 
-## 6. Cleanup, then hand back
+## 7. Cleanup, then hand back
 
 Run `/simplify` for reuse and cleanup. It is model-invocable, so it runs from here.
 

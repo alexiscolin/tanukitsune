@@ -150,6 +150,15 @@ is the grain the lenses want anyway: the failing test committed before the imple
 slice, and reading it alone produces findings about work that has not happened yet. `requirement-check`
 in particular cannot judge a slice that is not finished.
 
+**`change-walkthrough` runs in that same batch, and it is not a lens.** It describes what the branch
+adds: the behaviour from the user's side, the layer the work sits in, each file and what it is for, and
+the call site of every key function. It reports no defect, writes nothing, and appends no line to the
+review log, so it changes nothing about what a pass records or what the coverage gate counts. It rides
+along with the lenses because it reads the same diff, and it earns its place on the one question the
+diff cannot answer on its own: where a new symbol is plugged in, or whether anything calls it yet. That
+is why it appears in this document and not in [`verification.md`](verification.md), which is about what
+refuses a merge, and a description refuses nothing.
+
 **What replaces the automatic trigger is the merge button, not a reminder.** Reaching a pull request
 with unread code stops depending on anyone remembering, because `check-review-coverage.sh` runs as a
 required check and refuses the merge until a pass is on record. The demand moves from a hook that
