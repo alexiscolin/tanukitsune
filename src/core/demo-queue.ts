@@ -1,7 +1,9 @@
 import type { ReviewEntry } from './review-entry'
 
-// The deck demo mode runs on, written here rather than fetched, because the demo ships
-// without a token and has to work in a browser that has never been online.
+// The deck the loop runs on until `KnowledgeSource` supplies real assignments, written here
+// rather than fetched because there is nothing to fetch from yet. Demo mode as the spec
+// describes it is a seeded deck over the real corpus, which this is not: it carries no
+// mnemonic, no nuance and no locale key, and it is replaced rather than grown.
 //
 // A reading accepts every reading the character carries on its own. Which single one an
 // item wants is what an assignment says, and no assignment exists until `KnowledgeSource`

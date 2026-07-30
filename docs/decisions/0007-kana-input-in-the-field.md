@@ -87,10 +87,9 @@ Well-formed romaji does not, because it converts on the way in and on Enter. The
 kana syllable rather than for kana alone, since the library counts the middle dot and the prolonged sound
 mark as kana and a field holding only punctuation would otherwise be graded and cost an item its stage. **The refusal gates the field, before the cascade**, which has no
 outcome for an answer that is not gradable and must not acquire one: a verdict is what it exists to
-produce. Both land with the slice that installs the dependency, so until then a reading holding romaji
-reaches no gate and would be graded as any other miss.
+produce. Both land with the slice that installs the dependency.
 
-The dependency is installed with the slice that imports it, not now, because a dependency nothing
-imports is one the dead-code gate is right to reject. It is MIT, has no runtime dependencies of its own
-and ships types, so what it adds is bundle weight on the review route, measured in the build rather
-than estimated here.
+The dependency is installed by the slice that imports it, never ahead of it, because a dependency
+nothing imports is one the dead-code gate is right to reject. It is MIT, has no runtime dependencies of
+its own and ships types, so what it adds is bundle weight on the review route, measured in the build
+rather than estimated here.

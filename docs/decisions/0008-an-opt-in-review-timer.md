@@ -33,6 +33,12 @@ the reader sets is the adjustment, so two of the three hold by construction rath
 added beside the timer. Neither rests on the essential-activity exception, which is the argument a
 challenge mode would otherwise need and is weaker for being a judgement rather than a mechanism.
 
+**The third is not implemented, and that is the loosening this record exists to state.** The
+specification asked for all three, turn off and extend and adjust, which is stricter than the criterion.
+Extending a limit mid-answer is the one that buys nothing here: it exists for a limit imposed on
+someone, and this one is chosen by the person it applies to, who can end it in the same control that
+started it. A limit nobody imposed does not need a reprieve.
+
 **Expiry reveals the reference and asks the reader to grade, rather than failing the item.** A limit
 that ran out says nothing about what they knew. An expiry that failed the item would also poison the
 grading gate, which exists to measure the cascade against answers people meant.
