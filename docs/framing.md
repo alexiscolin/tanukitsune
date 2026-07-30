@@ -41,8 +41,9 @@ generation that fills a gap the retrieved sentence corpus cannot, and whose outp
 deterministic validator accepts it.
 
 **It writes the content layer**, meanings, nuances, mnemonics and thematic tags across the item set,
-generated once through the batch API and shared, so a user costs nothing at the margin and a locale
-costs one more run. **It grades free text**, because an answer that means the right thing in the wrong
+generated once through the batch API and shared, so a user costs nothing at the margin and a locale we
+generate costs one more run. A locale served from the upstream source's own content costs none, which
+is the case routing and locales sets out below. **It grades free text**, because an answer that means the right thing in the wrong
 words is the failure that makes people quit, and that is not a string comparison problem. **It finds
 the pairs a learner systematically confuses** in their own error history, which is possible only
 because `review_events` exists. **It chooses which item to present and in which format**, while when to
@@ -444,10 +445,13 @@ association is not a translated English pun. The interface therefore has a sourc
 corpus has none: each language's corpus is generated natively, and that asymmetry is the thesis rather
 than an inconsistency.
 
-**A locale reaches the route tree when both of its halves exist**, its strings and its corpus, so the
-languages the interface has and the languages the tree serves are two sets rather than one. French is
-served first. A language whose corpus has not been generated is not offered, because a screen whose
-interface is translated and whose teaching is not is worse than one the tree does not serve.
+**A locale reaches the route tree when both of its halves exist**, its strings and a content layer, so
+the languages the interface has and the languages the tree serves are two sets rather than one. The
+content half is ours where we generate it, and it is the upstream source's where a subscription already
+grants it: English needs no corpus of ours, because a subscriber's own account carries the mnemonics
+and the terms permit a free client to render them. French needs one, because there is nothing upstream
+to render. A language with neither is not offered, since a screen whose interface is translated and
+whose teaching is not is worse than one the tree does not serve.
 
 **The served language is negotiated, never asked for.** The bare root matches `Accept-Language` against
 the languages the tree serves and redirects, falling back to the default when none matches, because the

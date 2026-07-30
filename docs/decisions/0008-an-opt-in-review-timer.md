@@ -42,9 +42,9 @@ produced under a limit is never counted as one given cold.
 
 ## Consequences
 
-The timer is a setting, so v0.1 acquires the first thing it remembers about a reader. It is set where
-the session starts, next to the session length, rather than in a settings screen that does not exist,
-which keeps the surface at one screen instead of two.
+The timer is a setting, so it brings the first thing the product remembers about a reader. It is set
+where the session starts, next to the session length, rather than in a settings screen that does not
+exist, which keeps the surface at one screen instead of two.
 
 A countdown is motion. It respects the reduced-motion preference and offers a form that does not
 animate, because a limit whose display cannot be quietened is a second pressure under another name.
