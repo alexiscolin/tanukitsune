@@ -1,11 +1,15 @@
 import type { GradedAnswer, JudgePort } from './judge-port'
 
-// Travels into every verdict, so a case replayed later can be told apart from one
-// the same answer would produce today.
-const JUDGE_VERSION = 1
+// Each tier carries its own version into every verdict, because the two change for
+// different reasons: a new judge prompt must not relabel a row the exact tier decided,
+// and a change to the normalisation below must relabel the rows that rested on it.
+// Without that, a case replayed later cannot be told apart from one the same answer
+// would produce today.
+const EXACT_TIER = 'exact:1'
+const JUDGE_TIER = 'judge:1'
 
 type CascadeOutcome =
-  | { readonly verdict: 'correct' | 'incorrect'; readonly decidedBy: `exact:${number}` | `judge:${number}` }
+  | { readonly verdict: 'correct' | 'incorrect'; readonly decidedBy: typeof EXACT_TIER | typeof JUDGE_TIER }
   // Nobody decided, so nothing claims to have: the reader grades it and the
   // interface shows the item card while asking.
   | { readonly verdict: 'undecided' }
@@ -14,10 +18,8 @@ type CascadeOutcome =
 // decide. A reading never reaches it: an edit of one character accepts こうえん for
 // こうねん, which turns a wrong reading into a correct one and teaches it.
 export async function runCascade(answer: GradedAnswer, port: JudgePort | null): Promise<CascadeOutcome> {
-  const decidedBy = `exact:${JUDGE_VERSION}` as const
-
-  if (matchesExactly(answer)) return { verdict: 'correct', decidedBy }
-  if (answer.kind === 'reading') return { verdict: 'incorrect', decidedBy }
+  if (matchesExactly(answer)) return { verdict: 'correct', decidedBy: EXACT_TIER }
+  if (answer.kind === 'reading') return { verdict: 'incorrect', decidedBy: EXACT_TIER }
   if (port === null) return { verdict: 'undecided' }
 
   const judged = await port.judge(answer)
@@ -26,7 +28,7 @@ export async function runCascade(answer: GradedAnswer, port: JudgePort | null): 
   // judge is a question for the reader rather than a wrong answer.
   if (judged === 'unsure') return { verdict: 'undecided' }
 
-  return { verdict: judged, decidedBy: `judge:${JUDGE_VERSION}` }
+  return { verdict: judged, decidedBy: JUDGE_TIER }
 }
 
 function matchesExactly({ answer, accepted }: GradedAnswer): boolean {
