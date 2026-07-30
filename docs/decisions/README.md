@@ -25,6 +25,7 @@ is invisible. Naming the condition and the page to check turns it into a schedul
 | [0004](0004-free-forever.md) | The product is free, permanently |
 | [0005](0005-system-of-record-for-reviews.md) | We store review history; WaniKani no longer does |
 | [0006](0006-drizzle-and-a-file-backed-local-postgres.md) | Drizzle for queries, PGlite locally, server Postgres in CI |
+| [0007](0007-kana-input-in-the-field.md) | The answer field converts romaji to kana, through wanakana |
 
 ## Decided, argued in prose
 

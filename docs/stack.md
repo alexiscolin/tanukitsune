@@ -14,11 +14,12 @@ the arguments do not get re-litigated.
 | Language | TypeScript 6, installed under its own package name |
 | Framework | Next 16, App Router, React Compiler on, Cache Components off |
 | Styling | Tailwind 4, `shadcn/ui` primitives, design tokens in one file |
+| Kana input | `wanakana` for conversion and script detection, called from the field rather than bound to it, per [ADR 0007](decisions/0007-kana-input-in-the-field.md) |
 | Local store | IndexedDB through `idb`, append-only outbox |
 | Server store | Postgres through Drizzle, migrations by drizzle-kit |
 | Local database | PGlite, a file-backed Postgres opened in process, nothing to install or start |
 | Models | Pinned dated snapshots, batch API for the corpus, cached cascade for grading |
-| Tests | Vitest on `core/` with no DOM, jsdom added with the first component, Playwright with axe, real Postgres, MSW for third-party HTTP only |
+| Tests | Vitest in two projects, `core/` in Node with no DOM and components in jsdom through Testing Library, Playwright with axe, real Postgres, MSW for third-party HTTP only |
 | Gates | ESLint 10, dependency-cruiser, knip, jscpd, `check:docs`, all in `pnpm verify` and in CI |
 | Hosting | Not decided |
 

@@ -22,7 +22,7 @@ same agreement as everything under `docs/`. Read and write the rest when asked.
 pnpm bootstrap             one command from a fresh clone to a running app
 pnpm dev
 pnpm build                 in verify: the only gate that evaluates server modules
-pnpm test                  unit tests over core/, no database
+pnpm test                  unit tests over core/ and components, no database
 pnpm test path/to/file     one file
 pnpm test:e2e              Playwright against the production build, with the axe audit
 pnpm db:generate           write a migration from the schema
