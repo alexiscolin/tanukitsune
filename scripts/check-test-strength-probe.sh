@@ -17,13 +17,14 @@ fail=0
 
 # A repository holding one test file on main, then a branch to change it on.
 scaffold() {
-  local repo=$work/$1 baseline=$2
+  local repo=$work/$1 baseline=$2 second=${3:-}
   rm -rf "$repo"
   mkdir -p "$repo/src"
   git -C "$repo" init -q -b main
   git -C "$repo" config user.email probe@example.com
   git -C "$repo" config user.name probe
   printf '%s' "$baseline" > "$repo/src/a.test.ts"
+  [ -n "$second" ] && printf '%s' "$second" > "$repo/src/b.test.ts"
   git -C "$repo" add -A
   git -C "$repo" commit -qm 'test: base'
   git -C "$repo" checkout -q -b branch
@@ -36,6 +37,14 @@ commit_test() {
   printf '%s' "$content" > "$repo/$path"
   git -C "$repo" add -A >/dev/null 2>&1
   git -C "$repo" commit -qm "test: $path" >/dev/null 2>&1
+}
+
+# Four cases commit a trailer, which `commit_test` cannot carry: it takes one message.
+commit_declared() {
+  local repo=$1 path=$2 content=$3 subject=$4 trailer=$5
+  printf '%s' "$content" > "$repo/$path"
+  git -C "$repo" add -A >/dev/null 2>&1
+  git -C "$repo" commit -q -m "$subject" -m "$trailer" >/dev/null 2>&1
 }
 
 expect() {
@@ -94,36 +103,22 @@ expect 'a test marked fixme' "$repo" 2
 # A reduction the range explains is a decision rather than a loss, and the trailer is
 # what tells the two apart.
 repo=$(scaffold declared "$two")
-printf '%s' "$one" > "$repo/src/a.test.ts"
-git -C "$repo" add -A >/dev/null 2>&1
-git -C "$repo" commit -q -m 'refactor: assert the object once' \
-  -m 'Test-weakened: src/a.test.ts one toEqual asserts more than two toBe'
+commit_declared "$repo" src/a.test.ts "$one" 'refactor: assert the object once' \
+  'Test-weakened: src/a.test.ts one toEqual asserts more than two toBe'
 expect 'a reduction the range declares' "$repo" 0
 
 # A trailer naming another file does not cover this one.
 repo=$(scaffold misdeclared "$two")
-printf '%s' "$one" > "$repo/src/a.test.ts"
-git -C "$repo" add -A >/dev/null 2>&1
-git -C "$repo" commit -q -m 'refactor: assert the object once' \
-  -m 'Test-weakened: src/other.test.ts unrelated'
+commit_declared "$repo" src/a.test.ts "$one" 'refactor: assert the object once' \
+  'Test-weakened: src/other.test.ts unrelated'
 expect 'a reduction declared for another file' "$repo" 1
 
 # A reason naming a second test file does not open it: only the first field is the
-# path. Both files need a baseline on main, so this case seeds its own repository.
-repo=$work/reasoned
-rm -rf "$repo"; mkdir -p "$repo/src"
-git -C "$repo" init -q -b main
-git -C "$repo" config user.email probe@example.com
-git -C "$repo" config user.name probe
-printf '%s' "$two" > "$repo/src/a.test.ts"
-printf '%s' "$two" > "$repo/src/b.test.ts"
-git -C "$repo" add -A && git -C "$repo" commit -qm 'test: base'
-git -C "$repo" checkout -q -b branch
-printf '%s' "$one" > "$repo/src/a.test.ts"
+# path. Both files need a baseline, which is what the second seed is for.
+repo=$(scaffold reasoned "$two" "$two")
 printf '%s' "$one" > "$repo/src/b.test.ts"
-git -C "$repo" add -A >/dev/null 2>&1
-git -C "$repo" commit -q -m 'refactor: fold both' \
-  -m 'Test-weakened: src/a.test.ts src/b.test.ts covers the rest now'
+commit_declared "$repo" src/a.test.ts "$one" 'refactor: fold both' \
+  'Test-weakened: src/a.test.ts src/b.test.ts covers the rest now'
 expect 'a reason naming a second file' "$repo" 1
 
 # A rename carries its baseline under the name it had: emptying a test while renaming it
@@ -177,10 +172,8 @@ expect 'a test marked todo' "$repo" 2
 # A declaration lifts the count and not the marker, since one is a delta and the other
 # a state: declaring a reduction must not license disabling the file later.
 repo=$(scaffold marker_not_lifted "$two")
-printf '%s' "${one/it(/it.skip(}" > "$repo/src/a.test.ts"
-git -C "$repo" add -A >/dev/null 2>&1
-git -C "$repo" commit -q -m 'refactor: fold and disable' \
-  -m 'Test-weakened: src/a.test.ts one toEqual asserts more'
+commit_declared "$repo" src/a.test.ts "${one/it(/it.skip(}" 'refactor: fold and disable' \
+  'Test-weakened: src/a.test.ts one toEqual asserts more'
 expect 'a declared reduction that also disables' "$repo" 2
 
 # A range with no test file in it has nothing to judge.

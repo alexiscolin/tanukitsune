@@ -9,11 +9,8 @@ set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
 probe_dir=src/ui
-# A probe has to live under src/ui/, because that path is what the rules match on.
-# So tsconfig excludes it instead: a typecheck enumerating src/ while a probe exists
-# reports a file the removal below has taken away, as TS6053. The gate runs from a
-# hook at the end of every turn, so a typecheck running beside this script is the
-# ordinary case and not an unlucky one.
+# A probe has to live under src/ui/, because that path is what the rules match on, so
+# the exclusions below carry it instead of the directory.
 probe_prefix=__boundary-probe-
 server_only=$probe_dir/${probe_prefix}server-only.ts
 reaches_data=$probe_dir/${probe_prefix}reaches-data.ts
@@ -39,6 +36,21 @@ if ! grep -qF "'$excluded'" eslint.config.js; then
   printf 'eslint.config.js does not ignore %s, so a lint can fail on a probe.\n' "$excluded" >&2
   fail=1
 fi
+
+# The same shape for the sibling cause. A worktree is a second checkout living inside
+# the tree, and every checker that walks from the root reads it unless told otherwise.
+# Those exclusions were written by hand in three syntaxes and nothing held them, so a
+# refactor dropping one would bring the failure back in silence, visible only the next
+# time a session works in a worktree while a gate runs.
+worktrees=.claude/worktrees
+for spec in "eslint.config.js:'$worktrees/**'" "scripts/check-docs.sh:'./$worktrees/*'" \
+            "scripts/check-docs.sh:--exclude-dir=worktrees" ".gitignore:$worktrees/"; do
+  file=${spec%%:*}
+  pattern=${spec#*:}
+  grep -qF -- "$pattern" "$file" && continue
+  printf '%s does not exclude %s, so a checker reads another checkout.\n' "$file" "$pattern" >&2
+  fail=1
+done
 
 printf "import 'server-only'\n\nexport const PROBE = 1\n" > "$server_only"
 if ./node_modules/.bin/depcruise src > /dev/null 2>&1; then

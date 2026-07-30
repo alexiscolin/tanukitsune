@@ -32,12 +32,11 @@ set -uo pipefail
 base_ref=${1:-main}
 
 git rev-parse --git-dir >/dev/null 2>&1 || { printf 'Not a git repository.\n' >&2; exit 3; }
-git rev-parse HEAD >/dev/null 2>&1 || exit 3
 base=$(git merge-base "$base_ref" HEAD 2>/dev/null) || {
   printf 'No merge base between %s and HEAD.\n' "$base_ref" >&2
   exit 3
 }
-head=$(git rev-parse HEAD)
+head=$(git rev-parse HEAD 2>/dev/null) || exit 3
 
 [ "$base" = "$head" ] && { printf 'test strength: no commits over %s\n' "$base_ref"; exit 0; }
 
@@ -50,15 +49,17 @@ assertions() { grep -o 'expect(' 2>/dev/null | wc -l | tr -d ' ' || true; }
 # A reduction is sometimes the right change: two assertions folded into one `toEqual`
 # assert more than they did, and refusing that would block correct work, which is worse
 # than not gating at all. So the count below is lifted when a commit in the range names
-# the file in a `Test-weakened:` trailer. The marker refusal is not: see its own note. Same shape as a dismissed finding in the
-# review log, and for the same reason: what cannot be told from silence is not a
-# decision. The trailer is read from the whole range, since the commit that reduces and
-# the commit that explains need not be the same one.
+# the file in a `Test-weakened:` trailer. The marker refusal is not: see its own note.
+# The trailer is read from the whole range, since the commit that reduces and the commit
+# that explains need not be the same one.
 # Only the first field is read as the path, and it is matched whole: the rest of the
 # line is the reason, free text, and a reason naming a second test file would
 # otherwise open that file too.
 declared=$(git log --format=%B "$base..$head" \
   | sed -n 's/^Test-weakened:[[:space:]]*//p' | awk '{print $1}')
+
+# Every chainable form that leaves the body in place, so the count cannot see it.
+disabled='\b(it|test|describe)\.(skip|only|fixme|skipIf|runIf|todo)\b'
 
 weakened=''
 skipped=''
@@ -79,8 +80,8 @@ while IFS= read -r -d '' status; do
     D*) IFS= read -r -d '' f; continue ;;
     *)  IFS= read -r -d '' f; was=$f ;;
   esac
+  # `D` is the only status whose path is absent from head, and it left above.
   [ -n "$f" ] || continue
-  git cat-file -e "$head:$f" 2>/dev/null || continue
 
   # Read once and held: both checks below read the same blob, and fetching it twice
   # doubles the git round trips per file for nothing.
@@ -98,10 +99,11 @@ while IFS= read -r -d '' status; do
   # later commit adds, and would be demanded again by every range that touches the file
   # afterwards. A Playwright spec guarding a browser it cannot serve is the case that
   # asked for an escape, and `e2e/*.spec.*` is where those live, so scope answers it
-  # without coupling the two. `.only` there is refused by `playwright.config.ts:17`.
+  # without coupling the two. `.only` there is refused by `forbidOnly` in the
+  # Playwright config.
   case $f in
     *.test.ts|*.test.tsx)
-      if printf '%s' "$current" | grep -qE '\b(it|test|describe)\.(skip|only|fixme|skipIf|runIf|todo)\b'; then
+      if printf '%s' "$current" | grep -qE "$disabled"; then
         skipped+=$(printf '  %s\n' "$f")
       fi
       ;;
