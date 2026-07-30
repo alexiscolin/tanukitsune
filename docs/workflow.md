@@ -100,8 +100,9 @@ tool call rather than an intention. `SubagentStop` fires per reviewer, which not
 `TeammateIdle` only fires inside an agent team.
 
 The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
-makes it impossible for an agent to declare done on code that does not compile. What it runs is in
-[`verification.md`](verification.md#the-one-hook). The arguments behind it are here.
+refuses the end of a turn on code that does not compile. What it runs, and what bounds that refusal to
+one forced continuation, is in [`verification.md`](verification.md#the-one-hook). The arguments behind it
+are here.
 
 **An event is not an intention, and a hook that has to guess which one it is looking at is not a
 guard.** A hook can see that a shell command ran; it cannot see that the command was about to open a
@@ -150,14 +151,14 @@ is the grain the lenses want anyway: the failing test committed before the imple
 slice, and reading it alone produces findings about work that has not happened yet. `requirement-check`
 in particular cannot judge a slice that is not finished.
 
-**`change-walkthrough` runs in that same batch, and it is not a lens.** It describes what the branch
-adds: the behaviour from the user's side, the layer the work sits in, each file and what it is for, and
-the call site of every key function. It reports no defect, writes nothing, and appends no line to the
+**`change-walkthrough` runs in that same batch, and it is not a lens.** What it describes, and in which
+sections, is stated once in `.claude/agents/change-walkthrough.md`; restating it here is how the two
+drift. It reports no defect, writes nothing, and appends no line to the
 review log, so it changes nothing about what a pass records or what the coverage gate counts. It rides
 along with the lenses because it reads the same diff, and it earns its place on the one question the
-diff cannot answer on its own: where a new symbol is plugged in, or whether anything calls it yet. That
-is why it appears in this document and not in [`verification.md`](verification.md), which is about what
-refuses a merge, and a description refuses nothing.
+diff cannot answer on its own: where a new symbol is plugged in, or whether anything calls it yet. It
+is absent from [`verification.md`](verification.md) on purpose: that document carries what refuses a
+merge, and a description refuses nothing.
 
 **What replaces the automatic trigger is the merge button, not a reminder.** Reaching a pull request
 with unread code stops depending on anyone remembering, because `check-review-coverage.sh` runs as a

@@ -16,11 +16,20 @@ report() { printf '%s\n' "$1" >&2; fail=1; }
 
 # One enumeration for every check. git ls-files would hide an untracked document
 # from the three checks below while the two above still scanned it.
-markdown() { find "$@" -name '*.md' -not -path './.git/*' -not -path './node_modules/*' \
+# node_modules is matched at any depth, and worktrees are skipped whole: a session
+# working under .claude/worktrees/ installs dependencies there, and a dependency's
+# README is neither authored here nor reachable by the links this walk resolves.
+markdown() { find "$@" -name '*.md' -not -path './.git/*' -not -path '*/node_modules/*' \
+  -not -path './.claude/worktrees/*' \
   -not -path './.next/*' -not -path './info/*' -not -path './coverage/*'; }
 
-# A dependency's README is not documentation this project authored.
-EXCLUDED=(--exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=info --exclude-dir=coverage)
+# A dependency's README is not documentation this project authored, and a worktree
+# holds another checkout of this one: its copies carry the same exemptions under a
+# different prefix, so every path-keyed exemption below would miss them.
+EXCLUDED=(--exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=info --exclude-dir=coverage --exclude-dir=worktrees)
+# `--exclude-dir` matches a directory name at any depth while the `find` above anchors
+# the path, so the two enumerations differ on a directory of that name outside
+# `.claude/`. None exists, and grep offers no anchored form of the flag.
 
 # Narrating the document's own history. Provenance belongs in docs/agent-log.md
 # and docs/decisions/, which are excluded.

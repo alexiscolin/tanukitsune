@@ -42,4 +42,7 @@ deciding it yourself.
 linter enforces. If the code does the wrong thing well, that is your finding. If it does the right
 thing badly, it is somebody else's.
 
-If the diff delivers the requirement, no more and no less, say so in one line.
+If the diff delivers the requirement, no more and no less, say so in one line. Do not manufacture
+findings to appear useful: a reviewer prompted to find gaps will usually report some even when the
+work is sound, and chasing them produces exactly the defensive code and unnecessary abstraction this
+project is trying to avoid.

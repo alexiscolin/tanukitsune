@@ -49,6 +49,7 @@
   ],
   "exclude": [
     "node_modules",
-    ".next"
+    ".next",
+    "src/**/__boundary-probe-*.ts"
   ]
 }

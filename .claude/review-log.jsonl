@@ -175,3 +175,34 @@
 {"date": "2026-07-30", "branch": "worktree-feat+kana-input", "kind": "pass", "base": "c2fb01dae2647b2e9f374fa28f546c95a688e97b", "head": "70b51d6b1af61242e0afee2b6311f97591746233"}
 {"date": "2026-07-30", "branch": "worktree-feat+kana-input", "kind": "pass", "base": "ff34c34a4f53674369ca221610ec591a4d5c9fbb", "head": "407c14add7525fd964f9fb841b3bdfee0c0a6dd7"}
 {"date": "2026-07-30", "branch": "worktree-feat+kana-input", "kind": "pass", "base": "6983964e2326630db76d3461505fb779e2e4b8f5", "head": "1813cf896e443e1b18446dfa4fecf1b3fb506471"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 100, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 91, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "docs-conformity", "file": "docs/workflow.md", "line": 154, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 237, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 113, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 117, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "docs-conformity", "file": "AGENTS.md", "line": 37, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 76, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "performance-check", "file": "scripts/check-test-strength.sh", "line": 73, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "performance-check", "file": "scripts/check-test-strength-probe.sh", "line": 85, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "architecture-check", "file": "scripts/check-test-strength.sh", "line": 7, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "architecture-check", "file": "scripts/check-test-strength.sh", "line": 38, "outcome": "dismissed", "reason": "extracting the shared range resolution would make an abstraction with two call sites, which AGENTS.md makes a stop condition; the third gate is the trigger"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "architecture-check", "file": "scripts/check-test-strength-probe.sh", "line": 44, "outcome": "dismissed", "reason": "the identical expect() helper is duplicated for the same two-call-site reason, and each probe must stand alone inside a throwaway repository"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "security-check", "file": "scripts/check-test-strength.sh", "line": 105, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "security-check", "file": "scripts/check-test-strength.sh", "line": 102, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "security-check", "file": "scripts/check-test-strength.sh", "line": 95, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "security-check", "file": "scripts/check-test-strength.sh", "line": 96, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "regression-check", "file": "scripts/check-test-strength.sh", "line": 105, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "regression-check", "file": "scripts/check-test-strength.sh", "line": 92, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "regression-check", "file": "scripts/check-test-strength.sh", "line": 106, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "regression-check", "file": "docs/verification.md", "line": 169, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "regression-check", "file": "scripts/check-test-strength.sh", "line": 117, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "requirement-check", "file": ".claude/agents/docs-conformity.md", "line": 52, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "requirement-check", "file": ".claude/hooks/verify.sh", "line": 2, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "requirement-check", "file": "docs/workflow.md", "line": 158, "outcome": "fixed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "requirement-check", "file": "scripts/check-docs.sh", "line": 22, "outcome": "dismissed", "reason": "the node_modules broadening goes past the named defect but is a strict superset of the anchored form it replaces, and narrowing it back would reintroduce the nested case the worktree exposed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "requirement-check", "file": "docs/workflow.md", "line": 25, "outcome": "dismissed", "reason": "the branch carries six behaviours against the one a slice allows; the excess is in the plan rather than the diff, and it is reported to the reader rather than resolved by splitting work already reviewed"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "2bff5bc96c0deb3e0ddbd2d12da6b4ad5c4fd7ea"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "df9be794203bf244900227737f9cccde49642e8c"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "a5635c57d297f4104e750237a65eaebaa920d177"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "abc6f0f493600e7936c38ae58616213648b0b15b"}

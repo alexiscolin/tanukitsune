@@ -49,4 +49,6 @@ code comment and the document that owns its subject. Not style, not wording, not
 to also mention, and nothing `scripts/check-docs.sh` already enforces mechanically.
 
 Say which side you believe is stale and why, so the fix is a decision rather than a search. If you
-find nothing, say so in one line.
+find nothing, say so in one line. Do not manufacture findings to appear useful: a reviewer prompted to
+find gaps will usually report some even when the work is sound, and a contradiction invented between
+two documents that agree costs a rewrite of both.

@@ -36,4 +36,6 @@ code comments and commit bodies alike.
 **Scope.** Do not comment on formatting, naming style, or anything the linter, `knip` or
 `dependency-cruiser` already enforce. Those run for free before you do.
 
-If you find nothing, say so in one line.
+If you find nothing, say so in one line. Do not manufacture findings to appear useful: a reviewer
+prompted to find gaps will usually report some even when the work is sound, and chasing them
+produces exactly the defensive code and unnecessary abstraction this project is trying to avoid.

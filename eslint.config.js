@@ -5,7 +5,25 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['.next/**', 'node_modules/**', 'coverage/**', 'next-env.d.ts'] },
+  // `eslint .` walks from the repository root, and a worktree is a second checkout
+  // living inside it, so without this the gate reports another branch's work in
+  // progress as this branch's failure. `check-docs.sh` skips the same directory for
+  // the same reason; `depcruise`, `jscpd`, `knip`, `vitest` and `tsc` are all scoped
+  // to `src` or to an include list and never reach it.
+  //
+  // The boundary probes are excluded from tsconfig, so `projectService` would refuse
+  // to parse one for as long as it exists. scripts/check-boundaries.sh asserts this
+  // glob and the tsconfig one together, since a rename breaks each differently.
+  {
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'coverage/**',
+      'next-env.d.ts',
+      '.claude/worktrees/**',
+      'src/**/__boundary-probe-*.ts',
+    ],
+  },
 
   js.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
@@ -34,6 +52,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
       'no-console': 'error',
+      // AGENTS.md refuses anything provisional at merge. A marker naming later work
+      // is a backlog entry, so the rule points at the file that holds them.
+      'no-warning-comments': ['error', { terms: ['todo', 'fixme', 'hack', 'xxx'], location: 'anywhere' }],
 
       complexity: ['error', 15],
       'max-lines': ['error', 400],

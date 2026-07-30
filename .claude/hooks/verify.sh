@@ -1,5 +1,6 @@
 #!/bin/bash
-# Blocks a turn ending on code that does not compile or lint.
+# Refuses the end of a turn on code that does not compile or lint, once: the
+# stop_hook_active guard below bounds the guarantee to one forced continuation.
 # Exit 2 makes the agent keep working, with stderr as the reason it receives.
 # Runs pnpm gate, not pnpm verify: a hook killed on its timeout blocks nothing.
 

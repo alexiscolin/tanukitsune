@@ -25,7 +25,7 @@ open them unless the task is about the documentation itself.
 `pnpm check:docs` enforces the discipline these documents are held to, so it does not depend on anyone
 remembering it. It runs inside `pnpm verify`, which a human runs before a pull request and which CI
 runs on pushes to main and on pull requests. The `Stop` hook at the end of every agent turn runs
-`pnpm gate`, which is typecheck, lint, the boundary check and `check:docs`: the full suite needs a
+`pnpm gate`, which is typecheck, `check:docs`, the boundary check and lint: the full suite needs a
 database and a browser, and a hook killed on its timeout blocks nothing while appearing to guard
 everything. `check:docs` belongs in the fast gate because a session that changes only documentation
 never reaches the slow one.
@@ -61,7 +61,8 @@ Agent configuration lives at the repository root: `AGENTS.md` is canonical and u
 with disjoint lenses, one of which reads intent rather than code, a sixth that reads documentation
 against itself and runs only when the branch touches markdown, `change-walkthrough`, which describes
 what a branch adds instead of judging it and reports no finding, the `pre-pr`
-skill, and one hook, which calls no model: it blocks a turn ending on code that does not compile.
+skill, and one hook, which calls no model: it forces one continuation when a turn would end on code that
+does not compile.
 Alongside them, `review-log.jsonl`
 records what each lens found, whether it survived, and which range each pass read, which
 `scripts/review-stats.sh` reports and `scripts/check-review-coverage.sh` gates on.
