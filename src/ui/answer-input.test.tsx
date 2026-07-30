@@ -150,21 +150,32 @@ describe('AnswerInput, converting a reading', () => {
 })
 
 describe('AnswerInput, refusing a reading that is not kana', () => {
-  it('sends nothing, keeps the text, and says what is missing', () => {
+  it('finalises a held n on Enter, which is the keystroke saying none follows', () => {
     const { field, onSubmit } = renderInput('reading')
 
     fireEvent.change(field, { target: { value: 'kan' } })
+    expect(field.value).toBe('かn')
+
+    fireEvent.keyDown(field, { key: 'Enter' })
+
+    expect(onSubmit).toHaveBeenCalledWith('かん')
+  })
+
+  it('sends nothing, keeps the text, and says what is missing', () => {
+    const { field, onSubmit } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: '漢字' } })
     fireEvent.keyDown(field, { key: 'Enter' })
 
     expect(onSubmit).not.toHaveBeenCalled()
-    expect(field.value).toBe('かn')
+    expect(field.value).toBe('漢字')
     expect(screen.getByText(UNCONVERTED)).toBeDefined()
   })
 
   it('marks the field invalid and points it at the message, for a reader who cannot see it', () => {
     const { field } = renderInput('reading')
 
-    fireEvent.change(field, { target: { value: 'kan' } })
+    fireEvent.change(field, { target: { value: '漢字' } })
     fireEvent.keyDown(field, { key: 'Enter' })
 
     expect(field.getAttribute('aria-invalid')).toBe('true')
@@ -176,7 +187,7 @@ describe('AnswerInput, refusing a reading that is not kana', () => {
   it('drops the message as soon as the reader types again', () => {
     const { field } = renderInput('reading')
 
-    fireEvent.change(field, { target: { value: 'kan' } })
+    fireEvent.change(field, { target: { value: '漢字' } })
     fireEvent.keyDown(field, { key: 'Enter' })
     fireEvent.change(field, { target: { value: 'かんじ' } })
 
