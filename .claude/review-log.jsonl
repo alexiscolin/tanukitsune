@@ -204,3 +204,4 @@
 {"date": "2026-07-30", "branch": "fix/workflow-gates", "reviewer": "requirement-check", "file": "docs/workflow.md", "line": 25, "outcome": "dismissed", "reason": "the branch carries six behaviours against the one a slice allows; the excess is in the plan rather than the diff, and it is reported to the reader rather than resolved by splitting work already reviewed"}
 {"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "2bff5bc96c0deb3e0ddbd2d12da6b4ad5c4fd7ea"}
 {"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "df9be794203bf244900227737f9cccde49642e8c"}
+{"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "a5635c57d297f4104e750237a65eaebaa920d177"}
