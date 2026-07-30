@@ -97,7 +97,7 @@ repo=$(scaffold declared "$two")
 printf '%s' "$one" > "$repo/src/a.test.ts"
 git -C "$repo" add -A >/dev/null 2>&1
 git -C "$repo" commit -q -m 'refactor: assert the object once' \
-  -m 'Assertions-reduced: src/a.test.ts one toEqual asserts more than two toBe'
+  -m 'Test-weakened: src/a.test.ts one toEqual asserts more than two toBe'
 expect 'a reduction the range declares' "$repo" 0
 
 # A trailer naming another file does not cover this one.
@@ -105,7 +105,7 @@ repo=$(scaffold misdeclared "$two")
 printf '%s' "$one" > "$repo/src/a.test.ts"
 git -C "$repo" add -A >/dev/null 2>&1
 git -C "$repo" commit -q -m 'refactor: assert the object once' \
-  -m 'Assertions-reduced: src/other.test.ts unrelated'
+  -m 'Test-weakened: src/other.test.ts unrelated'
 expect 'a reduction declared for another file' "$repo" 1
 
 # A reason naming a second test file does not open it: only the first field is the
@@ -123,7 +123,7 @@ printf '%s' "$one" > "$repo/src/a.test.ts"
 printf '%s' "$one" > "$repo/src/b.test.ts"
 git -C "$repo" add -A >/dev/null 2>&1
 git -C "$repo" commit -q -m 'refactor: fold both' \
-  -m 'Assertions-reduced: src/a.test.ts src/b.test.ts covers the rest now'
+  -m 'Test-weakened: src/a.test.ts src/b.test.ts covers the rest now'
 expect 'a reason naming a second file' "$repo" 1
 
 # A rename carries its baseline under the name it had: emptying a test while renaming it
@@ -153,6 +153,20 @@ expect 'an accented test file losing an assertion' "$repo" 1
 repo=$(scaffold introduced_skip "$two")
 commit_test "$repo" src/b.test.ts "${two/it(/it.skip(}"
 expect 'a new test file carrying a skipped case' "$repo" 2
+
+# `skipIf` keeps the body, so the count sees nothing: one call neutralises a file.
+repo=$(scaffold conditional "$two")
+commit_test "$repo" src/a.test.ts "${two/it(/it.skipIf(true)(}"
+expect 'a test made conditional' "$repo" 2
+
+# A Playwright spec guarding a browser it cannot serve is correct work, and the same
+# trailer lifts the marker refusal as it lifts the count.
+repo=$(scaffold guarded "$two")
+printf '%s' "${two/it(/it.skip(}" > "$repo/src/a.test.ts"
+git -C "$repo" add -A >/dev/null 2>&1
+git -C "$repo" commit -q -m 'test: guard the case' \
+  -m 'Test-weakened: src/a.test.ts the runner cannot serve this browser'
+expect 'a disabled test the range declares' "$repo" 0
 
 # A range with no test file in it has nothing to judge.
 repo=$(scaffold untouched "$two")

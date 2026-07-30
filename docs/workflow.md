@@ -156,7 +156,9 @@ sections, is stated once in `.claude/agents/change-walkthrough.md`; restating it
 drift. It reports no defect, writes nothing, and appends no line to the
 review log, so it changes nothing about what a pass records or what the coverage gate counts. It rides
 along with the lenses because it reads the same diff, and it earns its place on the one question the
-diff cannot answer on its own: where a new symbol is plugged in, or whether anything calls it yet.
+diff cannot answer on its own: where a new symbol is plugged in, or whether anything calls it yet. It
+is absent from [`verification.md`](verification.md) on purpose: that document carries what refuses a
+merge, and a description refuses nothing.
 
 **What replaces the automatic trigger is the merge button, not a reminder.** Reaching a pull request
 with unread code stops depending on anyone remembering, because `check-review-coverage.sh` runs as a

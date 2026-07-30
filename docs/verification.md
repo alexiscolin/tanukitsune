@@ -46,7 +46,7 @@ because it needs a browser and a database.
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
-| `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, a skipped, focused or fixme test, and still allows a declared reduction |
+| `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion and a disabled, focused or conditional test, and still allows either when a `Test-weakened:` trailer names the file |
 | `build` | Next | anything only the server compilation sees |
 | `test` | Vitest | logic in `core/` in Node, and a component's own behaviour in jsdom |
 | `knip` | knip | unused exports, files and dependencies |
@@ -175,6 +175,14 @@ a bare package name matches nothing once the package resolves inside `node_modul
 adjacency-only rule misses `ui` reaching `data` through `app`. The other three are asserted rather than
 proven, which is the state the first two were in.
 
+
+It also asserts that `tsconfig.json` excludes the probe prefix and that `eslint.config.js` ignores
+it, rather than trusting both. A probe lives under `src/ui/` because that path is what the rules
+match on, so it is inside what `tsc` enumerates and what `eslint .` walks; without the two
+exclusions a typecheck or a lint running beside this script fails on a file it has since removed,
+and the hook runs `pnpm gate` at the end of every turn. Renaming a probe would leave both patterns
+matching nothing, which is why the script checks them instead of assuming them.
+
 ## The four CI jobs
 
 Defined in `.github/workflows/verify.yml`. Every action is pinned to a commit SHA, since a mutable tag
@@ -185,7 +193,7 @@ needs no secret, and costs nothing beyond runner minutes.
 |---|---|---|
 | `verify` | push to main, pull request | `pnpm verify`, then checks the build left `tsconfig.json` alone |
 | `e2e` | push to main, pull request | Playwright with the axe audit, against the production build and a server Postgres |
-| `review` | pull request | `check-review-coverage.sh` and `check-test-strength.sh`, over the head commit rather than the merge commit. A test file may lose assertions when a commit in the range says so in an `Assertions-reduced:` trailer naming it |
+| `review` | pull request | `check-review-coverage.sh` and `check-test-strength.sh`, over the head commit rather than the merge commit. A test file may lose assertions, or carry a disabled or conditional test, when a commit in the range says so in a `Test-weakened:` trailer naming it |
 | `subjects` | pull request | the title, every commit subject on the branch, and a description carrying the plan |
 
 `e2e` runs against a server Postgres rather than the file-backed local one, so the driver that runs in

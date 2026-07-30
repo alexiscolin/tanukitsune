@@ -4,10 +4,9 @@
 #
 # `red before green` is the rule this repository holds best and outallows least: the
 # failing test is committed before the implementation and never edited to reach green.
-# A commit that edits a test alongside the code it covers is allowed, because a rename
-# carried by a refactor is that, and four commits on the branch this was written
-# against do exactly it. What is never allowed is the same edit taking an assertion
-# away, and no linter can tell the two apart.
+# A commit that edits a test alongside the code it covers is allowed: a rename carried by
+# a refactor is that. What is never allowed is the same edit taking an assertion away in
+# silence, and no linter can tell the two apart.
 #
 # The published detection signal for the same failure, only test files changed
 # alongside a failing check, does not apply here: tests change with their
@@ -17,7 +16,7 @@
 # Exit codes are distinct so the probe can tell the refusals apart:
 #   0  no test file lost an assertion, and none is skipped
 #   1  a test file that still exists holds fewer assertions than it did
-#   2  a test is skipped, focused, or marked fixme
+#   2  a test is disabled, focused, or made conditional, and nothing declares it
 #   3  the environment cannot answer
 #
 # A lint rule disabled in the range is deliberately not read: `eslint-disable` has
@@ -48,10 +47,11 @@ head=$(git rev-parse HEAD)
 # sharing a line would then hide the loss of one.
 assertions() { grep -o 'expect(' 2>/dev/null | wc -l | tr -d ' ' || true; }
 
-# A reduction is sometimes the right change: two assertions folded into one `toEqual`
-# assert more than they did, and refusing that would block correct work, which is worse
-# than not gating at all. So a reduction is allowed when a commit in the range names the
-# file in an `Assertions-reduced:` trailer. Same shape as a dismissed finding in the
+# Weakening is sometimes the right change: two assertions folded into one `toEqual`
+# assert more than they did, and a Playwright spec guarding one browser needs a
+# conditional skip. Refusing those would block correct work, which is worse than not
+# gating at all. So both refusals below are lifted when a commit in the range names the
+# file in a `Test-weakened:` trailer. Same shape as a dismissed finding in the
 # review log, and for the same reason: what cannot be told from silence is not a
 # decision. The trailer is read from the whole range, since the commit that reduces and
 # the commit that explains need not be the same one.
@@ -59,7 +59,7 @@ assertions() { grep -o 'expect(' 2>/dev/null | wc -l | tr -d ' ' || true; }
 # line is the reason, free text, and a reason naming a second test file would
 # otherwise open that file too.
 declared=$(git log --format=%B "$base..$head" \
-  | sed -n 's/^Assertions-reduced:[[:space:]]*//p' | awk '{print $1}')
+  | sed -n 's/^Test-weakened:[[:space:]]*//p' | awk '{print $1}')
 
 weakened=''
 skipped=''
@@ -89,7 +89,11 @@ while IFS= read -r -d '' status; do
 
   # Read before the baseline is required, so a test file the range introduces cannot
   # carry a skipped case through: the count needs two sides, the marker needs one.
-  if printf '%s' "$current" | grep -qE '\b(it|test|describe)\.(skip|only|fixme)\b'; then
+  # `skipIf` and `runIf` keep the body, so the count below cannot see them, and one
+  # `describe.skipIf(true)` neutralises a whole file. Lifted by the same trailer as the
+  # count, because a Playwright spec skipping a browser it cannot serve is correct work.
+  if printf '%s' "$current" | grep -qE '\b(it|test|describe)\.(skip|only|fixme|skipIf|runIf)\b' \
+    && ! printf '%s\n' "$declared" | grep -qxF -- "$f"; then
     skipped+=$(printf '  %s\n' "$f")
   fi
 
@@ -108,12 +112,13 @@ done < <(git diff --name-status -M25% -z "$base..$head" -- \
 if [ -n "$weakened" ]; then
   printf 'A test file lost assertions in this range:\n%s\n' "$weakened" >&2
   printf 'A test that has to change to pass means the plan was wrong. If the reduction is the\n' >&2
-  printf 'right change, say so in a commit: `Assertions-reduced: <path> <reason>`.\n' >&2
+  printf 'right change, say so in a commit: `Test-weakened: <path> <reason>`.\n' >&2
   exit 1
 fi
 
 if [ -n "$skipped" ]; then
-  printf 'A test is skipped, focused, or marked fixme:\n%s\n' "$skipped" >&2
+  printf 'A test is disabled, focused, or made conditional:\n%s\n' "$skipped" >&2
+  printf 'If that is the right change, say so in a commit: `Test-weakened: <path> <reason>`.\n' >&2
   exit 2
 fi
 
