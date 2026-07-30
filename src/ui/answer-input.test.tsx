@@ -9,6 +9,12 @@ afterEach(cleanup)
 
 const UNCONVERTED = "La conversion n'est pas terminée."
 
+// One change event per keystroke, appending to what the field holds, because that is the
+// only shape in which the buffer behind the field can be told apart from the kana on it.
+function type(field: HTMLInputElement, romaji: string) {
+  for (const key of romaji) fireEvent.change(field, { target: { value: field.value + key } })
+}
+
 function renderInput(kind: AnswerKind) {
   const onSubmit = vi.fn()
   render(<AnswerInput kind={kind} label="Réponse" unconverted={UNCONVERTED} onSubmit={onSubmit} />)
@@ -109,13 +115,29 @@ describe('AnswerInput, converting a reading', () => {
     expect(field.value).toBe('みず')
   })
 
-  it('holds an ambiguous n until the next keystroke decides it', () => {
+  it('reads a doubled n as the syllable it starts, keystroke by keystroke', () => {
     const { field } = renderInput('reading')
 
-    fireEvent.change(field, { target: { value: 'kan' } })
-    expect(field.value).toBe('かn')
+    type(field, 'tennou')
 
-    fireEvent.change(field, { target: { value: 'かni' } })
+    expect(field.value).toBe('てんのう')
+  })
+
+  it('does the same where the syllable is not the last one', () => {
+    const { field } = renderInput('reading')
+
+    type(field, 'konnichi')
+
+    expect(field.value).toBe('こんにち')
+  })
+
+  it('corrects a lone n once a vowel follows it', () => {
+    const { field } = renderInput('reading')
+
+    type(field, 'kan')
+    expect(field.value).toBe('かん')
+
+    type(field, 'i')
     expect(field.value).toBe('かに')
   })
 
@@ -127,6 +149,15 @@ describe('AnswerInput, converting a reading', () => {
 
     expect(field.value).toBe('')
     expect(onSubmit).toHaveBeenCalledWith('eau')
+  })
+
+  it('leaves the text to an editor from the moment it starts, before it has said what it holds', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.compositionStart(field)
+    fireEvent.change(field, { target: { value: 'ka' } })
+
+    expect(field.value).toBe('ka')
   })
 
   it('leaves the text to a Japanese editor while it composes, rather than converting under it', () => {
@@ -171,15 +202,35 @@ describe('AnswerInput, converting a reading', () => {
 })
 
 describe('AnswerInput, refusing a reading that is not kana', () => {
-  it('finalises a held n on Enter, which is the keystroke saying none follows', () => {
+  it('finalises on Enter what a correction left mid-answer', () => {
     const { field, onSubmit } = renderInput('reading')
 
-    fireEvent.change(field, { target: { value: 'kan' } })
-    expect(field.value).toBe('かn')
+    fireEvent.change(field, { target: { value: 'みずうみ' } })
+    fireEvent.change(field, { target: { value: 'みずkaうみ', selectionStart: 5 } })
+    fireEvent.keyDown(field, { key: 'Enter' })
+
+    expect(onSubmit).toHaveBeenCalledWith('みずかうみ')
+  })
+
+  it('accepts half-width kana, which the judge folds and no message should stand in front of', () => {
+    const { field, onSubmit } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'ﾐｽﾞ' } })
+    fireEvent.keyDown(field, { key: 'Enter' })
+
+    expect(onSubmit).toHaveBeenCalledWith('ﾐｽﾞ')
+  })
+
+  it('says it again on a second Enter, since a live region announces a change and not a state', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: '漢字' } })
+    fireEvent.keyDown(field, { key: 'Enter' })
+    const first = screen.getByText(UNCONVERTED)
 
     fireEvent.keyDown(field, { key: 'Enter' })
 
-    expect(onSubmit).toHaveBeenCalledWith('かん')
+    expect(screen.getByText(UNCONVERTED)).not.toBe(first)
   })
 
   it('sends nothing, keeps the text, and says what is missing', () => {
