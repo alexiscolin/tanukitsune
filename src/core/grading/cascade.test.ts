@@ -86,6 +86,32 @@ describe('runCascade, a reading', () => {
     expect(combining.verdict).toBe('correct')
   })
 
+  it('accepts the same reading written in katakana, which is a spelling and not another answer', async () => {
+    const outcome = await runCascade({ kind: 'reading', answer: 'ミズ', accepted: ['みず'] }, null)
+
+    expect(outcome).toEqual({ verdict: 'correct', decidedBy: 'exact:1' })
+  })
+
+  it('accepts half-width kana, which a keyboard shortcut produces and no reader intends', async () => {
+    const outcome = await runCascade({ kind: 'reading', answer: 'ﾐｽﾞ', accepted: ['みず'] }, null)
+
+    expect(outcome.verdict).toBe('correct')
+  })
+
+  it('keeps a small kana small through the fold, since it is its own sound', async () => {
+    const folded = await runCascade({ kind: 'reading', answer: 'キュウ', accepted: ['きゅう'] }, null)
+    const wrong = await runCascade({ kind: 'reading', answer: 'キユウ', accepted: ['きゅう'] }, null)
+
+    expect(folded.verdict).toBe('correct')
+    expect(wrong.verdict).toBe('incorrect')
+  })
+
+  it('leaves the prolonged sound mark alone, because the reference says which reading the item wants', async () => {
+    const outcome = await runCascade({ kind: 'reading', answer: 'コー', accepted: ['こう'] }, null)
+
+    expect(outcome.verdict).toBe('incorrect')
+  })
+
   it('accepts any of the readings the item allows', async () => {
     const outcome = await runCascade({ kind: 'reading', answer: 'ゲツ', accepted: ['がつ', 'ゲツ'] }, null)
 
