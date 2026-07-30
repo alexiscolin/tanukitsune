@@ -86,6 +86,12 @@ Omnibus, unlike the high-risk obligations.
 harmonised through EN 301 549:
 [European Commission](https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/disability/union-equality-strategy-rights-persons-disabilities-2021-2030/european-accessibility-act_en).
 
+**A time limit satisfies WCAG 2.2.1 when any one of turn off, adjust or extend holds**, which is what
+makes a limit the reader switches on conformant without resting on the essential-activity exception:
+[Understanding SC 2.2.1 Timing Adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html).
+The criterion is Level A, so it is the floor rather than a target:
+[How to Meet WCAG, 2.2.1](https://www.w3.org/WAI/WCAG22/quickref/#timing-adjustable).
+
 ## Judging and evaluation
 
 **Self-preference bias exists and is measurable**, which is why the judge comes from a different model

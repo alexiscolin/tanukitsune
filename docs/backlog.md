@@ -21,7 +21,12 @@ in [`ai-engineering.md`](ai-engineering.md).
 | Review flow, offline first | none | |
 | Answer judge, tiers 1 and 2 | none | Exact match on normalised input, then fuzzy: case fold, accent fold, edit distance, article tolerance. Anything they cannot decide falls to self-grade in v0.1. |
 | Typo tolerance and self-grade | none | WaniKani has no undo. The single most requested thing in the userscript ecosystem. |
-| Item card shown on wrong answer | none | |
+| Item card shown on wrong answer | none | Carries the typed answer beside the reference, aligned, and names the difference wherever a rule can: dakuten, small kana, long vowel. The part that needs a model is the confusion detector in v0.3. |
+| Hints, as a recorded ladder | none | Kana count, first kana, mnemonic, reference. Recorded in `assist`, because an item resolved at the third rung is not an item known. |
+| Retype rescue on a refused answer | none | Bunpro mutates the row and the item reads as correct. Append-only makes the rescue a second row, so the same help costs no honesty. |
+| Practice on demand, burned items included | none | Local ordering only, so no network and no upstream stage. A whole batch at once. Automatic return of a missed item is FSRS in v0.2, not a second scheduler here. |
+| Session length chosen at the start | none | The due queue arriving whole is the API's shape, not the learner's day. |
+| Opt-in review timer | none | Off by default, duration chosen, expiry reveals and asks rather than failing. [ADR 0008](decisions/0008-an-opt-in-review-timer.md). |
 | JLPT level shown | none | Data mapping, and the mapping needs a source that can be redistributed. There is no official per-item list, only community compilations of varying provenance, so this follows the pitch accent rule: named and licensed, or not shipped. |
 | Dark mode | none | |
 | `review_events` capture | none | Load-bearing. WaniKani stopped persisting review history in April 2023, so we are the system of record. Everything in later versions depends on data that only exists if collected from the first answer. |
@@ -40,6 +45,7 @@ in [`ai-engineering.md`](ai-engineering.md).
 |---|---|---|
 | FSRS scheduling | none | Statistics, not AI. The improvement over WaniKani's fixed intervals gets measured on real data and published, because the widely cited 20 to 30 percent figure is a simulation result nobody has verified. |
 | Stats and projection | none | Arithmetic over `review_events`. |
+| A missed item returning sooner | none | Falls out of FSRS: difficulty is modelled per card, so nothing needs the second parallel scheduler Bunpro's fixed intervals force on it. |
 | Theme tags | once | Administrative, health, family, food and so on. A closed set, so a text array column in Postgres with a GIN index, not a vector store. |
 | Situational prep | none | "I have an appointment at the ward office tomorrow" becomes a filtered query over themes and SRS state. Predefined situations need no model at all; only a free-text field would. |
 | Review by theme, cross-category buckets | none | Falls out of the tags. |
