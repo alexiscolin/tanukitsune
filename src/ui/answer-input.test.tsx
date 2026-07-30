@@ -75,6 +75,38 @@ describe('AnswerInput', () => {
     expect(onSubmit).toHaveBeenCalledWith('みず')
   })
 
+  it('takes the focus as it appears, since one field is mounted per question', () => {
+    const { field } = renderInput('reading')
+
+    expect(document.activeElement).toBe(field)
+  })
+
+  // `fireEvent` returns false when the handler prevented the default, which is the only
+  // thing a document with no next screen in it can assert about the key being consumed.
+  it('consumes the Enter it sent an answer on, so nothing that replaces the field is pressed', () => {
+    const { field } = renderInput('meaning')
+
+    fireEvent.change(field, { target: { value: 'eau' } })
+
+    expect(fireEvent.keyDown(field, { key: 'Enter' })).toBe(false)
+  })
+
+  it('consumes the Enter it refused a reading on, for the same reason', () => {
+    const { field } = renderInput('reading')
+
+    type(field, '123')
+
+    expect(fireEvent.keyDown(field, { key: 'Enter' })).toBe(false)
+  })
+
+  it('leaves the Enter an editor is confirming a conversion with to the editor', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'みず' } })
+
+    expect(fireEvent.keyDown(field, { key: 'Enter', isComposing: true })).toBe(true)
+  })
+
   it('ignores a key that is not Enter, so the answer is still being typed', () => {
     const { field, onSubmit } = renderInput('meaning')
 

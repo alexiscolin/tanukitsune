@@ -56,6 +56,9 @@ describe('ReviewSession', () => {
     press(COPY.next)
 
     expect(screen.getByText(COPY.prompt.meaning)).toBeTruthy()
+    // The next answer is typed without reaching for the mouse, which is the whole loop:
+    // the key that moved the session on has to land in the field it opened.
+    expect(document.activeElement).toBe(screen.getByLabelText(COPY.answerLabel))
   })
 
   it('shows the reading the item wanted on a miss, which is what tier 1 rejected it against', async () => {
