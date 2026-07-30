@@ -1,10 +1,7 @@
 import type { GradedAnswer, JudgePort } from './judge-port'
 
-// Each tier carries its own version into every verdict, because the two change for
-// different reasons: a new judge prompt must not relabel a row the exact tier decided,
-// and a change to the normalisation below must relabel the rows that rested on it.
-// Without that, a case replayed later cannot be told apart from one the same answer
-// would produce today.
+// One version per tier, because the two change for different reasons: a judge prompt
+// must not relabel a row the exact tier decided, and a change to normalise must.
 const EXACT_TIER = 'exact:1'
 const JUDGE_TIER = 'judge:1'
 
