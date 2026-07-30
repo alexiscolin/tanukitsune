@@ -35,17 +35,14 @@ function matchesExactly({ answer, accepted }: GradedAnswer): boolean {
 }
 
 // Bounded at ヶ, the last katakana with a hiragana counterpart one fixed offset below.
-// What that leaves out is deliberate: ヷ and its neighbours have no counterpart, and the
-// prolonged sound mark is a difference between two readings rather than two spellings.
+// What that leaves out is deliberate: ヷ and its neighbours have none, and the prolonged
+// sound mark separates two readings rather than two spellings of one.
 const KATAKANA = /[ァ-ヶ]/g
 const TO_HIRAGANA = 0x60
 
-// Only what cannot make a wrong answer right. NFKC composes a dakuten onto its kana and
-// pulls half-width kana and full-width Latin onto their canonical forms, leaving a small
-// kana small, which is the distinction a reading rests on. The prolonged sound mark is
-// outside the folded block on purpose: コー and こう are two readings and the reference
-// says which one the item wants. Case folding is a no-op on kana, so one path serves
-// both answer kinds rather than a branch reading as a rule that is not one.
+// What may sit here and why is tier 1 in docs/specs/v0.1.md. Case folding is a no-op on
+// kana, so one path serves both answer kinds rather than a branch reading as a rule that
+// is not one.
 function normalise(value: string): string {
   return value
     .trim()
