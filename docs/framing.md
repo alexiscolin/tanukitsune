@@ -424,6 +424,22 @@ The route tree carries a locale segment from the first commit, even while only o
 changes the service worker scope, the manifest entry point and every route's identity, so adding it
 later is a restructure rather than a feature.
 
+**The interface is authored in English and served translated.** English is the source every string is
+written in and the one a new language is translated from, so adding a language is a translation pass
+over one file rather than a reading of the code. No string is written in a component, which is what
+makes that pass possible at all.
+
+**The corpus is the exception, and the exception is the product.** Meanings, nuances and mnemonics are
+generated in the target language from the item itself and never translated, because a French sound
+association is not a translated English pun. The interface therefore has a source language and the
+corpus has none: each language's corpus is generated natively, and that asymmetry is the thesis rather
+than an inconsistency.
+
+**A locale reaches the route tree when both of its halves exist**, its strings and its corpus, so the
+languages the interface has and the languages the tree serves are two sets rather than one. French is
+served first. A language whose corpus has not been generated is not offered, because a screen whose
+interface is translated and whose teaching is not is worse than one the tree does not serve.
+
 ## Where AI is used, and where it is refused
 
 **Refused, with the cheaper answer named.** FSRS for scheduling, rules for conjugation, statistics for
