@@ -24,11 +24,19 @@ trap cleanup EXIT
 mkdir -p "$probe_dir"
 fail=0
 
-# The exclusion is asserted, not trusted: renaming a probe leaves the pattern
-# matching nothing, and the race would come back with nothing saying so.
+# Both exclusions are asserted, not trusted: renaming a probe leaves the patterns
+# matching nothing, and each brings back a different failure. Without the tsconfig
+# one, a typecheck enumerating src/ reports a file this script has since removed.
+# Without the eslint one, `projectService` refuses to parse a file the project no
+# longer contains, for as long as a probe exists. Matched as the literal string
+# both files carry, so the gate gains no dependency for one assertion.
 excluded="src/**/${probe_prefix}*.ts"
-if ! jq -e --arg p "$excluded" '(.exclude // []) | index($p)' tsconfig.json > /dev/null; then
+if ! grep -qF "\"$excluded\"" tsconfig.json; then
   printf 'tsconfig.json does not exclude %s, so a typecheck can fail on a probe.\n' "$excluded" >&2
+  fail=1
+fi
+if ! grep -qF "'$excluded'" eslint.config.js; then
+  printf 'eslint.config.js does not ignore %s, so a lint can fail on a probe.\n' "$excluded" >&2
   fail=1
 fi
 

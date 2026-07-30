@@ -5,7 +5,10 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['.next/**', 'node_modules/**', 'coverage/**', 'next-env.d.ts'] },
+  // The boundary probes are excluded from tsconfig, so `projectService` would refuse
+  // to parse one for as long as it exists. scripts/check-boundaries.sh asserts this
+  // glob and the tsconfig one together, since a rename breaks each differently.
+  { ignores: ['.next/**', 'node_modules/**', 'coverage/**', 'next-env.d.ts', 'src/**/__boundary-probe-*.ts'] },
 
   js.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
