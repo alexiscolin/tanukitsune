@@ -5,10 +5,10 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import tseslint from 'typescript-eslint'
 
 // A Tailwind arbitrary value that spends no token. Two shapes fall outside it. A bracket
-// mentioning a custom property anywhere spends one by name, so calc over a token passes as
-// the bare reference does. And a variant carries a colon after its bracket, selecting
-// rather than spending: the theme is an attribute on the root element, so data-[theme=dark]
-// is a class this interface will write.
+// carrying var(-- anywhere inside spends one by name, so calc over a token passes as the
+// bare reference does. And a variant carries a colon after its bracket, selecting rather
+// than spending: the theme is an attribute on the root element, so data-[theme=dark] is a
+// class this interface will write.
 const ARBITRARY_VALUE = String.raw`[a-z][a-z0-9:-]*-\[(?![^\]]*var\(--)[^\]]*\](?!:)`
 const SPEND_A_TOKEN =
   'Arbitrary value. Spend a token from src/app/globals.css, as text-[var(--color-ink)] does.'

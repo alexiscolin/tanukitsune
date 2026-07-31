@@ -20,8 +20,7 @@ const preview: Preview = {
       document.documentElement.dataset.theme = theme
       document.documentElement.style.colorScheme = theme
 
-      // The application's own container rather than one invented here, so a state is
-      // measured in the width and the rhythm it will actually have.
+      // Wrapped so a state is measured in the width and the rhythm it will actually have.
       return (
         <PageShell>
           <Story />

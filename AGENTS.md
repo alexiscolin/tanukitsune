@@ -38,7 +38,7 @@ pnpm check:review          a probe proving the review coverage gate refuses what
 pnpm check:tests           a probe proving the test strength gate refuses a weakened test
 pnpm check:tokens          a probe proving the token rule refuses an arbitrary Tailwind value
 pnpm gate                  typecheck, check:docs, arch, lint, cheapest first: needs no database
-pnpm verify                gate, check:review, check:tests, check:tokens, build, test, knip, dupes
+pnpm verify                gate, check:tokens, check:review, check:tests, build, test, knip, dupes
 ```
 
 Run `pnpm verify` and show its output before saying work is done. Do not assert that something

@@ -22,7 +22,7 @@
     "check:tests": "bash scripts/check-test-strength-probe.sh",
     "check:tokens": "bash scripts/check-tokens.sh",
     "gate": "pnpm typecheck && pnpm check:docs && pnpm arch && pnpm lint",
-    "verify": "pnpm gate && pnpm check:review && pnpm check:tests && pnpm check:tokens && pnpm build && pnpm test && pnpm knip && pnpm dupes",
+    "verify": "pnpm gate && pnpm check:tokens && pnpm check:review && pnpm check:tests && pnpm build && pnpm test && pnpm knip && pnpm dupes",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "db:generate": "drizzle-kit generate",

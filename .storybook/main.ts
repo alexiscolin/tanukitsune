@@ -5,9 +5,8 @@ const config: StorybookConfig = {
   framework: '@storybook/nextjs-vite',
   stories: ['../src/ui/**/*.stories.tsx'],
   addons: ['@storybook/addon-a11y'],
-  // The catalogue is a development tool on a product that asks for no account and sends
-  // nothing anywhere. A tool reporting to a third party from a contributor's machine is a
-  // decision, and this is it, taken the other way.
+  // A product that asks for no account does not report to a third party from a
+  // contributor's machine either.
   core: { disableTelemetry: true },
 }
 

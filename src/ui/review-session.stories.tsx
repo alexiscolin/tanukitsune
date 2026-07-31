@@ -9,12 +9,16 @@ import { ReviewSession } from './review-session'
 // The deck and the copy the application runs on, not a fixture written beside them. A
 // catalogue rendering invented data stops describing the product the day the two diverge.
 const COPY = copyFor('fr').review
-const MEANING = DEMO_QUEUE.filter((entry) => entry.kind === 'meaning').slice(0, 1)
-const READING = DEMO_QUEUE.filter((entry) => entry.kind === 'reading').slice(0, 1)
 
-// The states are held in the session's own state, so a story types and clicks its way to
-// one rather than passing it in. This is affordable because the cascade runs with no judge
-// in v0.1: it is a string comparison, and every state follows from a chosen answer.
+// Named rather than taken from the head of the deck, because the answers below are this
+// subject's: に is wrong for 一 and right for 二, so a deck reordered around them would
+// leave the incorrect verdict rendering a correct one under its own name.
+const ICHI = DEMO_QUEUE.filter((entry) => entry.subjectId === 'demo-ichi')
+const MEANING = ICHI.filter((entry) => entry.kind === 'meaning')
+const READING = ICHI.filter((entry) => entry.kind === 'reading')
+
+// A story types and clicks its way to a state rather than passing it in, for the reason
+// docs/decisions/0009-storybook-as-the-review-surface.md gives.
 async function answer(canvasElement: HTMLElement, typed: string) {
   const canvas = within(canvasElement)
   await userEvent.type(canvas.getByLabelText(COPY.answerLabel), `${typed}{Enter}`)
@@ -48,8 +52,7 @@ export const VerdictCorrect: Story = {
   },
 }
 
-// A reading the exact tier cannot match is wrong rather than undecided, which is the one
-// place the cascade decides without a judge.
+// A reading the exact tier cannot match is wrong rather than undecided.
 export const VerdictIncorrect: Story = {
   args: { queue: READING },
   play: async ({ canvasElement }) => {

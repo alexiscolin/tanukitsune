@@ -35,7 +35,7 @@ first failure and the four cost 0.9, 0.9, 1.2 and 4.0 seconds: a boundary or doc
 reported in about two seconds rather than after the type-aware lint has run. Seven seconds in all, no
 database, which is what makes it usable from a hook that runs at every turn.
 
-`pnpm verify` is `gate` plus `check:review`, `check:tests`, `check:tokens`, `build`, `test`, `knip` and
+`pnpm verify` is `gate` plus `check:tokens`, `check:review`, `check:tests`, `build`, `test`, `knip` and
 `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits outside both and runs
 in its own CI job, because it needs a browser and a database.
 
@@ -47,7 +47,7 @@ in its own CI job, because it needs a browser and a database.
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, which a `Test-weakened:` trailer may declare, and a disabled, focused or conditional unit test, which nothing declares |
-| `check:tokens` | `check-tokens.sh` | whether the token rule still refuses an arbitrary Tailwind value, written in a class attribute and written into a constant |
+| `check:tokens` | `check-tokens.sh` | whether the token rule still refuses an arbitrary Tailwind value, in a class attribute, in a constant and in a template, and still passes the three shapes that are legal |
 | `build` | Next | anything only the server compilation sees |
 | `test` | Vitest | logic in `core/` in Node, and a component's own behaviour in jsdom |
 | `knip` | knip | unused exports, files and dependencies |
@@ -200,8 +200,8 @@ either of them**, which is recorded below under what is not covered.
 
 `src/app/globals.css` declares itself the single token source, and a Tailwind arbitrary value is the
 one way to spend a colour or a length that never passed through it. The lint rule refuses one under
-`src/`, in a string and in a template, and leaves two shapes alone: a bracket mentioning a custom
-property anywhere, which spends a token by name and so covers arithmetic over one as well as a bare
+`src/`, in a string and in a template, and leaves two shapes alone: a bracket carrying `var(--`
+anywhere inside it, which spends a token by name and so covers arithmetic over one as well as a bare
 reference, and a variant, whose bracket is followed by a colon because it selects rather than
 spending anything.
 
