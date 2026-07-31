@@ -258,3 +258,4 @@
 {"date": "2026-07-31", "branch": "docs/routes-and-architecture", "kind": "pass", "base": "ef93993522d10600f430e63ee616fff0eb8e81bc", "head": "e6b77c2da83c9e75694fdfee39f19b019abf4ba7"}
 {"date": "2026-07-31", "branch": "docs/deeper-tree", "reviewer": "docs-conformity", "file": "README.md", "line": 143, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/deeper-tree", "kind": "pass", "base": "43768af960b645f2c318f83c39b13324528dc31f", "head": "106901e8745922d3adb6161a1723b7e3330c85a7"}
+{"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "kind": "pass", "base": "ef93993522d10600f430e63ee616fff0eb8e81bc", "head": "e4b6c4cff102a20b6860236659e7ce33414baeaf"}
