@@ -11,13 +11,18 @@ cd "$(dirname "$0")/.." || exit 1
 
 log=.claude/review-log.jsonl
 
+# Counted as a set of records rather than as lines. A merge can put one line in
+# twice, by hand or through the union driver the log is merged with, and a lens
+# whose findings are counted twice reads as busier than it was, which is the one
+# number this exists to produce.
 if [ ! -s "$log" ]; then
   echo "review-log: empty, so nothing can be said about the reviewers yet."
   exit 0
 fi
 
-jq -rs '
-  map(select((.kind // "finding") != "pass"))
+jq -rs --arg _ "" '
+  unique_by(tojson)
+  | map(select((.kind // "finding") != "pass"))
   | group_by(.reviewer)
   | map({
       reviewer: .[0].reviewer,
@@ -32,6 +37,6 @@ jq -rs '
 # Passes are the denominator. Findings alone cannot say whether a lens is quiet
 # because the code is clean or because it ran once and never again.
 printf '\n%s findings over %s passes, on %s branches\n' \
-  "$(jq -rs 'map(select((.kind // "finding") != "pass")) | length' "$log")" \
-  "$(jq -rs 'map(select(.kind == "pass")) | length' "$log")" \
+  "$(jq -rs "unique_by(tojson) | map(select((.kind // \"finding\") != \"pass\")) | length" "$log")" \
+  "$(jq -rs "unique_by(tojson) | map(select(.kind == \"pass\")) | length" "$log")" \
   "$(jq -rs 'map(.branch) | unique | length' "$log")"

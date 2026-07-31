@@ -265,3 +265,5 @@
 {"date": "2026-07-31", "branch": "docs/deeper-tree", "reviewer": "docs-conformity", "file": "README.md", "line": 143, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/deeper-tree", "kind": "pass", "base": "43768af960b645f2c318f83c39b13324528dc31f", "head": "106901e8745922d3adb6161a1723b7e3330c85a7"}
 {"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "kind": "pass", "base": "0a7bef6a3a5603edf50fe70750da0e61f72ec816", "head": "a48217d724081947db68d574e621a4831ac9c891"}
+{"date": "2026-07-31", "branch": "chore/union-merge-the-review-log", "reviewer": "regression-check", "file": "scripts/review-stats.sh", "line": 26, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "chore/union-merge-the-review-log", "kind": "pass", "base": "651213c538aa1c3a4d8538bde0fe19833c823ee7", "head": "8b812f362df8e5acd3e35766181fffb0cb020ed8"}
