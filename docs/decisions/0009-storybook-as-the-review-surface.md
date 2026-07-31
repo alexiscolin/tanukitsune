@@ -65,11 +65,17 @@ cover.
 
 ## Consequences
 
-Three tools have to be told what a story is, or they report the catalogue as a defect. Unused-export
-detection treats stories as entry points rather than dead code. The copy-paste ratchet ignores them,
-because stories repeat by construction and a catalogue that has to be varied to pass a duplication
-threshold is a catalogue distorted by its own gate. The dependency rules gain a statement of what a
-story may import, which is the component and nothing under `src/data`.
+None of the three volume tools needs configuring for the catalogue. Unused-export detection reads the
+Storybook configuration itself and treats stories as entry points from it. The dependency rules
+already reach them, a story being a module under `src/ui/`, so the rule refusing `ui` to reach `data`
+refuses it inside a story. The copy-paste ratchet reports none.
+
+**The Storybook directory has to be named by an explicit glob in `tsconfig.json`, not by its name.**
+TypeScript drops a directory beginning with a dot when it expands an include entry, so naming
+`.storybook` leaves the configuration unchecked while the typecheck stays green, and the first thing
+to notice is the lint, which fails on a file its project service cannot find. A gate that passes
+because it read nothing is the failure the probes in [`../verification.md`](../verification.md) exist
+to catch, and this one is invisible without listing the files the compiler saw.
 
 The accessibility addon runs the audit once per state. `e2e/shell.spec.ts` visits three paths and
 audits each as it loads, and none of the three enters the loop, so no state of a review has ever been

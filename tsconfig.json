@@ -42,6 +42,8 @@
   "include": [
     "src",
     "e2e",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx",
     "*.config.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts",

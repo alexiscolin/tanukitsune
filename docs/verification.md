@@ -185,6 +185,17 @@ exclusions a typecheck or a lint running beside this script fails on a file it h
 and the hook runs `pnpm gate` at the end of every turn. Renaming a probe would leave both patterns
 matching nothing, which is why the script checks them instead of assuming them.
 
+## The review surface
+
+`pnpm storybook` serves every state of `src/ui/` as its own page, with the theme and the viewport as
+controls rather than as separate stories, so the matrix is walked without being written. A story
+supplies arguments and never markup, which is what keeps the catalogue a second entry point into one
+renderer instead of a second renderer. Why it stops at `src/ui/`, and why states are reached by
+typing rather than by passing a property: [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md).
+
+The accessibility addon runs the audit per state. `e2e/shell.spec.ts` audits three paths as they
+load and none of them enters the loop, so the states of a review are audited here or nowhere.
+
 ## The token rule
 
 `src/app/globals.css` declares itself the single token source, and a Tailwind arbitrary value is the
