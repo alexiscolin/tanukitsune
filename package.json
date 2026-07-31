@@ -20,8 +20,9 @@
     "check:docs": "bash scripts/check-docs.sh",
     "check:review": "bash scripts/check-review-coverage-probe.sh",
     "check:tests": "bash scripts/check-test-strength-probe.sh",
+    "check:tokens": "bash scripts/check-tokens.sh",
     "gate": "pnpm typecheck && pnpm check:docs && pnpm arch && pnpm lint",
-    "verify": "pnpm gate && pnpm check:review && pnpm check:tests && pnpm build && pnpm test && pnpm knip && pnpm dupes",
+    "verify": "pnpm gate && pnpm check:review && pnpm check:tests && pnpm check:tokens && pnpm build && pnpm test && pnpm knip && pnpm dupes",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "test:e2e": "playwright test"
