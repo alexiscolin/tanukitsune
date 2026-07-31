@@ -28,6 +28,7 @@ is invisible. Naming the condition and the page to check turns it into a schedul
 | [0007](0007-kana-input-in-the-field.md) | The answer field converts romaji to kana, through wanakana |
 | [0008](0008-an-opt-in-review-timer.md) | A review timer, off until the reader turns it on |
 | [0009](0009-storybook-as-the-review-surface.md) | Storybook as the review surface, catalogued by state |
+| [0010](0010-behaviour-imported-appearance-written.md) | Behaviour imported, appearance written: no copied skin, native first, Base UI for the rest |
 
 ## Decided, argued in prose
 
@@ -46,7 +47,6 @@ genuinely challenged, written then, with the challenge as its context.
 | Cache Components | Off; the corpus is served as immutable content-addressed chunks instead | `framing.md`, `stack.md` |
 | Storage durability on iOS | Request persistence and surface refusal; recovery on install rather than prevention | `framing.md` |
 | React Compiler | On | `stack.md` |
-| Styling and primitives | Tailwind, `shadcn/ui` copied into `ui/`, module stylesheets for visual logic only | `framing.md`, `stack.md` |
 | Locale routing | A locale segment from the first commit, even with one locale | `framing.md` |
 | FSRS and WaniKani | FSRS never writes upstream; it orders and selects, WaniKani owns the stage | `framing.md` |
 

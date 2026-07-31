@@ -13,7 +13,7 @@ the arguments do not get re-litigated.
 | Runtime | Node 22, which is the AI SDK v7 floor |
 | Language | TypeScript 6, installed under its own package name |
 | Framework | Next 16, App Router, React Compiler on, Cache Components off |
-| Styling | Tailwind 4, `shadcn/ui` primitives, design tokens in one file |
+| Styling | Tailwind 4, native elements and Base UI for behaviour, design tokens in one file |
 | Kana input | `wanakana` for conversion and script detection, called from the field rather than bound to it, per [ADR 0007](decisions/0007-kana-input-in-the-field.md) |
 | Local store | IndexedDB through `idb`, append-only outbox |
 | Server store | Postgres through Drizzle, migrations by drizzle-kit |
@@ -123,17 +123,23 @@ Server Actions are for forms. The queue flush is a route handler taking a batch.
 
 ## Styling
 
-Tailwind 4 for everything visual, `shadcn/ui` for accessible primitives copied into `ui/` as source,
-module-scoped stylesheets only for keyframes and stateful visual logic. Design tokens in one file in
-the community standard format, compiled to custom properties. No runtime CSS-in-JS.
+Tailwind 4 for everything visual, module-scoped stylesheets only for keyframes and stateful visual
+logic. Design tokens in one file, compiled to custom properties by Tailwind itself. No runtime
+CSS-in-JS.
+
+Behaviour is imported and appearance is written here: a native element wherever one exists, Base UI
+for the few widgets HTML has none for, and no copied skin. The argument, and the four layers under
+`src/ui/` that follow from it, are in
+[ADR 0010](decisions/0010-behaviour-imported-appearance-written.md).
 
 The reason utilities win here is that an agent writes them: naming CSS classes is where agent output
 duplicates and drifts, and a visual change spanning a component and a stylesheet doubles the places to
 get it wrong. Components are added the moment they are first imported, never in bulk, or `knip` and
 `jscpd` start reporting noise on files nobody chose.
 
-`shadcn/ui` changed its default primitive base once. Which one it installs is verified at install time
-and recorded here, not assumed.
+Motion has three lanes and never two libraries: CSS or the Web Animations API for anything on
+`transform` and `opacity`, view transitions for route and card continuity, and at most one JavaScript
+dependency, for a gesture. Same record.
 
 ## Data
 

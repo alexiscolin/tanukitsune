@@ -126,7 +126,7 @@ must be free to be approved. See [ADR 0004](docs/decisions/0004-free-forever.md)
 |---|---|
 | Language | TypeScript 6 |
 | Framework | Next 16, App Router |
-| Styling | Tailwind 4, shadcn/ui primitives, design tokens in one file |
+| Styling | Tailwind 4, native elements and Base UI for behaviour, design tokens in one file |
 | Server data | Postgres through Drizzle |
 | Local data | IndexedDB, append-only outbox |
 | Models | Batch API for the corpus, cached cascade for grading |
