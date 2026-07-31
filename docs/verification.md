@@ -222,7 +222,7 @@ bracket carrying `var(--` anywhere inside it, which spends a token by name and s
 over one as well as a bare reference, and a bracket followed by a colon, which is a variant and
 selects rather than spending anything.
 
-It reads every string rather than class attributes alone, because `src/ui/review-session.tsx` holds
+It reads every string rather than class attributes alone, because `src/ui/organisms/review-session.tsx` holds
 its classes in module constants and an attribute-scoped rule would pass a constant holding one. What
 escapes it is an arbitrary value split across an interpolation, whose brackets land in separate
 pieces of the template and match nothing.

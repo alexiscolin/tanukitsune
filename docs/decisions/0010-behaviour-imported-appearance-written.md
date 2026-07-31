@@ -69,16 +69,16 @@ dependency. A second one is the second way to do something that already exists h
 
 ## Consequences
 
-`src/ui/page-shell.tsx` is wrong for this interface. It centres inside a prose measure, and the screens
-are full bleed. It is the first component the new structure replaces, and it is four lines.
+`src/ui/atoms/page-shell.tsx` is wrong for this interface. It centres inside a prose measure, and the
+screens are full bleed. It is the first component the new structure replaces, and it is four lines.
 
 `pnpm arch` needs no change. Its rules match `^src/ui/`, a prefix, so a component in a sub-directory is
 covered by the same reachability and `server-only` rules as one directly beneath. This was checked
 rather than assumed.
 
-The catalogue gains the taxonomy through the title each story declares, not through a second
-configuration. `docs/verification.md` describes what the catalogue shows and is updated with the
-structure rather than after it.
+The catalogue takes the taxonomy from the directory, since a story with no declared title is filed
+under its own path. So a component that changes layer changes place in the catalogue with the move,
+and there is no second declaration to keep in step with the first.
 
 A shader is not decided here. Rendering a gradient with animated noise is a WebGL question, and a
 tweening library cannot answer it: it would only drive that shader's inputs, which a frame callback

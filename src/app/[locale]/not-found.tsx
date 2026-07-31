@@ -1,6 +1,6 @@
 import { DEFAULT_LOCALE } from '@/core/locales'
 import { copyFor } from '@/core/site-copy'
-import { PageShell } from '@/ui/page-shell'
+import { PageShell } from '@/ui/atoms/page-shell'
 
 // Rendered when the page rejects the segment, which is where the rejection has
 // to happen: a notFound thrown from the layout skips that layout's own html

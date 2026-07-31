@@ -97,7 +97,7 @@ export default tseslint.config(
     // and it is how a generated component arrives carrying its own scale.
     //
     // Every string rather than class attributes alone, because classes are held in module
-    // constants in src/ui/review-session.tsx and an attribute-scoped rule would pass a
+    // constants in src/ui/organisms/review-session.tsx and an attribute-scoped rule would pass a
     // constant holding one. A template counts for the same reason a constant does.
     files: ['src/**/*.{ts,tsx}'],
     rules: {

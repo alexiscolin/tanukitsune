@@ -1,6 +1,6 @@
 import type { Preview } from '@storybook/nextjs-vite'
 
-import { PageShell } from '../src/ui/page-shell'
+import { PageShell } from '../src/ui/atoms/page-shell'
 import '../src/app/globals.css'
 
 const preview: Preview = {

@@ -152,8 +152,9 @@ src/
 │   └── schema.ts                the tables, from which migrations are generated
 ├── ai/                      the model. Prompts, eval sets, and what implements core's ports
 ├── ui/                      the components. Everything reaches them as props
-│   ├── answer-input.tsx         romaji becomes kana here, and Enter is decided here
-│   └── review-session.tsx       the loop: question, verdict, next
+│   ├── atoms/                   appearance, no behaviour
+│   ├── molecules/               answer-input: romaji becomes kana here, and Enter is decided here
+│   └── organisms/               review-session: the loop, question, verdict, next
 └── app/                     the routes. The only layer allowed to touch both data and ui
     ├── [locale]/                the session, its layout, its error and not-found pages
     └── api/health/route.ts      what answered, which build, and whether the database is there
