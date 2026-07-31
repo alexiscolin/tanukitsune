@@ -27,6 +27,7 @@ is invisible. Naming the condition and the page to check turns it into a schedul
 | [0006](0006-drizzle-and-a-file-backed-local-postgres.md) | Drizzle for queries, PGlite locally, server Postgres in CI |
 | [0007](0007-kana-input-in-the-field.md) | The answer field converts romaji to kana, through wanakana |
 | [0008](0008-an-opt-in-review-timer.md) | A review timer, off until the reader turns it on |
+| [0009](0009-storybook-as-the-review-surface.md) | Storybook as the review surface, catalogued by state |
 
 ## Decided, argued in prose
 
