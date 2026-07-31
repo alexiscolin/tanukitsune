@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation'
 
+import { DEMO_QUEUE } from '@/core/demo-queue'
 import { isLocale } from '@/core/locales'
 import { copyFor } from '@/core/site-copy'
 import { PageShell } from '@/ui/page-shell'
+import { ReviewSession } from '@/ui/review-session'
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -12,8 +14,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <PageShell>
-      <h1 className="text-3xl font-semibold tracking-tight">{copy.title}</h1>
-      <p className="text-[var(--color-ink-muted)]">{copy.tagline}</p>
+      <ReviewSession queue={DEMO_QUEUE} copy={copy.review} />
     </PageShell>
   )
 }

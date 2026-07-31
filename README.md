@@ -22,8 +22,9 @@ Five of those nine run on a model: the mnemonics, the grading, the confusion pai
 comes next, and the tutor. The other four do not, and the section below names them beside five more
 places a model was refused outright. Knowing which is which is the whole design.
 
-> **Status: the toolchain and the shell run, the product does not.** No review flow, no corpus and no
-> judge exist yet.
+> **Status: the review loop runs on a fixture deck, the product does not.** Answers are graded by the
+> exact tier and nothing else, nothing is recorded, and no corpus, no judge and no connection to a real
+> account exist yet.
 
 ## The nine that deliberately do not
 

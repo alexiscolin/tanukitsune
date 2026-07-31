@@ -41,17 +41,28 @@ function convertReading(buffer: string, next: string, shown: string, atEnd: bool
   return { buffer: grown, value: atEnd ? toKana(grown) : next }
 }
 
-export function AnswerInput({
-  kind,
-  label,
-  unconverted,
-  onSubmit,
-}: {
+// Two rules about the keystroke rather than about the text, because the field is one step
+// of a loop and not a form on its own.
+//
+// The Enter it acted on is consumed. What replaces the field is focused as the answer
+// leaves it, and the default action of that same keystroke would then press it, so one
+// Enter would send the answer and dismiss the verdict it produced. Only the paths that act
+// consume it, which leaves an editor the Enter it is confirming a conversion with.
+//
+// The field takes the focus as it mounts when it replaced another one, so the key that moved
+// the session on lands in the answer to the next question. Without it the focus falls on
+// nothing when the control that advanced leaves, and every question has to be clicked before
+// it can be typed. The caller decides, because the first field of a session replaced nothing
+// and taking the focus there reads the field out before the question it answers.
+type AnswerInputProps = {
   kind: AnswerKind
   label: string
   unconverted: string
+  autoFocus: boolean
   onSubmit: (raw: string) => void
-}) {
+}
+
+export function AnswerInput({ kind, label, unconverted, autoFocus, onSubmit }: AnswerInputProps) {
   const fieldId = useId()
   const messageId = useId()
   const [value, setValue] = useState('')
@@ -90,6 +101,7 @@ export function AnswerInput({
     )
     compositionEndedAt.current = press.compositionEndedAt
     if (!press.submits || value.trim() === '') return
+    event.preventDefault()
 
     // From the buffer, and Enter is the keystroke saying no other follows, so what a
     // correction left in the middle is decided here rather than sent as it stands.
@@ -135,6 +147,7 @@ export function AnswerInput({
           composing.current = false
           compositionEndedAt.current = event.nativeEvent.timeStamp
         }}
+        autoFocus={autoFocus}
         aria-invalid={refusals > 0 || undefined}
         aria-describedby={refusals > 0 ? messageId : undefined}
         // A reading is typed in Japanese; a meaning is typed in whichever language

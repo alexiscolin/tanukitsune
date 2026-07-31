@@ -1,4 +1,4 @@
-import type { GradedAnswer, JudgePort } from './judge-port'
+import type { GradedAnswer, JudgePort, Verdict } from './judge-port'
 
 // One version per tier, because the two change for different reasons: a judge prompt
 // must not relabel a row the exact tier decided, and a change to normalise must.
@@ -6,7 +6,7 @@ const EXACT_TIER = 'exact:2'
 const JUDGE_TIER = 'judge:1'
 
 type CascadeOutcome =
-  | { readonly verdict: 'correct' | 'incorrect'; readonly decidedBy: typeof EXACT_TIER | typeof JUDGE_TIER }
+  | { readonly verdict: Verdict; readonly decidedBy: typeof EXACT_TIER | typeof JUDGE_TIER }
   // Nobody decided, so nothing claims to have: the reader grades it and the
   // interface shows the item card while asking.
   | { readonly verdict: 'undecided' }
