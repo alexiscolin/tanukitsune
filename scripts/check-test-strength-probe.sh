@@ -23,9 +23,7 @@ scaffold() {
   git -C "$repo" init -q -b main
   git -C "$repo" config user.email probe@example.com
   git -C "$repo" config user.name probe
-  # Signing is inherited from whoever runs this, and every commit below is deleted on
-  # exit. A locked agent would refuse the probe rather than the rule the probe tests,
-  # which reports as a failed gate on a repository nothing is wrong with.
+  # Signing off for the reason scripts/check-review-coverage-probe.sh gives.
   git -C "$repo" config commit.gpgsign false
   printf '%s' "$baseline" > "$repo/src/a.test.ts"
   [ -n "$second" ] && printf '%s' "$second" > "$repo/src/b.test.ts"

@@ -28,7 +28,8 @@ it is written. Read `docs/design-direction.md` for the intent, `src/app/globals.
 spent, and `src/ui/` for what already exists, because the most expensive failure here is inventing a
 piece that is already there under another name. If the direction file is missing, write it from what
 the reader says and never invent it: a direction the agent guessed is one the agent will then defend
-against the reader.
+against the reader. Add it to the map in `docs/README.md` in the same edit, since `check:docs` refuses
+a document directly under `docs/` that the map does not list, and the session ends on `pnpm verify`.
 
 Take one screen, for the reason `AGENTS.md` gives for one slice. A screen is a client organism whose
 route is the shell that awaits its data, and that is what makes it reachable at all: the catalogue

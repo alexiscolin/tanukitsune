@@ -36,8 +36,8 @@ reported in about two seconds rather than after the type-aware lint has run. Sev
 database, which is what makes it usable from a hook that runs at every turn.
 
 `pnpm verify` is `gate` plus `check:sketches`, `check:tokens`, `check:review`, `check:tests`, `build`,
-`test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits outside both and runs
-in its own CI job, because it needs a browser and a database.
+`test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits
+outside both and runs in its own CI job, because it needs a browser and a database.
 
 | Command | Tool | Catches |
 |---|---|---|
@@ -46,7 +46,7 @@ in its own CI job, because it needs a browser and a database.
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
-| `check:sketches` | `check-sketches.sh` | a `sketch-*` file a design session left behind, which carries a story and so passes `arch` and `knip`, and whether the search still finds one |
+| `check:sketches` | `check-sketches.sh` | a file named `sketch-*`, the contract three mechanisms key on, left behind by a design session, which carries a story and so passes `arch` and `knip`, and whether the search still finds one |
 | `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, which a `Test-weakened:` trailer may declare, and a disabled, focused or conditional unit test, which nothing declares |
 | `check:tokens` | `check-tokens.sh` | whether the token rule still refuses an arbitrary Tailwind value, in a class attribute, in a constant, in a template and as a bare arbitrary property, and still passes the four shapes that are legal |
 | `build` | Next | anything only the server compilation sees |
@@ -79,9 +79,10 @@ and every story renders through, and a component under `src/ui/` that something 
 it reports with the importers listed. A sketch has none, so a design session stays quiet until it
 reaches what already works. `PreToolUse` stdout never reaches the agent, so the notice travels in
 `hookSpecificOutput.additionalContext`, injected beside the tool result, and `permissionDecision` is
-`defer` rather than `allow`: the hook informs without granting a permission the reader would otherwise
-be asked for. It reads its input without `jq` for the reason above. The rule it makes mechanical is
-written in `.claude/skills/design/SKILL.md`, which is why a leftover sketch is refused by
+absent: deciding nothing is what the missing field means, and `allow` would grant in the reader's
+place a permission they would otherwise be asked for. It reads its input without `jq` for the reason
+above. The rule it makes mechanical is written in `.claude/skills/design/SKILL.md`, which is why a
+leftover sketch is refused by
 `check:sketches` at the merge rather than here: a hook that blocks a legitimate edit gets switched off,
 and a repository with a hook switched off is worse than one without it.
 
@@ -238,7 +239,8 @@ bracket carrying `var(--` anywhere inside it, which spends a token by name and s
 over one as well as a bare reference, and a bracket followed by a colon, which is a variant and
 selects rather than spending anything.
 
-It reads every string rather than class attributes alone, because `src/ui/organisms/review-session.tsx` holds
+It reads every string rather than class attributes alone, because
+`src/ui/organisms/review-session.tsx` holds
 its classes in module constants and an attribute-scoped rule would pass a constant holding one. What
 escapes it is an arbitrary value split across an interpolation, whose brackets land in separate
 pieces of the template and match nothing.
@@ -277,9 +279,10 @@ without any of them running unprompted.
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - A pass line is a record somebody wrote, not evidence a model ran. The gate refuses a merge nobody
   reviewed; it cannot refuse one somebody only claimed to have reviewed.
-- Nothing checks that the announcing hook is registered or that it fires. `.claude/settings.json`
-  names a script and a matcher, and the script answers correctly to an input piped into it, but
-  whether the tool reads that registration and delivers the notice is visible only by opening a
+- Nothing checks that the announcing hook fires. `check:docs` pairs every registration in
+  `.claude/settings.json` against the scripts present, so a renamed file and a ghost entry are both
+  caught, and the script answers correctly to an input piped into it. What no command reaches is
+  delivery: whether the tool matches the event and passes the notice on is visible only by opening a
   session and editing a shared file. A matcher that stopped matching leaves it silent with nothing
   saying so, which is the failure a hook exists to prevent in the first place.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the

@@ -1,42 +1,46 @@
 #!/bin/bash
-set -euo pipefail
+# Refuses a sketch a design session left behind. Sketches are named sketch-* and compare
+# alternatives in the catalogue, and .claude/skills/design deletes them once one wins.
+# Nothing else catches one: a component carrying a story satisfies both dependency-cruiser
+# and knip, which is exactly what makes sketching legal while the session runs. So the
+# refusal belongs at the merge, and the announcing hook stays free to never block.
+#
+# Writes one probe into src/ui/, expects the search to find it, removes it. A probe
+# surviving a killed run is an orphan module dependency-cruiser refuses, and the Stop hook
+# runs gate, so it would refuse every turn until someone found it; the trap prevents that.
 
-# A design session writes sketch-*.tsx to compare alternatives, and .claude/skills/design
-# deletes them once one wins. Nothing else catches one left behind: a component carrying a
-# story satisfies both dependency-cruiser and knip, which is exactly what makes sketching
-# legal while the session runs. So the refusal belongs at the merge rather than at the
-# edit, and the announcing hook stays free to never block.
+set -uo pipefail
+cd "$(dirname "$0")/.." || exit 1
 
-cd "$(dirname "$0")/.."
+probe_dir=src/ui
+probe=$probe_dir/sketch-gate-probe.tsx
 
-PROBE=src/ui/sketch-gate-probe.tsx
-
-# A probe surviving a killed run is a file typecheck, lint and arch all refuse, and the
-# Stop hook runs gate, so it would refuse every turn until someone found it. The trap is
-# what prevents that.
-cleanup() { rm -f "$PROBE"; }
+cleanup() { rm -f "$probe"; }
 trap cleanup EXIT
+
+fail=0
 
 sketches() { find src -type f -name 'sketch-*' | sort; }
 
 # Prove the search finds one before trusting it to report none. A find whose pattern or
 # whose root stopped matching reports a clean tree in the same words as a clean tree does.
-: > "$PROBE"
+: > "$probe"
 found=$(sketches)
 cleanup
 
 case "$found" in
-  *"$PROBE"*) ;;
+  *"$probe"*) ;;
   *)
-    printf 'The search did not find %s while it existed, so a clean report here would prove nothing.\n' "$PROBE" >&2
-    exit 1
+    printf 'The search did not find %s while it existed, so a clean report here would prove nothing.\n' "$probe" >&2
+    fail=1
     ;;
 esac
 
 left=$(sketches)
 if [ -n "$left" ]; then
   printf 'A design session left sketches behind. They exist to be compared and never to merge, so delete them or promote one:\n%s\n' "$left" >&2
-  exit 1
+  fail=1
 fi
 
-printf 'sketches: proven, none left\n'
+[ "$fail" -eq 0 ] && printf 'sketches: proven, none left\n'
+exit "$fail"

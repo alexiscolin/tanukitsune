@@ -212,7 +212,8 @@ This repository is built primarily with AI coding agents, and the method is part
 disjoint lenses check every diff from a fresh context, one of them asking only whether the diff is
 what was asked for, a sixth reads the documentation against itself whenever it moves, and two hooks
 call no model at all: one forces a continuation when a turn would end on code that does not compile,
-the other names an edit reaching what something else already renders, and refuses nothing.
+the other names an edit reaching the token source or a component something already renders, and
+refuses nothing.
 
 [`docs/workflow.md`](docs/workflow.md) describes that process: the per-task cycle, the review lenses,
 and the conditions under which a session is discarded rather than continued.
