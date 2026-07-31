@@ -8,13 +8,15 @@ input=$(cat)
 
 # Claude Code sets stop_hook_active when this hook already caused a block.
 # An exported shell variable would not work: each invocation is a fresh process.
-if [ "$(printf '%s' "$input" | jq -r '.stop_hook_active // false')" = "true" ]; then
+# Read without jq, which no document lists as a prerequisite: this guard is what bounds
+# every refusal below, and a PATH thin enough to lose pnpm loses a packaged jq with it,
+# so reading it through one would drop the bound in the same environment that needs it.
+if printf '%s' "$input" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true'; then
   exit 0
 fi
 
 # A hook that cannot run has no guarantee to give, and from outside a hook that passed
-# and a hook that never ran are the same observation. Each condition names itself, and
-# stop_hook_active bounds the refusal to one turn the same way a failed gate is bounded.
+# and a hook that never ran are the same observation, so each condition names itself.
 cd "${CLAUDE_PROJECT_DIR:-.}" || {
   printf 'The project directory is unreachable, so nothing verified this turn.\n' >&2
   exit 2
