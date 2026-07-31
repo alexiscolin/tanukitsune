@@ -108,7 +108,6 @@
 {"date":"2026-07-30","branch":"feat/answer-input","kind":"pass","base":"a985d8f97c11112c2bab46024de926dba7ee5929","head":"7323443519e215fd3d19694464c04a9d0dbd9826"}
 {"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":".claude/hooks/pre-pr-gate.sh","line":32,"outcome":"fixed"}
 {"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-review-coverage.sh","line":98,"outcome":"fixed"}
-{"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-docs.sh","line":101,"outcome":"fixed"}
 {"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-docs.sh","line":102,"outcome":"fixed"}
 {"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":".claude/skills/pre-pr/SKILL.md","line":98,"outcome":"fixed"}
 {"date":"2026-07-30","branch":"feat/answer-input","reviewer":"security-check","file":"scripts/check-review-coverage.sh","line":117,"outcome":"fixed"}
@@ -273,3 +272,8 @@
 {"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "kind": "pass", "base": "0a7bef6a3a5603edf50fe70750da0e61f72ec816", "head": "a48217d724081947db68d574e621a4831ac9c891"}
 {"date": "2026-07-31", "branch": "chore/union-merge-the-review-log", "reviewer": "regression-check", "file": "scripts/review-stats.sh", "line": 26, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "chore/union-merge-the-review-log", "kind": "pass", "base": "651213c538aa1c3a4d8538bde0fe19833c823ee7", "head": "8b812f362df8e5acd3e35766181fffb0cb020ed8"}
+{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 43, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 54, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 60, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/specs/v0.1.md", "line": 189, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "kind": "pass", "base": "7b5f775f509c915dc46c596bc713271257993996", "head": "f0a6f97a3dfcc819d3a97500225e8f6640750b0b"}
