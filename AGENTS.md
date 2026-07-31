@@ -25,6 +25,7 @@ pnpm build                 in verify: the only gate that evaluates server module
 pnpm test                  unit tests over core/ and components, no database
 pnpm test path/to/file     one file
 pnpm test:e2e              Playwright against the production build, with the axe audit
+pnpm storybook             the review loop's six states by theme and viewport, :build for a site
 pnpm db:generate           write a migration from the schema
 pnpm db:migrate            apply pending migrations
 pnpm typecheck             tsc6, because the TS 6 line ships its binary under that name
@@ -35,8 +36,9 @@ pnpm dupes                 jscpd, copy-paste ratchet
 pnpm check:docs            documentation discipline
 pnpm check:review          a probe proving the review coverage gate refuses what it claims to
 pnpm check:tests           a probe proving the test strength gate refuses a weakened test
+pnpm check:tokens          a probe proving the token rule refuses an arbitrary Tailwind value
 pnpm gate                  typecheck, check:docs, arch, lint, cheapest first: needs no database
-pnpm verify                gate, check:review, check:tests, build, test, knip, dupes
+pnpm verify                gate, check:tokens, check:review, check:tests, build, test, knip, dupes
 ```
 
 Run `pnpm verify` and show its output before saying work is done. Do not assert that something

@@ -35,9 +35,9 @@ first failure and the four cost 0.9, 0.9, 1.2 and 4.0 seconds: a boundary or doc
 reported in about two seconds rather than after the type-aware lint has run. Seven seconds in all, no
 database, which is what makes it usable from a hook that runs at every turn.
 
-`pnpm verify` is `gate` plus `check:review`, `check:tests`, `build`, `test`, `knip` and `dupes`. `build`
-is the only gate that evaluates server modules. `test:e2e` sits outside both and runs in its own CI job,
-because it needs a browser and a database.
+`pnpm verify` is `gate` plus `check:tokens`, `check:review`, `check:tests`, `build`, `test`, `knip` and
+`dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits outside both and runs
+in its own CI job, because it needs a browser and a database.
 
 | Command | Tool | Catches |
 |---|---|---|
@@ -47,6 +47,7 @@ because it needs a browser and a database.
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, which a `Test-weakened:` trailer may declare, and a disabled, focused or conditional unit test, which nothing declares |
+| `check:tokens` | `check-tokens.sh` | whether the token rule still refuses an arbitrary Tailwind value, in a class attribute, in a constant, in a template and as a bare arbitrary property, and still passes the four shapes that are legal |
 | `build` | Next | anything only the server compilation sees |
 | `test` | Vitest | logic in `core/` in Node, and a component's own behaviour in jsdom |
 | `knip` | knip | unused exports, files and dependencies |
@@ -183,6 +184,43 @@ exclusions a typecheck or a lint running beside this script fails on a file it h
 and the hook runs `pnpm gate` at the end of every turn. Renaming a probe would leave both patterns
 matching nothing, which is why the script checks them instead of assuming them.
 
+## The review surface
+
+`pnpm storybook` serves each catalogued state as its own page, with the theme and the viewport as
+controls rather than as separate stories, so the matrix is walked without being written. A story
+supplies arguments and never markup, which is what keeps the catalogue a second entry point into one
+renderer instead of a second renderer. Why it stops at `src/ui/`, and why states are reached by
+typing rather than by passing a property: [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md).
+
+The six states of the review loop are what is catalogued. `answer-input.tsx` appears inside them and
+`page-shell.tsx` around them, neither with a page of its own, and nothing requires a component under
+`src/ui/` to have one.
+
+The accessibility addon runs the audit per state, which is the only place the states of a review are
+audited at all: `e2e/shell.spec.ts` audits two paths and neither enters the loop. **Nothing gates
+either of them**, which is recorded below under what is not covered.
+
+## The token rule
+
+`src/app/globals.css` declares itself the single token source, and a Tailwind arbitrary value is the
+one way to spend a colour or a length that never passed through it. The lint rule refuses one under
+`src/`, in a string and in a template, and in both syntaxes: a bracket after a utility, as `p-[13px]`
+is, and a bracket standing alone and naming its property, as `[color:#ff0000]` is, which is the
+shortest way to write a raw colour and carries no utility to key on. Two shapes are left alone: a
+bracket carrying `var(--` anywhere inside it, which spends a token by name and so covers arithmetic
+over one as well as a bare reference, and a bracket followed by a colon, which is a variant and
+selects rather than spending anything.
+
+It reads every string rather than class attributes alone, because `src/ui/review-session.tsx` holds
+its classes in module constants and an attribute-scoped rule would pass a constant holding one. What
+escapes it is an arbitrary value split across an interpolation, whose brackets land in separate
+pieces of the template and match nothing.
+
+`scripts/check-tokens.sh` writes the four refused shapes and the four legal ones, lints all five
+files at once, and reads the report as JSON so it can require the token rule by name. Asking only
+whether the linter spoke about a file would keep passing with the rule replaced by any other that
+happened to flag the same probes.
+
 ## The four CI jobs
 
 Defined in `.github/workflows/verify.yml`. Every action is pinned to a commit SHA, since a mutable tag
@@ -205,6 +243,10 @@ without any of them running unprompted.
 
 ## What is not covered
 
+- No command runs a story. The catalogue and the accessibility audit over the states of a review both
+  answer to a person opening a browser, so a state that regresses between two of those is caught by
+  nobody. Closing it needs a runner that drives a story, which is the one thing here that gates
+  nothing.
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - A pass line is a record somebody wrote, not evidence a model ran. The gate refuses a merge nobody
   reviewed; it cannot refuse one somebody only claimed to have reviewed.
