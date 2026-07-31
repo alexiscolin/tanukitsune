@@ -83,16 +83,25 @@ export default tseslint.config(
     // value is the one way to spend a colour or a length that never passed through it,
     // and it is how a generated component arrives carrying its own scale.
     //
-    // Read on every string literal rather than on class attributes, because classes are
-    // held in module constants in src/ui/review-session.tsx and an attribute-scoped rule
-    // would pass a constant holding one. The custom-property form stays legal: it spends
-    // a token by name, which is the whole point of declaring them.
+    // Read on every string rather than on class attributes, because classes are held in
+    // module constants in src/ui/review-session.tsx and an attribute-scoped rule would
+    // pass a constant holding one. A template counts for the same reason a constant does.
+    //
+    // Two shapes are left alone. A custom property spends a token by name, which is what
+    // declaring them is for. And a variant carries a colon after its bracket, as
+    // data-[theme=dark]: does, which selects rather than spending anything: the theme is
+    // an attribute on the root element, so that is a class this interface will write.
     files: ['src/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-syntax': [
         'error',
         {
-          selector: 'Literal[value=/[a-z][a-z0-9:-]*-\\[(?!var\\(--)/]',
+          selector: 'Literal[value=/[a-z][a-z0-9:-]*-\\[(?!var\\(--)[^\\]]*\\](?!:)/]',
+          message:
+            'Arbitrary value. Spend a token from src/app/globals.css, as text-[var(--color-ink)] does.',
+        },
+        {
+          selector: 'TemplateElement[value.raw=/[a-z][a-z0-9:-]*-\\[(?!var\\(--)[^\\]]*\\](?!:)/]',
           message:
             'Arbitrary value. Spend a token from src/app/globals.css, as text-[var(--color-ink)] does.',
         },

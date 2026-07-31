@@ -1,58 +1,73 @@
 #!/bin/bash
-# Proves the token rule refuses what it claims to, rather than trusting that it does.
-# A rule that matches nothing passes every lint and reads as a guard in place.
+# Proves the token rule refuses what it claims to and nothing beside it, rather than
+# trusting that it does. A rule that matches nothing passes every lint and reads as a
+# guard in place; one that matches too much is worked around until it is deleted.
 #
-# Three probes into src/ui/, because the rule has to hold on all three: an arbitrary
-# value written in the attribute, the same written into a constant the attribute reads,
-# and the custom-property form the codebase already uses, which must stay legal. The
-# middle one is the reason the rule reads every string literal instead of only the
-# attributes: classes live in constants in src/ui/review-session.tsx, and a rule
-# scoped to JSX would pass a constant holding p-[13px] in silence.
+# Four probes into src/ui/, one lint over all four. Three must be refused: an arbitrary
+# value in the attribute, the same held in a constant, and the same written as a template.
+# The constant is why the rule reads every string instead of the attributes alone, classes
+# being held in constants in src/ui/review-session.tsx. The fourth must pass whole, and it
+# carries the three shapes that are legal on purpose: a colour token, a token that is not
+# a colour, and a variant, whose bracket is followed by a colon because it selects rather
+# than spending anything.
 
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
-# Under src/, so the file lands where the rule matches and where the type service
-# resolves it. Removed before anything else in the gate enumerates the directory.
+# Under src/, so a probe lands where the rule matches and where the type service resolves
+# it. Removed before anything else in the gate enumerates the directory.
 probe_dir=src/ui
 probe_prefix=__token-probe-
 inline=$probe_dir/${probe_prefix}inline.tsx
 constant=$probe_dir/${probe_prefix}constant.tsx
+template=$probe_dir/${probe_prefix}template.tsx
 allowed=$probe_dir/${probe_prefix}allowed.tsx
 
-cleanup() { rm -f "$inline" "$constant" "$allowed"; }
+cleanup() { rm -f "$inline" "$constant" "$template" "$allowed"; }
 trap cleanup EXIT
 
 fail=0
 RULE=no-restricted-syntax
 
-# Named as a violation of the rule rather than as any failure: the probes are valid
-# TypeScript and break nothing else, so a lint failing for another reason would
-# otherwise be read as the rule firing.
+printf 'export function TokenProbe() {\n  return <p className="p-[13px]">probe</p>\n}\n' > "$inline"
+printf "const CARD = 'text-[#ffffff]'\n\nexport function TokenProbe() {\n  return <p className={CARD}>probe</p>\n}\n" > "$constant"
+printf 'const CARD = `gap-[7px]`\n\nexport function TokenProbe() {\n  return <p className={CARD}>probe</p>\n}\n' > "$template"
+printf 'export function TokenProbe() {\n  return (\n    <p className="text-[var(--color-ink)] p-[var(--spacing-loose)] data-[theme=dark]:underline">\n      probe\n    </p>\n  )\n}\n' > "$allowed"
+
+# One invocation rather than one per probe: the type-aware configuration builds a project
+# graph on startup, which is most of a lint's cost, and paying it four times proves
+# nothing a single pass does not.
+report=$(./node_modules/.bin/eslint "$inline" "$constant" "$template" "$allowed" 2>&1)
+
 # Matched on a captured string rather than through a pipe into grep: under pipefail,
 # grep -q closes the tube on its first hit, eslint dies on SIGPIPE, and the pipeline
 # reports 141 for the case that just succeeded.
-refuses() {
-  local file="$1" what="$2" out
-  out=$(./node_modules/.bin/eslint "$file" 2>&1)
-  case "$out" in
-    *"$RULE"*) return 0 ;;
+refused() {
+  case "$report" in
+    *"$1"*) return 0 ;;
   esac
-  printf '%s did not refuse %s.\n' "$RULE" "$what" >&2
+  return 1
+}
+
+check_refused() {
+  refused "$1" && return 0
+  printf '%s did not refuse %s.\n' "$RULE" "$2" >&2
   fail=1
 }
 
-printf 'export function TokenProbe() {\n  return <p className="p-[13px]">probe</p>\n}\n' > "$inline"
-refuses "$inline" 'an arbitrary value in a class attribute'
+check_refused "$inline" 'an arbitrary value in a class attribute'
+check_refused "$constant" 'an arbitrary value held in a constant'
+check_refused "$template" 'an arbitrary value written as a template'
 
-printf "const CARD = 'text-[#ffffff]'\n\nexport function TokenProbe() {\n  return <p className={CARD}>probe</p>\n}\n" > "$constant"
-refuses "$constant" 'an arbitrary value held in a constant'
+# Named rather than counted: a file with nothing to report is absent from the output, so
+# its presence is the failure, and the message says which of the three legal shapes broke.
+if refused "$allowed"; then
+  printf 'The rule refuses a token, a token that is not a colour, or a variant, and all three are legal.\n' >&2
+  fail=1
+fi
 
-# Exit code rather than a rule name: this one proves the probe is clean outright, so a
-# rule written too broadly is caught here instead of surfacing as a puzzling lint later.
-printf 'export function TokenProbe() {\n  return <p className="text-[var(--color-ink)]">probe</p>\n}\n' > "$allowed"
-if ! ./node_modules/.bin/eslint "$allowed" > /dev/null 2>&1; then
-  printf 'The custom-property form is refused, and it is the form the codebase writes.\n' >&2
+if ! refused "$RULE"; then
+  printf 'The lint reported nothing at all, so the probes prove nothing.\n' >&2
   fail=1
 fi
 

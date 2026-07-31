@@ -36,9 +36,8 @@ reported in about two seconds rather than after the type-aware lint has run. Sev
 database, which is what makes it usable from a hook that runs at every turn.
 
 `pnpm verify` is `gate` plus `check:review`, `check:tests`, `check:tokens`, `build`, `test`, `knip` and
-`dupes`. `build`
-is the only gate that evaluates server modules. `test:e2e` sits outside both and runs in its own CI job,
-because it needs a browser and a database.
+`dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits outside both and runs
+in its own CI job, because it needs a browser and a database.
 
 | Command | Tool | Catches |
 |---|---|---|
@@ -193,19 +192,28 @@ supplies arguments and never markup, which is what keeps the catalogue a second 
 renderer instead of a second renderer. Why it stops at `src/ui/`, and why states are reached by
 typing rather than by passing a property: [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md).
 
-The accessibility addon runs the audit per state. `e2e/shell.spec.ts` audits three paths as they
-load and none of them enters the loop, so the states of a review are audited here or nowhere.
+The accessibility addon runs the audit per state. `e2e/shell.spec.ts` audits two paths as they load,
+neither of which enters the loop, so the states of a review are audited here or nowhere.
+
+**Nothing gates it.** No command runs a story, so both the audit and the catalogue answer to a person
+opening a browser. What would close that is listed under what is not covered.
 
 ## The token rule
 
 `src/app/globals.css` declares itself the single token source, and a Tailwind arbitrary value is the
-one way to spend a colour or a length that never passed through it. The lint rule refuses one
-anywhere under `src/`, and leaves the `var(--color-*)` form legal, since that spends a token by name.
+one way to spend a colour or a length that never passed through it. The lint rule refuses one under
+`src/`, in a string and in a template, and leaves two shapes alone: any `var(--...)`, which spends a
+token by name whether or not the token is a colour, and a variant, whose bracket is followed by a
+colon because it selects rather than spending anything.
 
-It reads every string literal rather than class attributes alone, because `src/ui/review-session.tsx`
-holds its classes in module constants and an attribute-scoped rule would pass a constant holding one.
-`scripts/check-tokens.sh` covers both shapes and the legal form, so a rule narrowed to attributes, or
-widened until it refuses the form the codebase writes, fails rather than passing quietly.
+It reads every string rather than class attributes alone, because `src/ui/review-session.tsx` holds
+its classes in module constants and an attribute-scoped rule would pass a constant holding one. What
+escapes it is an arbitrary value split across an interpolation, whose brackets land in separate
+pieces of the template and match nothing.
+
+`scripts/check-tokens.sh` writes the three refused shapes and the three legal ones and lints all four
+files at once, so a rule narrowed to attributes and a rule widened until it refuses a variant both
+fail rather than passing quietly.
 
 ## The four CI jobs
 
@@ -229,6 +237,10 @@ without any of them running unprompted.
 
 ## What is not covered
 
+- No command runs a story. The catalogue and the accessibility audit over the states of a review both
+  answer to a person opening a browser, so a state that regresses between two of those is caught by
+  nobody. Closing it needs a runner that drives a story, which is the one thing here that gates
+  nothing.
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - A pass line is a record somebody wrote, not evidence a model ran. The gate refuses a merge nobody
   reviewed; it cannot refuse one somebody only claimed to have reviewed.

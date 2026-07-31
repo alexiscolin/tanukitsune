@@ -32,9 +32,13 @@ inside the application, rendering every state from fixtures. Storybook.
 
 **Storybook, through the Vite framework rather than the webpack one.** Only the former carries stable
 support for this major of the framework; the webpack variant reached it in a prerelease. The Vite
-variant is also the one whose testing integration runs stories as cases of the runner already
-configured in `vitest.config.ts`, which is what turns a catalogue into a gate instead of a second
-suite beside one.
+variant is also the one whose testing integration would run stories as cases of the runner already
+configured in `vitest.config.ts`, which is the form a gate over the catalogue would take.
+
+**Nothing gates it today, and that is the shape of what ships.** No command runs a story, so the
+catalogue and its accessibility audit both answer to a person opening a browser.
+[`../verification.md`](../verification.md) carries that under what is not covered, beside the runner
+that would close it.
 
 The rejected two fail on the same axis. A directory of screenshots is not a surface: nothing links
 the image to the state it shows, and a reader browses files. A gallery route ships a page inside the
@@ -78,11 +82,10 @@ because it read nothing is the failure the probes in [`../verification.md`](../v
 to catch, and this one is invisible without listing the files the compiler saw.
 
 The accessibility addon runs the audit once per state. `e2e/shell.spec.ts` visits three paths and
-audits each as it loads, and none of the three enters the loop, so no state of a review has ever been
-audited. [`../verification.md`](../verification.md) records that gap under what is not covered until
-this closes it.
+audits two of them as they load, the third being checked for where it redirects, and neither audited
+path enters the loop, so no state of a review has ever been audited.
 
-**Visual baselines are not part of this.** The runner offers them and they cost nothing to switch on,
+**Visual baselines are not part of this.** They come with the runner and cost nothing to switch on,
 which is the trap: a baseline over a design still moving turns every deliberate change into a
 ratification, and a reader who ratifies noise stops reading. They arrive when the design settles, and
 that is a decision someone takes rather than a date that passes.

@@ -25,8 +25,7 @@ pnpm build                 in verify: the only gate that evaluates server module
 pnpm test                  unit tests over core/ and components, no database
 pnpm test path/to/file     one file
 pnpm test:e2e              Playwright against the production build, with the axe audit
-pnpm storybook             the review surface: every state of src/ui/, by theme and viewport
-pnpm storybook:build       the same as a static site
+pnpm storybook             every state of src/ui/ by theme and viewport, :build for a static site
 pnpm db:generate           write a migration from the schema
 pnpm db:migrate            apply pending migrations
 pnpm typecheck             tsc6, because the TS 6 line ships its binary under that name

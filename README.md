@@ -161,6 +161,7 @@ e2e/                         Playwright against the production build, with the a
 drizzle/                     migrations, generated from the schema, never written by hand
 scripts/                     the gates a linter cannot express
 docs/                        everything argued rather than enforced
+.storybook/                  the review surface: every state of ui/, by theme and viewport
 .claude/                     the agent configuration, the review lenses, and their append-only log
 ```
 

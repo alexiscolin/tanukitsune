@@ -17,7 +17,7 @@ const READING = DEMO_QUEUE.filter((entry) => entry.kind === 'reading').slice(0, 
 // in v0.1: it is a string comparison, and every state follows from a chosen answer.
 async function answer(canvasElement: HTMLElement, typed: string) {
   const canvas = within(canvasElement)
-  await userEvent.type(canvas.getByLabelText('Réponse'), `${typed}{Enter}`)
+  await userEvent.type(canvas.getByLabelText(COPY.answerLabel), `${typed}{Enter}`)
 }
 
 const meta = {
