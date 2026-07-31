@@ -15,9 +15,17 @@ function type(field: HTMLInputElement, romaji: string) {
   for (const key of romaji) fireEvent.change(field, { target: { value: field.value + key } })
 }
 
-function renderInput(kind: AnswerKind) {
+function renderInput(kind: AnswerKind, { autoFocus = false } = {}) {
   const onSubmit = vi.fn()
-  render(<AnswerInput kind={kind} label="Réponse" unconverted={UNCONVERTED} onSubmit={onSubmit} />)
+  render(
+    <AnswerInput
+      kind={kind}
+      label="Réponse"
+      unconverted={UNCONVERTED}
+      autoFocus={autoFocus}
+      onSubmit={onSubmit}
+    />,
+  )
 
   return { field: screen.getByLabelText<HTMLInputElement>('Réponse'), onSubmit }
 }
@@ -73,6 +81,46 @@ describe('AnswerInput', () => {
     fireEvent.keyDown(field, { key: 'Enter' })
 
     expect(onSubmit).toHaveBeenCalledWith('みず')
+  })
+
+  it('takes the focus as it appears when it replaced another field', () => {
+    const { field } = renderInput('reading', { autoFocus: true })
+
+    expect(document.activeElement).toBe(field)
+  })
+
+  // The first field of a session is not a field that replaced anything, and taking the
+  // focus there reads the field to a screen reader before the question it answers.
+  it('leaves the focus alone otherwise', () => {
+    renderInput('reading')
+
+    expect(document.activeElement).toBe(document.body)
+  })
+
+  // `fireEvent` returns false when the handler prevented the default, which is the only
+  // thing a document with no next screen in it can assert about the key being consumed.
+  it('consumes the Enter it sent an answer on, so nothing that replaces the field is pressed', () => {
+    const { field } = renderInput('meaning')
+
+    fireEvent.change(field, { target: { value: 'eau' } })
+
+    expect(fireEvent.keyDown(field, { key: 'Enter' })).toBe(false)
+  })
+
+  it('consumes the Enter it refused a reading on, for the same reason', () => {
+    const { field } = renderInput('reading')
+
+    type(field, '123')
+
+    expect(fireEvent.keyDown(field, { key: 'Enter' })).toBe(false)
+  })
+
+  it('leaves the Enter an editor is confirming a conversion with to the editor', () => {
+    const { field } = renderInput('reading')
+
+    fireEvent.change(field, { target: { value: 'みず' } })
+
+    expect(fireEvent.keyDown(field, { key: 'Enter', isComposing: true })).toBe(true)
   })
 
   it('ignores a key that is not Enter, so the answer is still being typed', () => {

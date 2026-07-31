@@ -230,6 +230,10 @@ without any of them running unprompted.
 - No automated driver produces a real conversion, so the component test covers synthetic composition
   events and the behaviour on a device is covered by the manual pass alone, dated in
   [`agent-log.md`](agent-log.md) with the devices and the operating system versions.
+- Nothing runs `pnpm bootstrap`. CI installs with a frozen lockfile and sets `DATABASE_URL`, so the
+  file-backed branch of the migration configuration, which is the one a fresh clone takes, executes on
+  a developer's machine alone. The rule that decides it is unit tested; the path through the script is
+  not, and the acceptance criterion it serves is checked by a person running the two commands.
 - Nothing measures the quality of a plan, which `workflow.md` names as where attention matters most.
 - The conformity reviewer reads the whole documentation set on every pass, so its cost grows with the
   documentation rather than with the change.
