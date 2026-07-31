@@ -54,13 +54,14 @@ for spec in "eslint.config.js:'$worktrees/**'" "scripts/check-docs.sh:'./$worktr
   fail=1
 done
 
-# The exit code says a rule fired, not which one, and a probe trips more than one, so
-# reading it alone leaves the gate green when the rule the probe is named for is deleted
-# and a sibling stands in for it.
+# The exit code names no rule, and a probe trips more than one.
 expect_rules() {
   local probe=$1 out rule
   shift
-  out=$(./node_modules/.bin/depcruise src --output-type err 2>&1)
+  # Colour is pinned off rather than stripped after the fact: an inherited FORCE_COLOR
+  # puts a reset between the severity and the rule name, and NO_COLOR does not override
+  # it. Matching on the severity is what tells an error from a warning.
+  out=$(FORCE_COLOR=0 ./node_modules/.bin/depcruise src --output-type err 2>&1)
   for rule in "$@"; do
     grep -qF "error $rule:" <<< "$out" && continue
     printf '%s was not refused by %s.\n' "$probe" "$rule" >&2
@@ -72,10 +73,8 @@ printf "import 'server-only'\n\nexport const PROBE = 1\n" > "$server_only"
 expect_rules 'A ui/ module importing server-only' ui-imports-nothing-server-only
 rm -f "$server_only"
 
-# Two hops, not one. An adjacency-only rule refuses ui -> data and misses ui -> app ->
-# data, which is the same leak, so a one-hop probe leaves `reachable` unexercised on
-# both rules. The hop imports server-only itself rather than inheriting it through
-# data/env.ts, so the gate turns on the rules and not on what production code imports.
+# The hop imports server-only itself rather than inheriting it through data/env.ts, so
+# the gate turns on the rules and not on what production code happens to import.
 printf "import 'server-only'\nimport { env } from '@/data/env'\n\nexport const HOP = env.DATABASE_URL\n" > "$data_hop"
 printf "import { HOP } from '@/app/${probe_prefix}data-hop'\n\nexport const PROBE = HOP\n" > "$reaches_data"
 expect_rules 'A ui/ module reaching data/ through app/' ui-imports-no-io ui-imports-nothing-server-only
