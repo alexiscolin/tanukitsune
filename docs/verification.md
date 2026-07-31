@@ -56,14 +56,17 @@ because it needs a browser and a database.
 
 **`.claude/hooks/verify.sh`** is registered in `.claude/settings.json`, on `Stop`, when the agent
 finishes a turn. It runs `pnpm gate` and refuses the end of the turn when it fails, and refuses it the
-same way when it cannot run at all: an unreachable project directory, a missing `package.json`, or a
-`pnpm` absent from the hook's own PATH, each naming itself. A hook that passed and a hook that never
-ran are otherwise the same observation. Exit code 2 is the
-only code the tool treats as a refusal; exit 1 is ignored. It reads the `stop_hook_active` field the
-tool places in its own JSON input and exits when that field is set, since a hook that blocks without
-reading it wedges the session shut. That field is matched without `jq`, which nothing here requires:
-it is what bounds every refusal above, and the PATH that loses `pnpm` loses a packaged `jq` with it.
-The consequence is that the guarantee is one forced continuation, not a loop until compliance.
+same way when it cannot run at all: a missing `package.json`, a `pnpm` absent from the hook's own
+PATH, or the project directory going away mid-turn, each naming itself. A hook that passed and a hook
+that never ran are otherwise the same observation. The interpreter resolves the script under
+`CLAUDE_PROJECT_DIR` before its first line runs, so a directory that was never reachable ends the turn
+at 126 or 127 and no hook can see it. Exit code 2 is the only code the tool treats as a refusal; exit
+1 is ignored. It reads the `stop_hook_active` field the tool places in its own JSON input and exits
+when that field is set, since a hook that blocks without reading it wedges the session shut. That
+field is matched without `jq`, which `check:review` does require: this guard bounds every refusal
+above, and the PATH thin enough to lose `pnpm` loses a packaged `jq` with it, so reading it through
+one would drop the bound in the environment that needs it. The consequence is that the guarantee is
+one forced continuation, not a loop until compliance.
 
 It calls no model, and nothing else is registered. Why an event is the wrong place both for a model pass
 and for a question about intent: [`workflow.md`](workflow.md#5-hooks).
