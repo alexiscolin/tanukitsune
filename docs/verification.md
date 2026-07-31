@@ -277,6 +277,11 @@ without any of them running unprompted.
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - A pass line is a record somebody wrote, not evidence a model ran. The gate refuses a merge nobody
   reviewed; it cannot refuse one somebody only claimed to have reviewed.
+- Nothing checks that the announcing hook is registered or that it fires. `.claude/settings.json`
+  names a script and a matcher, and the script answers correctly to an input piped into it, but
+  whether the tool reads that registration and delivers the notice is visible only by opening a
+  session and editing a shared file. A matcher that stopped matching leaves it silent with nothing
+  saying so, which is the failure a hook exists to prevent in the first place.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the
   documents were read against each other depends on `docs-conformity` having been asked for.
 - Three of the five boundary rules have no probe, and one of the two covered is covered halfway: the
