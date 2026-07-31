@@ -175,20 +175,24 @@ document reproducing them is a document the script then refuses.
 
 ## The boundary probes
 
-`scripts/check-boundaries.sh` writes two modules into `src/ui/` that violate a rule, requires a
-violation for each, and removes them. Two of the five rules in `.dependency-cruiser.js` are covered:
+`scripts/check-boundaries.sh` writes three modules, two of them violating a rule, requires the named
+rule to refuse each, and removes them. Two of the five rules in `.dependency-cruiser.js` are covered:
 the reachability rule and the `server-only` rule. Those two are covered because a rule written against
 a bare package name matches nothing once the package resolves inside `node_modules`, and an
 adjacency-only rule misses `ui` reaching `data` through `app`. The other three are asserted rather than
 proven, which is the state the first two were in.
 
+The rule name is read rather than the exit code. A probe trips more than one rule, so a gate reading
+the exit code alone stays green when the rule the probe is named for is deleted and a sibling stands
+in for it. The `data/` probe also reaches through a hop under `src/app/` rather than importing
+`data/` directly, since a one-hop probe leaves `reachable` unexercised on both rules.
 
 It also asserts that `tsconfig.json` excludes the probe prefix and that `eslint.config.js` ignores
-it, rather than trusting both. A probe lives under `src/ui/` because that path is what the rules
-match on, so it is inside what `tsc` enumerates and what `eslint .` walks; without the two
-exclusions a typecheck or a lint running beside this script fails on a file it has since removed,
-and the hook runs `pnpm gate` at the end of every turn. Renaming a probe would leave both patterns
-matching nothing, which is why the script checks them instead of assuming them.
+it, rather than trusting both. A probe lives under the path its rule matches on, so it is inside what
+`tsc` enumerates and what `eslint .` walks; without the two exclusions a typecheck or a lint running
+beside this script fails on a file it has since removed, and the hook runs `pnpm gate` at the end of
+every turn. Renaming a probe would leave both patterns matching nothing, which is why the script
+checks them instead of assuming them.
 
 ## The four CI jobs
 
@@ -217,7 +221,9 @@ without any of them running unprompted.
   reviewed; it cannot refuse one somebody only claimed to have reviewed.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the
   documents were read against each other depends on `docs-conformity` having been asked for.
-- Three of the five boundary rules have no probe.
+- Three of the five boundary rules have no probe, and one of the two covered is covered halfway: the
+  probe reaches `data/`, so narrowing the rule's target from `src/(data|ai)/` to `src/data/` would
+  still pass. Closing it needs a probe under `src/ai/`, which lands with the first `ai/` module.
 - Commits made directly on `main` are reviewed by nothing: the gate computes its range from the merge
   base, which on `main` collapses to `HEAD`.
 - No dependency advisory check runs anywhere, although `security-check` delegates advisories to one.
