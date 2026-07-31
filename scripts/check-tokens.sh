@@ -29,9 +29,15 @@ RULE=no-restricted-syntax
 # Named as a violation of the rule rather than as any failure: the probes are valid
 # TypeScript and break nothing else, so a lint failing for another reason would
 # otherwise be read as the rule firing.
+# Matched on a captured string rather than through a pipe into grep: under pipefail,
+# grep -q closes the tube on its first hit, eslint dies on SIGPIPE, and the pipeline
+# reports 141 for the case that just succeeded.
 refuses() {
-  local file="$1" what="$2"
-  ./node_modules/.bin/eslint "$file" 2>&1 | grep -q "$RULE" && return 0
+  local file="$1" what="$2" out
+  out=$(./node_modules/.bin/eslint "$file" 2>&1)
+  case "$out" in
+    *"$RULE"*) return 0 ;;
+  esac
   printf '%s did not refuse %s.\n' "$RULE" "$what" >&2
   fail=1
 }

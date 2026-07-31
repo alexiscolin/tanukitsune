@@ -79,6 +79,28 @@ export default tseslint.config(
   },
 
   {
+    // src/app/globals.css declares itself the single token source. A Tailwind arbitrary
+    // value is the one way to spend a colour or a length that never passed through it,
+    // and it is how a generated component arrives carrying its own scale.
+    //
+    // Read on every string literal rather than on class attributes, because classes are
+    // held in module constants in src/ui/review-session.tsx and an attribute-scoped rule
+    // would pass a constant holding one. The custom-property form stays legal: it spends
+    // a token by name, which is the whole point of declaring them.
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Literal[value=/[a-z][a-z0-9:-]*-\\[(?!var\\(--)/]',
+          message:
+            'Arbitrary value. Spend a token from src/app/globals.css, as text-[var(--color-ink)] does.',
+        },
+      ],
+    },
+  },
+
+  {
     files: ['**/*.test.ts', '**/*.test.tsx'],
     rules: {
       'max-lines': 'off',

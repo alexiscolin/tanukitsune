@@ -35,7 +35,8 @@ first failure and the four cost 0.9, 0.9, 1.2 and 4.0 seconds: a boundary or doc
 reported in about two seconds rather than after the type-aware lint has run. Seven seconds in all, no
 database, which is what makes it usable from a hook that runs at every turn.
 
-`pnpm verify` is `gate` plus `check:review`, `check:tests`, `build`, `test`, `knip` and `dupes`. `build`
+`pnpm verify` is `gate` plus `check:review`, `check:tests`, `check:tokens`, `build`, `test`, `knip` and
+`dupes`. `build`
 is the only gate that evaluates server modules. `test:e2e` sits outside both and runs in its own CI job,
 because it needs a browser and a database.
 
@@ -47,6 +48,7 @@ because it needs a browser and a database.
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, which a `Test-weakened:` trailer may declare, and a disabled, focused or conditional unit test, which nothing declares |
+| `check:tokens` | `check-tokens.sh` | whether the token rule still refuses an arbitrary Tailwind value, written in a class attribute and written into a constant |
 | `build` | Next | anything only the server compilation sees |
 | `test` | Vitest | logic in `core/` in Node, and a component's own behaviour in jsdom |
 | `knip` | knip | unused exports, files and dependencies |
@@ -182,6 +184,17 @@ match on, so it is inside what `tsc` enumerates and what `eslint .` walks; witho
 exclusions a typecheck or a lint running beside this script fails on a file it has since removed,
 and the hook runs `pnpm gate` at the end of every turn. Renaming a probe would leave both patterns
 matching nothing, which is why the script checks them instead of assuming them.
+
+## The token rule
+
+`src/app/globals.css` declares itself the single token source, and a Tailwind arbitrary value is the
+one way to spend a colour or a length that never passed through it. The lint rule refuses one
+anywhere under `src/`, and leaves the `var(--color-*)` form legal, since that spends a token by name.
+
+It reads every string literal rather than class attributes alone, because `src/ui/review-session.tsx`
+holds its classes in module constants and an attribute-scoped rule would pass a constant holding one.
+`scripts/check-tokens.sh` covers both shapes and the legal form, so a rule narrowed to attributes, or
+widened until it refuses the form the codebase writes, fails rather than passing quietly.
 
 ## The four CI jobs
 
