@@ -74,12 +74,11 @@ Storybook configuration itself and treats stories as entry points from it. The d
 already reach them, a story being a module under `src/ui/`, so the rule refusing `ui` to reach `data`
 refuses it inside a story. The copy-paste ratchet reports none.
 
-**The Storybook directory has to be named by an explicit glob in `tsconfig.json`, not by its name.**
-TypeScript drops a directory beginning with a dot when it expands an include entry, so naming
-`.storybook` leaves the configuration unchecked while the typecheck stays green, and the first thing
-to notice is the lint, which fails on a file its project service cannot find. A gate that passes
-because it read nothing is the failure the probes in [`../verification.md`](../verification.md) exist
-to catch, and this one is invisible without listing the files the compiler saw.
+**The Storybook directory has to be named by a glob in `tsconfig.json`, not by its name.** TypeScript
+drops a directory beginning with a dot when it expands an include entry, so naming `.storybook` leaves
+the configuration unchecked while the typecheck stays green. The lint is what catches it, failing on a
+file its project service cannot find, and the lint is inside the fast gate, which is why this needs no
+probe of its own.
 
 The accessibility addon runs the audit once per state. `e2e/shell.spec.ts` visits three paths and
 audits two of them as they load, the third being checked for where it redirects, and neither audited

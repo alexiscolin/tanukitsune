@@ -33,8 +33,7 @@ export const Question: Story = {
   args: { queue: MEANING },
 }
 
-// Non-kana on a reading, which the field counts rather than flags, so the live region
-// announces a second refusal as a change.
+// Non-kana on a reading, which the field refuses rather than submits.
 export const Refusal: Story = {
   args: { queue: READING },
   play: async ({ canvasElement }) => {

@@ -13,9 +13,9 @@ const preview: Preview = {
   initialGlobals: { theme: 'light' },
   decorators: [
     (Story, context) => {
-      // The attribute and the colour scheme together, as src/app/[locale]/layout.tsx sets
-      // them: the second is what stops controls, scrollbars and the page background from
-      // rendering light under a dark theme.
+      // The colour scheme beside the attribute, as src/app/[locale]/layout.tsx sets it: it
+      // is what stops controls, scrollbars and the page background from rendering light
+      // under a dark theme.
       const theme = context.globals.theme === 'dark' ? 'dark' : 'light'
       document.documentElement.dataset.theme = theme
       document.documentElement.style.colorScheme = theme

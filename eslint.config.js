@@ -4,6 +4,15 @@ import js from '@eslint/js'
 import reactHooks from 'eslint-plugin-react-hooks'
 import tseslint from 'typescript-eslint'
 
+// A Tailwind arbitrary value that spends no token. Two shapes fall outside it. A bracket
+// mentioning a custom property anywhere spends one by name, so calc over a token passes as
+// the bare reference does. And a variant carries a colon after its bracket, selecting
+// rather than spending: the theme is an attribute on the root element, so data-[theme=dark]
+// is a class this interface will write.
+const ARBITRARY_VALUE = String.raw`[a-z][a-z0-9:-]*-\[(?![^\]]*var\(--)[^\]]*\](?!:)`
+const SPEND_A_TOKEN =
+  'Arbitrary value. Spend a token from src/app/globals.css, as text-[var(--color-ink)] does.'
+
 export default tseslint.config(
   // `eslint .` walks from the repository root, and a worktree is a second checkout
   // living inside it, so without this the gate reports another branch's work in
@@ -83,27 +92,16 @@ export default tseslint.config(
     // value is the one way to spend a colour or a length that never passed through it,
     // and it is how a generated component arrives carrying its own scale.
     //
-    // Read on every string rather than on class attributes, because classes are held in
-    // module constants in src/ui/review-session.tsx and an attribute-scoped rule would
-    // pass a constant holding one. A template counts for the same reason a constant does.
-    //
-    // Two shapes are left alone. A custom property spends a token by name, which is what
-    // declaring them is for. And a variant carries a colon after its bracket, as
-    // data-[theme=dark]: does, which selects rather than spending anything: the theme is
-    // an attribute on the root element, so that is a class this interface will write.
+    // Every string rather than class attributes alone, because classes are held in module
+    // constants in src/ui/review-session.tsx and an attribute-scoped rule would pass a
+    // constant holding one. A template counts for the same reason a constant does.
     files: ['src/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-syntax': [
         'error',
         {
-          selector: 'Literal[value=/[a-z][a-z0-9:-]*-\\[(?!var\\(--)[^\\]]*\\](?!:)/]',
-          message:
-            'Arbitrary value. Spend a token from src/app/globals.css, as text-[var(--color-ink)] does.',
-        },
-        {
-          selector: 'TemplateElement[value.raw=/[a-z][a-z0-9:-]*-\\[(?!var\\(--)[^\\]]*\\](?!:)/]',
-          message:
-            'Arbitrary value. Spend a token from src/app/globals.css, as text-[var(--color-ink)] does.',
+          selector: `:matches(Literal[value=/${ARBITRARY_VALUE}/], TemplateElement[value.raw=/${ARBITRARY_VALUE}/])`,
+          message: SPEND_A_TOKEN,
         },
       ],
     },

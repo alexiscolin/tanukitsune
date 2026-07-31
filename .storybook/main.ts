@@ -1,8 +1,6 @@
 import type { StorybookConfig } from '@storybook/nextjs-vite'
 
-// Stories are limited to src/ui/, which is the boundary ADR 0009 draws: a Server Component
-// renders here only behind an experimental flag that does not survive one reaching a
-// database, and every one of ours does.
+// Why the catalogue stops at src/ui/: docs/decisions/0009-storybook-as-the-review-surface.md.
 const config: StorybookConfig = {
   framework: '@storybook/nextjs-vite',
   stories: ['../src/ui/**/*.stories.tsx'],

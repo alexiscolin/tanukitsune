@@ -192,28 +192,28 @@ supplies arguments and never markup, which is what keeps the catalogue a second 
 renderer instead of a second renderer. Why it stops at `src/ui/`, and why states are reached by
 typing rather than by passing a property: [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md).
 
-The accessibility addon runs the audit per state. `e2e/shell.spec.ts` audits two paths as they load,
-neither of which enters the loop, so the states of a review are audited here or nowhere.
-
-**Nothing gates it.** No command runs a story, so both the audit and the catalogue answer to a person
-opening a browser. What would close that is listed under what is not covered.
+The accessibility addon runs the audit per state, which is the only place the states of a review are
+audited at all: `e2e/shell.spec.ts` audits two paths and neither enters the loop. **Nothing gates
+either of them**, which is recorded below under what is not covered.
 
 ## The token rule
 
 `src/app/globals.css` declares itself the single token source, and a Tailwind arbitrary value is the
 one way to spend a colour or a length that never passed through it. The lint rule refuses one under
-`src/`, in a string and in a template, and leaves two shapes alone: any `var(--...)`, which spends a
-token by name whether or not the token is a colour, and a variant, whose bracket is followed by a
-colon because it selects rather than spending anything.
+`src/`, in a string and in a template, and leaves two shapes alone: a bracket mentioning a custom
+property anywhere, which spends a token by name and so covers arithmetic over one as well as a bare
+reference, and a variant, whose bracket is followed by a colon because it selects rather than
+spending anything.
 
 It reads every string rather than class attributes alone, because `src/ui/review-session.tsx` holds
 its classes in module constants and an attribute-scoped rule would pass a constant holding one. What
 escapes it is an arbitrary value split across an interpolation, whose brackets land in separate
 pieces of the template and match nothing.
 
-`scripts/check-tokens.sh` writes the three refused shapes and the three legal ones and lints all four
-files at once, so a rule narrowed to attributes and a rule widened until it refuses a variant both
-fail rather than passing quietly.
+`scripts/check-tokens.sh` writes the three refused shapes and the three legal ones, lints all four
+files at once, and reads the report as JSON so it can require the token rule by name. Asking only
+whether the linter spoke about a file would keep passing with the rule replaced by any other that
+happened to flag the same probes.
 
 ## The four CI jobs
 
