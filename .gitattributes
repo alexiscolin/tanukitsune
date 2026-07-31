@@ -1,0 +1,5 @@
+# The review log is append-only and every branch appends to its end, so two branches
+# always conflict there and the resolution is always the same: keep both sides. The
+# union driver does exactly that, which removes a hand resolution that touches a record
+# nothing else may touch, on every merge, for no judgement.
+.claude/review-log.jsonl merge=union
