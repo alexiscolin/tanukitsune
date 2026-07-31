@@ -17,8 +17,6 @@ type Answered = {
   readonly overridden: Verdict | null
 }
 
-const GRADES = ['correct', 'incorrect'] as const
-
 // The one place the override wins, so the message and the buttons cannot come to disagree
 // about the same answer. Null while no tier decided and the reader has not either.
 function verdictOf({ decided, overridden }: Answered): Verdict | null {
@@ -135,6 +133,12 @@ export function ReviewSession({
   )
 }
 
+// `Object.keys` widens to string, and the cast narrows it back to what the record's own
+// type already guarantees: one key per verdict, which is the exhaustiveness this reads for.
+function gradesIn(copy: ReviewCopy): Verdict[] {
+  return Object.keys(copy.grade) as Verdict[]
+}
+
 function verdictMessage(verdict: Verdict | null, copy: ReviewCopy): string {
   return verdict === null ? copy.askSelfGrade : copy.verdict[verdict]
 }
@@ -179,13 +183,17 @@ function VerdictPanel({
       )}
 
       {/* Every verdict the standing one is not: undecided offers both, and a decided
-          verdict offers the other one, which is the override. */}
+          verdict offers the other one, which is the override. Read off the copy rather than
+          listed here, because the copy owes one label per verdict by type and a list written
+          beside it would answer a wider union with silence. */}
       <div className="flex flex-wrap gap-2">
-        {GRADES.filter((said) => said !== verdict).map((said) => (
-          <button key={said} type="button" onClick={() => onGrade(said)} className={BUTTON}>
-            {copy.grade[said]}
-          </button>
-        ))}
+        {gradesIn(copy)
+          .filter((said) => said !== verdict)
+          .map((said) => (
+            <button key={said} type="button" onClick={() => onGrade(said)} className={BUTTON}>
+              {copy.grade[said]}
+            </button>
+          ))}
         {/* An answer no tier decided has no button here at all: it is graded first. */}
         {verdict === null ? null : (
           <button ref={next} type="button" onClick={onAdvance} className={BUTTON}>
