@@ -33,6 +33,16 @@ describe('DEMO_QUEUE', () => {
     }
   })
 
+  // Asked back to back, the second question is answered from the first rather than from
+  // memory, which is the one thing a deck demonstrating retrieval must not do.
+  it('never asks a subject twice in a row', () => {
+    const adjacent = DEMO_QUEUE.filter(
+      (entry, position) => position > 0 && DEMO_QUEUE[position - 1]?.subjectId === entry.subjectId,
+    )
+
+    expect(adjacent).toEqual([])
+  })
+
   it('shows the same characters for both questions about one subject', () => {
     for (const subjectId of subjectIds()) {
       const shown = new Set(

@@ -151,6 +151,25 @@ describe('ReviewSession', () => {
     expect(screen.getByText('みず')).toBeTruthy()
   })
 
+  // An announcement racing a focus move is the one a screen reader drops, so whatever takes
+  // the focus names the verdict as its description rather than relying on the region alone.
+  it('describes what takes the focus with the verdict it is answering', async () => {
+    render(<ReviewSession queue={[READING]} copy={COPY} />)
+
+    answer('mizu')
+    const message = await screen.findByText(COPY.verdict.correct)
+    const next = screen.getByRole('button', { name: COPY.next })
+
+    expect(next.getAttribute('aria-describedby')).toBe(message.id)
+  })
+
+  it('leaves the focus alone on a queue that arrives with nothing in it', () => {
+    render(<ReviewSession queue={[]} copy={COPY} />)
+
+    expect(screen.getByText(COPY.done)).toBeTruthy()
+    expect(document.activeElement).toBe(document.body)
+  })
+
   it('refuses a reading that cannot become kana instead of grading it', async () => {
     render(<ReviewSession queue={[READING]} copy={COPY} />)
 
