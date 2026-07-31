@@ -312,3 +312,4 @@
 {"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "reviewer": "requirement-check", "file": "AGENTS.md", "line": 142, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "reviewer": "architecture-check", "file": ".github/workflows/verify.yml", "line": 116, "outcome": "dismissed", "reason": "the filter stays in the workflow rather than in check-subject.sh: the script is also called on the pull request title, where a merge wording must keep failing, so folding the list in would need a second entry point or a flag"}
 {"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "kind": "pass", "base": "244474226018bb9afb1e0b5b014b00572abffaec", "head": "fd473c1fbfb0be6484582a0d4610c953d0ad95d7"}
+{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "kind": "pass", "base": "6da0e73fab22db630d93076fd60e12a3935fbc9d", "head": "a5dfb12f89c76993d17c418f2daf615e37705ab9"}
