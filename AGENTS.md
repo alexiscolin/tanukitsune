@@ -39,10 +39,11 @@ pnpm check:sketches        a sketch a design session left behind, and a probe pr
 pnpm check:tests           a probe proving the test strength gate refuses a weakened test
 pnpm check:tokens          a probe proving the token rule refuses an arbitrary Tailwind value
 pnpm gate                  typecheck, check:docs, arch, lint, cheapest first: needs no database
-pnpm verify                gate, check:review, check:sketches, check:tests, check:tokens, build, test, knip, dupes
+pnpm verify                gate, check:sketches, check:tokens, check:review, check:tests, build, test, knip, dupes
 ```
 
-Run `pnpm verify` and show its output before saying work is done. Never assert that a check passed.
+Run `pnpm verify` and show its output before saying work is done. Do not assert that something
+passes.
 
 The `Stop` hook runs `pnpm gate`, not `pnpm verify`: the full suite needs a database and end-to-end
 runs, which do not fit inside a hook timeout, and a hook killed on timeout does not block anything. So
@@ -115,8 +116,7 @@ audit, to what was previously wrong, to a conversation, or to the process that p
 The test: would this sentence still make sense to someone who joined today and has no idea the project
 had a yesterday. If not, delete it or move it.
 
-This is the same rule as the comment policy below. A comment explains a constraint, not the history of
-the change that introduced it.
+The comment policy below is the same rule: a comment explains a constraint, not a change's history.
 
 ## Style
 

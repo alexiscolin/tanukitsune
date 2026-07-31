@@ -11,13 +11,19 @@ cd "$(dirname "$0")/.."
 
 PROBE=src/ui/sketch-gate-probe.tsx
 
+# A probe surviving a killed run is a file typecheck, lint and arch all refuse, and the
+# Stop hook runs gate, so it would refuse every turn until someone found it. The trap is
+# what prevents that.
+cleanup() { rm -f "$PROBE"; }
+trap cleanup EXIT
+
 sketches() { find src -type f -name 'sketch-*' | sort; }
 
 # Prove the search finds one before trusting it to report none. A find whose pattern or
 # whose root stopped matching reports a clean tree in the same words as a clean tree does.
 : > "$PROBE"
 found=$(sketches)
-rm -f "$PROBE"
+cleanup
 
 case "$found" in
   *"$PROBE"*) ;;

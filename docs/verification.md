@@ -219,9 +219,9 @@ supplies arguments and never markup, which is what keeps the catalogue a second 
 renderer instead of a second renderer. Why it stops at `src/ui/`, and why states are reached by
 typing rather than by passing a property: [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md).
 
-The six states of the review loop are what is catalogued. `answer-input.tsx` appears inside them and
-`page-shell.tsx` around them, neither with a page of its own, and nothing requires a component under
-`src/ui/` to have one.
+The six states of the review loop are what is catalogued. `src/ui/molecules/answer-input.tsx` appears
+inside them and `src/ui/atoms/page-shell.tsx` around them, neither with a page of its own, and nothing
+requires a component under `src/ui/` to have one.
 
 The accessibility addon runs the audit per state, which is the only place the states of a review are
 audited at all: `e2e/shell.spec.ts` audits two paths and neither enters the loop. **Nothing gates

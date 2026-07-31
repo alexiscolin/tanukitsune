@@ -93,11 +93,11 @@ are the ones. If a file cannot be explained without rereading it, it is rewritte
 
 ## 5. Hooks
 
-Of the events the tool offers, `Stop` is the one that carries weight for solo work, and it is the one
-this repository registers on. `PostToolUse` fires after every shell command and `PreToolUse` before
-one, a grain too fine for anything but a check that costs nothing and, worse, a grain that describes a
-tool call rather than an intention. `SubagentStop` fires per reviewer, which nothing here needs, and
-`TeammateIdle` only fires inside an agent team.
+Of the events the tool offers, `Stop` is the one that carries weight for solo work. `PostToolUse` fires
+after every shell command and `PreToolUse` before one, a grain that describes a tool call rather than
+an intention, which leaves it good for nothing but a check costing nothing and deciding nothing. One
+such check is registered there, naming what an edit reaches and refusing none of them. `SubagentStop`
+fires per reviewer, which nothing here needs, and `TeammateIdle` only fires inside an agent team.
 
 The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
 refuses the end of a turn on code that does not compile. What it runs, and what bounds that refusal to

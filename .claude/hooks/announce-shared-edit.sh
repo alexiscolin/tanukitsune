@@ -7,8 +7,8 @@
 #
 # PreToolUse stdout is not shown to the agent, so the notice travels in
 # hookSpecificOutput.additionalContext, which is injected beside the tool result without
-# blocking. permissionDecision is defer rather than allow: this hook informs, it never
-# grants a permission the reader would otherwise be asked for.
+# blocking. permissionDecision is omitted rather than set: deciding nothing is what the
+# absent field means, and allow would grant a permission the reader would be asked for.
 
 input=$(cat)
 
@@ -47,4 +47,4 @@ esac
 
 [ -n "$notice" ] || exit 0
 
-printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"defer","additionalContext":"%s"}}\n' "$notice"
+printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","additionalContext":"%s"}}\n' "$notice"
