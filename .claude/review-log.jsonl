@@ -270,4 +270,4 @@
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 54, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 60, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/specs/v0.1.md", "line": 189, "outcome": "fixed"}
-{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "kind": "pass", "base": "651213c538aa1c3a4d8538bde0fe19833c823ee7", "head": "82611ca3a7b2c9090b4431ad871580d05145a422"}
+{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "kind": "pass", "base": "7b5f775f509c915dc46c596bc713271257993996", "head": "f0a6f97a3dfcc819d3a97500225e8f6640750b0b"}
