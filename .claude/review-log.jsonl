@@ -264,3 +264,6 @@
 {"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "reviewer": "requirement-check", "file": "docs/verification.md", "line": 206, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "reviewer": "requirement-check", "file": "drizzle.config.ts", "line": 14, "outcome": "dismissed", "reason": "the criterion names a fresh clone and the example file alone would serve it, but every clone bootstrapped before this carries the empty assignment in an untracked file the script will not overwrite, which was this machine an hour ago; fixing the clone that exists is not work nobody asked for"}
 {"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "kind": "pass", "base": "ef93993522d10600f430e63ee616fff0eb8e81bc", "head": "dcc2afc03c1f6af813605b4717ea0e0c907e0c70"}
+{"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "reviewer": "docs-conformity", "file": "src/data/env.ts", "line": 17, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "reviewer": "docs-conformity", "file": "docs/framing.md", "line": 320, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "kind": "pass", "base": "ef93993522d10600f430e63ee616fff0eb8e81bc", "head": "1754139a5762afd7c32449af94f0bffeb3937ea4"}
