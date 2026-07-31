@@ -266,7 +266,6 @@
 {"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "kind": "pass", "base": "0a7bef6a3a5603edf50fe70750da0e61f72ec816", "head": "a48217d724081947db68d574e621a4831ac9c891"}
 {"date": "2026-07-31", "branch": "chore/union-merge-the-review-log", "reviewer": "regression-check", "file": "scripts/review-stats.sh", "line": 26, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "chore/union-merge-the-review-log", "kind": "pass", "base": "651213c538aa1c3a4d8538bde0fe19833c823ee7", "head": "8b812f362df8e5acd3e35766181fffb0cb020ed8"}
-=======
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 43, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 54, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 60, "outcome": "fixed"}
