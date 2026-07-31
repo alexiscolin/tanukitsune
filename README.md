@@ -140,7 +140,7 @@ Every contested choice and the argument that settled it is in [`stack.md`](docs/
 ```
 src/
 ├── core/                    the rules. Pure, imports nothing, tested without a database
-│   ├── grading/cascade.ts       the tiers, in cost order: exact, then fuzzy, then a model
+│   ├── grading/cascade.ts       the tiers, in cost order. Today the exact one decides or nobody does
 │   ├── grading/judge-port.ts    what the model tier will implement, declared before it exists
 │   ├── composition-gate.ts      when a keystroke becomes an answer, and when it does not
 │   ├── review-entry.ts          one question: a subject, what is asked of it, what it accepts
