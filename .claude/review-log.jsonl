@@ -205,6 +205,20 @@
 {"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "df9be794203bf244900227737f9cccde49642e8c"}
 {"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "a5635c57d297f4104e750237a65eaebaa920d177"}
 {"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "abc6f0f493600e7936c38ae58616213648b0b15b"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "regression-check", "file": ".claude/hooks/verify.sh", "line": 11, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "security-check", "file": ".claude/hooks/verify.sh", "line": 11, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "security-check", "file": ".claude/hooks/verify.sh", "line": 18, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "security-check", "file": "docs/specs/v0.1.md", "line": 28, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "requirement-check", "file": "docs/verification.md", "line": 58, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "docs-conformity", "file": "docs/verification.md", "line": 58, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 151, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "kind": "pass", "base": "41a8df08b2c468b92f0e5d57e7601c23fd69217f", "head": "0a65653852d57584ba123dacf8306f78f7caa8d8"}
+{"date": "2026-07-31", "branch": "fix/boundary-probe-names-its-rule", "reviewer": "regression-check", "file": "scripts/check-boundaries.sh", "line": 65, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/boundary-probe-names-its-rule", "reviewer": "security-check", "file": "scripts/check-boundaries.sh", "line": 65, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/boundary-probe-names-its-rule", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 274, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/boundary-probe-names-its-rule", "reviewer": "requirement-check", "file": "docs/verification.md", "line": 217, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/boundary-probe-names-its-rule", "reviewer": "architecture-check", "file": "scripts/check-boundaries.sh", "line": 60, "outcome": "dismissed", "reason": "expect_rules has two call sites rather than three, but it is the direct implementation of asserting a list of rule names rather than a seam, and inlining it would duplicate the loop"}
+{"date": "2026-07-31", "branch": "fix/boundary-probe-names-its-rule", "kind": "pass", "base": "41a8df08b2c468b92f0e5d57e7601c23fd69217f", "head": "ad218b271726ef474853ba37b6af2eeac3d36d8d"}
 {"date": "2026-07-30", "branch": "worktree-feat+kana-input", "reviewer": "regression-check", "file": "src/core/site-copy.test.ts", "line": 9, "outcome": "fixed"}
 {"date": "2026-07-30", "branch": "worktree-feat+kana-input", "reviewer": "architecture-check", "file": "src/core/review-queue.ts", "line": 15, "outcome": "fixed"}
 {"date": "2026-07-30", "branch": "worktree-feat+kana-input", "reviewer": "requirement-check", "file": "src/core/review-queue.ts", "line": 1, "outcome": "fixed"}
@@ -292,3 +306,9 @@
 {"date": "2026-07-31", "branch": "docs/storybook-review-surface", "reviewer": "code-review", "file": "src/app/[locale]/page.tsx", "line": 16, "outcome": "dismissed", "reason": "real contradiction between the route model and the mount point, but both belong to the parent branch this one is stacked on, which is why the lens saw them at all"}
 {"date": "2026-07-31", "branch": "docs/storybook-review-surface", "reviewer": "code-review", "file": "src/ui/review-session.tsx", "line": 125, "outcome": "dismissed", "reason": "latent until a judge exists and the file is untouched here; it is a behaviour change on code an existing test covers, which AGENTS.md makes a stop-and-ask rather than a drive-by fix"}
 {"date": "2026-07-31", "branch": "docs/storybook-review-surface", "kind": "pass", "base": "6da0e73fab22db630d93076fd60e12a3935fbc9d", "head": "58d4794aacd96bddb68edb11801e6eb42e93df00"}
+{"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "reviewer": "regression-check", "file": ".github/workflows/verify.yml", "line": 116, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "reviewer": "security-check", "file": ".github/workflows/verify.yml", "line": 104, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "reviewer": "docs-conformity", "file": "AGENTS.md", "line": 142, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "reviewer": "requirement-check", "file": "AGENTS.md", "line": 142, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "reviewer": "architecture-check", "file": ".github/workflows/verify.yml", "line": 116, "outcome": "dismissed", "reason": "the filter stays in the workflow rather than in check-subject.sh: the script is also called on the pull request title, where a merge wording must keep failing, so folding the list in would need a second entry point or a flag"}
+{"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "kind": "pass", "base": "244474226018bb9afb1e0b5b014b00572abffaec", "head": "fd473c1fbfb0be6484582a0d4610c953d0ad95d7"}

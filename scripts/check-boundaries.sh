@@ -3,22 +3,24 @@
 # matched nothing once: `^server-only$` cannot match a path that resolves inside
 # node_modules, and an adjacency-only rule misses ui -> app -> data.
 #
-# Writes two probes into src/ui/, expects a violation for each, removes them.
+# Writes probes into src/ui/ and src/app/, expects each named rule to refuse them,
+# removes them.
 
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
-probe_dir=src/ui
-# A probe has to live under src/ui/, because that path is what the rules match on, so
-# the exclusions below carry it instead of the directory.
+# A probe has to live under the path the rules match on, so the exclusions below carry
+# the prefix at any depth instead of a directory. The hop sits under src/app/ because
+# that is the layer a real two-hop leak passes through.
 probe_prefix=__boundary-probe-
-server_only=$probe_dir/${probe_prefix}server-only.ts
-reaches_data=$probe_dir/${probe_prefix}reaches-data.ts
+server_only=src/ui/${probe_prefix}server-only.ts
+reaches_data=src/ui/${probe_prefix}reaches-data.ts
+data_hop=src/app/${probe_prefix}data-hop.ts
 
-cleanup() { rm -f "$server_only" "$reaches_data"; }
+cleanup() { rm -f "$server_only" "$reaches_data" "$data_hop"; }
 trap cleanup EXIT
 
-mkdir -p "$probe_dir"
+mkdir -p src/ui src/app
 fail=0
 
 # Both exclusions are asserted, not trusted: renaming a probe leaves the patterns
@@ -52,19 +54,31 @@ for spec in "eslint.config.js:'$worktrees/**'" "scripts/check-docs.sh:'./$worktr
   fail=1
 done
 
+# The exit code names no rule, and a probe trips more than one.
+expect_rules() {
+  local probe=$1 out rule
+  shift
+  # Colour is pinned off rather than stripped after the fact: an inherited FORCE_COLOR
+  # puts a reset between the severity and the rule name, and NO_COLOR does not override
+  # it. Matching on the severity is what tells an error from a warning.
+  out=$(FORCE_COLOR=0 ./node_modules/.bin/depcruise src --output-type err 2>&1)
+  for rule in "$@"; do
+    grep -qF "error $rule:" <<< "$out" && continue
+    printf '%s was not refused by %s.\n' "$probe" "$rule" >&2
+    fail=1
+  done
+}
+
 printf "import 'server-only'\n\nexport const PROBE = 1\n" > "$server_only"
-if ./node_modules/.bin/depcruise src > /dev/null 2>&1; then
-  printf 'A ui/ module importing server-only did not violate any rule.\n' >&2
-  fail=1
-fi
+expect_rules 'A ui/ module importing server-only' ui-imports-nothing-server-only
 rm -f "$server_only"
 
-printf "import { env } from '@/data/env'\n\nexport const PROBE = env.DATABASE_URL\n" > "$reaches_data"
-if ./node_modules/.bin/depcruise src > /dev/null 2>&1; then
-  printf 'A ui/ module reaching data/ did not violate any rule.\n' >&2
-  fail=1
-fi
-rm -f "$reaches_data"
+# The hop imports server-only itself rather than inheriting it through data/env.ts, so
+# the gate turns on the rules and not on what production code happens to import.
+printf "import 'server-only'\nimport { env } from '@/data/env'\n\nexport const HOP = env.DATABASE_URL\n" > "$data_hop"
+printf "import { HOP } from '@/app/${probe_prefix}data-hop'\n\nexport const PROBE = HOP\n" > "$reaches_data"
+expect_rules 'A ui/ module reaching data/ through app/' ui-imports-no-io ui-imports-nothing-server-only
+rm -f "$reaches_data" "$data_hop"
 
 [ "$fail" -eq 0 ] && echo "boundaries: proven"
 exit "$fail"

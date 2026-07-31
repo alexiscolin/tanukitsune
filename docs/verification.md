@@ -56,11 +56,18 @@ in its own CI job, because it needs a browser and a database.
 ## The one hook
 
 **`.claude/hooks/verify.sh`** is registered in `.claude/settings.json`, on `Stop`, when the agent
-finishes a turn. It runs `pnpm gate` and refuses the end of the turn when it fails. Exit code 2 is the
-only code the tool treats as a refusal; exit 1 is ignored. It reads the `stop_hook_active` field the
-tool places in its own JSON input and exits when that field is set, since a hook that blocks without
-reading it wedges the session shut. The consequence is that the guarantee is one forced continuation,
-not a loop until compliance.
+finishes a turn. It runs `pnpm gate` and refuses the end of the turn when it fails, and refuses it the
+same way when it cannot run at all: a missing `package.json`, a `pnpm` absent from the hook's own
+PATH, or the project directory going away mid-turn, each naming itself. A hook that passed and a hook
+that never ran are otherwise the same observation. The interpreter resolves the script under
+`CLAUDE_PROJECT_DIR` before its first line runs, so a directory that was never reachable ends the turn
+at 126 or 127 and no hook can see it. Exit code 2 is the only code the tool treats as a refusal; exit
+1 is ignored. It reads the `stop_hook_active` field the tool places in its own JSON input and exits
+when that field is set, since a hook that blocks without reading it wedges the session shut. That
+field is matched without `jq`, which `check:review` does require: this guard bounds every refusal
+above, and the PATH thin enough to lose `pnpm` loses a packaged `jq` with it, so reading it through
+one would drop the bound in the environment that needs it. The consequence is that the guarantee is
+one forced continuation, not a loop until compliance.
 
 It calls no model, and nothing else is registered. Why an event is the wrong place both for a model pass
 and for a question about intent: [`workflow.md`](workflow.md#5-hooks).
@@ -169,20 +176,24 @@ document reproducing them is a document the script then refuses.
 
 ## The boundary probes
 
-`scripts/check-boundaries.sh` writes two modules into `src/ui/` that violate a rule, requires a
-violation for each, and removes them. Two of the five rules in `.dependency-cruiser.js` are covered:
+`scripts/check-boundaries.sh` writes three modules, two of them violating a rule, requires the named
+rule to refuse each, and removes them. Two of the five rules in `.dependency-cruiser.js` are covered:
 the reachability rule and the `server-only` rule. Those two are covered because a rule written against
 a bare package name matches nothing once the package resolves inside `node_modules`, and an
 adjacency-only rule misses `ui` reaching `data` through `app`. The other three are asserted rather than
 proven, which is the state the first two were in.
 
+The rule name is read rather than the exit code. A probe trips more than one rule, so a gate reading
+the exit code alone stays green when the rule the probe is named for is deleted and a sibling stands
+in for it. The `data/` probe also reaches through a hop under `src/app/` rather than importing
+`data/` directly, since a one-hop probe leaves `reachable` unexercised on both rules.
 
 It also asserts that `tsconfig.json` excludes the probe prefix and that `eslint.config.js` ignores
-it, rather than trusting both. A probe lives under `src/ui/` because that path is what the rules
-match on, so it is inside what `tsc` enumerates and what `eslint .` walks; without the two
-exclusions a typecheck or a lint running beside this script fails on a file it has since removed,
-and the hook runs `pnpm gate` at the end of every turn. Renaming a probe would leave both patterns
-matching nothing, which is why the script checks them instead of assuming them.
+it, rather than trusting both. A probe lives under the path its rule matches on, so it is inside what
+`tsc` enumerates and what `eslint .` walks; without the two exclusions a typecheck or a lint running
+beside this script fails on a file it has since removed, and the hook runs `pnpm gate` at the end of
+every turn. Renaming a probe would leave both patterns matching nothing, which is why the script
+checks them instead of assuming them.
 
 ## The review surface
 
@@ -232,7 +243,7 @@ needs no secret, and costs nothing beyond runner minutes.
 | `verify` | push to main, pull request | `pnpm verify`, then checks the build left `tsconfig.json` alone |
 | `e2e` | push to main, pull request | Playwright with the axe audit, against the production build and a server Postgres |
 | `review` | pull request | `check-review-coverage.sh` and `check-test-strength.sh`, over the head commit rather than the merge commit. A test file may lose assertions when a commit in the range says so in a `Test-weakened:` trailer naming it. A disabled, focused or conditional test is refused outright, and only in `*.test.*`: a conditional guard belongs in an e2e spec, which the check does not read |
-| `subjects` | pull request | the title, every commit subject on the branch, and a description carrying the plan |
+| `subjects` | pull request | the title, every commit subject on the branch except the ones git composes when a branch is brought in, and a description carrying the plan |
 
 `e2e` runs against a server Postgres rather than the file-backed local one, so the driver that runs in
 production is the driver a merge is gated on.
@@ -252,7 +263,9 @@ without any of them running unprompted.
   reviewed; it cannot refuse one somebody only claimed to have reviewed.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the
   documents were read against each other depends on `docs-conformity` having been asked for.
-- Three of the five boundary rules have no probe.
+- Three of the five boundary rules have no probe, and one of the two covered is covered halfway: the
+  probe reaches `data/`, so narrowing the rule's target from `src/(data|ai)/` to `src/data/` would
+  still pass. Closing it needs a probe under `src/ai/`, which lands with the first `ai/` module.
 - Commits made directly on `main` are reviewed by nothing: the gate computes its range from the merge
   base, which on `main` collapses to `HEAD`.
 - No dependency advisory check runs anywhere, although `security-check` delegates advisories to one.

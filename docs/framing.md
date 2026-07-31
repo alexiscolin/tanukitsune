@@ -165,7 +165,7 @@ Five rules, all enforced by `pnpm arch`, two of them proven to fire rather than 
 The reachability matters more than it reads. An adjacency-only rule lets `ui/` reach `data/` through
 `app/` in one extra hop, and a rule written against a bare package name matches nothing at all once
 the package resolves inside `node_modules`. Both were true here, so `scripts/check-boundaries.sh`
-writes a probe for each, expects a violation, and fails the gate if either passes.
+writes a probe for each, expects the named rule to refuse it, and fails the gate if either passes.
 
 The ports rule exists for one concrete reason, and it is worth spelling out, because grading is the
 first feature that tests the layout.
