@@ -22,8 +22,9 @@ Five of those nine run on a model: the mnemonics, the grading, the confusion pai
 comes next, and the tutor. The other four do not, and the section below names them beside five more
 places a model was refused outright. Knowing which is which is the whole design.
 
-> **Status: the toolchain and the shell run, the product does not.** No review flow, no corpus and no
-> judge exist yet.
+> **Status: the review loop runs on a fixture deck, the product does not.** Answers are graded by the
+> exact tier and nothing else, nothing is recorded, and no corpus, no judge and no connection to a real
+> account exist yet.
 
 ## The nine that deliberately do not
 
@@ -133,6 +134,54 @@ must be free to be approved. See [ADR 0004](docs/decisions/0004-free-forever.md)
 | Hosting | Not decided yet |
 
 Every contested choice and the argument that settled it is in [`stack.md`](docs/stack.md).
+
+## The shape of the code
+
+```
+src/
+├── core/                    the rules. Pure, imports nothing, tested without a database
+│   ├── grading/cascade.ts       the tiers, in cost order. Today the exact one decides or nobody does
+│   ├── grading/judge-port.ts    what the model tier will implement, declared before it exists
+│   ├── composition-gate.ts      when a keystroke becomes an answer, and when it does not
+│   ├── review-entry.ts          one question: a subject, what is asked of it, what it accepts
+│   ├── demo-queue.ts            the deck the loop runs on until real assignments arrive
+│   └── site-copy.ts             every string a reader sees, keyed by locale
+├── data/                    the outside. Server only
+│   ├── db.ts                    a server Postgres, or the file-backed one, and which answered
+│   ├── env.ts                   the environment, parsed once, at the boundary
+│   └── schema.ts                the tables, from which migrations are generated
+├── ai/                      the model. Prompts, eval sets, and what implements core's ports
+├── ui/                      the components. Everything reaches them as props
+│   ├── answer-input.tsx         romaji becomes kana here, and Enter is decided here
+│   └── review-session.tsx       the loop: question, verdict, next
+└── app/                     the routes. The only layer allowed to touch both data and ui
+    ├── [locale]/                the session, its layout, its error and not-found pages
+    └── api/health/route.ts      what answered, which build, and whether the database is there
+e2e/                         Playwright against the production build, with the accessibility audit
+drizzle/                     migrations, generated from the schema, never written by hand
+scripts/                     the gates a linter cannot express
+docs/                        everything argued rather than enforced
+.claude/                     the agent configuration, the review lenses, and their append-only log
+```
+
+One answer travels the whole thing and touches each layer once. A route hands the session its deck and
+its strings, the field turns what was typed into kana and decides that Enter meant an answer, the
+session hands that answer to the cascade, and the cascade decides or says it could not, which is what
+puts the question back to the reader. Nothing in that path reaches a database, which is why the loop
+works with no network.
+
+The whole design is which of those may import which. **`core/` imports nothing**, so it declares ports
+instead: `JudgePort` for the grader, `KnowledgeSource` for WaniKani, both implemented further out. That
+is what keeps a third-party API from becoming a dependency of the rules. **`ui/` reaches nothing**, so a
+component cannot quietly acquire a database. **`app/` wires them**, because somebody has to hand a
+component what a query returned.
+
+`pnpm arch` enforces it, by reachability rather than by adjacency, and a probe proves the rule refuses
+what it claims to. `ai/` is empty until the model tier arrives, and the rule that governs it is already
+in force.
+
+The reasoning, plus offline reconciliation, the service worker and the client boundary, is in
+[`framing.md`](docs/framing.md) under architecture. This is the map; that is the argument.
 
 ## Running it
 

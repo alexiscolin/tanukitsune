@@ -86,6 +86,20 @@ Omnibus, unlike the high-risk obligations.
 harmonised through EN 301 549:
 [European Commission](https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/disability/union-equality-strategy-rights-persons-disabilities-2021-2030/european-accessibility-act_en).
 
+**WaniKani's subject content is copyrighted, and a third-party client may render it on two conditions**:
+nothing built on it may be for profit, and the limits a subscription puts in place must be respected,
+read from `max_level_granted` and the subscription's active state on the `user` endpoint. The free tier
+grants three levels and a paid one sixty:
+[WaniKani API reference](https://docs.api.wanikani.com/20170710/), read 31 July 2026. What the terms
+address is rendering to the account that holds it; producing a derived layer from that content is a
+question they do not answer, which is why the corpus is generated from the item rather than from them.
+
+**A time limit satisfies WCAG 2.2.1 when any one of turn off, adjust or extend holds**, which is what
+makes a limit the reader switches on conformant without resting on the essential-activity exception:
+[Understanding SC 2.2.1 Timing Adjustable](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html).
+The criterion is Level A, so it is the floor rather than a target:
+[How to Meet WCAG, 2.2.1](https://www.w3.org/WAI/WCAG22/quickref/#timing-adjustable).
+
 ## Judging and evaluation
 
 **Self-preference bias exists and is measurable**, which is why the judge comes from a different model
