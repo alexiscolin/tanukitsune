@@ -205,6 +205,14 @@
 {"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "df9be794203bf244900227737f9cccde49642e8c"}
 {"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "a5635c57d297f4104e750237a65eaebaa920d177"}
 {"date": "2026-07-30", "branch": "fix/workflow-gates", "kind": "pass", "base": "df7446c69ddbaab4c6fb5be637a6fce6e5a42b03", "head": "abc6f0f493600e7936c38ae58616213648b0b15b"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "regression-check", "file": ".claude/hooks/verify.sh", "line": 11, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "security-check", "file": ".claude/hooks/verify.sh", "line": 11, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "security-check", "file": ".claude/hooks/verify.sh", "line": 18, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "security-check", "file": "docs/specs/v0.1.md", "line": 28, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "requirement-check", "file": "docs/verification.md", "line": 58, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "docs-conformity", "file": "docs/verification.md", "line": 58, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 151, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "fix/hook-refuses-when-it-cannot-run", "kind": "pass", "base": "41a8df08b2c468b92f0e5d57e7601c23fd69217f", "head": "0a65653852d57584ba123dacf8306f78f7caa8d8"}
 {"date": "2026-07-31", "branch": "fix/boundary-probe-names-its-rule", "reviewer": "regression-check", "file": "scripts/check-boundaries.sh", "line": 65, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "fix/boundary-probe-names-its-rule", "reviewer": "security-check", "file": "scripts/check-boundaries.sh", "line": 65, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "fix/boundary-probe-names-its-rule", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 274, "outcome": "fixed"}
