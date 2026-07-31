@@ -8,7 +8,10 @@ try {
   // Absent before the first bootstrap, which is not an error.
 }
 
-const url = process.env['DATABASE_URL']
+// Empty means absent, the same rule src/data/env.ts parses the application's
+// environment by. This file cannot import it, since that module is server-only
+// and parses everything, so the rule is held here rather than shared.
+const url = process.env['DATABASE_URL'] || undefined
 
 // Mirrors the driver choice in src/data/db.ts: a server Postgres when the
 // environment names one, the local file-backed database otherwise.

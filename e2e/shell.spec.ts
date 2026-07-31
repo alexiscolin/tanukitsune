@@ -46,7 +46,10 @@ test('health reports the build, reaches the database, and is never cached', asyn
     // CI runs this against a server Postgres and a developer runs it against the
     // local file store. What the endpoint owes either of them is the truth about
     // which one answered, not a fixed value.
-    driver: process.env['DATABASE_URL'] === undefined ? 'local-file' : 'postgres',
+    // Empty means absent here too, or this asserts one driver while the app opened
+    // the other, which is the shape of an assertion that cannot fail for the right
+    // reason.
+    driver: process.env['DATABASE_URL'] ? 'postgres' : 'local-file',
   })
 })
 
