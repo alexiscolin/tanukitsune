@@ -35,14 +35,14 @@ pnpm knip                  unused exports, files and dependencies
 pnpm dupes                 jscpd, copy-paste ratchet
 pnpm check:docs            documentation discipline
 pnpm check:review          a probe proving the review coverage gate refuses what it claims to
+pnpm check:sketches        a sketch a design session left behind, and a probe proving the search fires
 pnpm check:tests           a probe proving the test strength gate refuses a weakened test
 pnpm check:tokens          a probe proving the token rule refuses an arbitrary Tailwind value
 pnpm gate                  typecheck, check:docs, arch, lint, cheapest first: needs no database
-pnpm verify                gate, check:tokens, check:review, check:tests, build, test, knip, dupes
+pnpm verify                gate, check:review, check:sketches, check:tests, check:tokens, build, test, knip, dupes
 ```
 
-Run `pnpm verify` and show its output before saying work is done. Do not assert that something
-passes.
+Run `pnpm verify` and show its output before saying work is done. Never assert that a check passed.
 
 The `Stop` hook runs `pnpm gate`, not `pnpm verify`: the full suite needs a database and end-to-end
 runs, which do not fit inside a hook timeout, and a hook killed on timeout does not block anything. So

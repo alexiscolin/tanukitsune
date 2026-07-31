@@ -101,7 +101,7 @@ tool call rather than an intention. `SubagentStop` fires per reviewer, which not
 
 The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
 refuses the end of a turn on code that does not compile. What it runs, and what bounds that refusal to
-one forced continuation, is in [`verification.md`](verification.md#the-one-hook). The arguments behind it
+one forced continuation, is in [`verification.md`](verification.md#the-hooks). The arguments behind it
 are here.
 
 **An event is not an intention, and a hook that has to guess which one it is looking at is not a

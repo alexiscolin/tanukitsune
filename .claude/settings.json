@@ -41,6 +41,21 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/announce-shared-edit.sh"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }

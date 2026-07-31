@@ -9,7 +9,7 @@ input=$(cat)
 # Claude Code sets stop_hook_active when this hook already caused a block.
 # An exported shell variable would not work: each invocation is a fresh process.
 # Read without jq: the PATH that loses pnpm below loses a packaged jq with it, and this
-# guard is what bounds every refusal below. Reasoning in verification.md#the-one-hook.
+# guard is what bounds every refusal below. Reasoning in verification.md#the-hooks.
 grep -q '"stop_hook_active"[[:space:]]*:[[:space:]]*true' <<< "$input" && exit 0
 
 # The interpreter resolves this script under CLAUDE_PROJECT_DIR before line 1 runs, so

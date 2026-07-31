@@ -35,8 +35,8 @@ first failure and the four cost 0.9, 0.9, 1.2 and 4.0 seconds: a boundary or doc
 reported in about two seconds rather than after the type-aware lint has run. Seven seconds in all, no
 database, which is what makes it usable from a hook that runs at every turn.
 
-`pnpm verify` is `gate` plus `check:tokens`, `check:review`, `check:tests`, `build`, `test`, `knip` and
-`dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits outside both and runs
+`pnpm verify` is `gate` plus `check:sketches`, `check:tokens`, `check:review`, `check:tests`, `build`,
+`test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits outside both and runs
 in its own CI job, because it needs a browser and a database.
 
 | Command | Tool | Catches |
@@ -46,6 +46,7 @@ in its own CI job, because it needs a browser and a database.
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
+| `check:sketches` | `check-sketches.sh` | a `sketch-*` file a design session left behind, which carries a story and so passes `arch` and `knip`, and whether the search still finds one |
 | `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, which a `Test-weakened:` trailer may declare, and a disabled, focused or conditional unit test, which nothing declares |
 | `check:tokens` | `check-tokens.sh` | whether the token rule still refuses an arbitrary Tailwind value, in a class attribute, in a constant, in a template and as a bare arbitrary property, and still passes the four shapes that are legal |
 | `build` | Next | anything only the server compilation sees |
@@ -53,7 +54,10 @@ in its own CI job, because it needs a browser and a database.
 | `knip` | knip | unused exports, files and dependencies |
 | `dupes` | jscpd | literal copy-paste, 70 tokens and 8 lines at weak mode |
 
-## The one hook
+## The hooks
+
+Two are registered in `.claude/settings.json`, and neither calls a model. One refuses the end of a
+turn, the other refuses nothing and only names what an edit reaches.
 
 **`.claude/hooks/verify.sh`** is registered in `.claude/settings.json`, on `Stop`, when the agent
 finishes a turn. It runs `pnpm gate` and refuses the end of the turn when it fails, and refuses it the
@@ -69,8 +73,20 @@ above, and the PATH thin enough to lose `pnpm` loses a packaged `jq` with it, so
 one would drop the bound in the environment that needs it. The consequence is that the guarantee is
 one forced continuation, not a loop until compliance.
 
-It calls no model, and nothing else is registered. Why an event is the wrong place both for a model pass
-and for a question about intent: [`workflow.md`](workflow.md#5-hooks).
+**`.claude/hooks/announce-shared-edit.sh`** runs on `PreToolUse` for `Edit` and `Write`, and refuses
+nothing. It names two edits and stays silent on every other: `src/app/globals.css`, which every route
+and every story renders through, and a component under `src/ui/` that something already imports, which
+it reports with the importers listed. A sketch has none, so a design session stays quiet until it
+reaches what already works. `PreToolUse` stdout never reaches the agent, so the notice travels in
+`hookSpecificOutput.additionalContext`, injected beside the tool result, and `permissionDecision` is
+`defer` rather than `allow`: the hook informs without granting a permission the reader would otherwise
+be asked for. It reads its input without `jq` for the reason above. The rule it makes mechanical is
+written in `.claude/skills/design/SKILL.md`, which is why a leftover sketch is refused by
+`check:sketches` at the merge rather than here: a hook that blocks a legitimate edit gets switched off,
+and a repository with a hook switched off is worse than one without it.
+
+Why an event is the wrong place both for a model pass and for a question about intent:
+[`workflow.md`](workflow.md#5-hooks).
 
 ## The coverage gate
 
