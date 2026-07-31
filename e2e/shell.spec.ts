@@ -1,6 +1,8 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 
+import { asOptional } from '../src/data/optional-text'
+
 test('the bare root sends the reader to a locale', async ({ page }) => {
   await page.goto('/')
 
@@ -45,11 +47,10 @@ test('health reports the build, reaches the database, and is never cached', asyn
     database: 'reachable',
     // CI runs this against a server Postgres and a developer runs it against the
     // local file store. What the endpoint owes either of them is the truth about
-    // which one answered, not a fixed value.
-    // Empty means absent here too, or this asserts one driver while the app opened
-    // the other, which is the shape of an assertion that cannot fail for the right
-    // reason.
-    driver: process.env['DATABASE_URL'] ? 'postgres' : 'local-file',
+    // which one answered, not a fixed value. Read through the rule the application
+    // and the migration tool read it by, rather than a third opinion about the
+    // variable, since three readings of one value is what this branch exists on.
+    driver: asOptional(process.env['DATABASE_URL']) === undefined ? 'local-file' : 'postgres',
   })
 })
 
