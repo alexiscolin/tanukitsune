@@ -250,3 +250,7 @@
 {"date": "2026-07-31", "branch": "worktree-feat+kana-input", "kind": "pass", "base": "41a8df08b2c468b92f0e5d57e7601c23fd69217f", "head": "edcd46ae015f8165746fab8d561f3c113b152753"}
 {"date": "2026-07-31", "branch": "worktree-feat+kana-input", "kind": "pass", "base": "41a8df08b2c468b92f0e5d57e7601c23fd69217f", "head": "e92f45c8ab1f17edfba743233403287cd9ec7e33"}
 {"date": "2026-07-31", "branch": "docs/routes-and-architecture", "kind": "pass", "base": "5d33acf4e56a7f3a0d7d4574f79d687addd66cc2", "head": "f542ec0d5a13104f9e46b97db2f664ff831785b3"}
+{"date": "2026-07-31", "branch": "docs/routes-and-architecture", "reviewer": "docs-conformity", "file": "README.md", "line": 140, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "docs/routes-and-architecture", "reviewer": "docs-conformity", "file": "docs/specs/v0.1.md", "line": 146, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "docs/routes-and-architecture", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 40, "outcome": "fixed"}
+{"date": "2026-07-31", "branch": "docs/routes-and-architecture", "reviewer": "docs-conformity", "file": "src/app/[locale]/page.tsx", "line": 9, "outcome": "dismissed", "reason": "the routes are a contract and the criterion beside them says so; the loop moves to its own route with the slice that adds the entry, which is where a start screen has something to count"}

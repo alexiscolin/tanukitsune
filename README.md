@@ -137,42 +137,32 @@ Every contested choice and the argument that settled it is in [`stack.md`](docs/
 
 ## The shape of the code
 
-Four directories under `src/`, and the whole design is which of them may import which. The graph is
-enforced by `pnpm arch` rather than agreed on, and a probe proves the rule refuses what it claims to,
-so the arrows below are checked on every run instead of being documentation.
-
 ```
-app/  ──> ui/  ──> core/ <── data/
-  └──────────────> core/
-  └──────────────> data/
+src/
+├── core/     the rules. Pure, imports nothing, tested without a database
+├── data/     the outside. Postgres, the environment, WaniKani. Server only
+├── ai/       the model. Prompts, eval sets, and what implements core's ports
+├── ui/       the components. Everything reaches them as props
+└── app/      the routes. The only layer allowed to touch both data and ui
+e2e/          Playwright against the production build, with the accessibility audit
+drizzle/      migrations, generated from the schema, never written by hand
+scripts/      the gates a linter cannot express
+docs/         everything argued rather than enforced
+.claude/      the agent configuration, the review lenses, and their append-only log
 ```
 
-**`core/` decides, and imports nothing.** The grading cascade, the composition gate, the answer kinds,
-the copy, the review entry. It is pure, so it is exhaustively unit tested with no database and no
-browser, and it declares the ports the outer layers implement: `JudgePort` for the model tier that does
-not exist yet, and `KnowledgeSource` for WaniKani. That inversion is what keeps a third-party API from
-being a dependency of the rules.
+The whole design is which of those may import which. **`core/` imports nothing**, so it declares ports
+instead: `JudgePort` for the grader, `KnowledgeSource` for WaniKani, both implemented further out. That
+is what keeps a third-party API from becoming a dependency of the rules. **`ui/` reaches nothing**, so a
+component cannot quietly acquire a database. **`app/` wires them**, because somebody has to hand a
+component what a query returned.
 
-**`ui/` renders, and reaches nothing.** Components take their data and their strings as props. The
-boundary is checked by reachability rather than by adjacency, so `ui` importing something that imports
-`data` fails the same way as importing `data` directly.
+`pnpm arch` enforces it, by reachability rather than by adjacency, and a probe proves the rule refuses
+what it claims to. `ai/` is empty until the model tier arrives, and the rule that governs it is already
+in force.
 
-**`data/` is the only thing that talks to the outside.** Postgres through Drizzle, the environment, the
-build identity. It is server-only, and the gate proves that nothing importing `server-only` is
-reachable from `ui/`.
-
-**`app/` wires the three.** Routes, layouts, the error boundary, `/api/health`. It is the one layer
-allowed to touch both `data/` and `ui/`, because somebody has to hand the second what the first
-fetched.
-
-Around them: `e2e/` for the Playwright suite that runs against the production build and carries the
-accessibility audit, `drizzle/` for migrations generated from the schema and never hand-written,
-`scripts/` for the gates that a linter cannot express, `docs/` for everything argued rather than
-enforced, and `.claude/` for the agent configuration, including the review lenses and the append-only
-log that records what they found.
-
-The reasoning behind the layering, offline reconciliation, the service worker and the client boundary is
-in [`framing.md`](docs/framing.md) under architecture. This is the map; that is the argument.
+The reasoning, plus offline reconciliation, the service worker and the client boundary, is in
+[`framing.md`](docs/framing.md) under architecture. This is the map; that is the argument.
 
 ## Running it
 
