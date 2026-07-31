@@ -4,12 +4,16 @@ import js from '@eslint/js'
 import reactHooks from 'eslint-plugin-react-hooks'
 import tseslint from 'typescript-eslint'
 
-// A Tailwind arbitrary value that spends no token. Two shapes fall outside it. A bracket
-// carrying var(-- anywhere inside spends one by name, so calc over a token passes as the
-// bare reference does. And a variant carries a colon after its bracket, selecting rather
-// than spending: the theme is an attribute on the root element, so data-[theme=dark] is a
-// class this interface will write.
-const ARBITRARY_VALUE = String.raw`[a-z][a-z0-9:-]*-\[(?![^\]]*var\(--)[^\]]*\](?!:)`
+// A Tailwind arbitrary value that spends no token, in both syntaxes: a bracket after a
+// utility, as in p-[13px], and a bracket standing on its own and naming the property, as
+// in [color:#ff0000], which is the shortest way to write a raw colour and carries no
+// utility to key on.
+//
+// Two shapes fall outside it. A bracket carrying var(-- anywhere inside spends a token by
+// name, so calc over one passes as the bare reference does. And a bracket followed by a
+// colon is a variant, which selects rather than spending: the theme is an attribute on the
+// root element, so data-[theme=dark] is a class this interface will write.
+const ARBITRARY_VALUE = String.raw`(?:[a-z][a-z0-9:-]*-\[|(?:^|\s)\[(?=[^\]\s]*:))(?![^\]]*var\(--)[^\]]*\](?!:)`
 const SPEND_A_TOKEN =
   'Arbitrary value. Spend a token from src/app/globals.css, as text-[var(--color-ink)] does.'
 

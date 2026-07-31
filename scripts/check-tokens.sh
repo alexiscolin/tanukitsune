@@ -4,7 +4,7 @@
 # much is worked around until it is deleted. What the rule is, and which shapes are legal
 # on purpose, is in docs/verification.md under the token rule.
 #
-# Writes four probes into src/ui/, expects a refusal for three, expects the fourth to pass
+# Writes five probes into src/ui/, expects a refusal for four, expects the fifth to pass
 # whole, removes them.
 #
 # Unlike scripts/check-boundaries.sh, these probes cannot be excluded from tsconfig.json or
@@ -20,9 +20,10 @@ probe_prefix=__token-probe-
 inline=$probe_dir/${probe_prefix}inline.tsx
 constant=$probe_dir/${probe_prefix}constant.tsx
 template=$probe_dir/${probe_prefix}template.tsx
+property=$probe_dir/${probe_prefix}property.tsx
 allowed=$probe_dir/${probe_prefix}allowed.tsx
 
-cleanup() { rm -f "$inline" "$constant" "$template" "$allowed"; }
+cleanup() { rm -f "$inline" "$constant" "$template" "$property" "$allowed"; }
 trap cleanup EXIT
 
 fail=0
@@ -41,11 +42,12 @@ fi
 printf 'export function TokenProbe() {\n  return <p className="p-[13px]">probe</p>\n}\n' > "$inline"
 printf "const CARD = 'text-[#ffffff]'\n\nexport function TokenProbe() {\n  return <p className={CARD}>probe</p>\n}\n" > "$constant"
 printf 'const CARD = `gap-[7px]`\n\nexport function TokenProbe() {\n  return <p className={CARD}>probe</p>\n}\n' > "$template"
-printf 'export function TokenProbe() {\n  return (\n    <p className="text-[var(--color-ink)] w-[calc(var(--spacing-loose)*2)] data-[theme=dark]:underline">\n      probe\n    </p>\n  )\n}\n' > "$allowed"
+printf 'export function TokenProbe() {\n  return <p className="[color:#ff0000]">probe</p>\n}\n' > "$property"
+printf 'export function TokenProbe() {\n  return (\n    <p className="text-[var(--color-ink)] [color:var(--color-ink)] w-[calc(var(--spacing-loose)*2)] data-[theme=dark]:underline">\n      probe\n    </p>\n  )\n}\n' > "$allowed"
 
 # One invocation rather than one per probe: the type-aware configuration builds a project
-# graph on startup, which is most of a lint's cost and about five seconds over four files.
-report=$(./node_modules/.bin/eslint -f json "$inline" "$constant" "$template" "$allowed")
+# graph on startup, which is most of a lint's cost and about six seconds over five files.
+report=$(./node_modules/.bin/eslint -f json "$inline" "$constant" "$template" "$property" "$allowed")
 
 if ! printf '%s' "$report" | jq -e . > /dev/null 2>&1; then
   printf 'The lint produced no report, so the probes prove nothing.\n' >&2
@@ -62,14 +64,15 @@ refuses() {
 
 for spec in "$inline:an arbitrary value in a class attribute" \
             "$constant:an arbitrary value held in a constant" \
-            "$template:an arbitrary value written as a template"; do
+            "$template:an arbitrary value written as a template" \
+            "$property:an arbitrary property, which carries no utility to key on"; do
   refuses "${spec%%:*}" && continue
   printf 'The token rule did not refuse %s.\n' "${spec#*:}" >&2
   fail=1
 done
 
 if refuses "$allowed"; then
-  printf 'The token rule refuses a token, a token reached through calc, or a variant, and all three are legal.\n' >&2
+  printf 'The token rule refuses a token spent by a utility or by a property, a token reached through calc, or a variant, and all four are legal.\n' >&2
   fail=1
 fi
 
