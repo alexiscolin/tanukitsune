@@ -263,7 +263,6 @@
 {"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "reviewer": "docs-conformity", "file": "docs/framing.md", "line": 320, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/deeper-tree", "reviewer": "docs-conformity", "file": "README.md", "line": 143, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/deeper-tree", "kind": "pass", "base": "43768af960b645f2c318f83c39b13324528dc31f", "head": "106901e8745922d3adb6161a1723b7e3330c85a7"}
-{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "kind": "pass", "base": "651213c538aa1c3a4d8538bde0fe19833c823ee7", "head": "38e33d0a3daad4721c84859cdc43998327e7950a"}
 {"date": "2026-07-31", "branch": "fix/bootstrap-empty-database-url", "kind": "pass", "base": "0a7bef6a3a5603edf50fe70750da0e61f72ec816", "head": "a48217d724081947db68d574e621a4831ac9c891"}
 {"date": "2026-07-31", "branch": "chore/union-merge-the-review-log", "reviewer": "regression-check", "file": "scripts/review-stats.sh", "line": 26, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "chore/union-merge-the-review-log", "kind": "pass", "base": "651213c538aa1c3a4d8538bde0fe19833c823ee7", "head": "8b812f362df8e5acd3e35766181fffb0cb020ed8"}
@@ -272,4 +271,4 @@
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 54, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 60, "outcome": "fixed"}
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "reviewer": "docs-conformity", "file": "docs/specs/v0.1.md", "line": 189, "outcome": "fixed"}
-{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "kind": "pass", "base": "0a7bef6a3a5603edf50fe70750da0e61f72ec816", "head": "576d992b660cca6a67934dbbef2a6b16b4bd524b"}
+{"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "kind": "pass", "base": "651213c538aa1c3a4d8538bde0fe19833c823ee7", "head": "82611ca3a7b2c9090b4431ad871580d05145a422"}
