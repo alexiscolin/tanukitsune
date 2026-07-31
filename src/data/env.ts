@@ -14,8 +14,9 @@ const optionalText = z.preprocess(
   z.string().min(1).optional(),
 )
 
-// Parsed once, at the boundary. Nothing else in the application reads
-// process.env.
+// Parsed once, at the boundary. Nothing else in the application reads process.env.
+// What reads the raw variable outside the application is the migration configuration
+// and the end-to-end expectation, through the rule above rather than around it.
 const schema = z.object({
   DATABASE_URL: optionalText,
   TANUKITSUNE_COMMIT: optionalText,
