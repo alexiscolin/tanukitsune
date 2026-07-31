@@ -12,10 +12,25 @@ if [ "$(printf '%s' "$input" | jq -r '.stop_hook_active // false')" = "true" ]; 
   exit 0
 fi
 
-cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
+# A hook that cannot run has no guarantee to give, and from outside a hook that passed
+# and a hook that never ran are the same observation. Each condition names itself, and
+# stop_hook_active bounds the refusal to one turn the same way a failed gate is bounded.
+cd "${CLAUDE_PROJECT_DIR:-.}" || {
+  printf 'The project directory is unreachable, so nothing verified this turn.\n' >&2
+  exit 2
+}
 
-[ -f package.json ] || exit 0
-command -v pnpm >/dev/null 2>&1 || exit 0
+if [ ! -f package.json ]; then
+  printf 'No package.json in %s, so nothing verified this turn.\n' "$PWD" >&2
+  exit 2
+fi
+
+# Hooks are not spawned from a login shell, so a pnpm installed through corepack, nvm
+# or asdf can be absent here while present in a terminal.
+if ! command -v pnpm >/dev/null 2>&1; then
+  printf 'pnpm is not on this hook PATH, so nothing verified this turn.\n' >&2
+  exit 2
+fi
 
 # exit 2 discards stdout, so merging would block the turn while withholding the
 # errors needed to unblock it.
