@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 
 import { runCascade } from '@/core/grading/cascade'
 import type { Verdict } from '@/core/grading/judge-port'
@@ -38,14 +38,17 @@ export function ReviewSession({
   const [index, setIndex] = useState(0)
   const [answered, setAnswered] = useState<Answered | null>(null)
   const end = useRef<HTMLHeadingElement>(null)
+  const verdictId = useId()
 
   const entry = queue[index]
 
   // The button that ended the session left with the focus on it, so the end takes it like
-  // every other step of the loop does rather than dropping it on the document.
+  // every other step of the loop does rather than dropping it on the document. Only once
+  // a step has been left: a queue that arrives empty was never a session, and taking the
+  // focus as the page loads is what the field's own rule refuses.
   useEffect(() => {
-    end.current?.focus()
-  }, [entry])
+    if (index > 0) end.current?.focus()
+  }, [entry, index])
 
   // No tally, because v0.1 refuses statistics and a number nothing persists is one the
   // reader cannot check. What was answered is in the log, once there is a log.
@@ -104,8 +107,10 @@ export function ReviewSession({
 
       {/* Rendered whether or not it holds anything, because a polite region has to be in
           the document before its content changes: one inserted with its text already in it
-          is the case a screen reader routinely says nothing about. */}
-      <p role="status" className="text-lg">
+          is the case a screen reader routinely says nothing about. It is also named as the
+          description of whatever takes the focus next, since an announcement racing a focus
+          move is the one a screen reader drops. */}
+      <p role="status" id={verdictId} className="text-lg">
         {answered === null ? '' : verdictMessage(verdictOf(answered), copy)}
       </p>
 
@@ -125,6 +130,7 @@ export function ReviewSession({
           entry={entry}
           answered={answered}
           copy={copy}
+          verdictId={verdictId}
           onGrade={grade}
           onAdvance={advance}
         />
@@ -147,12 +153,14 @@ function VerdictPanel({
   entry,
   answered,
   copy,
+  verdictId,
   onGrade,
   onAdvance,
 }: {
   entry: ReviewEntry
   answered: Answered
   copy: ReviewCopy
+  verdictId: string
   onGrade: (said: Verdict) => void
   onAdvance: () => void
 }) {
@@ -169,7 +177,12 @@ function VerdictPanel({
   }, [verdict])
 
   return (
-    <div ref={panel} tabIndex={-1} className="flex flex-col gap-4 outline-none">
+    <div
+      ref={panel}
+      tabIndex={-1}
+      aria-describedby={verdictId}
+      className="flex flex-col gap-4 outline-none"
+    >
       {/* Kept while the reader can still act on it, so grading does not remove what was
           graded against. Hidden only while the cascade's correct verdict stands unchallenged.
           The full item card is what the corpus adds here. */}
@@ -196,7 +209,13 @@ function VerdictPanel({
           ))}
         {/* An answer no tier decided has no button here at all: it is graded first. */}
         {verdict === null ? null : (
-          <button ref={next} type="button" onClick={onAdvance} className={BUTTON}>
+          <button
+            ref={next}
+            type="button"
+            onClick={onAdvance}
+            aria-describedby={verdictId}
+            className={BUTTON}
+          >
             {copy.next}
           </button>
         )}

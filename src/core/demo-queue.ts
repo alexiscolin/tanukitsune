@@ -22,9 +22,24 @@ const SUBJECTS = [
   { id: 'demo-hi', characters: '火', meanings: ['feu'], readings: ['ひ', 'か'] },
 ] as const
 
-export const DEMO_QUEUE: readonly ReviewEntry[] = SUBJECTS.flatMap(
-  ({ id, characters, meanings, readings }): ReviewEntry[] => [
-    { subjectId: id, characters, kind: 'meaning', accepted: meanings },
-    { subjectId: id, characters, kind: 'reading', accepted: readings },
-  ],
-)
+// Every meaning, then every reading, so a subject's two questions are never adjacent. Asked
+// back to back, the second is answered from the first rather than from memory, which is the
+// one thing a deck demonstrating retrieval must not do.
+export const DEMO_QUEUE: readonly ReviewEntry[] = [
+  ...SUBJECTS.map(
+    ({ id, characters, meanings }): ReviewEntry => ({
+      subjectId: id,
+      characters,
+      kind: 'meaning',
+      accepted: meanings,
+    }),
+  ),
+  ...SUBJECTS.map(
+    ({ id, characters, readings }): ReviewEntry => ({
+      subjectId: id,
+      characters,
+      kind: 'reading',
+      accepted: readings,
+    }),
+  ),
+]
