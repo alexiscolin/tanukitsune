@@ -30,6 +30,7 @@ export default tseslint.config(
   {
     ignores: [
       '.next/**',
+      'storybook-static/**',
       'node_modules/**',
       'coverage/**',
       'next-env.d.ts',
