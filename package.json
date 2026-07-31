@@ -20,8 +20,11 @@
     "check:docs": "bash scripts/check-docs.sh",
     "check:review": "bash scripts/check-review-coverage-probe.sh",
     "check:tests": "bash scripts/check-test-strength-probe.sh",
+    "check:tokens": "bash scripts/check-tokens.sh",
     "gate": "pnpm typecheck && pnpm check:docs && pnpm arch && pnpm lint",
-    "verify": "pnpm gate && pnpm check:review && pnpm check:tests && pnpm build && pnpm test && pnpm knip && pnpm dupes",
+    "verify": "pnpm gate && pnpm check:tokens && pnpm check:review && pnpm check:tests && pnpm build && pnpm test && pnpm knip && pnpm dupes",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "test:e2e": "playwright test"
@@ -42,6 +45,8 @@
     "@eslint/js": "10.0.1",
     "@next/eslint-plugin-next": "16.2.12",
     "@playwright/test": "1.62.0",
+    "@storybook/addon-a11y": "10.5.5",
+    "@storybook/nextjs-vite": "10.5.5",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/react": "16.3.2",
     "@types/node": "26.1.2",
@@ -56,9 +61,11 @@
     "jscpd": "5.0.14",
     "jsdom": "30.0.1",
     "knip": "6.29.0",
+    "storybook": "10.5.5",
     "tailwindcss": "4.3.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-eslint": "8.65.0",
+    "vite": "8.1.5",
     "vitest": "4.1.10"
   }
 }
