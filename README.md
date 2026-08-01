@@ -151,7 +151,8 @@ src/
 │   ├── env.ts                   the environment, parsed once, at the boundary
 │   └── schema.ts                the tables, from which migrations are generated
 ├── ai/                      the model. Prompts, eval sets, and what implements core's ports
-├── ui/                      the components. Everything reaches them as props
+├── ui/                      the components, props only. A fourth layer, primitives/, holds
+│                            imported behaviour and arrives with the first widget needing it
 │   ├── atoms/                   appearance, no behaviour
 │   ├── molecules/               answer-input: romaji becomes kana here, and Enter is decided here
 │   └── organisms/               review-session: the loop, question, verdict, next
