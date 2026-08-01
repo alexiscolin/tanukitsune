@@ -216,8 +216,8 @@ model at all: one forces a continuation when a turn would end on code that does 
 names an edit reaching the token source or a component something already renders, and refuses nothing.
 
 The deterministic gates hold on their own. **The semantic reading does not:** a required check refuses
-a merge whose commits no recorded pass covers, and that record is written by the party under review, so
-skipping the reading is visible rather than impossible.
+a merge whose commits no recorded pass covers, and that record is a line the party under review writes
+and a human approves, so skipping the reading is visible rather than impossible.
 [`verification.md`](docs/verification.md) carries what that is worth.
 
 [`docs/workflow.md`](docs/workflow.md) describes that process: the per-task cycle, the review lenses,
