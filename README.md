@@ -159,7 +159,7 @@ src/
 └── app/                     the routes. The only layer allowed to touch both data and ui
     ├── [locale]/                the session, its layout, its error and not-found pages
     └── api/health/route.ts      what answered, which build, and whether the database is there
-e2e/                         Playwright against the production build, with the accessibility audit
+e2e/                         Playwright: the routes against the production build, every story by theme
 drizzle/                     migrations, generated from the schema, never written by hand
 scripts/                     the gates a linter cannot express
 docs/                        everything argued rather than enforced

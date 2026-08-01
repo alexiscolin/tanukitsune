@@ -30,16 +30,24 @@ path=$(sed -n 's/.*"file_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' <<< "
 [ -n "$path" ] || exit 0
 
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
-rel=${path#"$PWD"/}
 
-# The prefix comes off only when the two spellings match byte for byte, and a project
-# directory reached through another case or another mount leaves it whole, which every
-# pattern below then misses in silence rather than loudly. The patterns key on the tail
-# from src/, so it is taken directly whenever the prefix did not come off.
-case "$rel" in
-  src/*) ;;
-  */src/*) rel=src/${rel#*/src/} ;;
+# The path is measured against the project directory as given and as resolved, ignoring
+# case: this tree is reachable under more than one spelling, and a prefix taken off byte
+# for byte leaves every pattern below unmatched, which is silence rather than a mistake
+# anyone sees. A file outside both leaves here, since keying on src/ wherever it appeared
+# would announce another checkout's component as one of ours. Nothing is read from disk:
+# a Write creates a file whose directory may not exist yet, and it is still an edit.
+root=$(pwd -P)
+shopt -s nocasematch
+case "$path" in
+  "$PWD"/*) rel=${path:${#PWD}+1} ;;
+  "$root"/*) rel=${path:${#root}+1} ;;
+  *) exit 0 ;;
 esac
+shopt -u nocasematch
+
+rel=${rel#./}
+rel=${rel//\/.\//\/}
 
 notice=''
 case "$rel" in

@@ -30,9 +30,18 @@ sketches() { find "$area" -type f -name '*.ts*' 2>/dev/null | sort; }
 # line exists and not that it wins: a case takes its first matching arm, so the same arm
 # moved below the general one leaves any search green while the hook starts announcing
 # every edit inside the area, which is the noise the area exists to remove.
-announce() {
-  CLAUDE_PROJECT_DIR=$PWD bash "$hook" <<< "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"$PWD/$1\"}}"
+announce() { announce_absolute "$PWD/$1"; }
+announce_absolute() {
+  CLAUDE_PROJECT_DIR=$PWD bash "$hook" <<< "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"$1\"}}"
 }
+
+# The gate and the hook are executable and are run above. The skill is prose and cannot be,
+# so the one thing left to assert is that it still sends a session to the directory this
+# gate empties: renamed there alone, work would be written where nothing looks for it.
+if ! grep -qF "$area" .claude/skills/design/SKILL.md; then
+  printf '.claude/skills/design/SKILL.md does not name %s, so a session would write where this gate never looks.\n' "$area" >&2
+  fail=1
+fi
 
 # The probes live inside the directory the gate empties, so they cannot be named out of
 # their own way the boundary and token probes are. They therefore never write over
@@ -63,6 +72,9 @@ speech=$(announce src/app/globals.css)
 # cannot see it fall silent on a path that reached it another way. This one does not
 # match the project directory byte for byte and must still be named.
 detoured=$(announce ./src/app/globals.css)
+# A path in another checkout entirely, which shares this tree's shape and must not be
+# reported as this tree's component.
+foreign=$(announce_absolute /tmp/not-this-tree/src/app/globals.css)
 cleanup
 
 case "$found" in
@@ -80,6 +92,11 @@ fi
 
 if [ -z "$speech" ]; then
   printf 'The announcing hook said nothing about src/app/globals.css, so its silence above proves nothing.\n' >&2
+  fail=1
+fi
+
+if [ -n "$foreign" ]; then
+  printf 'The announcing hook spoke about a path in another checkout, so it names components that are not this tree:\n%s\n' "$foreign" >&2
   fail=1
 fi
 

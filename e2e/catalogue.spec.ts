@@ -1,13 +1,7 @@
-import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 
 import { catalogueURL } from '../playwright.config'
-
-// The states of a review are catalogued and nothing ran them: the audit the addon performs
-// answers to a person opening a browser. This is what runs them. Every story is visited in
-// both themes, which is where a token decided in a design session changes a contrast
-// without changing a word of markup.
-const AUDITED = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
+import { expectNoViolations } from './audit'
 
 // docs/decisions/0009-storybook-as-the-review-surface.md says states are reached by driving
 // rather than by posing, so a story is not done when it renders: its play function is still
@@ -51,6 +45,8 @@ async function catalogued(page: Page): Promise<string[]> {
 // rather than as the too-small number it is.
 test.describe.configure({ timeout: 120_000 })
 
+// Both themes, which is where a token decided in a design session moves a contrast without
+// moving a word of markup.
 for (const theme of ['light', 'dark'] as const) {
   test(`every catalogued state reaches itself and is audited in ${theme}`, async ({ page }) => {
     await page.addInitScript(RECORD_OUTCOME)
@@ -70,9 +66,7 @@ for (const theme of ['light', 'dark'] as const) {
 
         expect(await page.evaluate('window.__storyOutcome')).toBe('finished')
 
-        const { violations } = await new AxeBuilder({ page }).withTags(AUDITED).analyze()
-
-        expect(violations.map((violation) => violation.id)).toEqual([])
+        await expectNoViolations(page)
       })
     }
   })

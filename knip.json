@@ -5,6 +5,7 @@
     "src/**/*.test.{ts,tsx}"
   ],
   "project": [
-    "src/**/*.{ts,tsx,css}"
+    "src/**/*.{ts,tsx,css}",
+    "e2e/**/*.ts"
   ]
 }

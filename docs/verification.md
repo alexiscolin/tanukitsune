@@ -261,7 +261,7 @@ needs no secret, and costs nothing beyond runner minutes.
 | Job | Runs on | Does |
 |---|---|---|
 | `verify` | push to main, pull request | `pnpm verify`, then checks the build left `tsconfig.json` alone |
-| `e2e` | push to main, pull request | Playwright with the axe audit, against the production build and a server Postgres |
+| `e2e` | push to main, pull request | Playwright with the axe audit: the routes against the production build and a server Postgres, the catalogue against its own server |
 | `review` | pull request | `check-review-coverage.sh` and `check-test-strength.sh`, over the head commit rather than the merge commit. A test file may lose assertions when a commit in the range says so in a `Test-weakened:` trailer naming it. A disabled, focused or conditional test is refused outright, and only in `*.test.*`: a conditional guard belongs in an e2e spec, which the check does not read |
 | `subjects` | pull request | the title, every commit subject on the branch except the ones git composes when a branch is brought in, and a description carrying the plan |
 
