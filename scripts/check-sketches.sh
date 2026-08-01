@@ -18,7 +18,9 @@ probe=$area/gate-probe.tsx
 
 fail=0
 
-sketches() { find "$area" -type f 2>/dev/null | sort; }
+# Sources only. find reads no .gitignore, so a .DS_Store the Finder drops in the area would
+# otherwise refuse the merge, naming a file no session wrote and none can promote.
+sketches() { find "$area" -type f -name '*.ts*' 2>/dev/null | sort; }
 
 # The probe lives inside the directory the gate empties, so it cannot be named out of its
 # own way the boundary and token probes are. It therefore never writes over anything:
@@ -39,12 +41,16 @@ trap cleanup EXIT
 # check-tokens.sh asserts the message its own probe depends on: the skill that fills the
 # area and the hook that stays silent inside it. An area renamed in one place and not the
 # others leaves this gate searching where nobody writes, and reporting a clean tree for it.
-for named in .claude/skills/design/SKILL.md .claude/hooks/announce-shared-edit.sh; do
-  if ! grep -qF "$area" "$named"; then
-    printf '%s does not name %s, so this gate would search where nothing is written.\n' "$named" "$area" >&2
-    fail=1
-  fi
-done
+# The hook is matched on the case arm rather than the bare path, since the path appears in
+# its header comment too and a comment left behind would satisfy a plain search while the
+# arm that decides had moved.
+naming() {
+  grep -qF "$2" "$1" && return 0
+  printf '%s does not carry %s, so this gate would search where nothing is written.\n' "$1" "$2" >&2
+  fail=1
+}
+naming .claude/skills/design/SKILL.md "$area"
+naming .claude/hooks/announce-shared-edit.sh "$area/*)"
 
 # Prove the search reaches the area at all before trusting it to report an empty one.
 mkdir -p "$area"
