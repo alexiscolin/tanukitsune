@@ -3,7 +3,7 @@ name: design
 description: Runs a design session on one screen: sketches carried as stories, judged in Storybook by the reader, promoted into the layers, then handed back. Use when a screen's appearance is undecided.
 disable-model-invocation: true
 argument-hint: "[screen]"
-allowed-tools: Bash(pnpm storybook), Bash(pnpm gate), Bash(pnpm verify), Bash(pnpm test:e2e), Bash(grep:*), Bash(git status:*), Bash(rm:*), Read, Write, Edit, Glob, Grep, SlashCommand, mcp__claude-in-chrome__tabs_create_mcp, mcp__claude-in-chrome__navigate
+allowed-tools: Bash(pnpm storybook), Bash(pnpm gate), Bash(pnpm verify), Bash(grep:*), Bash(git status:*), Bash(rm:*), Read, Write, Edit, Glob, Grep, SlashCommand, mcp__claude-in-chrome__navigate
 ---
 
 # Design session
@@ -54,9 +54,10 @@ so the layer and `server-only` rules cover it without a line of configuration.
 for every call site it already has, for the whole session, and rolling back is deleting files nothing
 imports. It is replaced once, when one alternative wins, in a commit that reverts on its own.
 
-Utilities are free, Tailwind's own defaults included. A colour or a scale that does not exist yet becomes a candidate block in `globals.css`,
-selected from the theme toolbar and never an arbitrary value in a class: every component then renders
-under it at once, and the token rule is never disabled.
+Utilities are free, Tailwind's own defaults included. A colour or a scale that does not exist yet
+becomes a candidate block in `globals.css`, selected from the theme toolbar and never an arbitrary
+value in a class: every component then renders under it at once, and the token rule is never
+disabled.
 
 **The reader is the eyes.** The agent states no opinion on how anything reads. An agent describing a
 screen it has not seen guesses in a register that sounds like observation, and the reader has no way to
@@ -75,13 +76,11 @@ and `check:sketches` refuses anything left in the area. Both are described in `d
 It takes its layer under `src/ui/` per `docs/decisions/0010-behaviour-imported-appearance-written.md`,
 **and its story moves with it**, renamed, or the state just designed leaves the catalogue with the
 alternatives it beat. The values that survived take names in `globals.css` and the component is
-rewritten to spend them. Empty `src/ui/sketches/`, which `check:sketches` refuses at the merge.
+rewritten to spend them. Empty `src/ui/sketches/`.
 
 **Then wire it in, in its own commit.** A component only its story imports is a display case rather
-than a product, so the session does not end before the screen is in the route. It is a separate commit
-because a structural change and a behavioural one never share one, which is what lets either be
-reverted without the other. Where the substitution touches a route `e2e/` visits, run `pnpm test:e2e`
-as well: `pnpm verify` does not, and this is the moment the catalogue stops being the only evidence.
+than a product, so the session does not end before the screen is in the route. The end-to-end suite
+covers the routes a substitution reaches, and its own job runs on the pull request.
 
 **A screen needing a route that does not exist yet is a different slice**, and the session says so
 instead of opening one. A route carries its own data loading, its empty and error states and its place

@@ -35,7 +35,7 @@ pnpm knip                  unused exports, files and dependencies
 pnpm dupes                 jscpd, copy-paste ratchet
 pnpm check:docs            documentation discipline
 pnpm check:review          a probe proving the review coverage gate refuses what it claims to
-pnpm check:sketches        work a design session left in src/ui/sketches, and the three names agreeing
+pnpm check:sketches        work left in src/ui/sketches, and the hook keeping that area quiet
 pnpm check:tests           a probe proving the test strength gate refuses a weakened test
 pnpm check:tokens          a probe proving the token rule refuses an arbitrary Tailwind value
 pnpm gate                  typecheck, check:docs, arch, lint, cheapest first: needs no database

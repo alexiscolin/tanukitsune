@@ -1,20 +1,23 @@
 #!/bin/bash
-# Refuses what a design session left in its iteration area. Alternatives are written under
-# src/ui/sketches/ and compared in the catalogue, and .claude/skills/design empties the
-# directory once one wins. Nothing else catches a leftover: a component carrying a story
-# satisfies both dependency-cruiser and knip, which is exactly what makes sketching legal
-# while the session runs. So the refusal belongs at the merge, and the announcing hook
-# stays free to never block.
+# Refuses what a design session left in its iteration area, and proves the hook that keeps
+# that area quiet still does. Alternatives are written under src/ui/sketches/ and compared
+# in the catalogue, and .claude/skills/design empties the directory once one wins. Nothing
+# else catches a leftover: a component carrying a story satisfies both dependency-cruiser
+# and knip, which is exactly what makes sketching legal while the session runs. So the
+# refusal belongs at the merge, and the announcing hook stays free to never block.
 #
-# Writes one probe into the area, expects the search to find it, removes it. A probe
-# surviving a killed run is an orphan module dependency-cruiser refuses, and the Stop hook
-# runs gate, so it would refuse every turn until someone found it; the trap prevents that.
+# Writes two probes into the area, expects the search to find them and the hook to stay
+# silent about them, removes them. A probe surviving a killed run is an orphan module
+# dependency-cruiser refuses, and the Stop hook runs gate, so it would refuse every turn
+# until someone found it; the trap prevents that.
 
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
 area=src/ui/sketches
 probe=$area/gate-probe.tsx
+importer=$area/gate-probe-importer.tsx
+hook=.claude/hooks/announce-shared-edit.sh
 
 fail=0
 
@@ -22,40 +25,40 @@ fail=0
 # otherwise refuse the merge, naming a file no session wrote and none can promote.
 sketches() { find "$area" -type f -name '*.ts*' 2>/dev/null | sort; }
 
-# The probe lives inside the directory the gate empties, so it cannot be named out of its
-# own way the boundary and token probes are. It therefore never writes over anything:
-# truncating a session's work and then deleting it would destroy it while reporting a clean
-# tree, and a concurrent run would clobber the other's proof. Checked before the trap is
-# armed, or the exit would delete the very file it declined to overwrite.
-if [ -e "$probe" ]; then
-  printf '%s already exists, so this gate will not write its probe over it. Move or delete it first.\n' "$probe" >&2
-  exit 1
-fi
+# The hook is run rather than read, the way check-tokens.sh runs ESLint and
+# check-boundaries.sh runs depcruise. Grepping it for the path it matches would prove the
+# line exists and not that it wins: a case takes its first matching arm, so the same arm
+# moved below the general one leaves any search green while the hook starts announcing
+# every edit inside the area, which is the noise the area exists to remove.
+announce() {
+  CLAUDE_PROJECT_DIR=$PWD bash "$hook" <<< "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"$PWD/$1\"}}"
+}
 
-cleanup() { rm -f "$probe"; rmdir "$area" 2>/dev/null; }
+# The probes live inside the directory the gate empties, so they cannot be named out of
+# their own way the boundary and token probes are. They therefore never write over
+# anything: truncating a session's work and then deleting it would destroy it while
+# reporting a clean tree, and a concurrent run would clobber the other's proof. Checked
+# before the trap is armed, or the exit would delete the very files it declined to
+# overwrite.
+for path in "$probe" "$importer"; do
+  if [ -e "$path" ]; then
+    printf '%s already exists, so this gate will not write its probe over it. Move or delete it first.\n' "$path" >&2
+    exit 1
+  fi
+done
+
+cleanup() { rm -f "$probe" "$importer"; rmdir "$area" 2>/dev/null; }
 trap cleanup EXIT
 
-# The probe below writes inside the directory it then searches, so the two cannot disagree
-# and finding it proves nothing about the path being the right one. What makes the path
-# right is that the other two mechanisms keying on it agree, which is asserted here the way
-# check-tokens.sh asserts the message its own probe depends on: the skill that fills the
-# area and the hook that stays silent inside it. An area renamed in one place and not the
-# others leaves this gate searching where nobody writes, and reporting a clean tree for it.
-# The hook is matched on the case arm rather than the bare path, since the path appears in
-# its header comment too and a comment left behind would satisfy a plain search while the
-# arm that decides had moved.
-naming() {
-  grep -qF "$2" "$1" && return 0
-  printf '%s does not carry %s, so this gate would search where nothing is written.\n' "$1" "$2" >&2
-  fail=1
-}
-naming .claude/skills/design/SKILL.md "$area"
-naming .claude/hooks/announce-shared-edit.sh "$area/*)"
-
-# Prove the search reaches the area at all before trusting it to report an empty one.
+# One probe importing the other, because a file nothing imports is silent under any arm and
+# would prove nothing about which one answered.
 mkdir -p "$area"
-: > "$probe"
+printf 'export const PROBE = 1\n' > "$probe"
+printf "import { PROBE } from './gate-probe'\nexport const USES = PROBE\n" > "$importer"
+
 found=$(sketches)
+silence=$(announce "$probe")
+speech=$(announce src/app/globals.css)
 cleanup
 
 case "$found" in
@@ -65,6 +68,16 @@ case "$found" in
     fail=1
     ;;
 esac
+
+if [ -n "$silence" ]; then
+  printf 'The announcing hook spoke about %s, which is inside the area it must ignore:\n%s\n' "$probe" "$silence" >&2
+  fail=1
+fi
+
+if [ -z "$speech" ]; then
+  printf 'The announcing hook said nothing about src/app/globals.css, so its silence above proves nothing.\n' >&2
+  fail=1
+fi
 
 left=$(sketches)
 if [ -n "$left" ]; then
