@@ -40,3 +40,34 @@ printf '\n%s findings over %s passes, on %s branches\n' \
   "$(jq -rs "unique_by(tojson) | map(select((.kind // \"finding\") != \"pass\")) | length" "$log")" \
   "$(jq -rs "unique_by(tojson) | map(select(.kind == \"pass\")) | length" "$log")" \
   "$(jq -rs 'map(.branch) | unique | length' "$log")"
+
+# What the lenses found is the easy half. What they let through is the half that
+# says whether reading a diff with fresh eyes is worth what it costs, and the log
+# already holds it: the file is append-only, so a finding recorded on a branch
+# after a pass was on record there is a defect an earlier reading concluded
+# without. Nothing else in this repository measures a reviewer against what it
+# missed rather than against what it produced.
+#
+# It is an upper bound, not an escape count. A branch that keeps working after a
+# pass earns findings about code that pass never saw, and separating the two
+# needs the commit each finding sits in, which the log does not carry. The number
+# is worth having anyway: a repository where it is near zero is one where the
+# first reading was enough, and this one is not that.
+printf '%s of them arrived on a branch that already had a pass on record\n' \
+  "$(jq -rs '
+    # unique_by sorts, and this measure is the one thing in the file that reads
+    # append order, so duplicates are dropped without disturbing it.
+    reduce .[] as $line ([]; if any(.[]; . == $line) then . else . + [$line] end)
+    | map(.branch) as $branches
+    | . as $lines
+    | ($branches | unique)
+    | map(
+        . as $branch
+        | [$lines[] | select(.branch == $branch)]
+        | (to_entries | map(select(.value.kind == "pass")) | first) as $pass
+        | if $pass == null then 0
+          else [.[($pass.key + 1):][] | select((.kind // "finding") != "pass")] | length
+          end
+      )
+    | add // 0
+  ' "$log")"

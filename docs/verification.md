@@ -170,6 +170,14 @@ are its denominator: findings alone cannot separate a lens that met clean code f
 and never again. The coverage gate reads those same lines, so one record serves both the measurement
 and the gate. Why the reviewers are measured rather than trusted is in [`workflow.md`](workflow.md).
 
+It also reports what the lenses let through, which is the half that says whether reading a diff with
+fresh eyes earns what it costs. The file is append-only, so a finding recorded on a branch after a
+pass was already on record there is a defect an earlier reading concluded without. That is an upper
+bound rather than a count: a branch that keeps working after a pass earns findings about code that
+pass never saw, and separating the two needs the commit each finding sits in, which the log does not
+carry. The number is worth having anyway, since a repository where it is near zero is one where the
+first reading was enough.
+
 ## What `check-docs.sh` enforces
 
 Mechanically, so the rules do not depend on anyone remembering them.
