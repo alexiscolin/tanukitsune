@@ -281,10 +281,11 @@ without any of them running unprompted.
   reviewed; it cannot refuse one somebody only claimed to have reviewed.
 - Nothing checks that the announcing hook fires. `check:docs` pairs every registration in
   `.claude/settings.json` against the scripts present, so a renamed file and a ghost entry are both
-  caught, and the script answers correctly to an input piped into it. What no command reaches is
-  delivery: whether the tool matches the event and passes the notice on is visible only by opening a
-  session and editing a shared file. A matcher that stopped matching leaves it silent with nothing
-  saying so, which is the failure a hook exists to prevent in the first place.
+  caught, but only where `jq` is installed, since the pairing is skipped without it and the run stays
+  green. What no command reaches at all is the event: whether the tool matches `Edit` and `Write` to
+  this registration and passes the notice on is visible only by opening a session and editing a shared
+  file. A matcher that stopped matching leaves it silent with nothing saying so, which is the failure
+  a hook exists to prevent in the first place.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the
   documents were read against each other depends on `docs-conformity` having been asked for.
 - Three of the five boundary rules have no probe, and one of the two covered is covered halfway: the

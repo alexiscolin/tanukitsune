@@ -37,10 +37,11 @@ case "$rel" in
   src/app/globals.css)
     notice='globals.css is the single token source. Every route and every story renders through it, so a value changed here changes what already works and not only the sketch. Name what else it reaches before editing.'
     ;;
-  src/ui/*.tsx)
+  src/ui/*.tsx | src/ui/*.ts)
     dir=${rel%/*}
     base=${rel##*/}
     base=${base%.tsx}
+    base=${base%.ts}
     case "$base" in
       sketch-* | *.test | *.stories) exit 0 ;;
     esac
@@ -49,13 +50,16 @@ case "$rel" in
     # announced as already rendered on the day it is created. That covers @/ui/<layer>/<x>
     # and every relative form crossing a directory. A sibling importing ./<x> resolves
     # inside one directory, so it is searched in that directory alone and nowhere else.
-    # The file's own story and test are excluded: they are what make a sketch legal, not
-    # what makes a component shared.
+    # The file's own story and test are excluded by their full paths, not by their names:
+    # a story at another layer that genuinely imports this component is an importer, and
+    # dropping it by name alone would hide the one call site a design session most needs
+    # to hear about. They are what make a sketch legal, not what makes a component shared.
     importers=$(
       {
         grep -rlE "${dir##*/}/${base}['\"]" src .storybook --include='*.ts' --include='*.tsx' 2>/dev/null
         grep -rlE "\./${base}['\"]" "$dir" --include='*.ts' --include='*.tsx' 2>/dev/null
-      } | sort -u | grep -vE "(^|/)${base}\.(test|stories)\.tsx$"
+      } | sort -u | grep -vxF -e "$dir/$base.test.tsx" -e "$dir/$base.stories.tsx" \
+        -e "$dir/$base.test.ts" -e "$dir/$base.stories.ts"
     )
     importers=${importers//$'\n'/ }
     [ -n "$importers" ] && notice="${rel} is already rendered by: ${importers}. This edit is not isolated, so say what changes for them before making it."

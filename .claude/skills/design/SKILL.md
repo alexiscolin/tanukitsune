@@ -3,7 +3,7 @@ name: design
 description: Runs a design session on one screen: sketches carried as stories, judged in Storybook by the reader, promoted into the layers, then handed back. Use when a screen's appearance is undecided.
 disable-model-invocation: true
 argument-hint: "[screen]"
-allowed-tools: Bash(pnpm storybook), Bash(pnpm gate), Bash(pnpm verify), Bash(grep:*), Bash(git status:*), Read, Write, Edit, Glob, Grep, SlashCommand
+allowed-tools: Bash(pnpm storybook), Bash(pnpm gate), Bash(pnpm verify), Bash(grep:*), Bash(git status:*), Bash(rm:*), Read, Write, Edit, Glob, Grep, SlashCommand
 ---
 
 # Design session

@@ -15,12 +15,24 @@ cd "$(dirname "$0")/.." || exit 1
 probe_dir=src/ui
 probe=$probe_dir/sketch-gate-probe.tsx
 
-cleanup() { rm -f "$probe"; }
-trap cleanup EXIT
-
 fail=0
 
 sketches() { find src -type f -name 'sketch-*' | sort; }
+
+# Unlike the probes in check-boundaries.sh and check-tokens.sh, this one cannot be named
+# out of its own gate's way: the pattern being proved is the file name itself, so a probe
+# the search can find is a probe the search would refuse. It therefore never writes over
+# anything, since truncating a session's real sketch and then deleting it would destroy
+# work while reporting a clean tree, and a concurrent run would clobber the other's proof.
+# The refusal is checked before the trap is armed, or the exit would delete the very file
+# it declined to overwrite.
+if [ -e "$probe" ]; then
+  printf '%s already exists, so this gate will not write its probe over it. Move or delete it first.\n' "$probe" >&2
+  exit 1
+fi
+
+cleanup() { rm -f "$probe"; }
+trap cleanup EXIT
 
 # Prove the search finds one before trusting it to report none. A find whose pattern or
 # whose root stopped matching reports a clean tree in the same words as a clean tree does.
