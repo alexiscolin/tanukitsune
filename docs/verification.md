@@ -37,7 +37,8 @@ database, which is what makes it usable from a hook that runs at every turn.
 
 `pnpm verify` is `gate` plus `check:sketches`, `check:tokens`, `check:review`, `check:tests`, `build`,
 `test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits
-outside both and runs in its own CI job, because it needs a browser and a database.
+outside both and runs in its own CI job, because it needs a browser and a database. It covers the two
+real routes and every catalogued state, in both themes.
 
 | Command | Tool | Catches |
 |---|---|---|
@@ -272,10 +273,11 @@ without any of them running unprompted.
 
 ## What is not covered
 
-- No command runs a story. The catalogue and the accessibility audit over the states of a review both
-  answer to a person opening a browser, so a state that regresses between two of those is caught by
-  nobody. Closing it needs a runner that drives a story, which is the one thing here that gates
-  nothing.
+- The catalogue has no visual baseline. `test:e2e` drives every story and audits it, so a state that
+  stops arriving or loses a contrast is refused, but a state that arrives looking wrong is not.
+  [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md)
+  defers baselines on purpose while the design moves, and taking them is a decision somebody makes
+  rather than a date that passes.
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - A pass line is a record somebody wrote, not evidence a model ran. The gate refuses a merge nobody
   reviewed; it cannot refuse one somebody only claimed to have reviewed.

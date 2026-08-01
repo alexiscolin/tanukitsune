@@ -24,7 +24,7 @@ pnpm dev
 pnpm build                 in verify: the only gate that evaluates server modules
 pnpm test                  unit tests over core/ and components, no database
 pnpm test path/to/file     one file
-pnpm test:e2e              Playwright against the production build, with the axe audit
+pnpm test:e2e              Playwright: the routes, and every story driven and audited by theme
 pnpm storybook             the review loop's six states by theme and viewport, :build for a site
 pnpm db:generate           write a migration from the schema
 pnpm db:migrate            apply pending migrations
