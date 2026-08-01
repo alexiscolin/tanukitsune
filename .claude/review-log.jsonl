@@ -355,3 +355,6 @@
 {"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "README.md", "line": 162, "outcome": "fixed"}
 {"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".claude/skills/design/SKILL.md", "line": 6, "outcome": "dismissed", "reason": "navigate is granted alone on purpose: called standalone without a tabId it calls tabs_context_mcp with createIfEmpty for itself and navigates the tab it opens, so the withdrawn grant was the redundant one and the skill can still open the catalogue"}
 {"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "87042afe043f7f567ca45de2bcbd162cc11ae386"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "performance-check", "file": "scripts/review-stats.sh", "line": 64, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 313, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "b001580cbeb3c3c33168c756ce7cd459c0791277"}
