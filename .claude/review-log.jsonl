@@ -343,3 +343,15 @@
 {"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".jscpd.json", "line": 6, "outcome": "fixed"}
 {"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "scripts/check-sketches.sh", "line": 42, "outcome": "dismissed", "reason": "the naming assertion restores a proof the redesign removed rather than adding an ambition: once the probe writes inside the directory it searches, finding it proves nothing about the path, so without the assertion the gate reports a clean tree while searching where nobody writes"}
 {"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "53ca1186729921d99640e5956dbe96a742c84d3c"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "scripts/check-sketches.sh", "line": 47, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".claude/hooks/announce-shared-edit.sh", "line": 39, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "docs/specs/v0.1.md", "line": 340, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "scripts/check-sketches.sh", "line": 47, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": ".claude/hooks/announce-shared-edit.sh", "line": 39, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": ".jscpd.json", "line": 9, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "architecture-check", "file": "e2e/catalogue.spec.ts", "line": 10, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "docs/verification.md", "line": 264, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "docs/stack.md", "line": 41, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "README.md", "line": 162, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".claude/skills/design/SKILL.md", "line": 6, "outcome": "dismissed", "reason": "navigate is granted alone on purpose: called standalone without a tabId it calls tabs_context_mcp with createIfEmpty for itself and navigates the tab it opens, so the withdrawn grant was the redundant one and the skill can still open the catalogue"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "87042afe043f7f567ca45de2bcbd162cc11ae386"}
