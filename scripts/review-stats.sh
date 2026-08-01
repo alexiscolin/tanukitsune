@@ -58,13 +58,11 @@ printf '%s of them arrived on a branch that already had a pass on record\n' \
     # unique_by sorts, and this measure is the one thing in the file that reads
     # append order, so duplicates are dropped without disturbing it.
     reduce .[] as $line ([]; if any(.[]; . == $line) then . else . + [$line] end)
-    | map(.branch) as $branches
-    | . as $lines
-    | ($branches | unique)
+    # group_by sorts on the key alone and holds each group in the order it met it,
+    # so the partition keeps the append order the measure reads.
+    | group_by(.branch)
     | map(
-        . as $branch
-        | [$lines[] | select(.branch == $branch)]
-        | (to_entries | map(select(.value.kind == "pass")) | first) as $pass
+        (to_entries | map(select(.value.kind == "pass")) | first) as $pass
         | if $pass == null then 0
           else [.[($pass.key + 1):][] | select((.kind // "finding") != "pass")] | length
           end
