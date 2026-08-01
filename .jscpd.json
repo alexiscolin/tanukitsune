@@ -3,8 +3,16 @@
   "minTokens": 70,
   "minLines": 8,
   "mode": "weak",
-  "reporters": ["consoleFull"],
+  "reporters": [
+    "consoleFull"
+  ],
   "absolute": true,
   "gitignore": true,
-  "ignore": ["**/*.test.ts", "**/*.test.tsx", "**/node_modules/**", "**/.next/**"]
+  "ignore": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/src/ui/sketches/**"
+  ]
 }

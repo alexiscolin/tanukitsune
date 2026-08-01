@@ -1,41 +1,53 @@
 #!/bin/bash
-# Refuses a sketch a design session left behind. Sketches are named sketch-* and compare
-# alternatives in the catalogue, and .claude/skills/design deletes them once one wins.
-# Nothing else catches one: a component carrying a story satisfies both dependency-cruiser
-# and knip, which is exactly what makes sketching legal while the session runs. So the
-# refusal belongs at the merge, and the announcing hook stays free to never block.
+# Refuses what a design session left in its iteration area. Alternatives are written under
+# src/ui/sketches/ and compared in the catalogue, and .claude/skills/design empties the
+# directory once one wins. Nothing else catches a leftover: a component carrying a story
+# satisfies both dependency-cruiser and knip, which is exactly what makes sketching legal
+# while the session runs. So the refusal belongs at the merge, and the announcing hook
+# stays free to never block.
 #
-# Writes one probe into src/ui/, expects the search to find it, removes it. A probe
+# Writes one probe into the area, expects the search to find it, removes it. A probe
 # surviving a killed run is an orphan module dependency-cruiser refuses, and the Stop hook
 # runs gate, so it would refuse every turn until someone found it; the trap prevents that.
 
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
-probe_dir=src/ui
-probe=$probe_dir/sketch-gate-probe.tsx
+area=src/ui/sketches
+probe=$area/gate-probe.tsx
 
 fail=0
 
-sketches() { find src -type f -name 'sketch-*' | sort; }
+sketches() { find "$area" -type f 2>/dev/null | sort; }
 
-# Unlike the probes in check-boundaries.sh and check-tokens.sh, this one cannot be named
-# out of its own gate's way: the pattern being proved is the file name itself, so a probe
-# the search can find is a probe the search would refuse. It therefore never writes over
-# anything, since truncating a session's real sketch and then deleting it would destroy
-# work while reporting a clean tree, and a concurrent run would clobber the other's proof.
-# The refusal is checked before the trap is armed, or the exit would delete the very file
-# it declined to overwrite.
+# The probe lives inside the directory the gate empties, so it cannot be named out of its
+# own way the boundary and token probes are. It therefore never writes over anything:
+# truncating a session's work and then deleting it would destroy it while reporting a clean
+# tree, and a concurrent run would clobber the other's proof. Checked before the trap is
+# armed, or the exit would delete the very file it declined to overwrite.
 if [ -e "$probe" ]; then
   printf '%s already exists, so this gate will not write its probe over it. Move or delete it first.\n' "$probe" >&2
   exit 1
 fi
 
-cleanup() { rm -f "$probe"; }
+cleanup() { rm -f "$probe"; rmdir "$area" 2>/dev/null; }
 trap cleanup EXIT
 
-# Prove the search finds one before trusting it to report none. A find whose pattern or
-# whose root stopped matching reports a clean tree in the same words as a clean tree does.
+# The probe below writes inside the directory it then searches, so the two cannot disagree
+# and finding it proves nothing about the path being the right one. What makes the path
+# right is that the other two mechanisms keying on it agree, which is asserted here the way
+# check-tokens.sh asserts the message its own probe depends on: the skill that fills the
+# area and the hook that stays silent inside it. An area renamed in one place and not the
+# others leaves this gate searching where nobody writes, and reporting a clean tree for it.
+for named in .claude/skills/design/SKILL.md .claude/hooks/announce-shared-edit.sh; do
+  if ! grep -qF "$area" "$named"; then
+    printf '%s does not name %s, so this gate would search where nothing is written.\n' "$named" "$area" >&2
+    fail=1
+  fi
+done
+
+# Prove the search reaches the area at all before trusting it to report an empty one.
+mkdir -p "$area"
 : > "$probe"
 found=$(sketches)
 cleanup
@@ -50,7 +62,7 @@ esac
 
 left=$(sketches)
 if [ -n "$left" ]; then
-  printf 'A design session left sketches behind. They exist to be compared and never to merge, so delete them or promote one:\n%s\n' "$left" >&2
+  printf 'A design session left work in %s. It exists to be compared and never to merge, so promote one and empty it:\n%s\n' "$area" "$left" >&2
   fail=1
 fi
 

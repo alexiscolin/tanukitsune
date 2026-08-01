@@ -46,7 +46,7 @@ outside both and runs in its own CI job, because it needs a browser and a databa
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
-| `check:sketches` | `check-sketches.sh` | a file named `sketch-*`, the contract three mechanisms key on, left behind by a design session, which carries a story and so passes `arch` and `knip`, and whether the search still finds one |
+| `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the skill and the hook still name that same area |
 | `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, which a `Test-weakened:` trailer may declare, and a disabled, focused or conditional unit test, which nothing declares |
 | `check:tokens` | `check-tokens.sh` | whether the token rule still refuses an arbitrary Tailwind value, in a class attribute, in a constant, in a template and as a bare arbitrary property, and still passes the four shapes that are legal |
 | `build` | Next | anything only the server compilation sees |
@@ -76,8 +76,8 @@ one forced continuation, not a loop until compliance.
 **`.claude/hooks/announce-shared-edit.sh`** runs on `PreToolUse` for `Edit` and `Write`, and refuses
 nothing. It names two edits and stays silent on every other: `src/app/globals.css`, which every route
 and every story renders through, and a component under `src/ui/` that something already imports, which
-it reports with the importers listed. A sketch has none, so a design session stays quiet until it
-reaches what already works. `PreToolUse` stdout never reaches the agent, so the notice travels in
+it reports with the importers listed. Everything inside `src/ui/sketches/` is silent by construction,
+so a design session hears nothing until it reaches what already works. `PreToolUse` stdout never reaches the agent, so the notice travels in
 `hookSpecificOutput.additionalContext`, injected beside the tool result, and `permissionDecision` is
 absent: deciding nothing is what the missing field means, and `allow` would grant in the reader's
 place a permission they would otherwise be asked for. It reads its input without `jq` for the reason

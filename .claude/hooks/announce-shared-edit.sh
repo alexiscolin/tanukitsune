@@ -1,9 +1,9 @@
 #!/bin/bash
-# Names an edit that leaves the sketch, and never refuses one. A design session is
-# additive while it writes sketch-*.tsx, and shared the moment it reaches the token source
-# or a component something else already renders, which is where .claude/skills/design
-# requires an announcement the reader cannot miss. A rule in prose depends on the agent
-# remembering it; this fires either way.
+# Names an edit that leaves the iteration area, and never refuses one. A design session is
+# additive while it writes under src/ui/sketches/, and shared the moment it reaches the
+# token source or a component something else already renders, which is where
+# .claude/skills/design requires an announcement the reader cannot miss. A rule in prose
+# depends on the agent remembering it; this fires either way.
 #
 # PreToolUse stdout is not shown to the agent, so the notice travels in
 # hookSpecificOutput.additionalContext, which is injected beside the tool result without
@@ -37,13 +37,14 @@ case "$rel" in
   src/app/globals.css)
     notice='globals.css is the single token source. Every route and every story renders through it, so a value changed here changes what already works and not only the sketch. Name what else it reaches before editing.'
     ;;
+  src/ui/sketches/*) exit 0 ;;
   src/ui/*.tsx | src/ui/*.ts)
     dir=${rel%/*}
     base=${rel##*/}
     base=${base%.tsx}
     base=${base%.ts}
     case "$base" in
-      sketch-* | *.test | *.stories) exit 0 ;;
+      *.test | *.stories) exit 0 ;;
     esac
     # Keyed on the layer and the name together, never the name alone: the four layers make
     # one basename at two of them the normal case, and a component keyed by name would be

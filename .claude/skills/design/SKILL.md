@@ -3,7 +3,7 @@ name: design
 description: Runs a design session on one screen: sketches carried as stories, judged in Storybook by the reader, promoted into the layers, then handed back. Use when a screen's appearance is undecided.
 disable-model-invocation: true
 argument-hint: "[screen]"
-allowed-tools: Bash(pnpm storybook), Bash(pnpm gate), Bash(pnpm verify), Bash(grep:*), Bash(git status:*), Bash(rm:*), Read, Write, Edit, Glob, Grep, SlashCommand
+allowed-tools: Bash(pnpm storybook), Bash(pnpm gate), Bash(pnpm verify), Bash(pnpm test:e2e), Bash(grep:*), Bash(git status:*), Bash(rm:*), Read, Write, Edit, Glob, Grep, SlashCommand
 ---
 
 # Design session
@@ -24,7 +24,12 @@ what a session did, never from what the next one might need.
 ## Before anything is written
 
 Start `pnpm storybook` and leave it up for the whole session, since every alternative appears in it as
-it is written. Read `docs/design-direction.md` for the intent, `src/app/globals.css` for what can be
+it is written. Open it in the reader's browser and, from then on, point that tab at each alternative as
+it lands, so they look rather than hunt for it in the sidebar. Navigating costs nothing, unlike a
+screenshot, and it is not the agent looking. Where the browser tools are absent, print the URL instead:
+the session must not depend on them.
+
+Read `docs/design-direction.md` for the intent, `src/app/globals.css` for what can be
 spent, and `src/ui/` for what already exists, because the most expensive failure here is inventing a
 piece that is already there under another name. If the direction file is missing, write it from what
 the reader says and never invent it: a direction the agent guessed is one the agent will then defend
@@ -41,9 +46,15 @@ hundred tokens and a round of sketching several thousand.
 
 ## While it is written
 
-Each alternative is a `sketch-*.tsx` beside the component it would replace, carrying a story, so the
-catalogue lists it and `knip` counts it as reached. Utilities are free, Tailwind's own defaults
-included. A colour or a scale that does not exist yet becomes a candidate block in `globals.css`,
+Every alternative lives under `src/ui/sketches/`, carrying a story, so the catalogue groups them apart
+from the components and `knip` counts them as reached. It sits inside `src/ui/` rather than beside it
+so the layer and `server-only` rules cover it without a line of configuration.
+
+**A component being reworked is copied there, never edited in place.** The original keeps rendering
+for every call site it already has, for the whole session, and rolling back is deleting files nothing
+imports. It is replaced once, when one alternative wins, in a commit that reverts on its own.
+
+Utilities are free, Tailwind's own defaults included. A colour or a scale that does not exist yet becomes a candidate block in `globals.css`,
 selected from the theme toolbar and never an arbitrary value in a class: every component then renders
 under it at once, and the token rule is never disabled.
 
@@ -56,18 +67,28 @@ variants is infinite and feels like progress, which is the failure mode of this 
 inconvenience in it.
 
 Two mechanisms carry what would otherwise be prose to remember: `.claude/hooks/announce-shared-edit.sh`
-names an edit reaching the token source or a component something already renders, and `check:sketches`
-refuses a sketch left behind. Both are described in `docs/verification.md`.
+names an edit leaving `src/ui/sketches/` for the token source or a component something already renders,
+and `check:sketches` refuses anything left in the area. Both are described in `docs/verification.md`.
 
 ## When one wins
 
 It takes its layer under `src/ui/` per `docs/decisions/0010-behaviour-imported-appearance-written.md`,
-the values that survived take names in `globals.css`, and the component is rewritten to spend them.
-Delete every sketch.
+**and its story moves with it**, renamed, or the state just designed leaves the catalogue with the
+alternatives it beat. The values that survived take names in `globals.css` and the component is
+rewritten to spend them. Empty `src/ui/sketches/`, which `check:sketches` refuses at the merge.
+
+**Then wire it in, in its own commit.** A component only its story imports is a display case rather
+than a product, so the session does not end before the screen is in the route. It is a separate commit
+because a structural change and a behavioural one never share one, which is what lets either be
+reverted without the other. Where the substitution touches a route `e2e/` visits, run `pnpm test:e2e`
+as well: `pnpm verify` does not, and this is the moment the catalogue stops being the only evidence.
+
+**A screen needing a route that does not exist yet is a different slice**, and the session says so
+instead of opening one. A route carries its own data loading, its empty and error states and its place
+in the layer graph, none of which is the tail of a design session.
 
 What was chosen goes into `docs/design-direction.md` as current truth and never as narrative, so the
 next session inherits the decision instead of arguing it again.
 
-Then run `pnpm verify`, show the output, and stop. Wiring the organism into its route, opening the pull
-request and running `/pre-pr` are ordinary work under the same rules as any other slice. Carrying them
-here would make one session hold a design decision, a structural change and a release at once.
+Then run `pnpm verify`, show the output, and stop. Opening the pull request and running `/pre-pr` are
+the reader's, as they are for any other slice.
