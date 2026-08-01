@@ -334,3 +334,12 @@
 {"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "code-review", "file": "docs/verification.md", "line": 282, "outcome": "fixed"}
 {"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "code-review", "file": ".claude/hooks/announce-shared-edit.sh", "line": 29, "outcome": "dismissed", "reason": "the greedy file_path match cannot be steered by a document quoting an example payload: every quote inside a tool argument arrives JSON-escaped, so the byte sequence the pattern needs can only come from the real key, which a crafted payload confirmed by producing silence"}
 {"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "b5096b9234ac3fdd2bc08682c644173de04e3588"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".claude/skills/design/SKILL.md", "line": 6, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "scripts/check-sketches.sh", "line": 21, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "scripts/check-sketches.sh", "line": 43, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "AGENTS.md", "line": 38, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "security-check", "file": "scripts/check-sketches.sh", "line": 43, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 113, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".jscpd.json", "line": 6, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "scripts/check-sketches.sh", "line": 42, "outcome": "dismissed", "reason": "the naming assertion restores a proof the redesign removed rather than adding an ambition: once the probe writes inside the directory it searches, finding it proves nothing about the path, so without the assertion the gate reports a clean tree while searching where nobody writes"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "53ca1186729921d99640e5956dbe96a742c84d3c"}
