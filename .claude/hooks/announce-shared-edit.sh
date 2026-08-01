@@ -32,6 +32,15 @@ path=$(sed -n 's/.*"file_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' <<< "
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 rel=${path#"$PWD"/}
 
+# The prefix comes off only when the two spellings match byte for byte, and a project
+# directory reached through another case or another mount leaves it whole, which every
+# pattern below then misses in silence rather than loudly. The patterns key on the tail
+# from src/, so it is taken directly whenever the prefix did not come off.
+case "$rel" in
+  src/*) ;;
+  */src/*) rel=src/${rel#*/src/} ;;
+esac
+
 notice=''
 case "$rel" in
   src/app/globals.css)

@@ -225,9 +225,10 @@ The six states of the review loop are what is catalogued. `src/ui/molecules/answ
 inside them and `src/ui/atoms/page-shell.tsx` around them, neither with a page of its own, and nothing
 requires a component under `src/ui/` to have one.
 
-The accessibility addon runs the audit per state, which is the only place the states of a review are
-audited at all: `e2e/shell.spec.ts` audits two paths and neither enters the loop. **Nothing gates
-either of them**, which is recorded below under what is not covered.
+The accessibility addon runs the audit per state for whoever has the catalogue open, and
+`e2e/catalogue.spec.ts` runs the same rules over every state in both themes for everyone else:
+`e2e/shell.spec.ts` audits the two real routes and neither enters the loop. What no gate holds is the
+appearance, which is recorded below under what is not covered.
 
 ## The token rule
 

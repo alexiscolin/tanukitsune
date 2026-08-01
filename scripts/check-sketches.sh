@@ -59,6 +59,10 @@ printf "import { PROBE } from './gate-probe'\nexport const USES = PROBE\n" > "$i
 found=$(sketches)
 silence=$(announce "$probe")
 speech=$(announce src/app/globals.css)
+# The two above hand the hook the one spelling its prefix strip removes cleanly, so they
+# cannot see it fall silent on a path that reached it another way. This one does not
+# match the project directory byte for byte and must still be named.
+detoured=$(announce ./src/app/globals.css)
 cleanup
 
 case "$found" in
@@ -76,6 +80,11 @@ fi
 
 if [ -z "$speech" ]; then
   printf 'The announcing hook said nothing about src/app/globals.css, so its silence above proves nothing.\n' >&2
+  fail=1
+fi
+
+if [ -z "$detoured" ]; then
+  printf 'The announcing hook said nothing about a path that did not match the project directory exactly, so it is silent wherever the two spellings differ.\n' >&2
   fail=1
 fi
 

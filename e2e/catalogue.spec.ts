@@ -45,13 +45,20 @@ async function catalogued(page: Page): Promise<string[]> {
     .map((entry) => entry.id)
 }
 
+// One test walks every story, and each one waits on a play function that types before an
+// audit runs, against a catalogue compiling on first hit. The default thirty seconds is a
+// budget for one page, not for a catalogue, and exceeding it would read as a flaky runner
+// rather than as the too-small number it is.
+test.describe.configure({ timeout: 120_000 })
+
 for (const theme of ['light', 'dark'] as const) {
   test(`every catalogued state reaches itself and is audited in ${theme}`, async ({ page }) => {
     await page.addInitScript(RECORD_OUTCOME)
 
     const ids = await catalogued(page)
-    // An empty catalogue passes every assertion below it. The count is the one thing a
-    // renamed stories glob would silently take away.
+    // An empty catalogue passes every assertion below it, so a stories glob matching
+    // nothing would report two green tests. This refuses that, and not a glob that lost
+    // some of what it matched: what each story is worth asserting about is inside it.
     expect(ids.length).toBeGreaterThan(0)
 
     for (const id of ids) {

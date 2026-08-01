@@ -37,7 +37,9 @@ export default defineConfig({
     // story spec asks of it is that each state still reaches itself and still passes the
     // audit, and neither answer changes between the two.
     {
-      command: `pnpm storybook --no-open -p ${CATALOGUE_PORT} --quiet`,
+      // The binary rather than the pnpm script, which carries a port of its own: passing a
+      // second one leaves the suite depending on which of the two the parser keeps.
+      command: `pnpm exec storybook dev --no-open --quiet -p ${CATALOGUE_PORT}`,
       url: `${catalogueURL}/index.json`,
       reuseExistingServer: process.env['CI'] === undefined,
       timeout: 180_000,
