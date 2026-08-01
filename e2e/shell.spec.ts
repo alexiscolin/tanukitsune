@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { asOptional } from '../src/data/optional-text'
-import { expectNoViolations } from './audit'
+import { violationsOn } from './audit'
 
 test('the bare root sends the reader to a locale', async ({ page }) => {
   await page.goto('/')
@@ -24,7 +24,7 @@ test('a locale the route tree does not serve is not found', async ({ page }) => 
 async function expectPathClean(page: Page, path: string) {
   await page.goto(path)
 
-  await expectNoViolations(page)
+  expect(await violationsOn(page)).toEqual([])
 }
 
 test('the page has no accessibility violations', async ({ page }) => {

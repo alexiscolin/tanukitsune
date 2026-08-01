@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { catalogueURL } from '../playwright.config'
-import { expectNoViolations } from './audit'
+import { violationsOn } from './audit'
 
 // docs/decisions/0009-storybook-as-the-review-surface.md says states are reached by driving
 // rather than by posing, so a story is not done when it renders: its play function is still
@@ -66,7 +66,7 @@ for (const theme of ['light', 'dark'] as const) {
 
         expect(await page.evaluate('window.__storyOutcome')).toBe('finished')
 
-        await expectNoViolations(page)
+        expect(await violationsOn(page)).toEqual([])
       })
     }
   })
