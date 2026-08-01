@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import type { ReviewEntry } from '@/core/review-entry'
@@ -66,7 +66,14 @@ describe('ReviewSession', () => {
     expect(screen.getByText(COPY.prompt.meaning)).toBeTruthy()
     // The next answer is typed without reaching for the mouse, which is the whole loop:
     // the key that moved the session on has to land in the field it opened.
-    expect(document.activeElement).toBe(screen.getByLabelText(COPY.answerLabel))
+    //
+    // Awaited, here and at every other focus assertion, because the component places the
+    // focus in an effect: a query resolving on the render says the markup arrived and
+    // nothing about whether the effect has run, so asserting in the same tick passes on a
+    // fast machine and fails on a loaded one.
+    await waitFor(() =>
+      expect(document.activeElement).toBe(screen.getByLabelText(COPY.answerLabel)),
+    )
   })
 
   it('shows the reading the item wanted on a miss, which is what tier 1 rejected it against', async () => {
@@ -100,7 +107,7 @@ describe('ReviewSession', () => {
     expect(screen.getByText(COPY.done)).toBeTruthy()
     // The button that ended the session left with the focus on it, so the end of the
     // session takes it like every other step of the loop does.
-    expect(document.activeElement).toBe(screen.getByText(COPY.done))
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByText(COPY.done)))
   })
 
   it('keeps self-grade on a verdict the cascade decided, since the override is the labelled disagreement', async () => {
@@ -123,7 +130,9 @@ describe('ReviewSession', () => {
     answer('mizu')
     expect(await screen.findByText(COPY.verdict.correct)).toBeTruthy()
 
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: COPY.next }))
+    await waitFor(() =>
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: COPY.next })),
+    )
   })
 
   it('puts the focus on the panel when the reader is the one who has to decide', async () => {
@@ -134,10 +143,12 @@ describe('ReviewSession', () => {
 
     // No verdict stands, so there is no button to continue on: the panel holding the
     // question takes the focus rather than letting it fall to the document.
-    expect(document.activeElement).not.toBe(document.body)
-    expect(
-      document.activeElement?.contains(screen.getByRole('button', { name: COPY.grade.correct })),
-    ).toBe(true)
+    await waitFor(() => {
+      expect(document.activeElement).not.toBe(document.body)
+      expect(
+        document.activeElement?.contains(screen.getByRole('button', { name: COPY.grade.correct })),
+      ).toBe(true)
+    })
   })
 
   it('keeps the reference after grading, so grading does not remove what was graded against', async () => {

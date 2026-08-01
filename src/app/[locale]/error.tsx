@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation'
 
 import { copyFor } from '@/core/site-copy'
-import { PageShell } from '@/ui/page-shell'
+import { PageShell } from '@/ui/atoms/page-shell'
 
 export default function SegmentError({ reset }: { error: Error; reset: () => void }) {
   const { locale } = useParams<{ locale: string }>()

@@ -126,7 +126,7 @@ must be free to be approved. See [ADR 0004](docs/decisions/0004-free-forever.md)
 |---|---|
 | Language | TypeScript 6 |
 | Framework | Next 16, App Router |
-| Styling | Tailwind 4, shadcn/ui primitives, design tokens in one file |
+| Styling | Tailwind 4, native elements and Base UI for behaviour, design tokens in one file |
 | Server data | Postgres through Drizzle |
 | Local data | IndexedDB, append-only outbox |
 | Models | Batch API for the corpus, cached cascade for grading |
@@ -151,13 +151,15 @@ src/
 │   ├── env.ts                   the environment, parsed once, at the boundary
 │   └── schema.ts                the tables, from which migrations are generated
 ├── ai/                      the model. Prompts, eval sets, and what implements core's ports
-├── ui/                      the components. Everything reaches them as props
-│   ├── answer-input.tsx         romaji becomes kana here, and Enter is decided here
-│   └── review-session.tsx       the loop: question, verdict, next
+├── ui/                      the components, props only. A fourth layer, primitives/, holds
+│                            imported behaviour and arrives with the first widget needing it
+│   ├── atoms/                   appearance, no behaviour
+│   ├── molecules/               answer-input: romaji becomes kana here, and Enter is decided here
+│   └── organisms/               review-session: the loop, question, verdict, next
 └── app/                     the routes. The only layer allowed to touch both data and ui
     ├── [locale]/                the session, its layout, its error and not-found pages
     └── api/health/route.ts      what answered, which build, and whether the database is there
-e2e/                         Playwright against the production build, with the accessibility audit
+e2e/                         Playwright: the routes against the production build, every story by theme
 drizzle/                     migrations, generated from the schema, never written by hand
 scripts/                     the gates a linter cannot express
 docs/                        everything argued rather than enforced
@@ -208,9 +210,15 @@ architecture decision records.
 
 This repository is built primarily with AI coding agents, and the method is part of the work.
 `AGENTS.md` carries the constraints a linter cannot express, five read-only review agents with
-disjoint lenses check every diff from a fresh context, one of them asking only whether the diff is
-what was asked for, a sixth reads the documentation against itself whenever it moves, and a hook forces
-one continuation when a turn would end on code that does not compile.
+disjoint lenses read a diff from a fresh context, one of them asking only whether the diff is what was
+asked for, a sixth reads the documentation against itself whenever it moves, and two hooks call no
+model at all: one forces a continuation when a turn would end on code that does not compile, the other
+names an edit reaching the token source or a component something already renders, and refuses nothing.
+
+The deterministic gates hold on their own. **The semantic reading does not:** a required check refuses
+a merge whose commits no recorded pass covers, and that record is a line the party under review writes
+and a human approves, so skipping the reading is visible rather than impossible.
+[`verification.md`](docs/verification.md) carries what that is worth.
 
 [`docs/workflow.md`](docs/workflow.md) describes that process: the per-task cycle, the review lenses,
 and the conditions under which a session is discarded rather than continued.

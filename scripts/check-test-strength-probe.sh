@@ -23,6 +23,8 @@ scaffold() {
   git -C "$repo" init -q -b main
   git -C "$repo" config user.email probe@example.com
   git -C "$repo" config user.name probe
+  # Signing off for the reason scripts/check-review-coverage-probe.sh gives.
+  git -C "$repo" config commit.gpgsign false
   printf '%s' "$baseline" > "$repo/src/a.test.ts"
   [ -n "$second" ] && printf '%s' "$second" > "$repo/src/b.test.ts"
   git -C "$repo" add -A

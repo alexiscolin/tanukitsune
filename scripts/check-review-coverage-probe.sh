@@ -23,6 +23,10 @@ scaffold() {
   git -C "$repo" init -q -b main
   git -C "$repo" config user.email probe@example.com
   git -C "$repo" config user.name probe
+  # Signing is inherited from whoever runs this, and every commit below is deleted on
+  # exit. A locked agent would refuse the probe rather than the rule the probe tests,
+  # which reports as a failed gate on a repository nothing is wrong with.
+  git -C "$repo" config commit.gpgsign false
   printf 'base\n' > "$repo/README.md"
   git -C "$repo" add -A
   git -C "$repo" commit -qm 'chore: base'

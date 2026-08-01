@@ -13,7 +13,7 @@ the arguments do not get re-litigated.
 | Runtime | Node 22, which is the AI SDK v7 floor |
 | Language | TypeScript 6, installed under its own package name |
 | Framework | Next 16, App Router, React Compiler on, Cache Components off |
-| Styling | Tailwind 4, `shadcn/ui` primitives, design tokens in one file |
+| Styling | Tailwind 4, native elements and Base UI for behaviour, design tokens in one file |
 | Kana input | `wanakana` for conversion and script detection, called from the field rather than bound to it, per [ADR 0007](decisions/0007-kana-input-in-the-field.md) |
 | Local store | IndexedDB through `idb`, append-only outbox |
 | Server store | Postgres through Drizzle, migrations by drizzle-kit |
@@ -38,7 +38,7 @@ recorded so it does not get re-litigated.
 | Coverage gating | **Patch only, never a required check.** Nothing measures coverage today | `patch: 80%, threshold 5%`; `project: auto, threshold 1%`. No global threshold: deleting a well-tested module would fail an unrelated PR. Never required, because you do not want to negotiate with a coverage tool at 2am. Alternative with no tool: Vitest `coverage.thresholds` with `autoUpdate: true`, a pure ratchet with no number to pick. The numbers above are the shape the gate takes when it arrives; `vitest.config.ts` declares no `coverage` block and no CI job reads one, so they describe a decision rather than an instrument. |
 | Copy-paste detection | **jscpd, loose ratchet** | 70 tokens, 8 lines, 5 percent threshold, tests and generated code excluded, `mode: weak`. The default of 50 tokens is far too sensitive for TSX, where every JSX attribute is tokens. **Never gate at zero**: it will fire on App Router scaffolding within a week and get disabled, which is worse than not having it. Our case, solo plus agents, is exactly the population where the duplication research holds. |
 | Conventional Commits | **Written on both, gated in CI on the title and on every commit of the branch** | Linting every commit blocks an agent mid-loop for no gain, so nothing runs at commit time. CI checks the pull request title and every commit subject on the branch that somebody wrote, both through one script so the two cannot drift. The style applies to commits as well, because a squash merge takes the commit subject when a pull request has exactly one commit: leaving the two conventions different would make a uniform history depend on a host setting rather than on what was written. |
-| Accessibility gate | **axe against the rendered page, in the Playwright run. One linter, not two.** | `eslint-plugin-jsx-a11y` stops at ESLint 9, so the usual gate cannot run here. Adding Biome for those rules alone was tried and undone: a second linter is a second config, a second upgrade path and a second place a rule can live, on a repository whose own rule is never to introduce a second way to do something. axe is the better instrument anyway, since it audits the accessibility tree that was actually produced, including contrast, focus order and computed roles, none of which a source-pattern rule can see. The cost is real and it is latency rather than machine time: axe answers at the end-to-end run, a linter answers in the editor. It is paid because there is no rendered page yet, so neither instrument catches anything today, and the end-to-end suite arrives with the first one. **Revisit when** `eslint-plugin-jsx-a11y` declares ESLint 10, at which point the fast source rules fold back into the single linter and cost nothing extra. |
+| Accessibility gate | **axe against the rendered page, in the Playwright run. One linter, not two.** | `eslint-plugin-jsx-a11y` stops at ESLint 9, so the usual gate cannot run here. Adding Biome for those rules alone was tried and undone: a second linter is a second config, a second upgrade path and a second place a rule can live, on a repository whose own rule is never to introduce a second way to do something. axe is the better instrument anyway, since it audits the accessibility tree that was actually produced, including contrast, focus order and computed roles, none of which a source-pattern rule can see. The cost is real and it is latency rather than machine time: axe answers at the end-to-end run, a linter answers in the editor. It is paid on the two routes and on every catalogued state in both themes, which is where a token moves a contrast without moving any markup a source rule could read. **Revisit when** `eslint-plugin-jsx-a11y` declares ESLint 10, at which point the fast source rules fold back into the single linter and cost nothing extra. |
 | App versioning | **None** | Git SHA exposed at `/api/health`. Changesets itself removed private package versioning by default in July 2026. This is an app, not a library: there is no public API to semver, so versions are deployment identifiers. |
 
 ## TypeScript config
@@ -123,17 +123,23 @@ Server Actions are for forms. The queue flush is a route handler taking a batch.
 
 ## Styling
 
-Tailwind 4 for everything visual, `shadcn/ui` for accessible primitives copied into `ui/` as source,
-module-scoped stylesheets only for keyframes and stateful visual logic. Design tokens in one file in
-the community standard format, compiled to custom properties. No runtime CSS-in-JS.
+Tailwind 4 for everything visual, module-scoped stylesheets only for keyframes and stateful visual
+logic. Design tokens in one file, compiled to custom properties by Tailwind itself. No runtime
+CSS-in-JS.
+
+Behaviour is imported and appearance is written here: a native element wherever one exists, Base UI
+for the few widgets HTML has none for, and no copied skin. The argument, and the four layers under
+`src/ui/` that follow from it, are in
+[ADR 0010](decisions/0010-behaviour-imported-appearance-written.md).
 
 The reason utilities win here is that an agent writes them: naming CSS classes is where agent output
 duplicates and drifts, and a visual change spanning a component and a stylesheet doubles the places to
 get it wrong. Components are added the moment they are first imported, never in bulk, or `knip` and
 `jscpd` start reporting noise on files nobody chose.
 
-`shadcn/ui` changed its default primitive base once. Which one it installs is verified at install time
-and recorded here, not assumed.
+Motion has three lanes and never two libraries: CSS or the Web Animations API for anything on
+`transform` and `opacity`, view transitions for route and card continuity, and at most one JavaScript
+dependency, for a gesture. Same record.
 
 ## Data
 

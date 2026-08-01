@@ -35,10 +35,10 @@ support for this major of the framework; the webpack variant reached it in a pre
 variant is also the one whose testing integration would run stories as cases of the runner already
 configured in `vitest.config.ts`, which is the form a gate over the catalogue would take.
 
-**Nothing gates it today, and that is the shape of what ships.** No command runs a story, so the
-catalogue and its accessibility audit both answer to a person opening a browser.
-[`../verification.md`](../verification.md) carries that under what is not covered, beside the runner
-that would close it.
+**A story is driven by the end-to-end suite, not by the unit runner.** `e2e/catalogue.spec.ts` visits
+every catalogued state in both themes, waits on Storybook's own channel for the play function to
+finish, and audits what it finds, so a state that stops arriving or loses a contrast is refused at the
+merge. What stays outside is the appearance itself, since nothing compares one render to the last.
 
 The rejected two fail on the same axis. A directory of screenshots is not a surface: nothing links
 the image to the state it shows, and a reader browses files. A gallery route ships a page inside the
@@ -51,12 +51,13 @@ the catalogue is a second entry point into one renderer, not a second renderer. 
 its own layout has already started the divergence, and there is no later point at which it is cheaper
 to notice.
 
-**States are reached by driving, not by posing.** `src/ui/review-session.tsx` holds the machine in its
-own state, so a story cannot land on the verdict by passing a property. It types and clicks, as a
+**States are reached by driving, not by posing.** `src/ui/organisms/review-session.tsx` holds the
+machine in its own state, so a story cannot land on the verdict by passing a property. It types and clicks, as a
 reader does. This is affordable because `src/core/grading/cascade.ts` is called with a null port in
 v0.1, which the call site states as a design decision rather than a stub: the cascade is a string
 comparison, with no network and no clock. Every state follows from a chosen answer. The refusal comes
-from non-kana on a reading item, which `src/ui/answer-input.tsx` counts, and the self-grade from a
+from non-kana on a reading item, which `src/ui/molecules/answer-input.tsx` counts, and the self-grade
+from a
 meaning the exact tier cannot place, which is undecided by construction. Nothing is mocked, and the
 transitions are exercised rather than assumed.
 
@@ -80,9 +81,10 @@ the configuration unchecked while the typecheck stays green. The lint is what ca
 file its project service cannot find, and the lint is inside the fast gate, which is why this needs no
 probe of its own.
 
-The accessibility addon runs the audit once per state. `e2e/shell.spec.ts` visits three paths and
-audits two of them as they load, the third being checked for where it redirects, and neither audited
-path enters the loop, so no state of a review has ever been audited.
+The accessibility addon runs the audit once per state for a reader with the catalogue open, and
+`e2e/catalogue.spec.ts` runs the same rules over every state in both themes without one.
+`e2e/shell.spec.ts` audits the two real routes, neither of which enters the loop, so the states of a
+review are covered by the catalogue spec alone.
 
 **Visual baselines are not part of this.** They come with the runner and cost nothing to switch on,
 which is the trap: a baseline over a design still moving turns every deliberate change into a

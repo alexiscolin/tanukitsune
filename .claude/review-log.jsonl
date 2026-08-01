@@ -313,3 +313,51 @@
 {"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "reviewer": "architecture-check", "file": ".github/workflows/verify.yml", "line": 116, "outcome": "dismissed", "reason": "the filter stays in the workflow rather than in check-subject.sh: the script is also called on the pull request title, where a merge wording must keep failing, so folding the list in would need a second entry point or a flag"}
 {"date": "2026-07-31", "branch": "fix/subjects-skips-generated-merges", "kind": "pass", "base": "244474226018bb9afb1e0b5b014b00572abffaec", "head": "fd473c1fbfb0be6484582a0d4610c953d0ad95d7"}
 {"date": "2026-07-31", "branch": "docs/learning-from-userscripts", "kind": "pass", "base": "6da0e73fab22db630d93076fd60e12a3935fbc9d", "head": "a5dfb12f89c76993d17c418f2daf615e37705ab9"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "scripts/check-sketches.sh", "line": 16, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "security-check", "file": ".claude/hooks/announce-shared-edit.sh", "line": 50, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "security-check", "file": "scripts/check-sketches.sh", "line": 16, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "docs/workflow.md", "line": 96, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 126, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "AGENTS.md", "line": 42, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "docs/verification.md", "line": 222, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "AGENTS.md", "line": 42, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "AGENTS.md", "line": 44, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "AGENTS.md", "line": 44, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "AGENTS.md", "line": 42, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "eslint.config.js", "line": 33, "outcome": "dismissed", "reason": "ignoring storybook-static is the same blockage the requirement names in another form: building the catalogue before verifying it made the linter walk the build output and fail on parsing it, so verify could not run after storybook:build"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "scripts/check-sketches.sh", "line": 1, "outcome": "dismissed", "reason": "the merge gate refuses a leftover sketch rather than a shared edit by design: the pair approved was a hook that never blocks and a refusal moved to the merge, and a gate refusing a shared edit would block exactly the legitimate updates the split exists to preserve"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "bf17fc734c8a6f890ba7da5e70fd04902a3dcc0f"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "code-review", "file": "scripts/check-sketches.sh", "line": 16, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "code-review", "file": ".claude/hooks/announce-shared-edit.sh", "line": 40, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "code-review", "file": ".claude/hooks/announce-shared-edit.sh", "line": 58, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "code-review", "file": ".claude/skills/design/SKILL.md", "line": 6, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "code-review", "file": "docs/verification.md", "line": 282, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "code-review", "file": ".claude/hooks/announce-shared-edit.sh", "line": 29, "outcome": "dismissed", "reason": "the greedy file_path match cannot be steered by a document quoting an example payload: every quote inside a tool argument arrives JSON-escaped, so the byte sequence the pattern needs can only come from the real key, which a crafted payload confirmed by producing silence"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "b5096b9234ac3fdd2bc08682c644173de04e3588"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".claude/skills/design/SKILL.md", "line": 6, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "scripts/check-sketches.sh", "line": 21, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "scripts/check-sketches.sh", "line": 43, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "AGENTS.md", "line": 38, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "security-check", "file": "scripts/check-sketches.sh", "line": 43, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 113, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".jscpd.json", "line": 6, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "scripts/check-sketches.sh", "line": 42, "outcome": "dismissed", "reason": "the naming assertion restores a proof the redesign removed rather than adding an ambition: once the probe writes inside the directory it searches, finding it proves nothing about the path, so without the assertion the gate reports a clean tree while searching where nobody writes"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "53ca1186729921d99640e5956dbe96a742c84d3c"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "scripts/check-sketches.sh", "line": 47, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".claude/hooks/announce-shared-edit.sh", "line": 39, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "docs/specs/v0.1.md", "line": 340, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": "scripts/check-sketches.sh", "line": 47, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": ".claude/hooks/announce-shared-edit.sh", "line": 39, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "regression-check", "file": ".jscpd.json", "line": 9, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "architecture-check", "file": "e2e/catalogue.spec.ts", "line": 10, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "docs/verification.md", "line": 264, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "docs/stack.md", "line": 41, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "README.md", "line": 162, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": ".claude/skills/design/SKILL.md", "line": 6, "outcome": "dismissed", "reason": "navigate is granted alone on purpose: called standalone without a tabId it calls tabs_context_mcp with createIfEmpty for itself and navigates the tab it opens, so the withdrawn grant was the redundant one and the skill can still open the catalogue"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "87042afe043f7f567ca45de2bcbd162cc11ae386"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "performance-check", "file": "scripts/review-stats.sh", "line": 64, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 313, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "b001580cbeb3c3c33168c756ce7cd459c0791277"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "reviewer": "requirement-check", "file": "README.md", "line": 219, "outcome": "fixed"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "e39d2fe59f1951fccff8fbe1d8a95f3b5cae309e"}
+{"date": "2026-08-01", "branch": "feat/ui-architecture", "kind": "pass", "base": "f9958efabb4fd80a9431a4ba87b3fdf416052559", "head": "60280ac14726c927dab28477f10c2a467de7f093"}

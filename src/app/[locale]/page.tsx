@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation'
 import { DEMO_QUEUE } from '@/core/demo-queue'
 import { isLocale } from '@/core/locales'
 import { copyFor } from '@/core/site-copy'
-import { PageShell } from '@/ui/page-shell'
-import { ReviewSession } from '@/ui/review-session'
+import { PageShell } from '@/ui/atoms/page-shell'
+import { ReviewSession } from '@/ui/organisms/review-session'
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params

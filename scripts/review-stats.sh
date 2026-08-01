@@ -40,3 +40,20 @@ printf '\n%s findings over %s passes, on %s branches\n' \
   "$(jq -rs "unique_by(tojson) | map(select((.kind // \"finding\") != \"pass\")) | length" "$log")" \
   "$(jq -rs "unique_by(tojson) | map(select(.kind == \"pass\")) | length" "$log")" \
   "$(jq -rs 'map(.branch) | unique | length' "$log")"
+
+# How often a first reading was not the last one, counted by branch because that is the
+# grain of the claim: a total over findings is carried by whichever branch ran longest.
+# What it does not say is in docs/verification.md.
+printf '%s branches with a pass then earned a finding after it\n' \
+  "$(jq -rs '
+    # unique_by sorts, and this is the one measure here that reads append order, so the
+    # index rides through the sort on to_entries and is restored by sort_by.
+    to_entries | unique_by(.value | tojson) | sort_by(.key) | map(.value)
+    | group_by(.branch)
+    | map((map(.kind == "pass") | index(true)) as $pass
+          | if $pass == null then null
+            else [.[$pass + 1:][] | select((.kind // "finding") != "pass")] | length > 0
+            end)
+    | map(select(. != null))
+    | "\(map(select(.)) | length) of \(length)"
+  ' "$log")"

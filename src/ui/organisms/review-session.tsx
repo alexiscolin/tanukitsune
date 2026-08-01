@@ -7,7 +7,7 @@ import type { Verdict } from '@/core/grading/judge-port'
 import type { ReviewEntry } from '@/core/review-entry'
 import type { ReviewCopy } from '@/core/site-copy'
 
-import { AnswerInput } from './answer-input'
+import { AnswerInput } from '@/ui/molecules/answer-input'
 
 // The two are kept apart rather than one overwriting the other: what the cascade produced
 // and what the reader said instead are the labelled disagreement a review event carries,

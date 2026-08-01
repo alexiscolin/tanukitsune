@@ -35,9 +35,10 @@ first failure and the four cost 0.9, 0.9, 1.2 and 4.0 seconds: a boundary or doc
 reported in about two seconds rather than after the type-aware lint has run. Seven seconds in all, no
 database, which is what makes it usable from a hook that runs at every turn.
 
-`pnpm verify` is `gate` plus `check:tokens`, `check:review`, `check:tests`, `build`, `test`, `knip` and
-`dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits outside both and runs
-in its own CI job, because it needs a browser and a database.
+`pnpm verify` is `gate` plus `check:sketches`, `check:tokens`, `check:review`, `check:tests`, `build`,
+`test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits
+outside both and runs in its own CI job, because it needs a browser and a database. It covers the two
+real routes and every catalogued state, in both themes.
 
 | Command | Tool | Catches |
 |---|---|---|
@@ -46,6 +47,7 @@ in its own CI job, because it needs a browser and a database.
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
+| `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |
 | `check:tests` | `check-test-strength-probe.sh` | whether the test strength gate still refuses a lost assertion, which a `Test-weakened:` trailer may declare, and a disabled, focused or conditional unit test, which nothing declares |
 | `check:tokens` | `check-tokens.sh` | whether the token rule still refuses an arbitrary Tailwind value, in a class attribute, in a constant, in a template and as a bare arbitrary property, and still passes the four shapes that are legal |
 | `build` | Next | anything only the server compilation sees |
@@ -53,7 +55,10 @@ in its own CI job, because it needs a browser and a database.
 | `knip` | knip | unused exports, files and dependencies |
 | `dupes` | jscpd | literal copy-paste, 70 tokens and 8 lines at weak mode |
 
-## The one hook
+## The hooks
+
+Two are registered in `.claude/settings.json`, and neither calls a model. One refuses the end of a
+turn, the other refuses nothing and only names what an edit reaches.
 
 **`.claude/hooks/verify.sh`** is registered in `.claude/settings.json`, on `Stop`, when the agent
 finishes a turn. It runs `pnpm gate` and refuses the end of the turn when it fails, and refuses it the
@@ -69,8 +74,21 @@ above, and the PATH thin enough to lose `pnpm` loses a packaged `jq` with it, so
 one would drop the bound in the environment that needs it. The consequence is that the guarantee is
 one forced continuation, not a loop until compliance.
 
-It calls no model, and nothing else is registered. Why an event is the wrong place both for a model pass
-and for a question about intent: [`workflow.md`](workflow.md#5-hooks).
+**`.claude/hooks/announce-shared-edit.sh`** runs on `PreToolUse` for `Edit` and `Write`, and refuses
+nothing. It names two edits and stays silent on every other: `src/app/globals.css`, which every
+route and every story renders through, and a component under `src/ui/` that something already
+imports, which it reports with the importers listed. Everything inside `src/ui/sketches/` is silent
+by construction, so a design session hears nothing until it reaches what already works. `PreToolUse`
+stdout never reaches the agent, so the notice travels in `hookSpecificOutput.additionalContext`,
+injected beside the tool result, and `permissionDecision` is absent: deciding nothing is what the
+missing field means, and `allow` would grant in the reader's place a permission they would otherwise
+be asked for. It reads its input without `jq` for the reason above. The rule it makes mechanical is
+written in `.claude/skills/design/SKILL.md`, which is why a leftover sketch is refused by
+`check:sketches` at the merge rather than here: a hook that blocks a legitimate edit gets switched
+off, and a repository with a hook switched off is worse than one without it.
+
+Why an event is the wrong place both for a model pass and for a question about intent:
+[`workflow.md`](workflow.md#5-hooks).
 
 ## The coverage gate
 
@@ -152,6 +170,12 @@ are its denominator: findings alone cannot separate a lens that met clean code f
 and never again. The coverage gate reads those same lines, so one record serves both the measurement
 and the gate. Why the reviewers are measured rather than trusted is in [`workflow.md`](workflow.md).
 
+It also reports how many branches earned a finding after a pass was already on record there, which is
+how often a first reading was not the last one. **It is not a count of what the lenses let through:**
+a branch that keeps working after a pass earns findings about code no pass had seen, and the two are
+separable only by the commit each finding sits in, which the log does not carry. Counted by branch
+rather than by finding, because a total over findings is carried by whichever branch ran longest.
+
 ## What `check-docs.sh` enforces
 
 Mechanically, so the rules do not depend on anyone remembering them.
@@ -203,13 +227,14 @@ supplies arguments and never markup, which is what keeps the catalogue a second 
 renderer instead of a second renderer. Why it stops at `src/ui/`, and why states are reached by
 typing rather than by passing a property: [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md).
 
-The six states of the review loop are what is catalogued. `answer-input.tsx` appears inside them and
-`page-shell.tsx` around them, neither with a page of its own, and nothing requires a component under
-`src/ui/` to have one.
+The six states of the review loop are what is catalogued. `src/ui/molecules/answer-input.tsx` appears
+inside them and `src/ui/atoms/page-shell.tsx` around them, neither with a page of its own, and nothing
+requires a component under `src/ui/` to have one.
 
-The accessibility addon runs the audit per state, which is the only place the states of a review are
-audited at all: `e2e/shell.spec.ts` audits two paths and neither enters the loop. **Nothing gates
-either of them**, which is recorded below under what is not covered.
+The accessibility addon runs the audit per state for whoever has the catalogue open, and
+`e2e/catalogue.spec.ts` runs the same rules over every state in both themes for everyone else:
+`e2e/shell.spec.ts` audits the two real routes and neither enters the loop. What no gate holds is the
+appearance, which is recorded below under what is not covered.
 
 ## The token rule
 
@@ -222,7 +247,8 @@ bracket carrying `var(--` anywhere inside it, which spends a token by name and s
 over one as well as a bare reference, and a bracket followed by a colon, which is a variant and
 selects rather than spending anything.
 
-It reads every string rather than class attributes alone, because `src/ui/review-session.tsx` holds
+It reads every string rather than class attributes alone, because
+`src/ui/organisms/review-session.tsx` holds
 its classes in module constants and an attribute-scoped rule would pass a constant holding one. What
 escapes it is an arbitrary value split across an interpolation, whose brackets land in separate
 pieces of the template and match nothing.
@@ -241,7 +267,7 @@ needs no secret, and costs nothing beyond runner minutes.
 | Job | Runs on | Does |
 |---|---|---|
 | `verify` | push to main, pull request | `pnpm verify`, then checks the build left `tsconfig.json` alone |
-| `e2e` | push to main, pull request | Playwright with the axe audit, against the production build and a server Postgres |
+| `e2e` | push to main, pull request | Playwright with the axe audit: the routes against the production build and a server Postgres, the catalogue against its own server |
 | `review` | pull request | `check-review-coverage.sh` and `check-test-strength.sh`, over the head commit rather than the merge commit. A test file may lose assertions when a commit in the range says so in a `Test-weakened:` trailer naming it. A disabled, focused or conditional test is refused outright, and only in `*.test.*`: a conditional guard belongs in an e2e spec, which the check does not read |
 | `subjects` | pull request | the title, every commit subject on the branch except the ones git composes when a branch is brought in, and a description carrying the plan |
 
@@ -254,13 +280,21 @@ without any of them running unprompted.
 
 ## What is not covered
 
-- No command runs a story. The catalogue and the accessibility audit over the states of a review both
-  answer to a person opening a browser, so a state that regresses between two of those is caught by
-  nobody. Closing it needs a runner that drives a story, which is the one thing here that gates
-  nothing.
+- The catalogue has no visual baseline. `test:e2e` drives every story and audits it, so a state that
+  stops arriving or loses a contrast is refused, but a state that arrives looking wrong is not.
+  [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md)
+  defers baselines on purpose while the design moves, and taking them is a decision somebody makes
+  rather than a date that passes.
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - A pass line is a record somebody wrote, not evidence a model ran. The gate refuses a merge nobody
   reviewed; it cannot refuse one somebody only claimed to have reviewed.
+- Nothing checks that the announcing hook fires. `check:docs` pairs every registration in
+  `.claude/settings.json` against the scripts present, so a renamed file and a ghost entry are both
+  caught, but only where `jq` is installed, since the pairing is skipped without it and the run stays
+  green. What no command reaches at all is the event: whether the tool matches `Edit` and `Write` to
+  this registration and passes the notice on is visible only by opening a session and editing a shared
+  file. A matcher that stopped matching leaves it silent with nothing saying so, which is the failure
+  a hook exists to prevent in the first place.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the
   documents were read against each other depends on `docs-conformity` having been asked for.
 - Three of the five boundary rules have no probe, and one of the two covered is covered halfway: the

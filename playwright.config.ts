@@ -11,6 +11,11 @@ try {
 const PORT = 3117
 const baseURL = `http://127.0.0.1:${PORT}`
 
+// The catalogue answers on its own port, so a spec reaches a story by absolute URL while
+// every other spec keeps resolving against the application.
+const CATALOGUE_PORT = 6017
+export const catalogueURL = `http://127.0.0.1:${CATALOGUE_PORT}`
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -19,12 +24,25 @@ export default defineConfig({
   reporter: process.env['CI'] === undefined ? 'list' : 'github',
   use: { baseURL, trace: 'on-first-retry' },
   projects: [{ name: 'chromium', use: devices['Desktop Chrome'] }],
-  // Against the production build, because the offline paths this suite exists to
-  // cover behave differently under the development server.
-  webServer: {
-    command: `pnpm build && pnpm start -p ${PORT}`,
-    url: baseURL,
-    reuseExistingServer: process.env['CI'] === undefined,
-    timeout: 180_000,
-  },
+  webServer: [
+    // Against the production build, because the offline paths this suite exists to
+    // cover behave differently under the development server.
+    {
+      command: `pnpm build && pnpm start -p ${PORT}`,
+      url: baseURL,
+      reuseExistingServer: process.env['CI'] === undefined,
+      timeout: 180_000,
+    },
+    // The catalogue is served by its development server rather than built first: what the
+    // story spec asks of it is that each state still reaches itself and still passes the
+    // audit, and neither answer changes between the two.
+    {
+      // The binary rather than the pnpm script, which carries a port of its own: passing a
+      // second one leaves the suite depending on which of the two the parser keeps.
+      command: `pnpm exec storybook dev --no-open --quiet -p ${CATALOGUE_PORT}`,
+      url: `${catalogueURL}/index.json`,
+      reuseExistingServer: process.env['CI'] === undefined,
+      timeout: 180_000,
+    },
+  ],
 })

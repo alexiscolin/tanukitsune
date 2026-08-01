@@ -398,7 +398,7 @@ not replace the mechanism.
 
 ### Styling and components
 
-**Tailwind for everything visual, `shadcn/ui` for the accessible primitives, module-scoped stylesheets
+**Tailwind for everything visual, imported behaviour and written appearance, module-scoped stylesheets
 only where a component has real visual logic.** No runtime CSS-in-JS: the bundler settles that, since a
 custom bundler configuration now fails the build and the main compile-to-CSS alternative ships only a
 plugin for the previous bundler.
@@ -409,13 +409,14 @@ file and a stylesheet is two places to get it wrong instead of one. Keyframes an
 visual logic still go in a module-scoped stylesheet, which is the exception rather than a second way to
 do the same thing.
 
-`shadcn/ui` is not a component library in the usual sense: its command copies source files into `ui/`,
-so there is no package whose API can drift from what an agent remembers, and every component is
-readable and editable in place. **Components are added at the moment they are first imported, never in
-bulk.** That is the existing rule against committing a file nothing imports, and it is also what keeps
-`knip` and `jscpd` meaningful instead of drowning them in thirty unused variants. Which primitive base
-the generator installs is verified at install time and recorded in [`stack.md`](stack.md), because that
-base has changed once already.
+A native element carries the behaviour wherever one exists, and Base UI carries it for the few widgets
+HTML has none for. Nothing is copied in: this interface writes one appearance per component, so a skin
+arriving with a primitive is rewritten rather than adjusted, and a rewritten skin is code the
+repository maintains for nothing. **Components are added at the moment they are first imported, never
+in bulk.** That is the existing rule against committing a file nothing imports, and it is also what
+keeps `knip` and `jscpd` meaningful instead of drowning them in thirty unused variants. The argument
+and the four layers that follow from it are in
+[ADR 0010](decisions/0010-behaviour-imported-appearance-written.md).
 
 Design tokens live in one place, the theme block of the single stylesheet, which the bundler compiles
 to custom properties. No second format and no build step between the two: an interchange format would

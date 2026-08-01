@@ -1,7 +1,7 @@
-import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 
 import { asOptional } from '../src/data/optional-text'
+import { violationsOn } from './audit'
 
 test('the bare root sends the reader to a locale', async ({ page }) => {
   await page.goto('/')
@@ -21,21 +21,14 @@ test('a locale the route tree does not serve is not found', async ({ page }) => 
   expect(response?.status()).toBe(404)
 })
 
-// The accessibility gate. There is no lint rule for it here, so this is the only
-// thing standing between a violation and production. One helper, so the two
-// pages cannot end up audited against different rules.
-async function expectNoViolations(page: Page, path: string) {
+async function expectPathClean(page: Page, path: string) {
   await page.goto(path)
 
-  const { violations } = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
-    .analyze()
-
-  expect(violations.map((violation) => violation.id)).toEqual([])
+  expect(await violationsOn(page)).toEqual([])
 }
 
 test('the page has no accessibility violations', async ({ page }) => {
-  await expectNoViolations(page, '/fr')
+  await expectPathClean(page, '/fr')
 })
 
 test('health reports the build, reaches the database, and is never cached', async ({ request }) => {
@@ -55,5 +48,5 @@ test('health reports the build, reaches the database, and is never cached', asyn
 })
 
 test('the not-found page is accessible too', async ({ page }) => {
-  await expectNoViolations(page, '/de')
+  await expectPathClean(page, '/de')
 })
