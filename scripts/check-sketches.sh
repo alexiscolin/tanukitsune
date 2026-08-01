@@ -21,9 +21,12 @@ hook=.claude/hooks/announce-shared-edit.sh
 
 fail=0
 
-# Sources only. find reads no .gitignore, so a .DS_Store the Finder drops in the area would
-# otherwise refuse the merge, naming a file no session wrote and none can promote.
-sketches() { find "$area" -type f -name '*.ts*' 2>/dev/null | sort; }
+# What a session can write, named rather than everything: find reads no .gitignore, so a
+# .DS_Store the Finder drops in the area would otherwise refuse the merge, naming a file no
+# session wrote and none can promote. Stylesheets are in the list because docs/stack.md
+# allows a module-scoped one, and nothing else would catch it: dependency-cruiser does not
+# reach CSS.
+sketches() { find "$area" -type f \( -name '*.ts*' -o -name '*.css' \) 2>/dev/null | sort; }
 
 # The hook is run rather than read, the way check-tokens.sh runs ESLint and
 # check-boundaries.sh runs depcruise. Grepping it for the path it matches would prove the

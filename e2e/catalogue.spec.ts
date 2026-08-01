@@ -16,12 +16,21 @@ const RECORD_OUTCOME = `
   const attach = () => {
     const channel = window.__STORYBOOK_ADDONS_CHANNEL__
     if (channel === undefined) return setTimeout(attach, 10)
-    channel.once('playFunctionThrewException', (error) => {
-      window.__storyOutcome = 'play threw: ' + (error?.message ?? JSON.stringify(error))
-    })
-    channel.once('storyFinished', () => {
-      window.__storyOutcome = window.__storyOutcome ?? 'finished'
-    })
+    const record = (outcome) => {
+      window.__storyOutcome = window.__storyOutcome ?? outcome
+    }
+    const named = (error) => error?.message ?? error?.title ?? JSON.stringify(error)
+    // A component that throws while rendering is caught by the preview's error boundary,
+    // which shows its own screen and lets the render loop reach the finished phase with a
+    // successful status. Listening for the end alone therefore passes a state that never
+    // arrived, and audits the error screen, which is clean. The first writer wins, and the
+    // exceptions are announced before the end is.
+    channel.once('storyThrewException', (error) => record('render threw: ' + named(error)))
+    channel.once('storyErrored', (error) => record('story errored: ' + named(error)))
+    channel.once('playFunctionThrewException', (error) => record('play threw: ' + named(error)))
+    channel.once('storyFinished', (payload) =>
+      record(payload?.status === 'error' ? 'story reported an error status' : 'finished'),
+    )
   }
   attach()
 `
@@ -45,6 +54,12 @@ async function catalogued(page: Page): Promise<string[]> {
 // rather than as the too-small number it is.
 test.describe.configure({ timeout: 120_000 })
 
+// The width .storybook/preview.tsx lands on, because the toolbar that applies it belongs to
+// the manager and this suite goes straight to the frame: without saying so, every state
+// would be audited at the runner's desktop default, which is the one width the catalogue
+// says a screen meant to fill the viewport does not fail at first.
+test.use({ viewport: { width: 360, height: 780 } })
+
 // Both themes, which is where a token decided in a design session moves a contrast without
 // moving a word of markup.
 for (const theme of ['light', 'dark'] as const) {
@@ -65,6 +80,10 @@ for (const theme of ['light', 'dark'] as const) {
         await page.waitForFunction('window.__storyOutcome !== undefined')
 
         expect(await page.evaluate('window.__storyOutcome')).toBe('finished')
+        // The theme reaches the frame through a query parameter and nothing else. A rename
+        // of the global, or a change to how Storybook spells them, would leave both tests
+        // green while auditing the light theme twice.
+        expect(await page.evaluate('document.documentElement.dataset.theme')).toBe(theme)
 
         expect(await violationsOn(page)).toEqual([])
       })

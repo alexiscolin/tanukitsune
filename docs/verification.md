@@ -170,12 +170,11 @@ are its denominator: findings alone cannot separate a lens that met clean code f
 and never again. The coverage gate reads those same lines, so one record serves both the measurement
 and the gate. Why the reviewers are measured rather than trusted is in [`workflow.md`](workflow.md).
 
-It also reports how many findings arrived after a branch already had a pass on record, which the
-append-only file answers exactly. **That is not a count of what the lenses let through**, and reading
-it as one overstates it by an amount nothing here can bound: a branch that keeps working after a pass
-earns findings about code no pass had seen, and the two are separable only by the commit each finding
-sits in, which the log does not carry. What it does say is how often a first reading was the last one.
-It is 167 of 317 today, so here it almost never is.
+It also reports how many branches earned a finding after a pass was already on record there, which is
+how often a first reading was not the last one. **It is not a count of what the lenses let through:**
+a branch that keeps working after a pass earns findings about code no pass had seen, and the two are
+separable only by the commit each finding sits in, which the log does not carry. Counted by branch
+rather than by finding, because a total over findings is carried by whichever branch ran longest.
 
 ## What `check-docs.sh` enforces
 

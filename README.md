@@ -215,10 +215,10 @@ asked for, a sixth reads the documentation against itself whenever it moves, and
 model at all: one forces a continuation when a turn would end on code that does not compile, the other
 names an edit reaching the token source or a component something already renders, and refuses nothing.
 
-The deterministic gates hold on their own. **The semantic reading does not:** the record that it
-happened is written by the party under review, which makes skipping it visible rather than impossible.
-[`verification.md`](docs/verification.md) carries what that is worth, and what the reviewers are
-measured against.
+The deterministic gates hold on their own. **The semantic reading does not:** a required check refuses
+a merge whose commits no recorded pass covers, and that record is written by the party under review, so
+skipping the reading is visible rather than impossible.
+[`verification.md`](docs/verification.md) carries what that is worth.
 
 [`docs/workflow.md`](docs/workflow.md) describes that process: the per-task cycle, the review lenses,
 and the conditions under which a session is discarded rather than continued.

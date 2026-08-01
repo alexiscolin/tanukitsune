@@ -75,7 +75,7 @@ case "$rel" in
     importers=$(
       {
         grep -rlE "${dir##*/}/${base}['\"]" src .storybook --include='*.ts' --include='*.tsx' 2>/dev/null
-        grep -rlE "\./${base}['\"]" "$dir" --include='*.ts' --include='*.tsx' 2>/dev/null
+        find "$dir" -maxdepth 1 \( -name '*.ts' -o -name '*.tsx' \) -exec grep -lE "\./${base}['\"]" {} + 2>/dev/null
       } | sort -u | grep -vxF -e "$dir/$base.test.tsx" -e "$dir/$base.stories.tsx" \
         -e "$dir/$base.test.ts" -e "$dir/$base.stories.ts"
     )
@@ -85,5 +85,11 @@ case "$rel" in
 esac
 
 [ -n "$notice" ] || exit 0
+
+# The notice carries file names, and a backslash or a quote in one would close the string
+# early. Malformed JSON is dropped without a word, which is the silence this hook exists
+# against, so both are escaped before the notice becomes one.
+notice=${notice//\\/\\\\}
+notice=${notice//\"/\\\"}
 
 printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","additionalContext":"%s"}}\n' "$notice"
