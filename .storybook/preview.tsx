@@ -1,6 +1,5 @@
 import type { Preview } from '@storybook/nextjs-vite'
 
-import { PageShell } from '../src/ui/atoms/page-shell'
 import '../src/app/globals.css'
 
 const preview: Preview = {
@@ -36,12 +35,9 @@ const preview: Preview = {
       document.documentElement.dataset.theme = theme
       document.documentElement.style.colorScheme = theme
 
-      // Wrapped so a state is measured in the width and the rhythm it will actually have.
-      return (
-        <PageShell>
-          <Story />
-        </PageShell>
-      )
+      // Not wrapped: every screen carries its own shell, and a second one around it would
+      // measure a rhythm the product never has.
+      return <Story />
     },
   ],
 }

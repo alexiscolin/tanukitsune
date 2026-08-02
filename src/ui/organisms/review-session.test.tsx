@@ -1,192 +1,107 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import type { ReviewEntry } from '@/core/review-entry'
+import { DEMO_QUESTIONS, KANJI } from '@/core/demo-deck'
+import type { Question } from '@/core/demo-deck'
 import { copyFor } from '@/core/site-copy'
 
 import { ReviewSession } from './review-session'
 
 afterEach(cleanup)
 
-const COPY = copyFor('fr').review
+const COPY = copyFor('fr')
 
-// The same subject twice, which is what the flat queue is: one entry is one question.
-// Pairing the two is a submission rule and lives at the flush, not on the screen.
-const READING: ReviewEntry = {
-  subjectId: 'kanji-water',
-  characters: '水',
-  kind: 'reading',
-  accepted: ['みず'],
+// Named rather than taken from the head of the deck, because the answers below are this
+// subject's: a deck reordered around them would leave a verdict rendering another one.
+const MEANING = DEMO_QUESTIONS.filter(
+  (question) => question.subject.id === KANJI.id && question.kind === 'meaning',
+)
+
+function session(questions: readonly Question[] = MEANING) {
+  render(
+    <ReviewSession questions={questions} copy={COPY.review} subjectCopy={COPY.subject} />,
+  )
+
+  return screen.getByLabelText<HTMLInputElement>(COPY.review.prompt.meaning)
 }
-const MEANING: ReviewEntry = {
-  subjectId: 'kanji-water',
-  characters: '水',
-  kind: 'meaning',
-  accepted: ['eau'],
-}
 
-// One change event per keystroke, because the field converts over a buffer of what was
-// typed rather than over the kana already on it.
-function answer(text: string) {
-  const field = screen.getByLabelText<HTMLInputElement>(COPY.answerLabel)
-
-  for (const key of text) fireEvent.change(field, { target: { value: field.value + key } })
+function answer(field: HTMLInputElement, typed: string) {
+  fireEvent.change(field, { target: { value: typed } })
   fireEvent.keyDown(field, { key: 'Enter' })
 }
 
-function press(name: string) {
-  fireEvent.click(screen.getByRole('button', { name }))
-}
+describe('ReviewSession, asking', () => {
+  // The heading and not any of the glyphs: the deck strip repeats the character, which is
+  // why it is hidden from the accessibility tree in the first place.
+  it('shows the character and names which of the two questions it is asking', () => {
+    session()
 
-describe('ReviewSession', () => {
-  it('asks the first entry, showing the subject and which answer it wants', () => {
-    render(<ReviewSession queue={[READING, MEANING]} copy={COPY} />)
-
-    expect(screen.getByText('水')).toBeTruthy()
-    expect(screen.getByText(COPY.prompt.reading)).toBeTruthy()
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(KANJI.characters)
+    expect(screen.getByLabelText(COPY.review.prompt.meaning)).toBeTruthy()
   })
 
-  // Read before it is offered: the first field of a session replaced nothing, so a reader
-  // using a screen reader hears the subject and what is wanted rather than a text field.
-  it('leaves the focus alone on the first entry', () => {
-    render(<ReviewSession queue={[READING, MEANING]} copy={COPY} />)
+  it('takes the focus on the first card, since the keyboard never leaves this screen', () => {
+    const field = session()
 
-    expect(document.activeElement).toBe(document.body)
+    expect(document.activeElement).toBe(field)
   })
 
-  it('decides an exact reading and asks the next entry', async () => {
-    render(<ReviewSession queue={[READING, MEANING]} copy={COPY} />)
+  it('shows nothing of the sheet until something has been answered', () => {
+    session()
 
-    answer('mizu')
+    expect(screen.queryByText(COPY.subject.nuance)).toBeNull()
+  })
+})
 
-    expect(await screen.findByText(COPY.verdict.correct)).toBeTruthy()
+describe('ReviewSession, answering', () => {
+  it('opens the sheet on the answer that was wanted once a tier has decided', async () => {
+    const field = session()
 
-    press(COPY.next)
+    answer(field, KANJI.meanings[0]?.text ?? '')
 
-    expect(screen.getByText(COPY.prompt.meaning)).toBeTruthy()
-    // The next answer is typed without reaching for the mouse, which is the whole loop:
-    // the key that moved the session on has to land in the field it opened.
-    //
-    // Awaited, here and at every other focus assertion, because the component places the
-    // focus in an effect: a query resolving on the render says the markup arrived and
-    // nothing about whether the effect has run, so asserting in the same tick passes on a
-    // fast machine and fails on a loaded one.
-    await waitFor(() =>
-      expect(document.activeElement).toBe(screen.getByLabelText(COPY.answerLabel)),
-    )
+    expect(await screen.findByText(COPY.subject.nuance)).toBeTruthy()
   })
 
-  it('shows the reading the item wanted on a miss, which is what tier 1 rejected it against', async () => {
-    render(<ReviewSession queue={[READING]} copy={COPY} />)
+  // There is nothing left to compare it against, and the answer standing alone under the
+  // character is the whole point of the card opening.
+  it('takes the field away once the answer stood', async () => {
+    const field = session()
 
-    answer('mizo')
+    answer(field, KANJI.meanings[0]?.text ?? '')
 
-    expect(await screen.findByText(COPY.verdict.incorrect)).toBeTruthy()
-    expect(screen.getByText('みず')).toBeTruthy()
+    await waitFor(() => expect(screen.queryByLabelText(COPY.review.prompt.meaning)).toBeNull())
   })
 
-  it('asks the reader about a meaning no tier could place, rather than failing it', async () => {
-    render(<ReviewSession queue={[MEANING]} copy={COPY} />)
+  // v0.1 ships no fuzzy tier, so a meaning the exact tier cannot match is undecided rather
+  // than wrong, and the reader is what resolves it.
+  it('keeps an answer no tier could place, so it can be read again and corrected', async () => {
+    const field = session()
 
-    answer("de l'eau")
+    answer(field, 'quelque chose que rien ne place')
 
-    expect(await screen.findByText(COPY.askSelfGrade)).toBeTruthy()
-    expect(screen.queryByText(COPY.verdict.incorrect)).toBeNull()
-    // Nothing to move on to: an answer nobody decided is not an answer the session owns.
-    expect(screen.queryByRole('button', { name: COPY.next })).toBeNull()
+    expect(await screen.findByText(COPY.subject.nuance)).toBeTruthy()
+    expect(screen.getByLabelText(COPY.review.prompt.meaning)).toBeTruthy()
   })
 
-  it('ends the session once the last entry has been graded and left', async () => {
-    render(<ReviewSession queue={[MEANING]} copy={COPY} />)
+  it('opens the sheet with nothing to grade when the reader gives up instead of answering', async () => {
+    session()
 
-    answer("de l'eau")
-    expect(await screen.findByText(COPY.askSelfGrade)).toBeTruthy()
-    press(COPY.grade.correct)
-    press(COPY.next)
+    fireEvent.click(screen.getByRole('button', { name: COPY.subject.reveal }))
 
-    expect(screen.getByText(COPY.done)).toBeTruthy()
-    // The button that ended the session left with the focus on it, so the end of the
-    // session takes it like every other step of the loop does.
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByText(COPY.done)))
+    expect(await screen.findByText(COPY.subject.nuance)).toBeTruthy()
+  })
+})
+
+describe('ReviewSession, moving on', () => {
+  it('leaves the deck ungradable until an answer has been given', () => {
+    session()
+
+    expect(screen.getByRole('group', { name: COPY.review.askSelfGrade }).getAttribute('aria-disabled')).toBe('true')
   })
 
-  it('keeps self-grade on a verdict the cascade decided, since the override is the labelled disagreement', async () => {
-    render(<ReviewSession queue={[READING]} copy={COPY} />)
+  it('ends where a session ends rather than on an empty card', () => {
+    render(<ReviewSession questions={[]} copy={COPY.review} subjectCopy={COPY.subject} />)
 
-    answer('mizu')
-    expect(await screen.findByText(COPY.verdict.correct)).toBeTruthy()
-    press(COPY.grade.incorrect)
-
-    expect(screen.getByText(COPY.verdict.incorrect)).toBeTruthy()
-
-    press(COPY.next)
-
-    expect(screen.getByText(COPY.done)).toBeTruthy()
-  })
-
-  it('puts the focus on the button that continues once a verdict stands', async () => {
-    render(<ReviewSession queue={[READING]} copy={COPY} />)
-
-    answer('mizu')
-    expect(await screen.findByText(COPY.verdict.correct)).toBeTruthy()
-
-    await waitFor(() =>
-      expect(document.activeElement).toBe(screen.getByRole('button', { name: COPY.next })),
-    )
-  })
-
-  it('puts the focus on the panel when the reader is the one who has to decide', async () => {
-    render(<ReviewSession queue={[MEANING]} copy={COPY} />)
-
-    answer("de l'eau")
-    expect(await screen.findByText(COPY.askSelfGrade)).toBeTruthy()
-
-    // No verdict stands, so there is no button to continue on: the panel holding the
-    // question takes the focus rather than letting it fall to the document.
-    await waitFor(() => {
-      expect(document.activeElement).not.toBe(document.body)
-      expect(
-        document.activeElement?.contains(screen.getByRole('button', { name: COPY.grade.correct })),
-      ).toBe(true)
-    })
-  })
-
-  it('keeps the reference after grading, so grading does not remove what was graded against', async () => {
-    render(<ReviewSession queue={[READING]} copy={COPY} />)
-
-    answer('mizo')
-    expect(await screen.findByText(COPY.verdict.incorrect)).toBeTruthy()
-    press(COPY.grade.correct)
-
-    expect(screen.getByText(COPY.verdict.correct)).toBeTruthy()
-    expect(screen.getByText('みず')).toBeTruthy()
-  })
-
-  // An announcement racing a focus move is the one a screen reader drops, so whatever takes
-  // the focus names the verdict as its description rather than relying on the region alone.
-  it('describes what takes the focus with the verdict it is answering', async () => {
-    render(<ReviewSession queue={[READING]} copy={COPY} />)
-
-    answer('mizu')
-    const message = await screen.findByText(COPY.verdict.correct)
-    const next = screen.getByRole('button', { name: COPY.next })
-
-    expect(next.getAttribute('aria-describedby')).toBe(message.id)
-  })
-
-  it('leaves the focus alone on a queue that arrives with nothing in it', () => {
-    render(<ReviewSession queue={[]} copy={COPY} />)
-
-    expect(screen.getByText(COPY.done)).toBeTruthy()
-    expect(document.activeElement).toBe(document.body)
-  })
-
-  it('refuses a reading that cannot become kana instead of grading it', async () => {
-    render(<ReviewSession queue={[READING]} copy={COPY} />)
-
-    answer('123')
-
-    expect(await screen.findByText(COPY.unconverted)).toBeTruthy()
-    expect(screen.queryByText(COPY.verdict.incorrect)).toBeNull()
+    expect(screen.getByText(COPY.review.done)).toBeTruthy()
   })
 })

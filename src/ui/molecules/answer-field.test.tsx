@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import type { AnswerKind } from '@/core/answer-kind'
 
-import { AnswerInput } from './answer-input'
+import { AnswerField } from './answer-field'
 
 afterEach(cleanup)
 
@@ -15,30 +15,49 @@ function type(field: HTMLInputElement, romaji: string) {
   for (const key of romaji) fireEvent.change(field, { target: { value: field.value + key } })
 }
 
-function renderInput(kind: AnswerKind, { autoFocus = false } = {}) {
+function renderInput(kind: AnswerKind, { autoFocus = false, judged = false } = {}) {
   const onSubmit = vi.fn()
+  const onEdit = vi.fn()
   render(
-    <AnswerInput
+    <AnswerField
       kind={kind}
       label="Réponse"
       unconverted={UNCONVERTED}
       autoFocus={autoFocus}
+      judged={judged}
       onSubmit={onSubmit}
+      onEdit={onEdit}
     />,
   )
 
-  return { field: screen.getByLabelText<HTMLInputElement>('Réponse'), onSubmit }
+  return { field: screen.getByLabelText<HTMLInputElement>('Réponse'), onSubmit, onEdit }
 }
 
-describe('AnswerInput', () => {
-  it('sends what was typed and empties the field for the next question', () => {
+describe('AnswerField', () => {
+  it('sends what was typed and keeps it, because it is what has to be looked at again', () => {
     const { field, onSubmit } = renderInput('meaning')
 
     fireEvent.change(field, { target: { value: 'eau' } })
     fireEvent.keyDown(field, { key: 'Enter' })
 
     expect(onSubmit).toHaveBeenCalledWith('eau')
-    expect(field.value).toBe('')
+    expect(field.value).toBe('eau')
+  })
+
+  it('withdraws a verdict as soon as the reader types again, since it was about other text', () => {
+    const { field, onEdit } = renderInput('meaning', { judged: true })
+
+    fireEvent.change(field, { target: { value: 'ea' } })
+
+    expect(onEdit).toHaveBeenCalledOnce()
+  })
+
+  it('says nothing about text nothing has judged yet', () => {
+    const { field, onEdit } = renderInput('meaning')
+
+    fireEvent.change(field, { target: { value: 'ea' } })
+
+    expect(onEdit).not.toHaveBeenCalled()
   })
 
   it('sends the answer unnormalised, because the judge is what decides what a match is', () => {
@@ -154,7 +173,7 @@ describe('AnswerInput', () => {
   })
 })
 
-describe('AnswerInput, converting a reading', () => {
+describe('AnswerField, converting a reading', () => {
   it('turns romaji into kana as it is typed, so no Japanese keyboard is needed', () => {
     const { field } = renderInput('reading')
 
@@ -195,7 +214,6 @@ describe('AnswerInput, converting a reading', () => {
     fireEvent.change(field, { target: { value: 'eau' } })
     fireEvent.keyDown(field, { key: 'Enter' })
 
-    expect(field.value).toBe('')
     expect(onSubmit).toHaveBeenCalledWith('eau')
   })
 
@@ -249,7 +267,7 @@ describe('AnswerInput, converting a reading', () => {
   })
 })
 
-describe('AnswerInput, refusing a reading that is not kana', () => {
+describe('AnswerField, refusing a reading that is not kana', () => {
   it('finalises on Enter what a correction left mid-answer', () => {
     const { field, onSubmit } = renderInput('reading')
 

@@ -69,8 +69,9 @@ dependency. A second one is the second way to do something that already exists h
 
 ## Consequences
 
-`src/ui/atoms/page-shell.tsx` is wrong for this interface. It centres inside a prose measure, and the
-screens are full bleed. It is the first component the new structure replaces, and it is four lines.
+`src/ui/atoms/screen-shell.tsx` is the shell, and it is four lines. The one this interface started
+with centred inside a prose measure while the screens are full bleed, which made it the first
+component the new structure replaced.
 
 `pnpm arch` needs no change. Its rules match `^src/ui/`, a prefix, so a component in a sub-directory is
 covered by the same reachability and `server-only` rules as one directly beneath. This was checked
