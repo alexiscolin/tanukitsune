@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent, PointerEvent, ReactNode } from 'react'
 
 // The review gesture of the reference, and the whole grading control: no buttons and no
@@ -40,11 +40,22 @@ function useDrag(onDecide: (direction: SwipeDirection) => void, disabled?: boole
   const [dragging, setDragging] = useState(false)
   const origin = useRef<{ x: number; y: number } | null>(null)
 
+  // The exit runs on a timer, so a screen left mid-swipe would otherwise keep the deck's
+  // setters and the caller's `onDecide` alive until it fires.
+  const exit = useRef<number | null>(null)
+  useEffect(
+    () => () => {
+      if (exit.current !== null) window.clearTimeout(exit.current)
+    },
+    [],
+  )
+
   const commit = useCallback(
     (direction: SwipeDirection) => {
       setExiting(true)
       setDrag({ x: direction === 'right' ? EXIT : -EXIT, y: 0 })
-      window.setTimeout(() => {
+      exit.current = window.setTimeout(() => {
+        exit.current = null
         setExiting(false)
         setDrag({ x: 0, y: 0 })
         onDecide(direction)
@@ -79,10 +90,18 @@ function useDrag(onDecide: (direction: SwipeDirection) => void, disabled?: boole
 
   // The arrow keys reach the same outcomes, because a gesture nobody can perform without a
   // pointer is a control a keyboard reader does not have at all.
+  //
+  // Only when the deck itself holds the focus. What the deck draws is a caller's, and a text
+  // field among it takes the same two keys to move a caret: those presses bubble here, and
+  // grading on them would rule on an answer the reader was still reading. Handled keys are
+  // stopped as well, or the page scrolls under the card that is leaving.
   function arrows(event: KeyboardEvent<HTMLDivElement>) {
     if (disabled === true || exiting) return
-    if (event.key === 'ArrowRight') commit('right')
-    if (event.key === 'ArrowLeft') commit('left')
+    if (event.target !== event.currentTarget) return
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return
+
+    event.preventDefault()
+    commit(event.key === 'ArrowRight' ? 'right' : 'left')
   }
 
   return { drag, exiting, dragging, down, move, up, arrows }
