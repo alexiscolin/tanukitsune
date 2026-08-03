@@ -112,7 +112,10 @@ export function StepCount({ step, total }: { step: number; total: number }) {
         <span className="animate-pulse-dot size-1.5 rounded-full bg-[var(--color-brand)]" />
         <span className="nums text-lg leading-none font-semibold tracking-tight">{step}</span>
       </span>
-      <span className="nums text-2xs text-[var(--color-ink-muted)]">/{total}</span>
+      {/* The muted ink at this size reads at 3.29:1 against the canvas, under the 4.5:1 the
+          audit holds text to. The total is quiet by its size and its position, not by a
+          colour that puts it under the floor. */}
+      <span className="nums text-2xs">/{total}</span>
     </p>
   )
 }
@@ -184,6 +187,42 @@ export function SessionRule({
   )
 }
 
+// Drawn rather than set. A glyph that has receded is what the strip is made of, and no colour
+// pale enough to read as receded clears the contrast floor the audit holds text to: the muted
+// ink is already under it at full strength. Drawn, the character is a shape the audit does not
+// weigh, and the strip keeps the one thing it is for.
+//
+// One em of advance per character, which is what a full-width character takes. Kana and the
+// long vowel mark are narrower and the anchor centres what is left over, so a word sits in its
+// own space rather than in its neighbour's.
+function Glyph({ characters, active }: { characters: string; active: boolean }) {
+  const advance = Math.max(characters.length, 1)
+
+  return (
+    <svg
+      viewBox={`0 0 ${advance * 16} 16`}
+      style={{ width: `${advance}rem` }}
+      className={`ease-out-soft h-4 shrink-0 transition duration-500 ${
+        active
+          ? 'font-medium text-[var(--color-ink)]'
+          : 'blur-hair font-light text-[var(--color-ink-muted)]/35'
+      }`}
+    >
+      <text
+        lang="ja"
+        x={advance * 8}
+        y="8"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="16"
+        fill="currentColor"
+      >
+        {characters}
+      </text>
+    </svg>
+  )
+}
+
 // The queue felt rather than listed, on a band of its own under the header: it is where the
 // session is going, and it is read across rather than glanced at, which is what a row set
 // between two fixed things cannot be.
@@ -223,16 +262,7 @@ export function DeckStrip({ queue, index }: { queue: readonly StripItem[]; index
             key={entry.key}
             className="flex shrink-0 snap-center flex-col items-center gap-1.5 px-4"
           >
-            <span
-              lang="ja"
-              className={`ease-out-soft text-base leading-none whitespace-nowrap transition duration-500 ${
-                at === index
-                  ? 'font-medium text-[var(--color-ink)]'
-                  : 'blur-hair font-light text-[var(--color-ink-muted)]/35'
-              }`}
-            >
-              {entry.characters}
-            </span>
+            <Glyph characters={entry.characters} active={at === index} />
             {/* The type's own colour rather than the accent: the dot under the active glyph
                 answers the same question as the dot on the card, so it answers it the same
                 way, and the vermillon stays reserved for what the reader can act on. */}
