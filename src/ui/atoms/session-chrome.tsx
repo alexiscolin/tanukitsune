@@ -24,13 +24,9 @@ export type StripItem = {
   readonly type: SubjectType
 }
 
-// The interaction vocabulary both alternatives wear, kept in one file so the two are
-// compared on their layout rather than on details that drifted apart while they were
-// written. The rules it holds to, taken from the reference and absolute: no filled button,
-// no outlined card, no chip, one accent spent once per screen, selection expressed by
-// contrast and a single dot, and every entrance six pixels and a blur.
-
-
+// The rules everything below holds to, absolute: no filled button, no outlined card, no chip,
+// one accent spent once per screen, selection expressed by contrast and a single dot, and
+// every entrance six pixels and a blur.
 
 // Three hairlines of unequal width. A mark rather than a control: nothing opens yet, and a
 // button that does nothing is a placeholder in the diff and a lie in the accessibility
@@ -229,7 +225,7 @@ export function DeckStrip({ queue, index }: { queue: readonly StripItem[]; index
           >
             <span
               lang="ja"
-              className={`ease-out-soft text-base leading-none whitespace-nowrap transition-all duration-500 ${
+              className={`ease-out-soft text-base leading-none whitespace-nowrap transition duration-500 ${
                 at === index
                   ? 'font-medium text-[var(--color-ink)]'
                   : 'blur-hair font-light text-[var(--color-ink-muted)]/35'
@@ -241,7 +237,7 @@ export function DeckStrip({ queue, index }: { queue: readonly StripItem[]; index
                 answers the same question as the dot on the card, so it answers it the same
                 way, and the vermillon stays reserved for what the reader can act on. */}
             <span
-              className={`ease-spring size-1 rounded-full transition-all duration-500 ${TYPE_FILL[entry.type]} ${
+              className={`ease-spring size-1 rounded-full transition duration-500 ${TYPE_FILL[entry.type]} ${
                 at === index ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
               }`}
             />

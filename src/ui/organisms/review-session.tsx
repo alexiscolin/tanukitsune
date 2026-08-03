@@ -1,7 +1,7 @@
 'use client'
 
 import { ScreenShell } from '@/ui/atoms/screen-shell'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { runCascade } from '@/core/grading/cascade'
@@ -38,11 +38,17 @@ function SessionHeader({
   questions: readonly Question[]
   index: number
 }) {
-  const strip: readonly StripItem[] = questions.map(({ subject, kind }) => ({
-    key: `${subject.id}-${kind}`,
-    characters: subject.characters ?? '',
-    type: subject.type,
-  }))
+  // The deck is fixed for the session while everything above it changes per answer, so the
+  // strip is built once rather than on every render the loop causes.
+  const strip: readonly StripItem[] = useMemo(
+    () =>
+      questions.map(({ subject, kind }) => ({
+        key: `${subject.id}-${kind}`,
+        characters: subject.characters ?? '',
+        type: subject.type,
+      })),
+    [questions],
+  )
 
   return (
     <>
