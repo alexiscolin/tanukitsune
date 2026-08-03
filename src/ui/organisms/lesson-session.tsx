@@ -1,18 +1,15 @@
 'use client'
 
-import { ScreenShell } from '@/ui/atoms/screen-shell'
 import { useState } from 'react'
 
-import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
-
-import { SessionRule } from '@/ui/atoms/session-rule'
-import type { StripItem } from '@/ui/molecules/deck-strip'
 import { SessionDone } from '@/ui/molecules/session-done'
-import { SessionHeader } from '@/ui/molecules/session-header'
-import { SessionStage } from '@/ui/molecules/session-stage'
+import { SessionScreen } from '@/ui/molecules/session-screen'
 import { SubjectCard } from '@/ui/molecules/subject-card'
-import type { Subject } from '@/core/subject'
+import type { StripItem } from '@/ui/molecules/deck-strip'
 import { SwipeDeck } from '@/ui/primitives/swipe-deck'
+
+import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
+import type { Subject } from '@/core/subject'
 
 // The lesson flow, and the same deck as the review: a batch arrives, it is paged through,
 // and nothing in it is judged. What separates the two screens is that this one has no field
@@ -20,6 +17,14 @@ import { SwipeDeck } from '@/ui/primitives/swipe-deck'
 //
 // Neither direction means anything different here, which is why the deck surfaces no verdict
 // behind the card: there is nothing to be about to say.
+
+function stripOf(deck: readonly Subject[]): readonly StripItem[] {
+  return deck.map((subject) => ({
+    key: `${subject.id}`,
+    characters: subject.characters ?? '',
+    type: subject.type,
+  }))
+}
 
 export function LessonSession({
   deck,
@@ -30,12 +35,6 @@ export function LessonSession({
   copy: ReviewCopy
   subjectCopy: SubjectCopy
 }) {
-  const strip: readonly StripItem[] = deck.map((subject) => ({
-    key: `${subject.id}`,
-    characters: subject.characters ?? '',
-    type: subject.type,
-  }))
-
   const [index, setIndex] = useState(0)
 
   const subject = deck[index]
@@ -44,27 +43,20 @@ export function LessonSession({
   if (subject === undefined) return <SessionDone label={copy.done} reached={index > 0} />
 
   return (
-    <ScreenShell>
-      <SessionHeader queue={strip} index={index} />
-
-      <SessionStage>
-        <SwipeDeck
-          cardKey={`${subject.id}`}
-          label={copy.next}
-          onDecide={() => setIndex(index + 1)}
-          behind={
-            upcoming === undefined ? undefined : (
-              <SubjectCard subject={upcoming} copy={subjectCopy} flow="lesson" revealed />
-            )
-          }
-        >
-          <SubjectCard subject={subject} copy={subjectCopy} flow="lesson" revealed />
-        </SwipeDeck>
-      </SessionStage>
-
-      {/* A lesson misses nothing: the bar says how much of the batch is behind and no more. */}
-      <SessionRule done={index} missed={0} total={deck.length} />
-    </ScreenShell>
+    // A lesson misses nothing: the rule says how much of the batch is behind and no more.
+    <SessionScreen queue={stripOf(deck)} index={index} done={index} missed={0}>
+      <SwipeDeck
+        cardKey={`${subject.id}`}
+        label={copy.next}
+        onDecide={() => setIndex(index + 1)}
+        behind={
+          upcoming === undefined ? undefined : (
+            <SubjectCard subject={upcoming} copy={subjectCopy} flow="lesson" revealed />
+          )
+        }
+      >
+        <SubjectCard subject={subject} copy={subjectCopy} flow="lesson" revealed />
+      </SwipeDeck>
+    </SessionScreen>
   )
 }
-

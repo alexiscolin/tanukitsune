@@ -2,13 +2,10 @@
 
 import { useId, useState } from 'react'
 
-import { ScreenShell } from '@/ui/atoms/screen-shell'
-import { SessionRule } from '@/ui/atoms/session-rule'
 import { SessionTally } from '@/ui/atoms/session-tally'
 import { QuestionCard } from '@/ui/molecules/question-card'
 import { SessionDone } from '@/ui/molecules/session-done'
-import { SessionHeader } from '@/ui/molecules/session-header'
-import { SessionStage } from '@/ui/molecules/session-stage'
+import { SessionScreen } from '@/ui/molecules/session-screen'
 import { SubjectCard } from '@/ui/molecules/subject-card'
 import type { StripItem } from '@/ui/molecules/deck-strip'
 import { SwipeDeck } from '@/ui/primitives/swipe-deck'
@@ -104,65 +101,62 @@ export function ReviewSession({
   if (question === undefined) return <SessionDone label={copy.done} reached={index > 0} />
 
   return (
-    <ScreenShell>
-      <SessionHeader queue={stripOf(questions)} index={index} />
-
-      {/* Mounted whether or not it holds anything, because a polite region has to be in the
-          document before its content changes: one inserted with its text already in it is the
-          case a screen reader routinely says nothing about. */}
-      <p role="status" id={verdictId} className="sr-only">
-        {spoken(answered, decided, copy)}
-      </p>
-
-      <SessionStage>
-        <SwipeDeck
-          cardKey={`${question.subject.id}-${question.kind}`}
-          onDecide={decide}
-          leftLabel={copy.grade.incorrect}
-          rightLabel={copy.grade.correct}
-          label={copy.askSelfGrade}
-          describedBy={verdictId}
-          disabled={!answered}
-          behind={
-            upcoming === undefined ? undefined : (
-              <SubjectCard
-                subject={upcoming.subject}
-                copy={subjectCopy}
-                flow="review"
-                revealed={false}
+    <SessionScreen
+      queue={stripOf(questions)}
+      index={index}
+      done={index - missed}
+      missed={missed}
+      announce={
+        // Mounted whether or not it holds anything, because a polite region has to be in the
+        // document before its content changes: one inserted with its text already in it is the
+        // case a screen reader routinely says nothing about.
+        <p role="status" id={verdictId} className="sr-only">
+          {spoken(answered, decided, copy)}
+        </p>
+      }
+    >
+      <SwipeDeck
+        cardKey={`${question.subject.id}-${question.kind}`}
+        onDecide={decide}
+        leftLabel={copy.grade.incorrect}
+        rightLabel={copy.grade.correct}
+        label={copy.askSelfGrade}
+        describedBy={verdictId}
+        disabled={!answered}
+        behind={
+          upcoming === undefined ? undefined : (
+            <SubjectCard
+              subject={upcoming.subject}
+              copy={subjectCopy}
+              flow="review"
+              revealed={false}
+            />
+          )
+        }
+      >
+        <QuestionCard
+          question={question}
+          copy={copy}
+          subjectCopy={subjectCopy}
+          answered={answered}
+          decided={decided}
+          foot={
+            answered ? (
+              <SessionTally
+                done={reviewed.filter((entry) => entry.said === 'correct').length}
+                left={questions.length - index}
+                missed={missed}
+                copy={copy.tally}
               />
-            )
+            ) : undefined
           }
-        >
-          <QuestionCard
-            question={question}
-            copy={copy}
-            subjectCopy={subjectCopy}
-            answered={answered}
-            decided={decided}
-            foot={
-              answered ? (
-                <SessionTally
-                  done={reviewed.filter((entry) => entry.said === 'correct').length}
-                  left={questions.length - index}
-                  missed={missed}
-                  copy={copy.tally}
-                />
-              ) : undefined
-            }
-            onReveal={giveUp}
-            onSubmit={(raw) => {
-              void submit(question, raw)
-            }}
-            onEdit={() => setAnswered(false)}
-          />
-        </SwipeDeck>
-      </SessionStage>
-
-      {/* Flush with the bottom of the screen and the last thing on it: three quantities on
-          one bar, what is passed, what was missed and what is left. The width is the quantity
-          and the colour says which, so there is no label and no digit. */}
-      <SessionRule done={index - missed} missed={missed} total={questions.length} />
-    </ScreenShell>
+          onReveal={giveUp}
+          onSubmit={(raw) => {
+            void submit(question, raw)
+          }}
+          onEdit={() => setAnswered(false)}
+        />
+      </SwipeDeck>
+    </SessionScreen>
   )
 }
