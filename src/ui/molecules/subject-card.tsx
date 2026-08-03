@@ -223,15 +223,12 @@ function Filing({
   return (
     <p className="eyebrow flex flex-wrap items-center gap-2 pt-1 text-[var(--color-ink-muted)]">
       {/* Behind the band beside it by carrying no colour of its own, and never by an opacity:
-          a sixty percent of the muted ink reads at 2.38:1, which is a line the reader is shown
-          and cannot read. */}
-      <span>
-        {[
-          copy.type[subject.type],
-          `${copy.level} ${subject.level}`,
-          ...(subject.jlpt === null ? [] : [`JLPT ${subject.jlpt}`]),
-        ].join(' · ')}
-      </span>
+          a fraction of the muted ink is a ratio the reader is shown and cannot read. */}
+      {[
+        copy.type[subject.type],
+        `${copy.level} ${subject.level}`,
+        ...(subject.jlpt === null ? [] : [`JLPT ${subject.jlpt}`]),
+      ].join(' · ')}
       {/* How far this reader has taken it, the one thing on the card that is theirs rather
           than the subject's. Its colour is the mastery ramp, so the band is read before the
           word is. */}
@@ -240,7 +237,7 @@ function Filing({
   )
 }
 
-// The one place in the interface where a glyph is not text: a radical with no Unicode
+// The subject's own glyph, and the only one the reader is meant to read: a radical with no Unicode
 // character arrives as an SVG, sized against the type rather than given a box.
 function GlyphFace({ subject }: { subject: Subject }) {
   if (subject.characters === null) {

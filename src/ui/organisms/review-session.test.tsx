@@ -21,13 +21,20 @@ const MEANING = DEMO_QUESTIONS.filter(
 // in the absence of the first.
 const PAIR = DEMO_QUESTIONS.filter((question) => question.subject.id === KANJI.id)
 
-function session(questions: readonly Question[] = MEANING) {
+// The prompt is a parameter rather than the meaning one always, because a deck opening on a
+// reading is the same screen asking the other of its two questions.
+function session(
+  questions: readonly Question[] = MEANING,
+  prompt: string = COPY.review.prompt.meaning,
+) {
   render(
     <ReviewSession questions={questions} copy={COPY.review} subjectCopy={COPY.subject} />,
   )
 
-  return screen.getByLabelText<HTMLInputElement>(COPY.review.prompt.meaning)
+  return screen.getByLabelText<HTMLInputElement>(prompt)
 }
+
+const READING = PAIR.filter((question) => question.kind === 'reading')
 
 function answer(field: HTMLInputElement, typed: string) {
   fireEvent.change(field, { target: { value: typed } })
@@ -42,9 +49,9 @@ function tallyUnder(label: string): string | undefined {
   return screen.getByText(label).parentElement?.firstElementChild?.textContent ?? undefined
 }
 
-// A graded card leaves on a timer before the next one is asked, so an assertion made straight
-// after the gesture reads the card that is still on its way out. Longer than that timer,
-// because what is being asserted is what the deck settled on and not what it passed through.
+// A graded card leaves on a timer before the next one is asked. Every assertion that names what
+// arrives waits for it with findBy instead, which stops as soon as it is there; this is for the
+// one that names what must not arrive, and only real elapsed time can say that.
 async function settle() {
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 400))
@@ -158,9 +165,8 @@ describe('ReviewSession, moving on', () => {
     await screen.findByText(COPY.subject.nuance)
 
     fireEvent.keyDown(deck(), { key: 'ArrowRight' })
-    await settle()
 
-    expect(screen.getByLabelText(COPY.review.prompt.reading)).toBeTruthy()
+    expect(await screen.findByLabelText(COPY.review.prompt.reading)).toBeTruthy()
   })
 
   // An answer no tier could place leaves the field on the card, and the field is inside the
@@ -188,9 +194,8 @@ describe('ReviewSession, moving on', () => {
     answer(field, KANJI.meanings[0]?.text ?? '')
     await screen.findByText(COPY.subject.nuance)
     fireEvent.keyDown(deck(), { key: 'ArrowRight' })
-    await settle()
 
-    expect(screen.getByLabelText(COPY.review.prompt.reading)).toBeTruthy()
+    expect(await screen.findByLabelText(COPY.review.prompt.reading)).toBeTruthy()
     expect(screen.getByText('2')).toBeTruthy()
   })
 
@@ -202,9 +207,8 @@ describe('ReviewSession, moving on', () => {
     answer(field, KANJI.meanings[0]?.text ?? '')
     await screen.findByText(COPY.subject.nuance)
     fireEvent.keyDown(deck(), { key: 'ArrowLeft' })
-    await settle()
 
-    const second = screen.getByLabelText<HTMLInputElement>(COPY.review.prompt.reading)
+    const second = await screen.findByLabelText<HTMLInputElement>(COPY.review.prompt.reading)
     answer(second, PAIR[1]?.accepted[0] ?? '')
     await screen.findByText(COPY.review.tally.missed)
 
@@ -218,26 +222,21 @@ describe('ReviewSession, moving on', () => {
     answer(field, KANJI.meanings[0]?.text ?? '')
     await screen.findByText(COPY.subject.nuance)
     fireEvent.keyDown(deck(), { key: 'ArrowRight' })
-    await settle()
 
-    expect(screen.getByText(COPY.review.done)).toBeTruthy()
+    expect(await screen.findByText(COPY.review.done)).toBeTruthy()
     expect(screen.queryByLabelText(COPY.review.prompt.meaning)).toBeNull()
   })
 
   // What tier 1 rejected it against, which is the only thing that makes a miss worth reading:
   // a verdict with nothing beside it says the answer was wrong and not what was wanted.
   it('shows the reading the card wanted when the answer missed', async () => {
-    const reading = PAIR.filter((question) => question.kind === 'reading')
-    render(
-      <ReviewSession questions={reading} copy={COPY.review} subjectCopy={COPY.subject} />,
-    )
-    const field = screen.getByLabelText<HTMLInputElement>(COPY.review.prompt.reading)
+    const field = session(READING, COPY.review.prompt.reading)
 
     answer(field, 'ねこ')
 
     expect(await screen.findByText(COPY.subject.nuance)).toBeTruthy()
     // Substring, because a card with more than one accepted reading sets them on one line.
-    expect(screen.getAllByText(reading[0]?.accepted[0] ?? '', { exact: false }).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(READING[0]?.accepted[0] ?? '', { exact: false }).length).toBeGreaterThan(0)
     expect(screen.getByLabelText(COPY.review.prompt.reading)).toBeTruthy()
   })
 
@@ -252,19 +251,14 @@ describe('ReviewSession, moving on', () => {
     expect(deck().getAttribute('aria-disabled')).toBeNull()
 
     fireEvent.keyDown(deck(), { key: 'ArrowLeft' })
-    await settle()
 
-    expect(screen.getByLabelText(COPY.review.prompt.reading)).toBeTruthy()
+    expect(await screen.findByLabelText(COPY.review.prompt.reading)).toBeTruthy()
   })
 
   // The refusal is the field's, and it stops short of the cascade: nothing has been graded, so
   // the sheet stays shut and the deck stays closed to the gesture.
   it('refuses a reading that cannot become kana instead of grading it', async () => {
-    const reading = PAIR.filter((question) => question.kind === 'reading')
-    render(
-      <ReviewSession questions={reading} copy={COPY.review} subjectCopy={COPY.subject} />,
-    )
-    const field = screen.getByLabelText<HTMLInputElement>(COPY.review.prompt.reading)
+    const field = session(READING, COPY.review.prompt.reading)
 
     answer(field, 'water')
 

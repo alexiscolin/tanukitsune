@@ -66,10 +66,7 @@ export function StepCount({ step, total }: { step: number; total: number }) {
         <span className="animate-pulse-dot size-1.5 rounded-full bg-[var(--color-brand)]" />
         <span className="nums text-lg leading-none font-semibold tracking-tight">{step}</span>
       </span>
-      {/* The muted ink at this size reads at 3.29:1 against the canvas, under the 4.5:1 the
-          audit holds text to. The total is quiet by its size and its position, not by a
-          colour that puts it under the floor. */}
-      <span className="nums text-2xs">/{total}</span>
+      <span className="nums text-2xs text-[var(--color-ink-muted)]">/{total}</span>
     </p>
   )
 }
@@ -141,14 +138,14 @@ export function SessionRule({
   )
 }
 
-// Drawn rather than set. A glyph that has receded is what the strip is made of, and no colour
-// pale enough to read as receded clears the contrast floor the audit holds text to: the muted
-// ink is already under it at full strength. Drawn, the character is a shape the audit does not
-// weigh, and the strip keeps the one thing it is for.
+// Drawn rather than set. What the strip is made of is a glyph that has receded, and it recedes
+// by being set at a third of the muted ink, which is a ratio no text may carry. Drawn, the
+// character is a shape rather than a word, which is what it always was here: the strip is
+// hidden from the accessibility tree because it repeats the heading.
 //
-// One em of advance per character, which is what a full-width character takes. Kana and the
-// long vowel mark are narrower and the anchor centres what is left over, so a word sits in its
-// own space rather than in its neighbour's.
+// One em of advance per character, which is what a full-width character takes. Kana are
+// narrower and the anchor centres what is left over, so a word sits in its own space rather
+// than in its neighbour's.
 function Glyph({ characters, active }: { characters: string; active: boolean }) {
   const advance = Math.max(characters.length, 1)
 

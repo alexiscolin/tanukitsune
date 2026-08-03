@@ -196,10 +196,10 @@ function Behind({
   return (
     <div
       aria-hidden
-      // Beside the hiding rather than instead of it: `aria-hidden` promises the card behind is
+      // Beside the hiding rather than instead of it: `aria-hidden` promises what is behind is
       // not there, and only `inert` keeps the tab order from walking into it and proving
-      // otherwise. The card draws a sheet that scrolls, and a sheet that scrolls owns a tab
-      // stop wherever it is rendered.
+      // otherwise. The deck cannot know what a caller draws here, and a lesson draws its next
+      // card open, sheet and scroll and tab stop included.
       inert
       className="absolute inset-0 origin-bottom"
       style={{

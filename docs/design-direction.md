@@ -175,7 +175,9 @@ wants it.
 **The Japanese face.** The character takes whatever the platform gives `lang="ja"`, with proportional
 kana spacing on. Choosing it is the same decision as the typeface and is taken with it.
 
-**The one glyph that is not text.** A radical with no Unicode character arrives as artwork drawn black
+**The glyphs that are not text.** The deck strip draws its characters rather than setting them, since
+what it shows is a subject receding and not a word to read, and it repeats the heading anyway. On the
+card, a radical with no Unicode character arrives as artwork drawn black
 for a pale ground, and the host serves it without the headers that would let it be used as a mask, so
 it is turned over on the dark ground instead. It is never deferred: a glyph that arrives late is a
 question the reader cannot read.
