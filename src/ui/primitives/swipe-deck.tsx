@@ -113,6 +113,7 @@ export function SwipeDeck({
   leftLabel,
   rightLabel,
   label,
+  describedBy,
   disabled,
   behind,
   children,
@@ -130,12 +131,24 @@ export function SwipeDeck({
   leftLabel?: string
   rightLabel?: string
   label: string
+  // What says, where a reader cannot see the card, why the deck has become gradable. Named on
+  // the group rather than announced separately, since an announcement racing a focus move is
+  // the one a screen reader drops.
+  describedBy?: string
   disabled?: boolean
   behind?: ReactNode
   children: ReactNode
 }) {
   const { drag, exiting, dragging, down, move, up, arrows } = useDrag(onDecide, disabled)
   const reached = Math.min(Math.abs(drag.x) / THRESHOLD, 1)
+  const group = useRef<HTMLDivElement>(null)
+
+  // The deck is the control that continues, so it takes the focus the moment it will answer
+  // to one. A reader who cannot see the card has no other way to find it, and the card it
+  // grades is the one they have just been told about.
+  useEffect(() => {
+    if (disabled !== true) group.current?.focus()
+  }, [disabled, cardKey])
 
   // Positioned rather than sized: the caller's box takes its height from flex, which is a
   // used height and not a declared one, so a percentage height here resolves against nothing
@@ -154,9 +167,11 @@ export function SwipeDeck({
 
       <div
         key={`front-${cardKey}`}
+        ref={group}
         role="group"
         tabIndex={0}
         aria-label={label}
+        aria-describedby={describedBy}
         aria-disabled={disabled || undefined}
         onPointerDown={down}
         onPointerMove={move}

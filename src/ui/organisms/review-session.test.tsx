@@ -227,6 +227,47 @@ describe('ReviewSession, moving on', () => {
     expect(screen.queryByLabelText(COPY.review.prompt.meaning)).toBeNull()
   })
 
+  // The end is a step of the loop like every other, so it takes the focus the same way. Only
+  // once a step has been left: a deck that arrives empty was never a session.
+  it('takes the focus to the end once the last card has been left', async () => {
+    const field = session()
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+    await screen.findByText(COPY.subject.nuance)
+    fireEvent.keyDown(deck(), { key: 'ArrowRight' })
+
+    const done = await screen.findByText(COPY.review.done)
+    await waitFor(() => expect(document.activeElement).toBe(done))
+  })
+
+  it('leaves the focus alone on a deck that arrives with nothing in it', () => {
+    render(<ReviewSession questions={[]} copy={COPY.review} subjectCopy={COPY.subject} />)
+
+    expect(document.activeElement).toBe(document.body)
+  })
+
+  // The pair is what a review event carries, and it cannot be rebuilt from the corrected
+  // value alone: a reader ruling against the cascade is the labelled disagreement on exactly
+  // the hard middle. Ruling the way it already ruled overrides nothing, so the tally counts
+  // the reader while the verdict that was overridden stays readable beside it.
+  it('keeps what the cascade said apart from what the reader said instead', async () => {
+    const field = session(PAIR)
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+    await waitFor(() =>
+      expect(screen.getByRole('status').textContent).toBe(COPY.review.verdict.correct),
+    )
+
+    fireEvent.keyDown(deck(), { key: 'ArrowLeft' })
+
+    const second = await screen.findByLabelText<HTMLInputElement>(COPY.review.prompt.reading)
+    answer(second, PAIR[1]?.accepted[0] ?? '')
+    await screen.findByText(COPY.review.tally.missed)
+
+    expect(tallyUnder(COPY.review.tally.missed)).toBe('1')
+    expect(tallyUnder(COPY.review.tally.done)).toBe('0')
+  })
+
   // What tier 1 rejected it against, which is the only thing that makes a miss worth reading:
   // a verdict with nothing beside it says the answer was wrong and not what was wanted.
   it('shows the reading the card wanted when the answer missed', async () => {
@@ -253,6 +294,41 @@ describe('ReviewSession, moving on', () => {
     fireEvent.keyDown(deck(), { key: 'ArrowLeft' })
 
     expect(await screen.findByLabelText(COPY.review.prompt.reading)).toBeTruthy()
+  })
+
+  // A verdict carried by colour and a strike is one a reader who cannot see either never
+  // receives. The region is in the document before it holds anything, because one inserted
+  // with its text already in it is the case a screen reader routinely says nothing about.
+  it('says the verdict rather than only colouring it', async () => {
+    const field = session()
+
+    expect(screen.getByRole('status').textContent).toBe('')
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+
+    await waitFor(() =>
+      expect(screen.getByRole('status').textContent).toBe(COPY.review.verdict.correct),
+    )
+  })
+
+  it('asks the reader to rule when no tier could place the answer', async () => {
+    const field = session()
+
+    answer(field, 'quelque chose que rien ne place')
+
+    await waitFor(() =>
+      expect(screen.getByRole('status').textContent).toBe(COPY.review.askSelfGrade),
+    )
+  })
+
+  // The gesture is what continues, so it is what the focus is handed once a verdict stands:
+  // a reader who cannot see the card has no other way to find the control that grades it.
+  it('puts the focus on the deck once a verdict stands', async () => {
+    const field = session()
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+
+    await waitFor(() => expect(document.activeElement).toBe(deck()))
   })
 
   // The refusal is the field's, and it stops short of the cascade: nothing has been graded, so

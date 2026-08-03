@@ -1,7 +1,7 @@
 'use client'
 
 import { ScreenShell } from '@/ui/atoms/screen-shell'
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { runCascade } from '@/core/grading/cascade'
@@ -53,6 +53,46 @@ function SessionHeader({
       <DeckStrip queue={strip} index={index} />
     </>
   )
+}
+
+// The two are kept apart rather than one overwriting the other: what the cascade produced and
+// what the reader said instead are the labelled disagreement a review event carries, on exactly
+// the hard middle where a grader is worth correcting. `said` is what the tally counts and what
+// the deck advances on; `decided` is the half that no later reading can recover, and it waits
+// here for the assignment layer that will write it.
+type Reviewed = {
+  readonly decided: Verdict | null
+  readonly said: Verdict
+}
+
+// The end is a step of the loop like every other, so it takes the focus the same way, and only
+// once a step has been left: a deck that arrives empty was never a session, and taking the focus
+// as the page loads is what the field's own rule refuses.
+function Finished({ label, reached }: { label: string; reached: boolean }) {
+  const end = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    if (reached) end.current?.focus()
+  }, [reached])
+
+  return (
+    <ScreenShell>
+      <h1
+        ref={end}
+        tabIndex={-1}
+        className="animate-drift flex flex-1 items-center text-4xl leading-tight font-medium tracking-tight outline-none"
+      >
+        {label}
+      </h1>
+    </ScreenShell>
+  )
+}
+
+// What the strike and the colour say to a reader who can see them. Nothing until something has
+// been said about the card, then the verdict a tier reached, or the question put back to the
+// reader when none could.
+function spoken(answered: boolean, decided: Verdict | null, copy: ReviewCopy): string {
+  return !answered ? '' : decided === null ? copy.askSelfGrade : copy.verdict[decided]
 }
 
 // The card as a question: the field under the character until something has been said about
@@ -120,12 +160,15 @@ export function ReviewSession({
   const [index, setIndex] = useState(0)
   const [decided, setDecided] = useState<Verdict | null>(null)
   const [answered, setAnswered] = useState(false)
-  // Counted rather than derived from the index, because a question the reader got wrong and
-  // one they got right are the same step through the queue.
-  const [missed, setMissed] = useState(0)
+  const [reviewed, setReviewed] = useState<readonly Reviewed[]>([])
+  const verdictId = useId()
 
   const question = questions[index]
   const upcoming = questions[index + 1]
+
+  // Counted from what the reader said rather than from the index, because a card they got
+  // wrong and one they got right are the same step through the deck.
+  const missed = reviewed.filter((entry) => entry.said === 'incorrect').length
 
   const submit = async (asked: Question, raw: string) => {
     const outcome = await runCascade(
@@ -145,27 +188,27 @@ export function ReviewSession({
   }
 
   // One gesture grades and moves on, which is what removes the grading bar: right is the
-  // reader saying the answer was right, left that it was wrong.
+  // reader saying the answer was right, left that it was wrong. Both halves are kept, since
+  // what the cascade produced cannot be rebuilt from the correction alone.
   function decide(direction: SwipeDirection) {
-    if (direction === 'left') setMissed(missed + 1)
+    setReviewed([...reviewed, { decided, said: direction === 'right' ? 'correct' : 'incorrect' }])
     setAnswered(false)
     setDecided(null)
     setIndex(index + 1)
   }
 
-  if (question === undefined) {
-    return (
-      <ScreenShell>
-        <h1 className="animate-drift flex flex-1 items-center text-4xl leading-tight font-medium tracking-tight">
-          {copy.done}
-        </h1>
-      </ScreenShell>
-    )
-  }
+  if (question === undefined) return <Finished label={copy.done} reached={index > 0} />
 
   return (
     <ScreenShell>
       <SessionHeader questions={questions} index={index} />
+
+      {/* Mounted whether or not it holds anything, because a polite region has to be in the
+          document before its content changes: one inserted with its text already in it is the
+          case a screen reader routinely says nothing about. */}
+      <p role="status" id={verdictId} className="sr-only">
+        {spoken(answered, decided, copy)}
+      </p>
 
       <div className="pb-safe relative flex min-h-0 flex-1 flex-col pt-3">
         <div className="relative min-h-0 flex-1">
@@ -175,6 +218,7 @@ export function ReviewSession({
             leftLabel={copy.grade.incorrect}
             rightLabel={copy.grade.correct}
             label={copy.askSelfGrade}
+            describedBy={verdictId}
             disabled={!answered}
             behind={
               upcoming === undefined ? undefined : (
@@ -196,7 +240,7 @@ export function ReviewSession({
               foot={
                 answered ? (
                   <SessionTally
-                    done={index - missed}
+                    done={reviewed.filter((entry) => entry.said === 'correct').length}
                     left={questions.length - index}
                     missed={missed}
                     copy={copy.tally}
