@@ -51,7 +51,11 @@ export const Refused: Story = {
 }
 
 // Judged and still on the screen, which is what an answer that did not stand looks like: the
-// question stops being asked and the word above it is struck.
+// question stops being asked and the word above it is struck. Typed rather than posed, because
+// an empty rule struck through is a state the reader never reaches.
 export const Judged: Story = {
   args: { kind: 'meaning', label: COPY.prompt.meaning, judged: true },
+  play: async ({ canvasElement }) => {
+    await userEvent.type(within(canvasElement).getByLabelText(COPY.prompt.meaning), 'la terre')
+  },
 }

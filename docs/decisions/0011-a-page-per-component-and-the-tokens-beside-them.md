@@ -30,10 +30,10 @@ every component a page and add a page for the tokens themselves.
 
 ## Decision
 
-**Every component under `src/ui/` has a page, except one whose content arrives as `children`.** A
+**Every component under `src/ui/` has a page, except those whose content arrives as `children`.** A
 container's page would have to invent what it contains, and invention in a story is the first step
-toward the second renderer 0009 refuses. Those are read through the component that fills them, which
-is how the shell and the well were already read.
+toward the second renderer 0009 refuses. There are six today, the shell, the well, the block, the card
+behind the deck, the session frame and the deck itself, and each is read through whatever fills it.
 
 **The rule that a story supplies arguments and never markup is unchanged**, and it is what decides the
 exception above rather than being weakened by it. States that follow from a machine are still reached

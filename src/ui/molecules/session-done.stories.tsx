@@ -8,7 +8,7 @@ import { SessionDone } from './session-done'
 // way. It carries its own shell, which is why this page is full bleed.
 const meta = {
   component: SessionDone,
-  parameters: { layout: 'fullscreen' },
+  parameters: { fullBleed: true },
   args: { label: copyFor('fr').review.done },
 } satisfies Meta<typeof SessionDone>
 

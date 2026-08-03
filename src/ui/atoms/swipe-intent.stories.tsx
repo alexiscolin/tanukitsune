@@ -21,8 +21,9 @@ type Story = StoryObj<typeof meta>
 // At rest, where neither verdict is being headed for and neither is legible.
 export const Still: Story = { args: { toward: null, reached: 0 } }
 
-// Pulled far enough to be read, well before it is far enough to commit.
-export const TowardWrong: Story = { args: { toward: 'left', reached: 0.4 } }
+// Each verdict at full strength, which is what it reaches before the gesture commits. The
+// partial opacities between those two are the reveal itself rather than a state: a still frame
+// of one claims a contrast that instant never has to hold, and the audit is right to refuse it.
+export const TowardWrong: Story = { args: { toward: 'left', reached: 1 } }
 
-// At the threshold, where the verdict is at full strength and releasing says it.
 export const TowardRight: Story = { args: { toward: 'right', reached: 1 } }

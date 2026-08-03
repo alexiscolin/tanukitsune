@@ -92,11 +92,13 @@ const RADII: readonly { readonly label: string; readonly radius: string }[] = [
   { label: '4xl', radius: 'rounded-4xl' },
 ]
 
-// The whole entrance vocabulary: six pixels and a blur, and two things that never stop.
+// The whole entrance vocabulary: six pixels and a blur, and two things that never stop. Each
+// names the curve it spends, which is how the easings are read: a cubic-bezier shown as four
+// numbers says nothing, and shown on the motion it drives it says everything.
 const MOTION: readonly { readonly label: string; readonly motion: string }[] = [
-  { label: 'drift, every entrance', motion: 'animate-drift' },
-  { label: 'breathe, the one control', motion: 'animate-breathe' },
-  { label: 'pulse, the session running', motion: 'animate-pulse-dot' },
+  { label: 'drift, on ease-out-soft', motion: 'animate-drift' },
+  { label: 'breathe, on ease-in-out-soft', motion: 'animate-breathe' },
+  { label: 'pulse, on ease-in-out-soft', motion: 'animate-pulse-dot' },
 ]
 
 function Heading({ title }: { title: string }) {
@@ -166,6 +168,37 @@ export function DesignTokens() {
               </span>
             </span>
           ))}
+        </div>
+      </section>
+
+      {/* The four that are not a colour, a size or a curve, and that no gate weighs: the one
+          shadow the interface spends, the blur that is not meant to be seen as blur, how far a
+          masked edge fades, and the two families. */}
+      <section className="flex flex-col gap-3">
+        <Heading title="Elevation, edge and letter" />
+        <div className="flex flex-wrap items-start gap-6">
+          <span className="flex w-24 flex-col gap-1.5">
+            <span className="h-12 w-full rounded-2xl bg-[var(--color-surface)] shadow-card" />
+            <span className="text-2xs leading-none text-[var(--color-ink-muted)]">shadow card</span>
+          </span>
+          <span className="flex w-24 flex-col gap-1.5">
+            <span lang="ja" className="blur-hair h-12 text-4xl leading-none">
+              下
+            </span>
+            <span className="text-2xs leading-none text-[var(--color-ink-muted)]">blur hair</span>
+          </span>
+          <span className="flex w-24 flex-col gap-1.5">
+            <span className="mask-fade-b h-12 w-full rounded-md bg-[var(--color-ink-muted)]" />
+            <span className="text-2xs leading-none text-[var(--color-ink-muted)]">fade</span>
+          </span>
+          <span className="flex flex-col gap-1.5">
+            <span className="font-sans text-lg">Descendre, sous, bas</span>
+            <span className="text-2xs leading-none text-[var(--color-ink-muted)]">sans</span>
+            <span lang="ja" className="font-jp text-lg">
+              下がる、下ろす
+            </span>
+            <span className="text-2xs leading-none text-[var(--color-ink-muted)]">jp</span>
+          </span>
         </div>
       </section>
     </div>

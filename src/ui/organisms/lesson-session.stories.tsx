@@ -13,7 +13,7 @@ const COPY = copyFor('fr')
 const meta = {
   component: LessonSession,
   args: { deck: DEMO_DECK, copy: COPY.review, subjectCopy: COPY.subject },
-  parameters: { layout: 'fullscreen' },
+  parameters: { fullBleed: true },
 } satisfies Meta<typeof LessonSession>
 
 export default meta
