@@ -51,8 +51,10 @@ async function catalogued(page: Page): Promise<string[]> {
 // One test walks every story, and each one waits on a play function that types before an
 // audit runs, against a catalogue compiling on first hit. The default thirty seconds is a
 // budget for one page, not for a catalogue, and exceeding it would read as a flaky runner
-// rather than as the too-small number it is.
-test.describe.configure({ timeout: 120_000 })
+// rather than as the too-small number it is. The number below is a budget for the catalogue,
+// so it grows with it: every component has a page, which is a few states each rather than the
+// dozen the three screens held.
+test.describe.configure({ timeout: 300_000 })
 
 // The width .storybook/preview.tsx lands on, because the toolbar that applies it belongs to
 // the manager and this suite goes straight to the frame: without saying so, every state

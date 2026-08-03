@@ -10,15 +10,7 @@ import { copyFor } from '@/core/site-copy'
 
 const meta = {
   component: SubjectCard,
-  parameters: { layout: 'fullscreen' },
   args: { flow: 'lesson' as const, revealed: true, copy: copyFor('fr').subject },
-  decorators: [
-    (Story) => (
-      <div className="h-screen-safe -m-6 flex flex-col bg-[var(--color-canvas)] p-6">
-        <Story />
-      </div>
-    ),
-  ],
 } satisfies Meta<typeof SubjectCard>
 
 export default meta

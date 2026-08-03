@@ -35,9 +35,20 @@ const preview: Preview = {
       document.documentElement.dataset.theme = theme
       document.documentElement.style.colorScheme = theme
 
-      // Not wrapped: every screen carries its own shell, and a second one around it would
-      // measure a rhythm the product never has.
-      return <Story />
+      // A screen carries its own shell, and a second one around it would measure a rhythm the
+      // product never has, so a story that declares itself full bleed gets nothing.
+      if (context.parameters.layout === 'fullscreen') return <Story />
+
+      // Everything else is a piece rendered alone, which needs a ground to be seen against and
+      // a height to resolve against: a card is full height inside its deck, and a box with no
+      // definite height of its own gives it nothing to be full of. The ground is here rather
+      // than in a story because a story that draws its own surface is a story writing markup,
+      // which docs/decisions/0009-storybook-as-the-review-surface.md refuses.
+      return (
+        <div className="h-screen-safe flex flex-col gap-6 bg-[var(--color-canvas)] p-6">
+          <Story />
+        </div>
+      )
     },
   ],
 }

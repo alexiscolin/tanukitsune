@@ -239,9 +239,13 @@ supplies arguments and never markup, which is what keeps the catalogue a second 
 renderer instead of a second renderer. Why it stops at `src/ui/`, and why states are reached by
 typing rather than by passing a property: [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md).
 
-The states of the review loop are what is catalogued. `src/ui/molecules/answer-field.tsx` appears
-inside them and `src/ui/atoms/screen-shell.tsx` around them, neither with a page of its own, and nothing
-requires a component under `src/ui/` to have one.
+The states of the review loop are catalogued, and so is every component under `src/ui/` on its own
+page. The exception is a component whose content arrives as `children`, such as
+`src/ui/atoms/screen-shell.tsx` and `src/ui/atoms/subject-well.tsx`: a page for one would have to
+invent what it contains, and that is the markup rule again. Those are read through whatever fills
+them. `src/ui/catalogue/` holds what the catalogue needs and the product does not render, which today
+is the page showing the tokens against each other. Why a page each, and why the ground comes from
+`.storybook/preview.tsx` rather than from a story: [`decisions/0011-a-page-per-component-and-the-tokens-beside-them.md`](decisions/0011-a-page-per-component-and-the-tokens-beside-them.md).
 
 The accessibility addon runs the audit per state for whoever has the catalogue open, and
 `e2e/catalogue.spec.ts` runs the same rules over every state in both themes for everyone else:
