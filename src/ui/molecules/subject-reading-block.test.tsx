@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { KANJI } from '@/core/demo-deck'
+import { KANJI, VERB } from '@/core/demo-deck'
 import { copyFor } from '@/core/site-copy'
 import type { Reading } from '@/core/subject'
 
@@ -37,25 +37,31 @@ describe('SubjectReadingBlock', () => {
   // A reading the convention gives no kind takes the plain label, since the script cannot say
   // for itself which of the two it is.
   it('labels an untyped kind plainly', () => {
-    render(<SubjectReadingBlock readings={[reading('でる', null, true)]} copy={COPY} />)
+    render(<SubjectReadingBlock readings={VERB.readings} copy={COPY} />)
 
     expect(screen.getByText(COPY.plainReading)).toBeTruthy()
   })
 
+  // The split is the decision, not the punctuation between two readings of one kind, so what is
+  // asserted is that the two lines are two lines.
   it('keeps what may be answered apart from what is only shown', () => {
     render(
       <SubjectReadingBlock
         readings={[
           reading('カ', 'onyomi', true),
           reading('ゲ', 'onyomi', true),
-          reading('した', 'kunyomi', false),
+          reading('した', 'onyomi', false),
         ]}
         copy={COPY}
       />,
     )
 
-    expect(screen.getByText('カ · ゲ')).toBeTruthy()
-    expect(screen.getByText('した', { exact: false })).toBeTruthy()
+    const answerable = screen.getByText(/カ/)
+    const shown = screen.getByText(/した/)
+
+    expect(answerable.textContent).toContain('ゲ')
+    expect(shown).not.toBe(answerable)
+    expect(answerable.textContent).not.toContain('した')
   })
 
   // The source sends six kun'yomi on this character and accepts none of them. Dropping the

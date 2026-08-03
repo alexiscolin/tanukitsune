@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react'
+import { act, cleanup, renderHook } from '@testing-library/react'
 import type { UIEvent } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -22,6 +22,8 @@ beforeEach(() => {
     frames[id - 1] = () => {}
   })
 })
+
+afterEach(cleanup)
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -48,6 +50,24 @@ describe('useCollapse', () => {
     })
 
     expect(frames).toHaveLength(1)
+  })
+
+  // One a frame, not one at all: the gate the first reading closes is reopened by the frame
+  // that runs it, or the sheet freezes where the reader first touched it.
+  it('asks for another frame once the one it was holding has run', () => {
+    const { result } = renderHook(() => useCollapse())
+
+    act(() => {
+      result.current.follow(scrolledBy(20))
+    })
+    act(() => {
+      frames[0]?.()
+    })
+    act(() => {
+      result.current.follow(scrolledBy(90))
+    })
+
+    expect(frames).toHaveLength(2)
   })
 
   // The share is the scroll over the distance the character gives up its room across, which is

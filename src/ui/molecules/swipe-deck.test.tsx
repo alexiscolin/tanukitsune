@@ -81,7 +81,7 @@ describe('SwipeDeck, by pointer', () => {
 })
 
 describe('SwipeDeck, by keyboard', () => {
-  it('reaches the same two outcomes, since a gesture needs a pointer and a reader may have none', () => {
+  it('grades right, since a gesture needs a pointer and a reader may have none', () => {
     const decided = vi.fn()
     const group = deck(decided)
 
@@ -91,6 +91,19 @@ describe('SwipeDeck, by keyboard', () => {
     })
 
     expect(decided).toHaveBeenCalledWith('right')
+  })
+
+  // Both outcomes, or the keyboard reaches only the half of the loop that says an answer stood.
+  it('grades left too', () => {
+    const decided = vi.fn()
+    const group = deck(decided)
+
+    fireEvent.keyDown(group, { key: 'ArrowLeft' })
+    act(() => {
+      vi.advanceTimersByTime(400)
+    })
+
+    expect(decided).toHaveBeenCalledWith('left')
   })
 
   // The same two keys move a caret, and those presses bubble up to the deck. Grading on one
