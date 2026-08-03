@@ -1,11 +1,9 @@
 'use client'
 
-import Image from 'next/image'
-
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode, UIEvent } from 'react'
 
-import { Line, Patterns, Prose, ReadingBlock, Sentences, Strip, Well } from '@/ui/atoms/subject-blocks'
+import { GlyphFace, Line, Patterns, Prose, ReadingBlock, Sentences, Strip, Well } from '@/ui/atoms/subject-blocks'
 import { acceptedIn, bandOf, refusedIn } from '@/core/subject'
 import type { AnswerKind } from '@/core/answer-kind'
 
@@ -48,16 +46,31 @@ const GLYPH_SHORT = 4.25
 const GLYPH_SHRINK = 0.6
 
 
-// A single character is the whole screen, and a word gives that room back per character it
-// adds. Read off the length rather than off the type, because the type does not predict it:
-// the source sends a vocabulary of one character and one of six, and at a size chosen for the
-// type the second runs past both edges of the card.
-function sizeFor(characters: string): string {
-  if (characters.length <= 1) return 'text-6xl'
-  if (characters.length === 2) return 'text-5xl'
-  if (characters.length <= 4) return 'text-4xl'
+// How far the sheet has been pulled up, and the handler that follows it. A momentum scroll
+// fires every few pixels and each event renders the whole sheet, so the reading is coalesced
+// to one a frame, and a card that leaves mid-scroll takes its pending frame with it.
+function useCollapse() {
+  const [gone, setGone] = useState(0)
+  const frame = useRef<number | null>(null)
 
-  return 'text-2xl'
+  useEffect(
+    () => () => {
+      if (frame.current !== null) cancelAnimationFrame(frame.current)
+    },
+    [],
+  )
+
+  function follow(event: UIEvent<HTMLDivElement>) {
+    if (frame.current !== null) return
+
+    const sheet = event.currentTarget
+    frame.current = requestAnimationFrame(() => {
+      frame.current = null
+      setGone(Math.min(sheet.scrollTop / COLLAPSE_OVER, 1))
+    })
+  }
+
+  return { gone, follow }
 }
 
 export function SubjectCard({
@@ -91,14 +104,7 @@ export function SubjectCard({
   // make the reader tap before being taught.
   const open = flow === 'lesson' || revealed
   const band = bandOf(subject.srsStage)
-  // How far the sheet has been pulled up, from nothing to fully collapsed. The character
-  // gives its room to what is being read rather than holding a third of the card while the
-  // reader is somewhere else in it.
-  const [gone, setGone] = useState(0)
-
-  function follow(event: UIEvent<HTMLDivElement>) {
-    setGone(Math.min(event.currentTarget.scrollTop / COLLAPSE_OVER, 1))
-  }
+  const { gone, follow } = useCollapse()
 
   return (
     <article className="flex h-full flex-col rounded-3xl bg-[var(--color-surface)] px-8 pt-5 pb-8 shadow-card sm:px-10 sm:pb-10">
@@ -237,44 +243,6 @@ function Filing({
   )
 }
 
-// The subject's own glyph, and the only one the reader is meant to read: a radical with no Unicode
-// character arrives as an SVG, sized against the type rather than given a box.
-function GlyphFace({ subject }: { subject: Subject }) {
-  if (subject.characters === null) {
-    // The file the source serves is a black vector drawn for a pale ground, and it arrives
-    // without the headers that would let it be used as a mask, so it is turned over on the
-    // dark ground instead. Unoptimised on purpose: putting a vector through a raster
-    // optimiser costs a request and returns the same file. The alternative text is the
-    // meaning, because that is what the shape says.
-    return (
-      <Image
-        src={subject.characterImage ?? ''}
-        alt={subject.meanings[0]?.text ?? ''}
-        width={80}
-        height={80}
-        unoptimized
-        // Never deferred: this is the subject of the card, not something further down it, and
-        // the lazy loader does not fire reliably for it inside a scrolling container. A glyph
-        // that arrives late is a question the reader cannot read.
-        loading="eager"
-        className="inked-art size-20 object-contain"
-      />
-    )
-  }
-
-  return (
-    <h1
-      lang="ja"
-      // The line box is the em box and nothing more. The empty band a leading of 1.25 leaves
-      // under a Japanese glyph is what reads as a gap before the sheet, and the fixed box
-      // around this one is what makes taking it away safe.
-      className={`text-center leading-none font-light tracking-tight ${sizeFor(subject.characters)}`}
-    >
-      {subject.characters}
-    </h1>
-  )
-}
-
 // The order is the order it is learnt in: what it means, what that really covers, how it is
 // read, how to keep it, what it is made of, and only then how it behaves in a sentence.
 function SubjectBody({
@@ -355,9 +323,8 @@ function RevealDot({
   copy: SubjectCopy
   onReveal: () => void
 }) {
-  // Revealed, the card has nothing left to give up, so the control is spent whether or not the
-  // subject carries audio: nothing plays it yet, and a control that is announced and answers to
-  // nothing is worse than one that says it is finished.
+  // Revealed, the card has nothing left to give up, so the control is spent: nothing plays the
+  // audio yet, and a control that answers to nothing is worse than one that says it is done.
   return (
     <button
       type="button"
