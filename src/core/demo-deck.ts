@@ -22,7 +22,7 @@ import type { Component, Subject } from './subject'
 // kana.
 
 const GROUND: Component = { id: 440, characters: '一', meaning: 'sol' }
-const TOE: Component = { id: 8762, characters: 'ト', meaning: 'orteil' }
+const HOOK: Component = { id: 8762, characters: 'ト', meaning: 'crochet' }
 const COLOUR: Component = { id: 507, characters: '色', meaning: 'couleur' }
 const REPEAT: Component = { id: 8769, characters: '々', meaning: 'répétition' }
 const ABOVE: Component = { id: 450, characters: '上', meaning: 'dessus' }
@@ -54,7 +54,7 @@ export const KANJI: Subject = {
   ],
   partsOfSpeech: [],
   sentences: [],
-  components: [GROUND, TOE],
+  components: [GROUND, HOOK],
   usedIn: [
     { id: 2493, characters: '下', meaning: 'le dessous' },
     { id: 2506, characters: '地下', meaning: 'sous-sol' },
@@ -65,7 +65,7 @@ export const KANJI: Subject = {
   alsoAccepted: ['en dessous'],
   jlpt: 'N5',
   nuance: "La position, pas le mouvement : descendre se dit avec un verbe, pas avec ce kanji seul.",
-  mnemonic: "Un orteil ト qui pointe vers le sol 一 : ce qui est en dessous.",
+  mnemonic: "Un crochet ト accroché sous le sol 一 : ce qui est en dessous.",
   patterns: [],
   hidden: false,
   srsStage: null,
@@ -190,15 +190,16 @@ export const MANY: Subject = {
   readingNote: null,
 }
 
-// No Unicode character at all. The source sends eight images of it and one of them is a
-// vector, which is the one a card renders.
+// No Unicode character at all, which is a shape the source really sends: it invents bricks
+// that no encoding carries, so the card has to render one from a vector. The brick is drawn
+// here and named here, since docs/specs/v0.1.md refuses their invented set, names included.
 export const IMAGED: Subject = {
   id: 8766,
   type: 'radical',
   level: 4,
   characters: null,
-  characterImage: 'https://files.wanikani.com/8v0hjy2gh2dnmh1cgbcg8cedpd58',
-  meanings: [{ text: 'mendiant', primary: true, accepted: true }],
+  characterImage: '/demo/radical-cle-barree.svg',
+  meanings: [{ text: 'clé barrée', primary: true, accepted: true }],
   readings: [],
   partsOfSpeech: [],
   sentences: [],
@@ -209,7 +210,7 @@ export const IMAGED: Subject = {
   refused: [],
   alsoAccepted: [],
   jlpt: null,
-  nuance: "Une brique inventée par la source, pas une clé traditionnelle : son nom n'a de sens que dans leur système.",
+  nuance: "Une brique de découpage, pas une clé traditionnelle : elle sert à lire le caractère et ne se rencontre jamais seule.",
   mnemonic: null,
   patterns: [],
   hidden: false,
