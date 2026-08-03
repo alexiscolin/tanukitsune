@@ -4,9 +4,8 @@ import { DEMO_DECK } from '@/core/demo-deck'
 
 import { DeckStrip, stripItemFor } from './deck-strip'
 
-// The queue felt rather than listed. It is hidden from the accessibility tree, because it
-// repeats the subject the heading already carries, so what there is to judge here is the
-// recession, the dot under the active glyph and where the row comes to rest.
+// The strip is hidden from the accessibility tree, so what there is to judge on this page is
+// the recession, the dot under the active glyph, and where the row comes to rest.
 const QUEUE = DEMO_DECK.map((subject) => stripItemFor(subject, `${subject.id}`))
 
 const meta = { component: DeckStrip, args: { queue: QUEUE } } satisfies Meta<typeof DeckStrip>

@@ -6,8 +6,6 @@ import { copyFor } from '@/core/site-copy'
 
 import { QuestionCard } from './question-card'
 
-// The card as a question: the field under the character until something has been said about it,
-// and gone once it was right, because there is then nothing left to compare it against.
 const COPY = copyFor('fr')
 
 // Named rather than taken from the head of the deck, since the answers typed below are this

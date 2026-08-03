@@ -4,8 +4,6 @@ import { copyFor } from '@/core/site-copy'
 
 import { RevealDot } from './reveal-dot'
 
-// The single vermillon dot, and the only accent the screen spends. It breathes while there is
-// something to reveal and is spent once there is not.
 const meta = {
   component: RevealDot,
   args: { copy: copyFor('fr').subject, onReveal: () => {}, listens: false },

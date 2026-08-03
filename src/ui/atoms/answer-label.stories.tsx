@@ -6,9 +6,6 @@ import { AnswerLabel } from './answer-label'
 
 const COPY = copyFor('fr').review
 
-// Which of the two questions is being put, and the only word on the screen while it is being
-// put. It goes once the answer has been judged, and only its ink goes: the field still owes a
-// screen reader its name.
 const meta = {
   component: AnswerLabel,
   args: { htmlFor: 'answer', judged: false },

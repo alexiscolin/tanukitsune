@@ -6,9 +6,6 @@ import { SwipeIntent } from './swipe-intent'
 
 const COPY = copyFor('fr').review
 
-// The two verdicts sit behind the card and surface as it is pulled toward one, so the reader
-// reads what they are about to say before they commit to saying it. Which one, and how far, are
-// the gesture's to say: this only draws them.
 const meta = {
   component: SwipeIntent,
   args: { left: COPY.grade.incorrect, right: COPY.grade.correct },

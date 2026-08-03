@@ -2,8 +2,6 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { DeckGlyph } from './deck-glyph'
 
-// Drawn rather than set, so the character recedes to a ratio no text may carry. One em of
-// advance per character, which is what decides the width of every state below.
 const meta = { component: DeckGlyph } satisfies Meta<typeof DeckGlyph>
 
 export default meta

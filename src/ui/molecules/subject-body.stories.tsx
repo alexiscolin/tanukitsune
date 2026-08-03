@@ -5,10 +5,6 @@ import { copyFor } from '@/core/site-copy'
 
 import { SubjectBody } from './subject-body'
 
-// The sheet under the character, in the order it is learnt in: what it means, what that really
-// covers, how it is read, how to keep it, what it is made of, and only then how it behaves in a
-// sentence. Every block is the same shape, and the only line ever drawn is the hairline between
-// two of them.
 const meta = {
   component: SubjectBody,
   args: { copy: copyFor('fr').subject },

@@ -5,9 +5,6 @@ import { copyFor } from '@/core/site-copy'
 
 import { AnswerField } from './answer-field'
 
-// There is no field to see: a rule, centred under the character, and the answer appearing on it
-// as it is typed. What the reader can be told is carried by the rule's colour and by a strike,
-// never by hue alone.
 const COPY = copyFor('fr').review
 
 const meta = {

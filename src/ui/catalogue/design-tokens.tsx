@@ -16,28 +16,26 @@ import type { Band, SubjectType } from '@/core/subject'
 
 type Swatch = { readonly label: string; readonly token: string }
 
-// The more an item is known, the further its colour recedes toward the colour of the text.
-const RAMP: Record<Band, string> = {
-  lesson: '--color-srs-lesson',
-  apprentice: '--color-srs-apprentice',
-  guru: '--color-srs-guru',
-  master: '--color-srs-master',
-  enlightened: '--color-srs-enlightened',
-  burned: '--color-srs-burned',
+// Keyed by the unions the product keys on, so a rung or a subject type added without a swatch
+// is a compile error rather than a page that quietly shows a shorter ramp. The caption is
+// written rather than taken from the key, which would put an identifier on a page whose whole
+// job is to be read.
+const RAMP: Record<Band, Swatch> = {
+  lesson: { label: 'lesson', token: '--color-srs-lesson' },
+  apprentice: { label: 'apprentice', token: '--color-srs-apprentice' },
+  guru: { label: 'guru', token: '--color-srs-guru' },
+  master: { label: 'master', token: '--color-srs-master' },
+  enlightened: { label: 'enlightened', token: '--color-srs-enlightened' },
+  burned: { label: 'burned', token: '--color-srs-burned' },
 }
 
-// Blue for the building block, pink for the character, purple for the word.
-const TYPES: Record<SubjectType, string> = {
-  radical: '--color-radical',
-  kanji: '--color-kanji',
-  vocabulary: '--color-vocab',
-  kanaVocabulary: '--color-kana-vocab',
-  grammar: '--color-grammar',
-  conjugation: '--color-conjugation',
-}
-
-function swatchesOf(tokens: Record<string, string>): readonly Swatch[] {
-  return Object.entries(tokens).map(([label, token]) => ({ label, token }))
+const TYPES: Record<SubjectType, Swatch> = {
+  radical: { label: 'radical', token: '--color-radical' },
+  kanji: { label: 'kanji', token: '--color-kanji' },
+  vocabulary: { label: 'vocabulary', token: '--color-vocab' },
+  kanaVocabulary: { label: 'kana vocabulary', token: '--color-kana-vocab' },
+  grammar: { label: 'grammar', token: '--color-grammar' },
+  conjugation: { label: 'conjugation', token: '--color-conjugation' },
 }
 
 const GROUPS: readonly { readonly title: string; readonly swatches: readonly Swatch[] }[] = [
@@ -70,12 +68,12 @@ const GROUPS: readonly { readonly title: string; readonly swatches: readonly Swa
       { label: 'destructive', token: '--color-destructive' },
     ],
   },
-  { title: 'The mastery ramp, receding toward the ink', swatches: swatchesOf(RAMP) },
-  { title: 'The one categorical use of colour', swatches: swatchesOf(TYPES) },
+  { title: 'The mastery ramp, receding toward the ink', swatches: Object.values(RAMP) },
+  { title: 'The one categorical use of colour', swatches: Object.values(TYPES) },
 ]
 
-// Two ends and almost nothing between them, which is the claim these lists are here to be
-// judged against. Each holds the utility that spends the token rather than the token's value.
+// What draws a token rather than what a token is: the utility that spends it, so the sample is
+// the interface's own way of spending it and not a second one written here.
 type Step = { readonly label: string; readonly spends: string }
 
 const SCALE: readonly Step[] = [
@@ -103,19 +101,18 @@ const RADII: readonly Step[] = [
   { label: '4xl', spends: 'rounded-4xl' },
 ]
 
-// The whole entrance vocabulary: six pixels and a blur, and two things that never stop.
 const MOTION: readonly Step[] = [
   { label: 'drift, on ease-out-soft', spends: 'animate-drift' },
   { label: 'breathe, on ease-in-out-soft', spends: 'animate-breathe' },
   { label: 'pulse, on ease-in-out-soft', spends: 'animate-pulse-dot' },
 ]
 
-// The four that are not a colour, a size or a curve: the one shadow the interface spends, the
-// blur that is meant not to be seen as blur, the edge a scrolling sheet fades under, and the
-// padding that edge owes its content, which is what keeps the last line clear of the fade.
+// The one shadow the interface spends, and the edge a scrolling sheet fades under. The padding
+// that edge owes its content has no sample: it is a length spent on whatever the sheet holds,
+// and a band with nothing in it would show a claim rather than the token.
 const EDGES: readonly Step[] = [
   { label: 'shadow card', spends: 'rounded-2xl bg-[var(--color-surface)] shadow-card' },
-  { label: 'masked edge and its padding', spends: 'mask-fade-b pb-fade bg-[var(--color-ink-muted)]' },
+  { label: 'masked edge', spends: 'mask-fade-b bg-[var(--color-ink-muted)]' },
 ]
 
 function Heading({ title }: { title: string }) {

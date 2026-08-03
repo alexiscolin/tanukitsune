@@ -5,8 +5,6 @@ import { copyFor } from '@/core/site-copy'
 
 import { SubjectHeadline } from './subject-headline'
 
-// The answer where the eye already is, with no heading over it: on a card that has just opened
-// it is the one thing the reader came for. What it carries depends on which question was put.
 const meta = {
   component: SubjectHeadline,
   args: { copy: copyFor('fr').subject },
@@ -22,7 +20,15 @@ export const Meaning: Story = { args: { subject: KANJI, asked: 'meaning' } }
 // Asked for a reading, so it is the readings, set in Japanese and separated by the middle dot.
 export const Reading: Story = { args: { subject: KANJI, asked: 'reading' } }
 
-// The glosses the source lists without accepting, qualified under the line rather than given a
-// heading of their own. A lesson puts no question at all, which reaches the same branch: only a
-// reading asked for is what this component turns on.
-export const AlsoShown: Story = { args: { subject: VERB, asked: 'meaning' } }
+// A gloss the source shows and refuses as an answer, qualified under the line rather than given
+// a heading of its own. Posed rather than taken from the deck, which carries none: the six the
+// deck refuses are readings, and this line is about meanings.
+export const AlsoShown: Story = {
+  args: {
+    subject: {
+      ...VERB,
+      meanings: [...VERB.meanings, { text: 'sortir quelque chose', primary: false, accepted: false }],
+    },
+    asked: 'meaning',
+  },
+}

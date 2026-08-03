@@ -2,8 +2,6 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { SessionRule } from './session-rule'
 
-// Three quantities on one hairline: what is passed, what was missed, what is left. The width
-// is the quantity and the colour says which, so every state below is read without a digit.
 const meta = { component: SessionRule } satisfies Meta<typeof SessionRule>
 
 export default meta

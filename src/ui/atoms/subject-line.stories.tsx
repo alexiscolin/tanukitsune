@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
+import { VERB } from '@/core/demo-deck'
 import { copyFor } from '@/core/site-copy'
 
 import { SubjectLine } from './subject-line'
@@ -18,10 +19,9 @@ export const Several: Story = {
   args: { label: COPY.synonyms, values: ['baisser', 'abaisser', 'faire descendre'] },
 }
 
-// The rule through the words says refused, and it says it alone: an opacity over the top would
-// put them under the contrast floor to repeat what the rule already carries.
+// The one state that draws a rule through what it lists.
 export const Struck: Story = {
-  args: { label: COPY.never, values: ['retirer', 'sortir quelque chose'], struck: true },
+  args: { label: COPY.never, values: VERB.refused, struck: true },
 }
 
 // Nothing to say, so nothing is drawn, not a heading over an empty line.

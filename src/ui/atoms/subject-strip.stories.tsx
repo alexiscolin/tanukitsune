@@ -7,8 +7,6 @@ import { SubjectStrip } from './subject-strip'
 
 const COPY = copyFor('fr').subject
 
-// Glyphs rather than a list: the reader has to see the pieces to recognise them in the next
-// character, and their meanings sit under them at label size.
 const meta = { component: SubjectStrip } satisfies Meta<typeof SubjectStrip>
 
 export default meta

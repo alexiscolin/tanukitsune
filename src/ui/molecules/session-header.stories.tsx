@@ -5,8 +5,6 @@ import { DEMO_DECK } from '@/core/demo-deck'
 import { stripItemFor } from './deck-strip'
 import { SessionHeader } from './session-header'
 
-// The mark and the counter on one row, the deck on a band of its own under them. The total is
-// the queue's own length, so the counter and the strip cannot disagree.
 const QUEUE = DEMO_DECK.map((subject) => stripItemFor(subject, `${subject.id}`))
 
 const meta = {

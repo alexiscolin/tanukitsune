@@ -5,7 +5,6 @@ import { copyFor } from '@/core/site-copy'
 
 import { SubjectPatterns } from './subject-patterns'
 
-// What a list of meanings never teaches: which particle follows the word and what it takes.
 const meta = {
   component: SubjectPatterns,
   args: { label: copyFor('fr').subject.patterns },
