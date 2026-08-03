@@ -196,6 +196,11 @@ function Behind({
   return (
     <div
       aria-hidden
+      // Beside the hiding rather than instead of it: `aria-hidden` promises the card behind is
+      // not there, and only `inert` keeps the tab order from walking into it and proving
+      // otherwise. The card draws a sheet that scrolls, and a sheet that scrolls owns a tab
+      // stop wherever it is rendered.
+      inert
       className="absolute inset-0 origin-bottom"
       style={{
         transform: `scale(${0.965 + 0.035 * reached}) translateY(${10 * (1 - reached)}px)`,

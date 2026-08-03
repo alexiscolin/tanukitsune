@@ -140,6 +140,10 @@ export function SubjectCard({
         // is what removes the band of padding a permanent one would need to stay clear of.
         <div
           onScroll={follow}
+          // The one region on the card that scrolls, so the one that owes a tab stop: reached
+          // by pointer and by touch and by nothing else, it would show a keyboard reader the
+          // readings and hide the mnemonic, the patterns and every sentence under them.
+          tabIndex={0}
           className={`no-scrollbar animate-drift flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto pb-fade ${
             gone > 0 ? 'mask-fade-y' : 'mask-fade-b'
           }`}
@@ -218,7 +222,10 @@ function Filing({
 }) {
   return (
     <p className="eyebrow flex flex-wrap items-center gap-2 pt-1 text-[var(--color-ink-muted)]">
-      <span className="opacity-60">
+      {/* Behind the band beside it by carrying no colour of its own, and never by an opacity:
+          a sixty percent of the muted ink reads at 2.38:1, which is a line the reader is shown
+          and cannot read. */}
+      <span>
         {[
           copy.type[subject.type],
           `${copy.level} ${subject.level}`,

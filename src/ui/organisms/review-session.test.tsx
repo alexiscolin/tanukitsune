@@ -83,6 +83,20 @@ describe('ReviewSession, answering', () => {
     expect(await screen.findByText(COPY.subject.nuance)).toBeTruthy()
   })
 
+  // The sheet is the only thing on the card that scrolls, and a subject with enough readings
+  // fills it past the window. A region that scrolls and cannot be reached shows a keyboard
+  // reader its first lines and hides the rest, so it carries a tab stop of its own.
+  it('lets the keyboard reach the sheet it has to scroll', async () => {
+    const field = session()
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+    await screen.findByText(COPY.subject.nuance)
+
+    const sheet = screen.getByText(COPY.subject.nuance).closest('[class*="overflow-y-auto"]')
+
+    expect(sheet?.getAttribute('tabindex')).toBe('0')
+  })
+
   // There is nothing left to compare it against, and the answer standing alone under the
   // character is the whole point of the card opening.
   it('takes the field away once the answer stood', async () => {
