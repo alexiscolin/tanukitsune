@@ -82,8 +82,10 @@ const PAIRS = [
   ["color-ink-muted", "color-surface-sunken"],
   ["color-brand", "color-canvas"],
   ["color-brand", "color-surface"],
+  ["color-brand", "color-surface-sunken"],
   ["color-destructive", "color-canvas"],
   ["color-destructive", "color-surface"],
+  ["color-destructive", "color-surface-sunken"],
   ["color-success-foreground", "color-brand"],
   // The mastery ramp names the stage in its own colour on the card, so every rung of it is
   // ink. The six type colours are not here: they fill a dot six pixels wide and never a word.
