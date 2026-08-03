@@ -49,7 +49,7 @@ export type Component = {
   readonly meaning: string
 }
 
-type Sentence = {
+export type Sentence = {
   readonly ja: string
   readonly fr: string
 }
@@ -57,7 +57,7 @@ type Sentence = {
 // How the word is actually joined to a sentence, which is the thing a list of meanings never
 // teaches: which particle follows it, what it takes as an object. Ours to generate, since
 // the source has no such field.
-type Pattern = {
+export type Pattern = {
   readonly pattern: string
   readonly gloss: string
 }

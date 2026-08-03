@@ -1,13 +1,16 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import type { ReactNode, UIEvent } from 'react'
+import type { ReactNode } from 'react'
 
-import { GlyphFace, Line, Patterns, Prose, ReadingBlock, Sentences, Strip, Well } from '@/ui/atoms/subject-blocks'
-import { acceptedIn, bandOf, refusedIn } from '@/core/subject'
+import { GlyphFace } from '@/ui/atoms/subject-glyph-face'
+import { RevealDot } from '@/ui/atoms/reveal-dot'
+import { SubjectHeadline } from '@/ui/atoms/subject-headline'
+import { SubjectBody } from '@/ui/molecules/subject-body'
+import { useCollapse } from '@/ui/primitives/use-collapse'
+import { bandOf } from '@/core/subject'
 import type { AnswerKind } from '@/core/answer-kind'
 
-import type { Band, Flow, Subject } from '@/core/subject'
+import type { Flow, Subject } from '@/core/subject'
 import type { SubjectCopy } from '@/core/site-copy'
 
 // Everything the source and the corpus carry about a subject, inside the reference's one
@@ -19,21 +22,6 @@ import type { SubjectCopy } from '@/core/site-copy'
 // half, so the card is the character and the rule the answer is written on, and nothing
 // else has room to exist. A lesson has no keyboard and opens whole.
 
-// The mastery ramp: the more an item is known, the further its colour recedes toward the
-// colour of the text.
-const STAGE_INK: Record<Band, string> = {
-  lesson: 'text-[var(--color-srs-lesson)]',
-  apprentice: 'text-[var(--color-srs-apprentice)]',
-  guru: 'text-[var(--color-srs-guru)]',
-  master: 'text-[var(--color-srs-master)]',
-  enlightened: 'text-[var(--color-srs-enlightened)]',
-  burned: 'text-[var(--color-srs-burned)]',
-}
-
-// Over how many scrolled pixels the character gives up its room. Short enough that the first
-// pull already answers, long enough that a flick does not snap it away.
-const COLLAPSE_OVER = 140
-
 // The box, in rem, full and collapsed, and how much of itself the glyph loses on the way.
 //
 // The collapsed height is not free: a transform scales what is painted and not what is laid
@@ -44,34 +32,6 @@ const COLLAPSE_OVER = 140
 const GLYPH_TALL = 8.5
 const GLYPH_SHORT = 4.25
 const GLYPH_SHRINK = 0.6
-
-
-// How far the sheet has been pulled up, and the handler that follows it. A momentum scroll
-// fires every few pixels and each event renders the whole sheet, so the reading is coalesced
-// to one a frame, and a card that leaves mid-scroll takes its pending frame with it.
-function useCollapse() {
-  const [gone, setGone] = useState(0)
-  const frame = useRef<number | null>(null)
-
-  useEffect(
-    () => () => {
-      if (frame.current !== null) cancelAnimationFrame(frame.current)
-    },
-    [],
-  )
-
-  function follow(event: UIEvent<HTMLDivElement>) {
-    if (frame.current !== null) return
-
-    const sheet = event.currentTarget
-    frame.current = requestAnimationFrame(() => {
-      frame.current = null
-      setGone(Math.min(sheet.scrollTop / COLLAPSE_OVER, 1))
-    })
-  }
-
-  return { gone, follow }
-}
 
 export function SubjectCard({
   subject,
@@ -154,7 +114,7 @@ export function SubjectCard({
             gone > 0 ? 'mask-fade-y' : 'mask-fade-b'
           }`}
         >
-          <Headline subject={subject} copy={copy} asked={asked} />
+          <SubjectHeadline subject={subject} copy={copy} asked={asked} />
           <SubjectBody subject={subject} copy={copy} flow={flow} band={band} asked={asked} />
         </div>
       ) : (
@@ -174,177 +134,5 @@ export function SubjectCard({
         </div>
       )}
     </article>
-  )
-}
-
-// The answer where the eye already is, under the character and centred on it, with no label
-// over it: on a card that has just opened it is the one thing the reader came for, and a
-// heading would announce what is already the largest text in the sheet. It scrolls with the
-// rest rather than sitting above it, so the sheet is one surface and not a header over a list.
-function Headline({
-  subject,
-  copy,
-  asked,
-}: {
-  subject: Subject
-  copy: SubjectCopy
-  asked?: AnswerKind
-}) {
-  const answers = asked === 'reading' ? subject.readings : subject.meanings
-
-  const listed = refusedIn(subject.meanings)
-
-  return (
-    <>
-      <p
-        lang={asked === 'reading' ? 'ja' : undefined}
-        className="text-center text-xl leading-tight font-medium tracking-tight text-balance"
-      >
-        {acceptedIn(answers).join(asked === 'reading' ? ' · ' : ', ')}
-      </p>
-      {/* Under it and never as a section of its own: what these words are is a qualification
-          of the line above them, and a heading would announce them as a second kind. */}
-      {asked === 'reading' || listed.length === 0 ? null : (
-        <p className="text-center text-sm text-[var(--color-ink-muted)]">
-          {listed.join(', ')}
-          <span className="eyebrow ml-2">{copy.alsoShown}</span>
-        </p>
-      )}
-    </>
-  )
-}
-
-// Where the card sits, last in the sheet and reached only by reading past everything else:
-// nobody opens a card to learn its level, and a line that has to be scrolled to is a line
-// nobody has to step over.
-function Filing({
-  subject,
-  copy,
-  band,
-}: {
-  subject: Subject
-  copy: SubjectCopy
-  band: Band | null
-}) {
-  return (
-    <p className="eyebrow flex flex-wrap items-center gap-2 pt-1 text-[var(--color-ink-muted)]">
-      {/* Behind the band beside it by carrying no colour of its own, and never by an opacity:
-          a fraction of the muted ink is a ratio the reader is shown and cannot read. */}
-      {[
-        copy.type[subject.type],
-        `${copy.level} ${subject.level}`,
-        ...(subject.jlpt === null ? [] : [`JLPT ${subject.jlpt}`]),
-      ].join(' · ')}
-      {/* How far this reader has taken it, the one thing on the card that is theirs rather
-          than the subject's. Its colour is the mastery ramp, so the band is read before the
-          word is. */}
-      {band === null ? null : <span className={STAGE_INK[band]}>{copy.stage[band]}</span>}
-    </p>
-  )
-}
-
-// The order is the order it is learnt in: what it means, what that really covers, how it is
-// read, how to keep it, what it is made of, and only then how it behaves in a sentence.
-function SubjectBody({
-  subject,
-  copy,
-  flow,
-  band,
-  asked,
-}: {
-  subject: Subject
-  copy: SubjectCopy
-  flow: Flow
-  band: Band | null
-  asked?: AnswerKind
-}) {
-  return (
-    <>
-      {/* The one the headline is not. Asked for a reading, the meaning is what the reader
-          still has to be told, and it takes a heading here rather than the middle. */}
-      {asked === 'reading' ? (
-        <Line
-          label={copy.meaning}
-          values={acceptedIn(subject.meanings)}
-        />
-      ) : null}
-      <Prose label={copy.nuance} text={subject.nuance} />
-      <Line label={copy.synonyms} values={subject.synonyms} />
-      {/* An untyped reading is exactly what the headline already carries, so it is dropped
-          there and kept everywhere it says something more: on'yomi and kun'yomi are a
-          distinction no single line can make. */}
-      <ReadingBlock
-        copy={copy}
-        readings={
-          asked === 'reading'
-            ? subject.readings.filter((reading) => reading.type !== null)
-            : subject.readings
-        }
-      />
-      {/* What the character is made of, then how to keep it, in that order and inside the
-          well: the pieces are what the mnemonic is built out of, so reading them second means
-          reading the story before its words. */}
-      {subject.components.length === 0 && subject.mnemonic === null ? null : (
-        <Well>
-          <Strip label={copy.components} parts={subject.components} />
-          <Prose label={copy.mnemonic} text={subject.mnemonic} />
-        </Well>
-      )}
-      <Prose label={copy.yourNote} text={subject.meaningNote} />
-      <Prose label={copy.yourNote} text={subject.readingNote} />
-      <Strip label={copy.usedIn} parts={subject.usedIn} />
-      <Strip label={copy.similar} parts={subject.similar} />
-      <Line label={copy.wordType} values={subject.partsOfSpeech} />
-      <Patterns subject={subject} label={copy.patterns} />
-      <Sentences subject={subject} label={copy.sentences} />
-
-      {/* An answer the source refuses outright, whatever a tier would have decided. Shown
-          while teaching, where knowing what will not be accepted is the lesson, and never
-          during recall, where it would be the answer. */}
-      {flow === 'lesson' ? (
-        <Line label={copy.never} values={subject.refused} struck />
-      ) : null}
-
-      <Filing subject={subject} copy={copy} band={band} />
-    </>
-  )
-}
-
-// The single vermillon dot. It breathes while there is something to reveal, and becomes the
-// pronunciation control on a subject that carries audio.
-function RevealDot({
-  revealed,
-  listens,
-  copy,
-  onReveal,
-}: {
-  revealed: boolean
-  listens: boolean
-  copy: SubjectCopy
-  onReveal: () => void
-}) {
-  // Revealed, the card has nothing left to give up, so the control is spent: nothing plays the
-  // audio yet, and a control that answers to nothing is worse than one that says it is done.
-  return (
-    <button
-      type="button"
-      onClick={(event) => {
-        event.stopPropagation()
-        if (!revealed) onReveal()
-      }}
-      disabled={revealed}
-      aria-label={revealed && listens ? copy.listen : copy.reveal}
-      className={`pressable ease-out-soft grid size-9 shrink-0 place-items-center rounded-full bg-[var(--color-brand)] outline-none transition-opacity duration-700 focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--color-surface)] ${
-        revealed ? 'opacity-30' : 'animate-breathe'
-      }`}
-    >
-      {revealed && listens ? (
-        <span aria-hidden className="flex items-end gap-1">
-          <span className="h-2 w-px bg-[var(--color-success-foreground)]" />
-          <span className="h-4 w-px bg-[var(--color-success-foreground)]" />
-          <span className="h-3 w-px bg-[var(--color-success-foreground)]" />
-        </span>
-      ) : null}
-    </button>
   )
 }

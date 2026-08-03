@@ -2,8 +2,10 @@
 
 import { useId, useRef, useState } from 'react'
 import type { ChangeEvent, KeyboardEvent } from 'react'
-import { isJapanese, isKana, toKana } from 'wanakana'
+import { isJapanese, toKana } from 'wanakana'
 
+import { AnswerLabel } from '@/ui/atoms/answer-label'
+import { convertReading, isReading } from '@/ui/primitives/kana-conversion'
 import type { AnswerKind } from '@/core/answer-kind'
 import { pressEnter } from '@/core/composition-gate'
 
@@ -15,20 +17,6 @@ import { pressEnter } from '@/core/composition-gate'
 // not say whether it is its meaning or its reading that is being asked, and the answer to
 // the wrong question is wrong for a reason the reader cannot see. It is a real label rather
 // than a description, so pressing it reaches the field.
-
-const KANA_SYLLABLE = /[ぁ-ゖァ-ヶ]/u
-
-function isReading(answer: string): boolean {
-  const composed = answer.normalize('NFKC')
-
-  return isKana(composed) && KANA_SYLLABLE.test(composed)
-}
-
-function convertReading(buffer: string, next: string, shown: string, atEnd: boolean) {
-  const grown = atEnd && next.startsWith(shown) ? buffer + next.slice(shown.length) : next
-
-  return { buffer: grown, value: atEnd ? toKana(grown) : next }
-}
 
 // Two states and no third. An answer that stood is not shown here at all, because the field
 // leaves with it, so every answer still on the screen once it has been judged is one that did
@@ -43,26 +31,6 @@ const STOOD_INK = 'text-[var(--color-ink)]'
 const FELL_INK = 'text-[var(--color-destructive)] line-through decoration-2'
 const STOOD_RULE = 'bg-[var(--color-brand)]'
 const FELL_RULE = 'bg-[var(--color-destructive)]'
-
-// Which of the two questions this is, and the only word on the screen. Under the rule rather
-// than over it, so the eye meets the character, then the empty line it has to fill, then what
-// to fill it with.
-//
-// It goes once the answer has been judged: the question stops being asked at that moment and
-// the sheet below now says what was wanted. Only its ink leaves, because the field still owes
-// a screen reader its name.
-function Asked({ htmlFor, label, judged }: { htmlFor: string; label: string; judged: boolean }) {
-  return (
-    <label
-      htmlFor={htmlFor}
-      className={
-        judged ? 'sr-only' : 'eyebrow cursor-pointer text-[var(--color-brand)]'
-      }
-    >
-      {label}
-    </label>
-  )
-}
 
 type AnswerFieldProps = {
   kind: AnswerKind
@@ -171,7 +139,7 @@ export function AnswerField({
         />
       </div>
 
-      <Asked htmlFor={fieldId} label={label} judged={judged} />
+      <AnswerLabel htmlFor={fieldId} label={label} judged={judged} />
 
       {refused ? (
         <p

@@ -1,7 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import type { KeyboardEvent, PointerEvent, ReactNode } from 'react'
+import { useEffect, useRef } from 'react'
+import type { ReactNode } from 'react'
+
+import { DeckBehind } from '@/ui/atoms/deck-behind'
+import { SwipeIntent } from '@/ui/atoms/swipe-intent'
+import { THRESHOLD, useDrag } from '@/ui/primitives/use-drag'
+import type { SwipeDirection } from '@/ui/primitives/use-drag'
 
 // The review gesture of the reference, and the whole grading control: no buttons and no
 // grading bar. The card is judged by being dragged sideways, it tilts and dims as it goes,
@@ -12,100 +17,8 @@ import type { KeyboardEvent, PointerEvent, ReactNode } from 'react'
 // they say was wrong. A lesson pages through the same deck and judges nothing, which is why
 // the two labels are optional.
 
-// Far enough that a scroll or a mistouch does not commit, close enough to reach with a thumb
-// without repositioning the hand.
-const THRESHOLD = 96
-
-// The pull is horizontal, so vertical movement is followed at a quarter of its distance: the
-// card stays under the finger without turning the gesture into a free drag.
-const VERTICAL_FOLLOW = 0.25
-
-// Enough to leave the viewport at any width the catalogue opens at.
-const EXIT = 520
-
 // The tilt, in degrees per pixel of pull, expressed as its divisor.
 const TILT = 26
-
-const INTENT = 24
-
-export type SwipeDirection = 'left' | 'right'
-
-// The gesture, kept apart from what is drawn: the deck below only reads the numbers this
-// returns and never touches a pointer event of its own.
-function useDrag(onDecide: (direction: SwipeDirection) => void, disabled?: boolean) {
-  const [drag, setDrag] = useState({ x: 0, y: 0 })
-  const [exiting, setExiting] = useState(false)
-  // Held as state rather than only on the ref, because the card follows the finger with no
-  // transition and eases back with one, and that is a decision taken while rendering.
-  const [dragging, setDragging] = useState(false)
-  const origin = useRef<{ x: number; y: number } | null>(null)
-
-  // The exit runs on a timer, so a screen left mid-swipe would otherwise keep the deck's
-  // setters and the caller's `onDecide` alive until it fires.
-  const exit = useRef<number | null>(null)
-  useEffect(
-    () => () => {
-      if (exit.current !== null) window.clearTimeout(exit.current)
-    },
-    [],
-  )
-
-  const commit = useCallback(
-    (direction: SwipeDirection) => {
-      setExiting(true)
-      setDrag({ x: direction === 'right' ? EXIT : -EXIT, y: 0 })
-      exit.current = window.setTimeout(() => {
-        exit.current = null
-        setExiting(false)
-        setDrag({ x: 0, y: 0 })
-        onDecide(direction)
-      }, 320)
-    },
-    [onDecide],
-  )
-
-  function down(event: PointerEvent<HTMLDivElement>) {
-    if (disabled === true || exiting) return
-    event.currentTarget.setPointerCapture(event.pointerId)
-    origin.current = { x: event.clientX, y: event.clientY }
-    setDragging(true)
-  }
-
-  function move(event: PointerEvent<HTMLDivElement>) {
-    if (origin.current === null || exiting) return
-    setDrag({
-      x: event.clientX - origin.current.x,
-      y: (event.clientY - origin.current.y) * VERTICAL_FOLLOW,
-    })
-  }
-
-  function up() {
-    if (origin.current === null || exiting) return
-    origin.current = null
-    setDragging(false)
-    if (drag.x > THRESHOLD) commit('right')
-    else if (drag.x < -THRESHOLD) commit('left')
-    else setDrag({ x: 0, y: 0 })
-  }
-
-  // The arrow keys reach the same outcomes, because a gesture nobody can perform without a
-  // pointer is a control a keyboard reader does not have at all.
-  //
-  // Only when the deck itself holds the focus. What the deck draws is a caller's, and a text
-  // field among it takes the same two keys to move a caret: those presses bubble here, and
-  // grading on them would rule on an answer the reader was still reading. Handled keys are
-  // stopped as well, or the page scrolls under the card that is leaving.
-  function arrows(event: KeyboardEvent<HTMLDivElement>) {
-    if (disabled === true || exiting) return
-    if (event.target !== event.currentTarget) return
-    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return
-
-    event.preventDefault()
-    commit(event.key === 'ArrowRight' ? 'right' : 'left')
-  }
-
-  return { drag, exiting, dragging, down, move, up, arrows }
-}
 
 export function SwipeDeck({
   cardKey,
@@ -156,13 +69,13 @@ export function SwipeDeck({
   return (
     <div className="absolute inset-0">
       {leftLabel === undefined || rightLabel === undefined ? null : (
-        <Intent left={leftLabel} right={rightLabel} pull={drag.x} reached={reached} />
+        <SwipeIntent left={leftLabel} right={rightLabel} pull={drag.x} reached={reached} />
       )}
 
       {behind === undefined ? null : (
-        <Behind key={`behind-${cardKey}`} reached={reached} dragging={dragging}>
+        <DeckBehind key={`behind-${cardKey}`} reached={reached} dragging={dragging}>
           {behind}
-        </Behind>
+        </DeckBehind>
       )}
 
       <div
@@ -191,75 +104,6 @@ export function SwipeDeck({
       >
         {children}
       </div>
-    </div>
-  )
-}
-
-// Depth without a shadow stack: the next card, barely there, and rising into place as the one
-// in front is pulled away. It arrives rather than appearing, so the deck reads as one object
-// being dealt from and never as two cards swapping. Same rule as the card in front on the
-// transition: none while the finger is down, so it tracks rather than lags.
-function Behind({
-  reached,
-  dragging,
-  children,
-}: {
-  reached: number
-  dragging: boolean
-  children: ReactNode
-}) {
-  return (
-    <div
-      aria-hidden
-      // Beside the hiding rather than instead of it: `aria-hidden` promises what is behind is
-      // not there, and only `inert` keeps the tab order from walking into it and proving
-      // otherwise. The deck cannot know what a caller draws here, and a lesson draws its next
-      // card open, sheet and scroll and tab stop included.
-      inert
-      className="absolute inset-0 origin-bottom"
-      style={{
-        transform: `scale(${0.965 + 0.035 * reached}) translateY(${10 * (1 - reached)}px)`,
-        opacity: 0.4 + 0.6 * reached,
-        transition: dragging
-          ? 'none'
-          : 'transform 0.42s var(--ease-out-soft), opacity 0.42s var(--ease-out-soft)',
-      }}
-    >
-      {children}
-    </div>
-  )
-}
-
-// The two verdicts sit behind the card and surface as it is pulled toward one, so the reader
-// reads what they are about to say before they commit to saying it.
-function Intent({
-  left,
-  right,
-  pull,
-  reached,
-}: {
-  left: string
-  right: string
-  pull: number
-  reached: number
-}) {
-  // Readable well before it commits, so the reader can still change their mind.
-  const toward = pull > INTENT ? 'right' : pull < -INTENT ? 'left' : null
-
-  return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-1">
-      <span
-        className="eyebrow text-[var(--color-ink-muted)] transition-opacity duration-200"
-        style={{ opacity: toward === 'left' ? reached : 0 }}
-      >
-        {left}
-      </span>
-      <span
-        className="eyebrow text-[var(--color-brand)] transition-opacity duration-200"
-        style={{ opacity: toward === 'right' ? reached : 0 }}
-      >
-        {right}
-      </span>
     </div>
   )
 }
