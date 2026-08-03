@@ -1,23 +1,21 @@
 'use client'
 
-// Readable well before it commits, so the reader can still change their mind.
-const INTENT = 24
+import type { SwipeDirection } from '@/ui/primitives/use-drag'
 
 // The two verdicts sit behind the card and surface as it is pulled toward one, so the reader
-// reads what they are about to say before they commit to saying it.
+// reads what they are about to say before they commit to saying it. Which one, and how far, are
+// the gesture's to say: this only draws them.
 export function SwipeIntent({
   left,
   right,
-  pull,
+  toward,
   reached,
 }: {
   left: string
   right: string
-  pull: number
+  toward: SwipeDirection | null
   reached: number
 }) {
-  const toward = pull > INTENT ? 'right' : pull < -INTENT ? 'left' : null
-
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-1">
       <span

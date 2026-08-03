@@ -1,5 +1,7 @@
 'use client'
 
+import type { ReviewCopy } from '@/core/site-copy'
+
 // The three numbers a session has, where the answer was while it still mattered. Tabular, so
 // none of them moves the others when it changes, and only the missed one is allowed a colour,
 // and only once there is one to name.
@@ -12,7 +14,7 @@ export function SessionTally({
   done: number
   left: number
   missed: number
-  copy: { readonly done: string; readonly left: string; readonly missed: string }
+  copy: ReviewCopy['tally']
 }) {
   const cells = [
     { key: 'done', value: done, label: copy.done, ink: '' },

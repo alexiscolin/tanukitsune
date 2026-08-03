@@ -5,7 +5,11 @@ import type { KeyboardEvent, PointerEvent } from 'react'
 
 // Far enough that a scroll or a mistouch does not commit, close enough to reach with a thumb
 // without repositioning the hand.
-export const THRESHOLD = 96
+const THRESHOLD = 96
+
+// Where the pull stops being a hesitation and starts being an answer. Well before it commits,
+// so the reader reads what they are about to say while they can still change their mind.
+const INTENT = 24
 
 // The pull is horizontal, so vertical movement is followed at a quarter of its distance: the
 // card stays under the finger without turning the gesture into a free drag.
@@ -90,5 +94,18 @@ export function useDrag(onDecide: (direction: SwipeDirection) => void, disabled?
     commit(event.key === 'ArrowRight' ? 'right' : 'left')
   }
 
-  return { drag, exiting, dragging, down, move, up, arrows }
+  // How far the card has come toward committing, and which of the two it is heading for. Both
+  // are read off the same two distances the gesture commits on, so what is drawn cannot say one
+  // thing while the release does another.
+  return {
+    drag,
+    reached: Math.min(Math.abs(drag.x) / THRESHOLD, 1),
+    toward: drag.x > INTENT ? 'right' : drag.x < -INTENT ? 'left' : null,
+    exiting,
+    dragging,
+    down,
+    move,
+    up,
+    arrows,
+  } as const
 }

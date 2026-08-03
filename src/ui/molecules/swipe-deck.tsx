@@ -5,7 +5,7 @@ import type { ReactNode } from 'react'
 
 import { DeckBehind } from '@/ui/atoms/deck-behind'
 import { SwipeIntent } from '@/ui/atoms/swipe-intent'
-import { THRESHOLD, useDrag } from '@/ui/primitives/use-drag'
+import { useDrag } from '@/ui/primitives/use-drag'
 import type { SwipeDirection } from '@/ui/primitives/use-drag'
 
 // The review gesture of the reference, and the whole grading control: no buttons and no
@@ -52,8 +52,10 @@ export function SwipeDeck({
   behind?: ReactNode
   children: ReactNode
 }) {
-  const { drag, exiting, dragging, down, move, up, arrows } = useDrag(onDecide, disabled)
-  const reached = Math.min(Math.abs(drag.x) / THRESHOLD, 1)
+  const { drag, reached, toward, exiting, dragging, down, move, up, arrows } = useDrag(
+    onDecide,
+    disabled,
+  )
   const group = useRef<HTMLDivElement>(null)
 
   // The deck is the control that continues, so it takes the focus the moment it will answer
@@ -69,7 +71,7 @@ export function SwipeDeck({
   return (
     <div className="absolute inset-0">
       {leftLabel === undefined || rightLabel === undefined ? null : (
-        <SwipeIntent left={leftLabel} right={rightLabel} pull={drag.x} reached={reached} />
+        <SwipeIntent left={leftLabel} right={rightLabel} toward={toward} reached={reached} />
       )}
 
       {behind === undefined ? null : (
