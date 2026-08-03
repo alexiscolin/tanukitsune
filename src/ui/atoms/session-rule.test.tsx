@@ -49,7 +49,6 @@ describe('SessionRule', () => {
     expect(rest?.scale).toBeCloseTo(0)
   })
 
-  // A deck of one is where a share is the whole bar rather than a fraction of it.
   it('gives the whole bar to a deck of one', () => {
     const [passed, missed, rest] = bandsOf(
       render(<SessionRule done={0} missed={1} total={1} />).container,

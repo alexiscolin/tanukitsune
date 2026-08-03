@@ -32,6 +32,13 @@ describe('isReading', () => {
     expect(isReading('')).toBe(false)
   })
 
+  // The middle dot is what the card itself puts between two readings, so a reader copying one
+  // back brings it along. It is kana by the library's reckoning and it is not a syllable, and
+  // grading it would cost an item its stage.
+  it('refuses the separator the card sets between readings', () => {
+    expect(isReading('・')).toBe(false)
+  })
+
   // Half-width katakana is what a Japanese keyboard on a narrow phone still emits, and it is
   // the reason the answer is normalised before either question is asked of it.
   it('accepts a half-width reading, which normalises to the full-width one', () => {
@@ -48,6 +55,23 @@ describe('convertReading', () => {
 
   it('completes a syllable once the latin that finishes it arrives', () => {
     expect(convertReading('shit', 'しta', 'しt', true)).toEqual({ buffer: 'shita', value: 'した' })
+  })
+
+  // Why the buffer exists at all. A second n is a syllable of its own until the vowel that
+  // follows says it was not, and only the latin can be reread to correct it: converting the
+  // kana already shown plus the new letter reaches てんんお and stays there.
+  it('holds a doubled n as its own syllable while it still might be one', () => {
+    expect(convertReading('ten', 'てんn', 'てん', true)).toEqual({
+      buffer: 'tenn',
+      value: 'てんん',
+    })
+  })
+
+  it('takes it back once the vowel says it was not', () => {
+    expect(convertReading('tenn', 'てんんo', 'てんん', true)).toEqual({
+      buffer: 'tenno',
+      value: 'てんの',
+    })
   })
 
   // Kana cannot be turned back into the latin that produced it, so the buffer is the only

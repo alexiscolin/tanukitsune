@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { KANJI, VERB } from '@/core/demo-deck'
+import { VERB } from '@/core/demo-deck'
 import { copyFor } from '@/core/site-copy'
 import type { Reading } from '@/core/subject'
 
@@ -15,7 +15,11 @@ const COPY = copyFor('fr').subject
 // the kind the convention gives them, and each group is split between what may be answered and
 // what is taught without being an answer. Getting the split wrong tells a reader that a reading
 // is accepted when it is not, which is the one thing the card must never do.
-
+//
+// The readings are built here rather than taken from the demo deck, except where the deck
+// carries the shape by nature: how many kinds a subject has and how many of its readings are
+// refused is the corpus's business, and a molecule test that leans on it goes red when the
+// demo changes with nothing wrong in the molecule.
 function reading(text: string, type: Reading['type'], accepted: boolean): Reading {
   return { text, type, accepted, primary: false }
 }
@@ -28,22 +32,27 @@ describe('SubjectReadingBlock', () => {
   })
 
   it('gives each kind its own block, labelled by the kind', () => {
-    render(<SubjectReadingBlock readings={KANJI.readings} copy={COPY} />)
+    render(
+      <SubjectReadingBlock
+        readings={[reading('カ', 'onyomi', true), reading('した', 'kunyomi', true)]}
+        copy={COPY}
+      />,
+    )
 
     expect(screen.getByText(COPY.reading.onyomi)).toBeTruthy()
     expect(screen.getByText(COPY.reading.kunyomi)).toBeTruthy()
   })
 
   // A reading the convention gives no kind takes the plain label, since the script cannot say
-  // for itself which of the two it is.
+  // for itself which of the two it is. Taken from the deck, which carries exactly that shape.
   it('labels an untyped kind plainly', () => {
     render(<SubjectReadingBlock readings={VERB.readings} copy={COPY} />)
 
     expect(screen.getByText(COPY.plainReading)).toBeTruthy()
   })
 
-  // The split is the decision, not the punctuation between two readings of one kind, so what is
-  // asserted is that the two lines are two lines.
+  // The split is the decision, not the punctuation between two readings of one kind, so what
+  // is asserted is that the two lines are two lines.
   it('keeps what may be answered apart from what is only shown', () => {
     render(
       <SubjectReadingBlock
@@ -64,19 +73,27 @@ describe('SubjectReadingBlock', () => {
     expect(answerable.textContent).not.toContain('した')
   })
 
-  // The source sends six kun'yomi on this character and accepts none of them. Dropping the
-  // group would teach that the character has two readings when it has eight.
-  it('keeps a kind whose every reading is refused, and says why once', () => {
-    const refusedOnly = KANJI.readings.filter((entry) => entry.type === 'kunyomi')
-
-    render(<SubjectReadingBlock readings={refusedOnly} copy={COPY} />)
+  // The source sends six kun'yomi on 下 and accepts none of them. Dropping the group would
+  // teach that the character has two readings when it has eight.
+  it('keeps a kind whose every reading is refused', () => {
+    render(
+      <SubjectReadingBlock
+        readings={[reading('した', 'kunyomi', false), reading('もと', 'kunyomi', false)]}
+        copy={COPY}
+      />,
+    )
 
     expect(screen.getByText(COPY.reading.kunyomi)).toBeTruthy()
-    expect(screen.getAllByText(COPY.alsoShown)).toHaveLength(1)
+    expect(screen.getByText(/した/).textContent).toContain('もと')
   })
 
-  it('says it once per kind rather than once per reading', () => {
-    render(<SubjectReadingBlock readings={KANJI.readings} copy={COPY} />)
+  it('says nothing extra on a kind whose readings are all answerable', () => {
+    render(
+      <SubjectReadingBlock
+        readings={[reading('カ', 'onyomi', true), reading('した', 'kunyomi', false)]}
+        copy={COPY}
+      />,
+    )
 
     expect(screen.getAllByText(COPY.alsoShown)).toHaveLength(1)
   })

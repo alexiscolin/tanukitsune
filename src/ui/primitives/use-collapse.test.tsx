@@ -6,21 +6,20 @@ import { useCollapse } from './use-collapse'
 
 // The sheet's scroll, coalesced to one reading a frame. A momentum scroll fires every few
 // pixels and each reading renders the whole sheet, so what this guards is the difference
-// between one render a frame and thirty.
+// between one render a frame and thirty, and the reading landing where the finger ended
+// rather than where it started.
 //
 // A .tsx rather than a .ts because the hook needs a document, and vitest.config.ts draws the
 // line between its two projects on the extension.
 
-// Frames are held rather than run, so a test says when one arrives and how many were asked
-// for. The real one would fire on a clock this runner does not advance.
+// Frames are held rather than run, so a test says when one arrives. The runner's own clock
+// does not drive this document's frames, so the queue is kept here.
 let frames: (() => void)[] = []
 
 beforeEach(() => {
   frames = []
   vi.stubGlobal('requestAnimationFrame', (run: () => void) => frames.push(run))
-  vi.stubGlobal('cancelAnimationFrame', (id: number) => {
-    frames[id - 1] = () => {}
-  })
+  vi.stubGlobal('cancelAnimationFrame', () => {})
 })
 
 afterEach(cleanup)
@@ -29,10 +28,21 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-// The handler reads one property off the event, so the event is that property. Building a real
-// UIEvent would need a real scrolling box, which is the sheet this hook is kept apart from.
-function scrolledBy(top: number): UIEvent<HTMLDivElement> {
-  return { currentTarget: { scrollTop: top } } as unknown as UIEvent<HTMLDivElement>
+// One box for the whole burst, moved rather than replaced: the handler keeps the box the first
+// event of a burst named and reads its position when the frame runs. A stub handing each event
+// a box of its own would prove a reading happened and never that it was the latest one.
+const sheet = { scrollTop: 0 }
+
+function scrolledTo(top: number): UIEvent<HTMLDivElement> {
+  sheet.scrollTop = top
+
+  return { currentTarget: sheet } as unknown as UIEvent<HTMLDivElement>
+}
+
+function nextFrame() {
+  act(() => {
+    frames.shift()?.()
+  })
 }
 
 describe('useCollapse', () => {
@@ -44,72 +54,71 @@ describe('useCollapse', () => {
     const { result } = renderHook(() => useCollapse())
 
     act(() => {
-      result.current.follow(scrolledBy(20))
-      result.current.follow(scrolledBy(40))
-      result.current.follow(scrolledBy(60))
+      result.current.follow(scrolledTo(20))
+      result.current.follow(scrolledTo(40))
+      result.current.follow(scrolledTo(60))
     })
 
     expect(frames).toHaveLength(1)
   })
 
-  // One a frame, not one at all: the gate the first reading closes is reopened by the frame
-  // that runs it, or the sheet freezes where the reader first touched it.
-  it('asks for another frame once the one it was holding has run', () => {
+  // The reading a burst is coalesced into is its last position, not its first. Read at the
+  // moment of the event instead, and the sheet lags a whole burst behind the finger.
+  it('reads where the burst ended rather than where it began', () => {
     const { result } = renderHook(() => useCollapse())
 
     act(() => {
-      result.current.follow(scrolledBy(20))
+      result.current.follow(scrolledTo(20))
+      result.current.follow(scrolledTo(40))
+      result.current.follow(scrolledTo(60))
     })
-    act(() => {
-      frames[0]?.()
-    })
-    act(() => {
-      result.current.follow(scrolledBy(90))
-    })
+    nextFrame()
 
-    expect(frames).toHaveLength(2)
+    expect(result.current.gone).toBe(60 / 140)
   })
 
-  // The share is the scroll over the distance the character gives up its room across, which is
-  // what the card multiplies its two heights by.
-  it('reports the share of the collapse the scroll has reached', () => {
+  // One a frame, not one at all: the gate the first reading closes is reopened by the frame
+  // that runs it, or the sheet freezes where the reader first touched it.
+  it('follows a second burst once the frame it was holding has run', () => {
     const { result } = renderHook(() => useCollapse())
 
     act(() => {
-      result.current.follow(scrolledBy(70))
+      result.current.follow(scrolledTo(20))
     })
+    nextFrame()
     act(() => {
-      frames[0]?.()
+      result.current.follow(scrolledTo(90))
     })
+    nextFrame()
 
-    expect(result.current.gone).toBe(0.5)
+    expect(result.current.gone).toBe(90 / 140)
   })
 
   it('stops at one, so a long scroll does not take more than the character has', () => {
     const { result } = renderHook(() => useCollapse())
 
     act(() => {
-      result.current.follow(scrolledBy(4000))
+      result.current.follow(scrolledTo(4000))
     })
-    act(() => {
-      frames[0]?.()
-    })
+    nextFrame()
 
     expect(result.current.gone).toBe(1)
   })
 
   // A card leaves mid-scroll on every swipe, so the frame it asked for has to leave with it.
+  // Nothing observable follows a frame that runs after the unmount, which is why the call is
+  // the witness here rather than a state nobody can read.
   it('cancels a pending frame when the card goes', () => {
-    const cancel = vi.fn()
-    vi.stubGlobal('cancelAnimationFrame', cancel)
+    const cancelled = vi.fn()
+    vi.stubGlobal('cancelAnimationFrame', cancelled)
 
     const { result, unmount } = renderHook(() => useCollapse())
 
     act(() => {
-      result.current.follow(scrolledBy(20))
+      result.current.follow(scrolledTo(20))
     })
     unmount()
 
-    expect(cancel).toHaveBeenCalledOnce()
+    expect(cancelled).toHaveBeenCalledOnce()
   })
 })
