@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import type { ReactNode, Ref } from 'react'
+import type { ReactNode } from 'react'
 
 import type { SubjectType } from '@/core/subject'
 
@@ -56,52 +56,6 @@ export function Eyebrow({
     </span>
   )
 }
-
-// Text, weight and a dot. The action that continues is never a slab, and its underline is
-// drawn from the left on hover rather than being there to begin with. The focus ring is
-// offset, because a control with no container has nothing else to show a keyboard reader
-// where it is.
-export function GhostAction({
-  children,
-  onClick,
-  emphasis = 'primary',
-  describedBy,
-  ref,
-}: {
-  children: ReactNode
-  onClick: () => void
-  emphasis?: 'primary' | 'quiet'
-  describedBy?: string
-  ref?: Ref<HTMLButtonElement>
-}) {
-  return (
-    <button
-      ref={ref}
-      type="button"
-      onClick={onClick}
-      aria-describedby={describedBy}
-      className={`pressable group relative inline-flex items-center gap-2.5 rounded-full py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--color-canvas)] ${
-        emphasis === 'primary'
-          ? 'font-medium text-[var(--color-ink)]'
-          : 'text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]'
-      }`}
-    >
-      {emphasis === 'primary' ? (
-        <span className="ease-spring size-1.5 shrink-0 rounded-full bg-[var(--color-brand)] transition-transform duration-500 group-hover:scale-150" />
-      ) : null}
-      <span className="relative">
-        {children}
-        <span
-          aria-hidden
-          className={`ease-out-soft absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100 ${
-            emphasis === 'primary' ? 'bg-[var(--color-brand)]' : 'bg-[var(--color-ink-muted)]'
-          }`}
-        />
-      </span>
-    </button>
-  )
-}
-
 
 // A dot, a number, a quiet total. The dot pulses because the session is running, which is the
 // only thing on the screen that is true continuously rather than at a step.

@@ -180,10 +180,10 @@ for a pale ground, and the host serves it without the headers that would let it 
 it is turned over on the dark ground instead. It is never deferred: a glyph that arrives late is a
 question the reader cannot read.
 
-**Where the onboarding and progression screens belong.** Their controls exist and are catalogued: the
-question block and its rail, the choice list, the ruler, the setting line, the four fields and the
-three progression figures. The routes that would carry them do not, and [`specs/v0.1.md`](specs/v0.1.md)
-puts none of them in scope. They reach the product through the spec, not the other way round.
+**Where the onboarding and progression screens belong.** Nowhere yet.
+[`specs/v0.1.md`](specs/v0.1.md) puts authentication, statistics and notifications out of scope, and
+the session length with them. A control reaches this interface through the spec, not the other way
+round, so the screens that would carry those are written when the routes are.
 
 **Where a subject comes from.** The screens take their deck as a prop and the demo one is seeded, so
 nothing here decides which subject is asked, for what, or in what order. That is what an assignment
