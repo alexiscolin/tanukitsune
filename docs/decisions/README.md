@@ -29,6 +29,7 @@ is invisible. Naming the condition and the page to check turns it into a schedul
 | [0008](0008-an-opt-in-review-timer.md) | A review timer, off until the reader turns it on |
 | [0009](0009-storybook-as-the-review-surface.md) | Storybook as the review surface, catalogued by state |
 | [0010](0010-behaviour-imported-appearance-written.md) | Behaviour imported, appearance written: no copied skin, native first, Base UI for the rest |
+| [0011](0011-a-page-per-component-and-the-tokens-beside-them.md) | A page per component, and the tokens beside them |
 
 ## Decided, argued in prose
 

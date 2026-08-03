@@ -4,6 +4,11 @@ import '../src/app/globals.css'
 
 const preview: Preview = {
   parameters: {
+    // The catalogue owns every inset, so the preview itself lays none. Storybook's default
+    // pads the body, which would sit outside the ground below and add to it: a box asked to
+    // be exactly the viewport tall then overflows the page it is centred in, and a screen
+    // meant to reach the edges stops short of it by a rhythm nothing in the product has.
+    layout: 'fullscreen',
     // Widths a layout is decided at, rather than device names, which age and multiply. The
     // three named ones are Tailwind's own defaults, so they are what an sm:, lg: or xl:
     // prefix resolves to the day one is written, and the fourth is the narrow phone below
@@ -35,9 +40,28 @@ const preview: Preview = {
       document.documentElement.dataset.theme = theme
       document.documentElement.style.colorScheme = theme
 
-      // Not wrapped: every screen carries its own shell, and a second one around it would
-      // measure a rhythm the product never has.
-      return <Story />
+      // A screen carries its own shell, and a second one around it would measure a rhythm the
+      // product never has, so a story that declares itself full bleed gets nothing.
+      if (context.parameters['fullBleed'] === true) return <Story />
+
+      // Everything else is a piece rendered alone, which needs a height to resolve against: a
+      // card is full height inside its deck, and a box with no definite height of its own gives
+      // it nothing to be full of. The ground is here rather than in a story because a story that
+      // draws its own surface is a story writing markup, which
+      // docs/decisions/0009-storybook-as-the-review-surface.md refuses. The colour is not
+      // repeated here: src/app/globals.css already paints the body with it.
+      //
+      // The measure and the gutter are src/ui/atoms/screen-shell.tsx's, so a piece is judged at
+      // the width it has in the product. Without them a wrapping row and a long French line are
+      // read at a thousand pixels, which no screen is.
+      return (
+        // Exactly the viewport tall and never a scroller: a piece that runs longer overflows
+        // onto the page, which scrolls without owing anyone a tab stop, where a box that
+        // scrolls owes one and a story is not the place to hand it out.
+        <div className="h-screen-safe mx-auto flex w-full max-w-xl flex-col gap-6 p-6 sm:px-8">
+          <Story />
+        </div>
+      )
     },
   ],
 }

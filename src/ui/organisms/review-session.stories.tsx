@@ -15,12 +15,12 @@ async function answer(canvasElement: HTMLElement, typed: string) {
   await userEvent.type(canvas.getByLabelText(COPY.review.prompt.meaning), `${typed}{Enter}`)
 }
 
-// Full bleed rather than the catalogue's default padding, which would frame a screen whose
-// whole subject is that it has no frame, and push it past the viewport it must fit inside.
+// Full bleed rather than the catalogue's ground, which would frame a screen whose whole subject
+// is that it has no frame, and push it past the viewport it must fit inside.
 const meta = {
   component: ReviewSession,
   args: { questions: DEMO_QUESTIONS, copy: COPY.review, subjectCopy: COPY.subject },
-  parameters: { layout: 'fullscreen' },
+  parameters: { fullBleed: true },
 } satisfies Meta<typeof ReviewSession>
 
 export default meta
