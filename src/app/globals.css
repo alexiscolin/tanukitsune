@@ -13,6 +13,8 @@
   --color-surface-sunken: oklch(96.8% 0.012 62);
 
   --color-ink: oklch(33% 0.006 60);
+  /* Secondary by being lighter than the ink and never by dropping under what a reader can
+     read: scripts/check-contrast.sh holds every ground it is set on to 4.5:1. */
   --color-ink-muted: oklch(54% 0.014 62);
 
   /* Felt rather than seen. The only line weight in the interface: a rule at rest is

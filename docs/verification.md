@@ -30,10 +30,16 @@ the gate refuses a merge nobody reviewed, and cannot refuse one somebody only cl
 
 ## The commands
 
-`pnpm gate` is `typecheck`, `check:docs`, `arch` and `lint`, in that order because `&&` stops at the
-first failure and the four cost 0.9, 0.9, 1.2 and 4.0 seconds: a boundary or documentation failure is
-reported in about two seconds rather than after the type-aware lint has run. Seven seconds in all, no
-database, which is what makes it usable from a hook that runs at every turn.
+`pnpm gate` is `typecheck`, `check:docs`, `check:contrast`, `arch` and `lint`, in that order because
+`&&` stops at the first failure and the last is the type-aware lint at 4.0 seconds: a boundary, a
+documentation or a contrast failure is reported in about two seconds rather than after it has run.
+Seven seconds in all, no database, which is what makes it usable from a hook that runs at every turn.
+
+`check:contrast` sits here rather than in `verify` because `check:tokens` sends every call site to
+these values: that rule refuses an arbitrary colour and names `src/app/globals.css` as the place to
+take one from, so a token under the readable floor turns it into an instruction to write text nobody
+can read. The audit in `e2e/` weighs the same thing on the screen, but only in a state a spec reaches,
+and an ink spent on a block that appears after an answer is one no story drives.
 
 `pnpm verify` is `gate` plus `check:sketches`, `check:tokens`, `check:review`, `check:tests`, `build`,
 `test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits
@@ -45,6 +51,7 @@ real routes and every catalogued state, in both themes.
 | `typecheck` | `tsc6` | type errors, under `strict` and `noUncheckedIndexedAccess` |
 | `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires, and a marker naming work the backlog should hold |
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
+| `check:contrast` | `check-contrast.sh` | a token pair the interface sets text in that falls under 4.5:1, in either theme, and whether its own comparator still tells black on white from white on white |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |
