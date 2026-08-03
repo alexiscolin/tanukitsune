@@ -39,7 +39,7 @@ export function SessionScreen({
 
       {announce}
 
-      <div className="pb-safe relative flex min-h-0 flex-1 flex-col pt-3">
+      <div className="pb-safe flex min-h-0 flex-1 flex-col pt-3">
         <div className="relative min-h-0 flex-1">{children}</div>
       </div>
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { bandOf } from '@/core/subject'
 import type { Band, Subject } from '@/core/subject'
 import type { SubjectCopy } from '@/core/site-copy'
 
@@ -17,15 +18,11 @@ const STAGE_INK: Record<Band, string> = {
 // Where the card sits, last in the sheet and reached only by reading past everything else:
 // nobody opens a card to learn its level, and a line that has to be scrolled to is a line
 // nobody has to step over.
-export function SubjectFiling({
-  subject,
-  copy,
-  band,
-}: {
-  subject: Subject
-  copy: SubjectCopy
-  band: Band | null
-}) {
+export function SubjectFiling({ subject, copy }: { subject: Subject; copy: SubjectCopy }) {
+  // Read here rather than handed down: a band beside the subject it was derived from is a
+  // second source for one fact, and the two can be told to disagree.
+  const band = bandOf(subject.srsStage)
+
   return (
     <p className="eyebrow flex flex-wrap items-center gap-2 pt-1 text-[var(--color-ink-muted)]">
       {/* Behind the band beside it by carrying no colour of its own, and never by an opacity:

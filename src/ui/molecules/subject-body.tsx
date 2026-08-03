@@ -4,13 +4,13 @@ import { SubjectFiling } from '@/ui/atoms/subject-filing'
 import { SubjectLine } from '@/ui/atoms/subject-line'
 import { SubjectPatterns } from '@/ui/atoms/subject-patterns'
 import { SubjectProse } from '@/ui/atoms/subject-prose'
-import { SubjectReadingBlock } from '@/ui/atoms/subject-reading-block'
+import { SubjectReadingBlock } from '@/ui/molecules/subject-reading-block'
 import { SubjectSentences } from '@/ui/atoms/subject-sentences'
 import { SubjectStrip } from '@/ui/atoms/subject-strip'
 import { SubjectWell } from '@/ui/atoms/subject-well'
 import { acceptedIn } from '@/core/subject'
 import type { AnswerKind } from '@/core/answer-kind'
-import type { Band, Flow, Subject } from '@/core/subject'
+import type { Flow, Subject } from '@/core/subject'
 import type { SubjectCopy } from '@/core/site-copy'
 
 // The order is the order it is learnt in: what it means, what that really covers, how it is
@@ -19,13 +19,11 @@ export function SubjectBody({
   subject,
   copy,
   flow,
-  band,
   asked,
 }: {
   subject: Subject
   copy: SubjectCopy
   flow: Flow
-  band: Band | null
   asked?: AnswerKind
 }) {
   return (
@@ -72,7 +70,7 @@ export function SubjectBody({
         <SubjectLine label={copy.never} values={subject.refused} struck />
       ) : null}
 
-      <SubjectFiling subject={subject} copy={copy} band={band} />
+      <SubjectFiling subject={subject} copy={copy} />
     </>
   )
 }

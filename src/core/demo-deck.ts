@@ -256,6 +256,14 @@ export type Question = {
   readonly accepted: AcceptedAnswers
 }
 
+// What tells one question from another, and it is the pair rather than the subject: the same
+// subject is asked twice in a deck, once for its meaning and once for its reading. Three things
+// key on it and two of them are load-bearing, the card the deck is dealing and the field that
+// remounts per question, so they are the same string by construction rather than by agreement.
+export function questionKey({ subject, kind }: Question): string {
+  return `${subject.id}-${kind}`
+}
+
 // What a tier may accept, which is not everything the card shows: a gloss can be listed and
 // refused in the same breath, and the whitelist is accepted without ever being shown. A
 // question with nothing acceptable cannot be asked at all, so it is dropped rather than

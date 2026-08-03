@@ -12,6 +12,7 @@ import { SwipeDeck } from '@/ui/molecules/swipe-deck'
 import type { SwipeDirection } from '@/ui/primitives/use-drag'
 
 import { runCascade } from '@/core/grading/cascade'
+import { questionKey } from '@/core/demo-deck'
 import type { Question } from '@/core/demo-deck'
 import type { Verdict } from '@/core/grading/judge-port'
 import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
@@ -58,8 +59,10 @@ export function ReviewSession({
   const upcoming = questions[index + 1]
 
   // Counted from what the reader said rather than from the index, because a card they got
-  // wrong and one they got right are the same step through the deck.
+  // wrong and one they got right are the same step through the deck. Both numbers are read off
+  // the same list, so the rule at the foot and the tally on the card cannot disagree.
   const missed = reviewed.filter((entry) => entry.said === 'incorrect').length
+  const right = reviewed.filter((entry) => entry.said === 'correct').length
 
   const submit = async (asked: Question, raw: string) => {
     const outcome = await runCascade(
@@ -92,11 +95,9 @@ export function ReviewSession({
 
   return (
     <SessionScreen
-      queue={questions.map((asked) =>
-        stripItemFor(asked.subject, `${asked.subject.id}-${asked.kind}`),
-      )}
+      queue={questions.map((asked) => stripItemFor(asked.subject, questionKey(asked)))}
       index={index}
-      done={index - missed}
+      done={right}
       missed={missed}
       announce={
         // Mounted whether or not it holds anything, because a polite region has to be in the
@@ -108,7 +109,7 @@ export function ReviewSession({
       }
     >
       <SwipeDeck
-        cardKey={`${question.subject.id}-${question.kind}`}
+        cardKey={questionKey(question)}
         onDecide={decide}
         leftLabel={copy.grade.incorrect}
         rightLabel={copy.grade.correct}
@@ -135,7 +136,7 @@ export function ReviewSession({
           foot={
             answered ? (
               <SessionTally
-                done={reviewed.filter((entry) => entry.said === 'correct').length}
+                done={right}
                 left={questions.length - index}
                 missed={missed}
                 copy={copy.tally}

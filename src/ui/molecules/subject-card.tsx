@@ -7,16 +7,13 @@ import { RevealDot } from '@/ui/atoms/reveal-dot'
 import { SubjectHeadline } from '@/ui/atoms/subject-headline'
 import { SubjectBody } from '@/ui/molecules/subject-body'
 import { useCollapse } from '@/ui/primitives/use-collapse'
-import { bandOf } from '@/core/subject'
 import type { AnswerKind } from '@/core/answer-kind'
 
 import type { Flow, Subject } from '@/core/subject'
 import type { SubjectCopy } from '@/core/site-copy'
 
 // Everything the source and the corpus carry about a subject, inside the reference's one
-// slab. The rule that keeps it lean under that load: there is a single shape, a label in
-// small capitals and its value under it, and the only line ever drawn is the hairline
-// between two of them. No tab, no accordion, no box, no badge. It scrolls.
+// slab. No tab, no accordion, no box, no badge. It scrolls.
 //
 // A question shows none of it. On the exercise the keyboard is open and the screen is cut in
 // half, so the card is the character and the rule the answer is written on, and nothing
@@ -63,7 +60,6 @@ export function SubjectCard({
   // A lesson is never hidden: there is nothing to recall yet, so holding it back would only
   // make the reader tap before being taught.
   const open = flow === 'lesson' || revealed
-  const band = bandOf(subject.srsStage)
   const { gone, follow } = useCollapse()
 
   return (
@@ -115,7 +111,7 @@ export function SubjectCard({
           }`}
         >
           <SubjectHeadline subject={subject} copy={copy} asked={asked} />
-          <SubjectBody subject={subject} copy={copy} flow={flow} band={band} asked={asked} />
+          <SubjectBody subject={subject} copy={copy} flow={flow} asked={asked} />
         </div>
       ) : (
         <div className="min-h-0 flex-1" />

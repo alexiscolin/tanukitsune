@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 
 import { AnswerField } from '@/ui/molecules/answer-field'
 import { SubjectCard } from '@/ui/molecules/subject-card'
+import { questionKey } from '@/core/demo-deck'
 import type { Question } from '@/core/demo-deck'
 import type { Verdict } from '@/core/grading/judge-port'
 import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
@@ -44,7 +45,7 @@ export function QuestionCard({
       answer={
         answered && decided === 'correct' ? null : (
           <AnswerField
-            key={`${question.subject.id}-${question.kind}`}
+            key={questionKey(question)}
             kind={question.kind}
             label={copy.prompt[question.kind]}
             unconverted={copy.unconverted}

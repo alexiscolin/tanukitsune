@@ -12,11 +12,6 @@ import { pressEnter } from '@/core/composition-gate'
 // There is no field to see: a rule, centred under the character, and the answer appearing on
 // it as it is typed. The rule is the brand at rest and the destructive colour when an answer
 // cannot be graded at all.
-//
-// One word is set under it, and it is the only word on the screen: a character alone does
-// not say whether it is its meaning or its reading that is being asked, and the answer to
-// the wrong question is wrong for a reason the reader cannot see. It is a real label rather
-// than a description, so pressing it reaches the field.
 
 // Two states and no third. An answer that stood is not shown here at all, because the field
 // leaves with it, so every answer still on the screen once it has been judged is one that did

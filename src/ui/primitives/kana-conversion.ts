@@ -1,5 +1,3 @@
-'use client'
-
 import { isKana, toKana } from 'wanakana'
 
 const KANA_SYLLABLE = /[ぁ-ゖァ-ヶ]/u
