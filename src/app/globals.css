@@ -142,7 +142,7 @@
 
   --color-success: oklch(68% 0.12 162);
   --color-success-foreground: oklch(16% 0.01 40);
-  --color-destructive: oklch(66% 0.19 25);
+  --color-destructive: oklch(67% 0.19 25);
 
   /* The ramp runs the other way here, because on a dark ground the text is light: what is
      acquired still recedes toward the colour of the text, and the logic is unchanged. */

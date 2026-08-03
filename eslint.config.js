@@ -124,4 +124,18 @@ export default tseslint.config(
     files: ['*.config.{js,mjs,ts}', '.dependency-cruiser.js'],
     ...tseslint.configs.disableTypeChecked,
   },
+
+  // A gate runs under node and outside every tsconfig include, so the type-aware service
+  // would refuse to parse one. Linted without it rather than left unlinted: a gate nothing
+  // reads would be the one file in the repository outside every gate. Its globals are named
+  // here rather than taken from a package, and writing to the terminal is what it is for.
+  {
+    files: ['scripts/*.mjs'],
+    ...tseslint.configs.disableTypeChecked,
+    languageOptions: {
+      ...tseslint.configs.disableTypeChecked.languageOptions,
+      globals: { console: 'readonly', process: 'readonly', URL: 'readonly' },
+    },
+    rules: { ...tseslint.configs.disableTypeChecked.rules, 'no-console': 'off' },
+  },
 )
