@@ -1,13 +1,13 @@
 'use client'
 
-import { Line } from '@/ui/atoms/subject-line'
-import { Patterns } from '@/ui/atoms/subject-patterns'
-import { Prose } from '@/ui/atoms/subject-prose'
-import { ReadingBlock } from '@/ui/atoms/subject-reading-block'
-import { Sentences } from '@/ui/atoms/subject-sentences'
-import { Strip } from '@/ui/atoms/subject-strip'
 import { SubjectFiling } from '@/ui/atoms/subject-filing'
-import { Well } from '@/ui/atoms/subject-well'
+import { SubjectLine } from '@/ui/atoms/subject-line'
+import { SubjectPatterns } from '@/ui/atoms/subject-patterns'
+import { SubjectProse } from '@/ui/atoms/subject-prose'
+import { SubjectReadingBlock } from '@/ui/atoms/subject-reading-block'
+import { SubjectSentences } from '@/ui/atoms/subject-sentences'
+import { SubjectStrip } from '@/ui/atoms/subject-strip'
+import { SubjectWell } from '@/ui/atoms/subject-well'
 import { acceptedIn } from '@/core/subject'
 import type { AnswerKind } from '@/core/answer-kind'
 import type { Band, Flow, Subject } from '@/core/subject'
@@ -33,17 +33,14 @@ export function SubjectBody({
       {/* The one the headline is not. Asked for a reading, the meaning is what the reader
           still has to be told, and it takes a heading here rather than the middle. */}
       {asked === 'reading' ? (
-        <Line
-          label={copy.meaning}
-          values={acceptedIn(subject.meanings)}
-        />
+        <SubjectLine label={copy.meaning} values={acceptedIn(subject.meanings)} />
       ) : null}
-      <Prose label={copy.nuance} text={subject.nuance} />
-      <Line label={copy.synonyms} values={subject.synonyms} />
+      <SubjectProse label={copy.nuance} text={subject.nuance} />
+      <SubjectLine label={copy.synonyms} values={subject.synonyms} />
       {/* An untyped reading is exactly what the headline already carries, so it is dropped
           there and kept everywhere it says something more: on'yomi and kun'yomi are a
           distinction no single line can make. */}
-      <ReadingBlock
+      <SubjectReadingBlock
         copy={copy}
         readings={
           asked === 'reading'
@@ -55,24 +52,24 @@ export function SubjectBody({
           well: the pieces are what the mnemonic is built out of, so reading them second means
           reading the story before its words. */}
       {subject.components.length === 0 && subject.mnemonic === null ? null : (
-        <Well>
-          <Strip label={copy.components} parts={subject.components} />
-          <Prose label={copy.mnemonic} text={subject.mnemonic} />
-        </Well>
+        <SubjectWell>
+          <SubjectStrip label={copy.components} parts={subject.components} />
+          <SubjectProse label={copy.mnemonic} text={subject.mnemonic} />
+        </SubjectWell>
       )}
-      <Prose label={copy.yourNote} text={subject.meaningNote} />
-      <Prose label={copy.yourNote} text={subject.readingNote} />
-      <Strip label={copy.usedIn} parts={subject.usedIn} />
-      <Strip label={copy.similar} parts={subject.similar} />
-      <Line label={copy.wordType} values={subject.partsOfSpeech} />
-      <Patterns patterns={subject.patterns} label={copy.patterns} />
-      <Sentences sentences={subject.sentences} label={copy.sentences} />
+      <SubjectProse label={copy.yourNote} text={subject.meaningNote} />
+      <SubjectProse label={copy.yourNote} text={subject.readingNote} />
+      <SubjectStrip label={copy.usedIn} parts={subject.usedIn} />
+      <SubjectStrip label={copy.similar} parts={subject.similar} />
+      <SubjectLine label={copy.wordType} values={subject.partsOfSpeech} />
+      <SubjectPatterns patterns={subject.patterns} label={copy.patterns} />
+      <SubjectSentences sentences={subject.sentences} label={copy.sentences} />
 
       {/* An answer the source refuses outright, whatever a tier would have decided. Shown
           while teaching, where knowing what will not be accepted is the lesson, and never
           during recall, where it would be the answer. */}
       {flow === 'lesson' ? (
-        <Line label={copy.never} values={subject.refused} struck />
+        <SubjectLine label={copy.never} values={subject.refused} struck />
       ) : null}
 
       <SubjectFiling subject={subject} copy={copy} band={band} />

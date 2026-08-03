@@ -2,7 +2,7 @@
 
 import { SubjectBlock } from '@/ui/atoms/subject-block'
 
-export function Line({
+export function SubjectLine({
   label,
   values,
   struck,

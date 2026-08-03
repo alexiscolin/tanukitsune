@@ -2,17 +2,11 @@
 
 import type { ReactNode } from 'react'
 
-export function Eyebrow({
-  children,
-  tone = 'brand',
-}: {
-  children: ReactNode
-  tone?: 'brand' | 'muted'
-}) {
+// The label over a value, in small capitals, and behind what it qualifies: a heading that reads
+// as loud as the line under it stops being a label.
+export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <span
-      className={`eyebrow transition-colors duration-500 ${tone === 'brand' ? 'text-[var(--color-brand)]' : 'text-[var(--color-ink-muted)]'}`}
-    >
+    <span className="eyebrow text-[var(--color-ink-muted)] transition-colors duration-500">
       {children}
     </span>
   )

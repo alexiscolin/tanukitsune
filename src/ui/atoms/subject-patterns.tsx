@@ -5,7 +5,13 @@ import type { Pattern } from '@/core/subject'
 
 // What a list of meanings never teaches: which particle follows the word and what it takes.
 // The pattern is set in Japanese at reading size, its gloss quiet underneath.
-export function Patterns({ patterns, label }: { patterns: readonly Pattern[]; label: string }) {
+export function SubjectPatterns({
+  patterns,
+  label,
+}: {
+  patterns: readonly Pattern[]
+  label: string
+}) {
   if (patterns.length === 0) return null
 
   return (

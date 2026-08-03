@@ -12,7 +12,7 @@ import { Eyebrow } from '@/ui/atoms/eyebrow'
 export function SubjectBlock({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1 border-t border-[var(--color-hairline)] pt-5 first:border-0 first:pt-0">
-      <Eyebrow tone="muted">{label}</Eyebrow>
+      <Eyebrow>{label}</Eyebrow>
       {children}
     </div>
   )

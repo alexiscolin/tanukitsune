@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 
+import { stripItemFor } from '@/ui/molecules/deck-strip'
 import { SessionDone } from '@/ui/molecules/session-done'
 import { SessionScreen } from '@/ui/molecules/session-screen'
 import { SubjectCard } from '@/ui/molecules/subject-card'
-import type { StripItem } from '@/ui/molecules/deck-strip'
-import { SwipeDeck } from '@/ui/primitives/swipe-deck'
+import { SwipeDeck } from '@/ui/molecules/swipe-deck'
 
 import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
 import type { Subject } from '@/core/subject'
@@ -17,14 +17,6 @@ import type { Subject } from '@/core/subject'
 //
 // Neither direction means anything different here, which is why the deck surfaces no verdict
 // behind the card: there is nothing to be about to say.
-
-function stripOf(deck: readonly Subject[]): readonly StripItem[] {
-  return deck.map((subject) => ({
-    key: `${subject.id}`,
-    characters: subject.characters ?? '',
-    type: subject.type,
-  }))
-}
 
 export function LessonSession({
   deck,
@@ -44,7 +36,12 @@ export function LessonSession({
 
   return (
     // A lesson misses nothing: the rule says how much of the batch is behind and no more.
-    <SessionScreen queue={stripOf(deck)} index={index} done={index} missed={0}>
+    <SessionScreen
+      queue={deck.map((entry) => stripItemFor(entry, `${entry.id}`))}
+      index={index}
+      done={index}
+      missed={0}
+    >
       <SwipeDeck
         cardKey={`${subject.id}`}
         label={copy.next}

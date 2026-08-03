@@ -3,10 +3,9 @@
 import { useEffect, useRef } from 'react'
 
 import { DeckGlyph } from '@/ui/atoms/deck-glyph'
-import type { SubjectType } from '@/core/subject'
+import type { Subject, SubjectType } from '@/core/subject'
 
-// The one categorical use of colour in the interface, spent here and nowhere else until the
-// card spends it too.
+// The one categorical use of colour in the interface, and the strip is where it is spent.
 const TYPE_FILL: Record<SubjectType, string> = {
   radical: 'bg-[var(--color-radical)]',
   kanji: 'bg-[var(--color-kanji)]',
@@ -22,6 +21,13 @@ export type StripItem = {
   readonly key: string
   readonly characters: string
   readonly type: SubjectType
+}
+
+// The three fields are the same wherever the queue comes from; the key is not, because what
+// makes an entry unique is the flow's own: a lesson pages through subjects, and a review asks
+// the same subject twice, once for its meaning and once for its reading.
+export function stripItemFor(subject: Subject, key: string): StripItem {
+  return { key, characters: subject.characters ?? '', type: subject.type }
 }
 
 // The queue felt rather than listed, on a band of its own under the header: it is where the
@@ -64,9 +70,9 @@ export function DeckStrip({ queue, index }: { queue: readonly StripItem[]; index
             className="flex shrink-0 snap-center flex-col items-center gap-1.5 px-4"
           >
             <DeckGlyph characters={entry.characters} active={at === index} />
-            {/* The type's own colour rather than the accent: the dot under the active glyph
-                answers the same question as the dot on the card, so it answers it the same
-                way, and the vermillon stays reserved for what the reader can act on. */}
+            {/* The type's own colour rather than the accent: it says what kind of subject is
+                being asked, and the vermillon stays reserved for what the reader can act
+                on. */}
             <span
               className={`ease-spring size-1 rounded-full transition duration-500 ${TYPE_FILL[entry.type]} ${
                 at === index ? 'scale-100 opacity-100' : 'scale-0 opacity-0'

@@ -13,7 +13,7 @@ import type { SubjectCopy } from '@/core/site-copy'
 // source sends six kun'yomi on 下 and accepts none of them as an answer, and dropping them
 // would teach that the character has two readings when it has eight. Accepted ones carry the
 // weight, the rest recede and say why once.
-export function ReadingBlock({
+export function SubjectReadingBlock({
   readings,
   copy,
 }: {

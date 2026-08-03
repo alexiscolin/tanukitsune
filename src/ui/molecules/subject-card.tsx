@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react'
 
-import { GlyphFace } from '@/ui/atoms/subject-glyph-face'
+import { SubjectGlyphFace } from '@/ui/atoms/subject-glyph-face'
 import { RevealDot } from '@/ui/atoms/reveal-dot'
 import { SubjectHeadline } from '@/ui/atoms/subject-headline'
 import { SubjectBody } from '@/ui/molecules/subject-body'
@@ -88,7 +88,7 @@ export function SubjectCard({
             sheet under it, and the empty top of the card is where the eye enters. Scaled from
             its own floor, so scrolling sinks it instead of lifting it. */}
         <div className="origin-bottom" style={{ transform: `scale(${1 - GLYPH_SHRINK * gone})` }}>
-          <GlyphFace subject={subject} />
+          <SubjectGlyphFace subject={subject} />
         </div>
       </div>
 

@@ -18,7 +18,7 @@ function sizeFor(characters: string): string {
 
 // The subject's own glyph, and the only one the reader is meant to read: a radical with no Unicode
 // character arrives as an SVG, sized against the type rather than given a box.
-export function GlyphFace({ subject }: { subject: Subject }) {
+export function SubjectGlyphFace({ subject }: { subject: Subject }) {
   if (subject.characters === null) {
     // A black vector drawn for a pale ground, served without the headers that would let it be
     // used as a mask, so it is turned over on the dark ground instead. Unoptimised on purpose:

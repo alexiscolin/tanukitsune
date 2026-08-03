@@ -2,7 +2,7 @@
 
 import { SubjectBlock } from '@/ui/atoms/subject-block'
 
-export function Prose({ label, text }: { label: string; text: string | null }) {
+export function SubjectProse({ label, text }: { label: string; text: string | null }) {
   if (text === null) return null
 
   return (

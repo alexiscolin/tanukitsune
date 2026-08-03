@@ -3,12 +3,12 @@
 import { useId, useState } from 'react'
 
 import { SessionTally } from '@/ui/atoms/session-tally'
+import { stripItemFor } from '@/ui/molecules/deck-strip'
 import { QuestionCard } from '@/ui/molecules/question-card'
 import { SessionDone } from '@/ui/molecules/session-done'
 import { SessionScreen } from '@/ui/molecules/session-screen'
 import { SubjectCard } from '@/ui/molecules/subject-card'
-import type { StripItem } from '@/ui/molecules/deck-strip'
-import { SwipeDeck } from '@/ui/primitives/swipe-deck'
+import { SwipeDeck } from '@/ui/molecules/swipe-deck'
 import type { SwipeDirection } from '@/ui/primitives/use-drag'
 
 import { runCascade } from '@/core/grading/cascade'
@@ -37,16 +37,6 @@ type Reviewed = {
 // reader when none could.
 function spoken(answered: boolean, decided: Verdict | null, copy: ReviewCopy): string {
   return !answered ? '' : decided === null ? copy.askSelfGrade : copy.verdict[decided]
-}
-
-// Keyed on the pair rather than on the subject: the same subject is asked twice in one deck,
-// once for its meaning and once for its reading.
-function stripOf(questions: readonly Question[]): readonly StripItem[] {
-  return questions.map(({ subject, kind }) => ({
-    key: `${subject.id}-${kind}`,
-    characters: subject.characters ?? '',
-    type: subject.type,
-  }))
 }
 
 export function ReviewSession({
@@ -102,7 +92,9 @@ export function ReviewSession({
 
   return (
     <SessionScreen
-      queue={stripOf(questions)}
+      queue={questions.map((asked) =>
+        stripItemFor(asked.subject, `${asked.subject.id}-${asked.kind}`),
+      )}
       index={index}
       done={index - missed}
       missed={missed}

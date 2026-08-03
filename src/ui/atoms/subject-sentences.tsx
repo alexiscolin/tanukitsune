@@ -3,7 +3,7 @@
 import { SubjectBlock } from '@/ui/atoms/subject-block'
 import type { Sentence } from '@/core/subject'
 
-export function Sentences({
+export function SubjectSentences({
   sentences,
   label,
 }: {
