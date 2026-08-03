@@ -51,10 +51,11 @@ async function catalogued(page: Page): Promise<string[]> {
 // One test walks every story, and each one waits on a play function that types before an
 // audit runs, against a catalogue compiling on first hit. The default thirty seconds is a
 // budget for one page, not for a catalogue, and exceeding it would read as a flaky runner
-// rather than as the too-small number it is. The number below is a budget for the catalogue,
-// so it grows with it: every component has a page, which is a few states each rather than the
-// dozen the three screens held.
-test.describe.configure({ timeout: 300_000 })
+// rather than as the too-small number it is. So the budget below is a page's, multiplied by
+// the catalogue's own length once that is known, rather than a total somebody raises the day
+// it is exceeded. The fixed part is what the first page pays to compile the catalogue.
+const PER_STORY = 4_000
+const COMPILING = 60_000
 
 // The width .storybook/preview.tsx lands on, because the toolbar that applies it belongs to
 // the manager and this suite goes straight to the frame: without saying so, every state
@@ -73,6 +74,7 @@ for (const theme of ['light', 'dark'] as const) {
     // nothing would report two green tests. This refuses that, and not a glob that lost
     // some of what it matched: what each story is worth asserting about is inside it.
     expect(ids.length).toBeGreaterThan(0)
+    test.setTimeout(COMPILING + ids.length * PER_STORY)
 
     for (const id of ids) {
       await test.step(id, async () => {

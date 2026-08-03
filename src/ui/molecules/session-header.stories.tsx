@@ -18,8 +18,8 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+// The two ends. Where the strip comes to rest in between is the strip's own page, and this one
+// is about the counter standing against the band under it.
 export const Opening: Story = { args: { index: 0 } }
-
-export const Middle: Story = { args: { index: 3 } }
 
 export const Last: Story = { args: { index: DEMO_DECK.length - 1 } }

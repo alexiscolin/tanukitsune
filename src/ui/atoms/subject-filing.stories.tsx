@@ -20,12 +20,9 @@ type Story = StoryObj<typeof meta>
 // Never studied, so there is no band to name and the line is the subject's alone.
 export const Unstudied: Story = { args: { subject: KANJI } }
 
-export const Apprentice: Story = { args: { subject: { ...KANJI, srsStage: 2 } } }
-
-export const Guru: Story = { args: { subject: { ...KANJI, srsStage: 5 } } }
-
-// The far end of the ramp, where the colour has receded to the colour of the text.
-export const Burned: Story = { args: { subject: { ...KANJI, srsStage: 9 } } }
+// One banded state is what this line has to show: the ramp as a ramp is on the token page, and
+// every rung of it is weighed on every ground by scripts/check-contrast.mjs.
+export const Banded: Story = { args: { subject: { ...KANJI, srsStage: 5 } } }
 
 // The level a redistributable mapping would add, which the source does not send.
 export const WithJlpt: Story = { args: { subject: { ...KANJI, jlpt: 'N5', srsStage: 5 } } }

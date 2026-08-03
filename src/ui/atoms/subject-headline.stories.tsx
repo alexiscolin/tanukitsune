@@ -23,8 +23,6 @@ export const Meaning: Story = { args: { subject: KANJI, asked: 'meaning' } }
 export const Reading: Story = { args: { subject: KANJI, asked: 'reading' } }
 
 // The glosses the source lists without accepting, qualified under the line rather than given a
-// heading of their own.
+// heading of their own. A lesson puts no question at all, which reaches the same branch: only a
+// reading asked for is what this component turns on.
 export const AlsoShown: Story = { args: { subject: VERB, asked: 'meaning' } }
-
-// A lesson puts no question, so nothing was asked and the meanings are what opens.
-export const Untasked: Story = { args: { subject: VERB } }

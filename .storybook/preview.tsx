@@ -44,17 +44,21 @@ const preview: Preview = {
       // product never has, so a story that declares itself full bleed gets nothing.
       if (context.parameters['fullBleed'] === true) return <Story />
 
-      // Everything else is a piece rendered alone, which needs a ground to be seen against and
-      // a height to resolve against: a card is full height inside its deck, and a box with no
-      // definite height of its own gives it nothing to be full of. The gutter is the shell's,
-      // so a piece is as wide here as it is in the product. The ground is here rather than in
-      // a story because a story that draws its own surface is a story writing markup, which
-      // docs/decisions/0009-storybook-as-the-review-surface.md refuses.
+      // Everything else is a piece rendered alone, which needs a height to resolve against: a
+      // card is full height inside its deck, and a box with no definite height of its own gives
+      // it nothing to be full of. The ground is here rather than in a story because a story that
+      // draws its own surface is a story writing markup, which
+      // docs/decisions/0009-storybook-as-the-review-surface.md refuses. The colour is not
+      // repeated here: src/app/globals.css already paints the body with it.
+      //
+      // The measure and the gutter are src/ui/atoms/screen-shell.tsx's, so a piece is judged at
+      // the width it has in the product. Without them a wrapping row and a long French line are
+      // read at a thousand pixels, which no screen is.
       return (
         // Exactly the viewport tall and never a scroller: a piece that runs longer overflows
         // onto the page, which scrolls without owing anyone a tab stop, where a box that
         // scrolls owes one and a story is not the place to hand it out.
-        <div className="h-screen-safe flex flex-col gap-6 bg-[var(--color-canvas)] px-6 py-6 sm:px-8">
+        <div className="h-screen-safe mx-auto flex w-full max-w-xl flex-col gap-6 p-6 sm:px-8">
           <Story />
         </div>
       )
