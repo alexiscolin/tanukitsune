@@ -33,12 +33,13 @@ pnpm lint
 pnpm arch                  dependency-cruiser, plus a probe proving the rules fire
 pnpm knip                  unused exports, files and dependencies
 pnpm dupes                 jscpd, copy-paste ratchet
+pnpm check:contrast        every ink token on every ground, against the readable floor
 pnpm check:docs            documentation discipline
 pnpm check:review          a probe proving the review coverage gate refuses what it claims to
 pnpm check:sketches        work left in src/ui/sketches, and the hook keeping that area quiet
 pnpm check:tests           a probe proving the test strength gate refuses a weakened test
 pnpm check:tokens          a probe proving the token rule refuses an arbitrary Tailwind value
-pnpm gate                  typecheck, check:docs, arch, lint, cheapest first: needs no database
+pnpm gate                  check:contrast, typecheck, check:docs, arch, lint: needs no database
 pnpm verify                gate, check:sketches, check:tokens, check:review, check:tests, build, test, knip, dupes
 ```
 

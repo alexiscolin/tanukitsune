@@ -30,10 +30,21 @@ the gate refuses a merge nobody reviewed, and cannot refuse one somebody only cl
 
 ## The commands
 
-`pnpm gate` is `typecheck`, `check:docs`, `arch` and `lint`, in that order because `&&` stops at the
-first failure and the four cost 0.9, 0.9, 1.2 and 4.0 seconds: a boundary or documentation failure is
-reported in about two seconds rather than after the type-aware lint has run. Seven seconds in all, no
-database, which is what makes it usable from a hook that runs at every turn.
+`pnpm gate` is `check:contrast`, `typecheck`, `check:docs`, `arch` and `lint`, in that order because
+`&&` stops at the first failure and the five cost 0.2, 1.0, 0.8, 1.3 and 2.9 seconds: a contrast, a
+type or a boundary failure is reported in about two seconds rather than after the type-aware lint has
+run. Six seconds in all, no database, which is what makes it usable from a hook that runs at
+every turn.
+
+`check:contrast` sits here rather than in `verify` for two reasons. It needs no browser, which is what
+lets it run at every turn instead of once before a merge. And it weighs a token before any call site
+spends it, where the audit in `e2e/` weighs one after: that audit reaches further than this does,
+since the catalogue drives every story's play function in both themes, but a rung of the mastery ramp
+is spent by no story at all, every demo subject carrying a null `srsStage`.
+
+It belongs beside `check:tokens` for the same reason that rule exists: `check:tokens` refuses an
+arbitrary colour and names `src/app/globals.css` as the place to take one from, so a token under the
+readable floor would turn it into an instruction to write text nobody can read.
 
 `pnpm verify` is `gate` plus `check:sketches`, `check:tokens`, `check:review`, `check:tests`, `build`,
 `test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits
@@ -45,6 +56,7 @@ real routes and every catalogued state, in both themes.
 | `typecheck` | `tsc6` | type errors, under `strict` and `noUncheckedIndexedAccess` |
 | `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires, and a marker naming work the backlog should hold |
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
+| `check:contrast` | `check-contrast.mjs` | an ink token that falls under 4.5:1 on a ground it can land on, in either theme, and whether its own comparator still tells black on white from white on white |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |
@@ -227,8 +239,8 @@ supplies arguments and never markup, which is what keeps the catalogue a second 
 renderer instead of a second renderer. Why it stops at `src/ui/`, and why states are reached by
 typing rather than by passing a property: [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md).
 
-The six states of the review loop are what is catalogued. `src/ui/molecules/answer-input.tsx` appears
-inside them and `src/ui/atoms/page-shell.tsx` around them, neither with a page of its own, and nothing
+The states of the review loop are what is catalogued. `src/ui/molecules/answer-field.tsx` appears
+inside them and `src/ui/atoms/screen-shell.tsx` around them, neither with a page of its own, and nothing
 requires a component under `src/ui/` to have one.
 
 The accessibility addon runs the audit per state for whoever has the catalogue open, and

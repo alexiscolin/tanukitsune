@@ -1,5 +1,6 @@
 import type { AnswerKind } from './answer-kind'
 import type { Verdict } from './grading/judge-port'
+import type { Band, ReadingType, SubjectType } from './subject'
 import { DEFAULT_LOCALE, isLocale } from './locales'
 import type { Locale } from './locales'
 
@@ -7,22 +8,48 @@ import type { Locale } from './locales'
 // names the page furniture. The session takes this and nothing else, so a client component
 // never resolves a locale.
 export type ReviewCopy = {
-  readonly progress: string
   // Keyed by the kind rather than two fields, so a kind added to the union without its
   // question is a type error rather than a blank label.
   readonly prompt: Record<AnswerKind, string>
-  readonly answerLabel: string
   readonly unconverted: string
   // Keyed by the verdict for the reason the question is keyed by the kind: a verdict added
   // without its word is a type error rather than a blank line where the answer was judged.
   readonly verdict: Record<Verdict, string>
-  readonly expected: string
   readonly askSelfGrade: string
-  // One label per verdict for the three states, because each asks the same question: say
-  // what the answer was. Undecided offers both, a decided verdict offers the other one.
+  // One label per verdict, because each asks the same question: say what the answer was.
   readonly grade: Record<Verdict, string>
   readonly next: string
   readonly done: string
+  // The three numbers a session has, at the foot of the card.
+  readonly tally: { readonly done: string; readonly left: string; readonly missed: string }
+}
+
+// Everything a subject card names about what it is showing. Apart from the review loop
+// because a card is shown outside one too, in a lesson, where nothing is being asked.
+export type SubjectCopy = {
+  // One label per type and per reading kind, so a taxonomy that grows without its words is a
+  // type error rather than a heading nobody wrote.
+  readonly type: Record<SubjectType, string>
+  readonly reading: Record<ReadingType, string>
+  readonly plainReading: string
+  readonly level: string
+  readonly meaning: string
+  readonly nuance: string
+  readonly mnemonic: string
+  readonly components: string
+  readonly usedIn: string
+  readonly similar: string
+  readonly synonyms: string
+  readonly yourNote: string
+  readonly patterns: string
+  readonly sentences: string
+  readonly wordType: string
+  readonly alsoShown: string
+  readonly never: string
+  // One word per rung of the mastery ramp, for the same reason the types are keyed.
+  readonly stage: Record<Band, string>
+  readonly reveal: string
+  readonly listen: string
 }
 
 export type SiteCopy = {
@@ -32,6 +59,7 @@ export type SiteCopy = {
   readonly error: string
   readonly retry: string
   readonly review: ReviewCopy
+  readonly subject: SubjectCopy
 }
 
 // A Record over Locale rather than a lookup that can miss: adding a locale
@@ -44,16 +72,54 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
     error: 'Quelque chose a cassé de notre côté.',
     retry: 'Réessayer',
     review: {
-      progress: 'Question',
       prompt: { meaning: 'Sens', reading: 'Lecture' },
-      answerLabel: 'Réponse',
       unconverted: "Cette réponse n'est pas une lecture en kana.",
       verdict: { correct: 'Juste', incorrect: 'Faux' },
-      expected: 'Attendu',
       askSelfGrade: "Rien n'a pu trancher. C'était juste ?",
       grade: { correct: "C'était juste", incorrect: "C'était faux" },
       next: 'Suivant',
       done: 'Session terminée',
+      tally: { done: 'passées', left: 'restantes', missed: 'erreurs' },
+    },
+    subject: {
+      type: {
+        radical: 'radical',
+        kanji: 'kanji',
+        vocabulary: 'vocabulaire',
+        kanaVocabulary: 'vocabulaire en kana',
+        grammar: 'grammaire',
+        conjugation: 'conjugaison',
+      },
+      reading: {
+        onyomi: "lecture on'yomi",
+        kunyomi: "lecture kun'yomi",
+        nanori: 'lecture dans les noms',
+      },
+      plainReading: 'lecture',
+      level: 'niveau',
+      meaning: 'sens',
+      nuance: 'à savoir',
+      mnemonic: 'moyen de retenir',
+      components: 'composé de',
+      usedIn: 'on le retrouve dans',
+      similar: 'à ne pas confondre',
+      synonyms: 'tes synonymes',
+      yourNote: 'ta note',
+      patterns: 'comment il se construit',
+      sentences: 'en contexte',
+      wordType: 'nature',
+      alsoShown: 'affiché, jamais accepté en réponse',
+      never: 'jamais accepté',
+      stage: {
+        lesson: 'jamais étudié',
+        apprentice: 'apprenti',
+        guru: 'confirmé',
+        master: 'maître',
+        enlightened: 'éclairé',
+        burned: 'gravé',
+      },
+      reveal: 'Révéler la carte',
+      listen: 'Écouter la prononciation',
     },
   },
 }

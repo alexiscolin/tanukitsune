@@ -1,78 +1,57 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { userEvent, within } from 'storybook/test'
 
-import { DEMO_QUEUE } from '@/core/demo-queue'
 import { copyFor } from '@/core/site-copy'
 
+import { DEMO_QUESTIONS, KANJI } from '@/core/demo-deck'
 import { ReviewSession } from './review-session'
 
-// The deck and the copy the application runs on, not a fixture written beside them. A
-// catalogue rendering invented data stops describing the product the day the two diverge.
-const COPY = copyFor('fr').review
+// The states of the loop, driven the way a reader reaches them rather than passed in: the
+// answer is typed and the verdict is whatever the cascade returns for it.
+const COPY = copyFor('fr')
 
-// Named rather than taken from the head of the deck, because the answers below are this
-// subject's: に is wrong for 一 and right for 二, so a deck reordered around them would
-// leave the incorrect verdict rendering a correct one under its own name.
-const ICHI = DEMO_QUEUE.filter((entry) => entry.subjectId === 'demo-ichi')
-const MEANING = ICHI.filter((entry) => entry.kind === 'meaning')
-const READING = ICHI.filter((entry) => entry.kind === 'reading')
-
-// A story types and clicks its way to a state rather than passing it in, for the reason
-// docs/decisions/0009-storybook-as-the-review-surface.md gives.
 async function answer(canvasElement: HTMLElement, typed: string) {
   const canvas = within(canvasElement)
-  await userEvent.type(canvas.getByLabelText(COPY.answerLabel), `${typed}{Enter}`)
+  await userEvent.type(canvas.getByLabelText(COPY.review.prompt.meaning), `${typed}{Enter}`)
 }
 
+// Full bleed rather than the catalogue's default padding, which would frame a screen whose
+// whole subject is that it has no frame, and push it past the viewport it must fit inside.
 const meta = {
   component: ReviewSession,
-  args: { copy: COPY },
+  args: { questions: DEMO_QUESTIONS, copy: COPY.review, subjectCopy: COPY.subject },
+  parameters: { layout: 'fullscreen' },
 } satisfies Meta<typeof ReviewSession>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Question: Story = {
-  args: { queue: MEANING },
-}
+export const Question: Story = {}
 
-// Non-kana on a reading, which the field refuses rather than submits.
-export const Refusal: Story = {
-  args: { queue: READING },
-  play: async ({ canvasElement }) => {
-    await answer(canvasElement, '123')
-  },
-}
-
+// The primary meaning of the first question, which is 下. Taken from the fixture rather than
+// remembered: a story typing a word the deck no longer accepts shows the opposite of its own
+// name, and says nothing about it.
 export const VerdictCorrect: Story = {
-  args: { queue: MEANING },
   play: async ({ canvasElement }) => {
-    await answer(canvasElement, 'un')
+    await answer(canvasElement, KANJI.meanings[0]?.text ?? '')
   },
 }
 
-// A reading the exact tier cannot match is wrong rather than undecided.
-export const VerdictIncorrect: Story = {
-  args: { queue: READING },
-  play: async ({ canvasElement }) => {
-    await answer(canvasElement, 'ni')
-  },
-}
-
-// A meaning no tier placed, which is undecided by design and hands the item card and the
-// grading control to the reader.
+// A meaning no tier placed, which is undecided by design and hands the card and the gesture
+// to the reader. There is no story for a wrong meaning, because v0.1 has no tier that can
+// declare one: docs/specs/v0.1.md sends anything the exact tier cannot match to self-grade,
+// and only a reading is decided outright. The queue asks every meaning before any reading, so
+// that verdict is reachable by playing the deck and not by typing one answer.
 export const SelfGrade: Story = {
-  args: { queue: MEANING },
   play: async ({ canvasElement }) => {
-    await answer(canvasElement, 'quelque chose')
+    await answer(canvasElement, 'la terre battue')
   },
 }
 
-export const Done: Story = {
-  args: { queue: MEANING },
+// Giving up rather than answering: the dot opens the card with nothing to grade.
+export const GaveUp: Story = {
   play: async ({ canvasElement }) => {
-    await answer(canvasElement, 'un')
-    await userEvent.click(within(canvasElement).getByRole('button', { name: COPY.next }))
+    await userEvent.click(within(canvasElement).getByRole('button', { name: COPY.subject.reveal }))
   },
 }

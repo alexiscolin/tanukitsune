@@ -1,225 +1,266 @@
 'use client'
 
+import { ScreenShell } from '@/ui/atoms/screen-shell'
 import { useEffect, useId, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 
 import { runCascade } from '@/core/grading/cascade'
+import type { Question } from '@/core/demo-deck'
 import type { Verdict } from '@/core/grading/judge-port'
-import type { ReviewEntry } from '@/core/review-entry'
-import type { ReviewCopy } from '@/core/site-copy'
+import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
 
-import { AnswerInput } from '@/ui/molecules/answer-input'
+import {
+  DeckStrip,
+  MenuMark,
+  SessionRule,
+  SessionTally,
+  StepCount,
+} from '@/ui/atoms/session-chrome'
+import type { StripItem } from '@/ui/atoms/session-chrome'
+import { AnswerField } from '@/ui/molecules/answer-field'
+import { SubjectCard } from '@/ui/molecules/subject-card'
+import { SwipeDeck } from '@/ui/primitives/swipe-deck'
+import type { SwipeDirection } from '@/ui/primitives/swipe-deck'
 
-// The two are kept apart rather than one overwriting the other: what the cascade produced
-// and what the reader said instead are the labelled disagreement a review event carries,
-// and it cannot be reconstructed from the corrected value alone.
-type Answered = {
-  readonly decided: Verdict | null
-  readonly overridden: Verdict | null
-}
+// The review screen. The character is on the slab, the answer is written on a rule under it,
+// and the card is the control that grades and moves on.
+//
+// It takes the questions rather than building them: which subject is asked, for what, and in
+// what order is what an assignment says, and this screen is not where that is decided.
 
-// The one place the override wins, so the message and the buttons cannot come to disagree
-// about the same answer. Null while no tier decided and the reader has not either.
-function verdictOf({ decided, overridden }: Answered): Verdict | null {
-  return overridden ?? decided
-}
-
-const BUTTON =
-  'rounded-md border border-[var(--color-ink-muted)] px-3 py-2 text-sm text-[var(--color-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ink)]'
-
-const MUTED = 'text-sm text-[var(--color-ink-muted)]'
-
-export function ReviewSession({
-  queue,
-  copy,
+// The mark and the counter on one row, the deck on a band of its own under them. The deck is
+// read across rather than glanced at, which is what a row squeezed between two fixed things
+// cannot be.
+function SessionHeader({
+  questions,
+  index,
 }: {
-  queue: readonly ReviewEntry[]
-  copy: ReviewCopy
+  questions: readonly Question[]
+  index: number
 }) {
-  const [index, setIndex] = useState(0)
-  const [answered, setAnswered] = useState<Answered | null>(null)
-  const end = useRef<HTMLHeadingElement>(null)
-  const verdictId = useId()
-
-  const entry = queue[index]
-
-  // The button that ended the session left with the focus on it, so the end takes it like
-  // every other step of the loop does rather than dropping it on the document. Only once
-  // a step has been left: a queue that arrives empty was never a session, and taking the
-  // focus as the page loads is what the field's own rule refuses.
-  useEffect(() => {
-    if (index > 0) end.current?.focus()
-  }, [entry, index])
-
-  // No tally, because v0.1 refuses statistics and a number nothing persists is one the
-  // reader cannot check. What was answered is in the log, once there is a log.
-  if (entry === undefined) {
-    return (
-      <h1 ref={end} tabIndex={-1} className="text-3xl font-semibold tracking-tight outline-none">
-        {copy.done}
-      </h1>
-    )
-  }
-
-  // An expression rather than a declaration, which is hoisted and would therefore be read
-  // as able to run before the entry above it was found.
-  const submit = async (raw: string) => {
-    // No port, because v0.1 ships no model tier. A meaning the exact tier cannot match is
-    // therefore undecided by design, and the reader is what resolves it.
-    const outcome = await runCascade(
-      { kind: entry.kind, answer: raw, accepted: entry.accepted },
-      null,
-    )
-
-    setAnswered({
-      decided: outcome.verdict === 'undecided' ? null : outcome.verdict,
-      overridden: null,
-    })
-  }
-
-  // A reader who grades their way back to what the cascade already said did not override
-  // it, so nothing is held against it: the pair exists to carry a disagreement, and one
-  // recorded where none happened is a labelled case that says the opposite of the truth.
-  function grade(said: Verdict) {
-    setAnswered((current) =>
-      current === null
-        ? current
-        : { ...current, overridden: said === current.decided ? null : said },
-    )
-  }
-
-  function advance() {
-    setAnswered(null)
-    setIndex(index + 1)
-  }
+  const strip: readonly StripItem[] = questions.map(({ subject, kind }) => ({
+    key: `${subject.id}-${kind}`,
+    characters: subject.characters ?? '',
+    type: subject.type,
+  }))
 
   return (
-    <section className="flex flex-col gap-6">
-      <p className={MUTED}>
-        {copy.progress} {index + 1} / {queue.length}
-      </p>
-
-      <div className="flex flex-col gap-1">
-        <h1 lang="ja" className="text-6xl leading-none">
-          {entry.characters}
-        </h1>
-        <p className={MUTED}>{copy.prompt[entry.kind]}</p>
-      </div>
-
-      {/* Rendered whether or not it holds anything, because a polite region has to be in
-          the document before its content changes: one inserted with its text already in it
-          is the case a screen reader routinely says nothing about. It is also named as the
-          description of whatever takes the focus next, since an announcement racing a focus
-          move is the one a screen reader drops. */}
-      <p role="status" id={verdictId} className="text-lg">
-        {answered === null ? '' : verdictMessage(verdictOf(answered), copy)}
-      </p>
-
-      {answered === null ? (
-        <AnswerInput
-          kind={entry.kind}
-          label={copy.answerLabel}
-          unconverted={copy.unconverted}
-          // Every field but the first one replaced a verdict the reader has just left.
-          autoFocus={index > 0}
-          onSubmit={(raw) => {
-            void submit(raw)
-          }}
-        />
-      ) : (
-        <VerdictPanel
-          entry={entry}
-          answered={answered}
-          copy={copy}
-          verdictId={verdictId}
-          onGrade={grade}
-          onAdvance={advance}
-        />
-      )}
-    </section>
+    <>
+      <header className="pt-safe flex items-start justify-between gap-4">
+        <MenuMark />
+        <StepCount step={index + 1} total={questions.length} />
+      </header>
+      <DeckStrip queue={strip} index={index} />
+    </>
   )
 }
 
-// `Object.keys` widens to string, and the cast narrows it back to what the record's own
-// type already guarantees: one key per verdict, which is the exhaustiveness this reads for.
-function gradesIn(copy: ReviewCopy): Verdict[] {
-  return Object.keys(copy.grade) as Verdict[]
+// The two are kept apart rather than one overwriting the other: what the cascade produced and
+// what the reader said instead are the labelled disagreement a review event carries, on exactly
+// the hard middle where a grader is worth correcting. `said` is what the tally counts and what
+// the deck advances on; `decided` is the half that no later reading can recover, and it waits
+// here for the assignment layer that will write it.
+type Reviewed = {
+  readonly decided: Verdict | null
+  readonly said: Verdict
 }
 
-function verdictMessage(verdict: Verdict | null, copy: ReviewCopy): string {
-  return verdict === null ? copy.askSelfGrade : copy.verdict[verdict]
-}
+// The end is a step of the loop like every other, so it takes the focus the same way, and only
+// once a step has been left: a deck that arrives empty was never a session, and taking the focus
+// as the page loads is what the field's own rule refuses.
+function Finished({ label, reached }: { label: string; reached: boolean }) {
+  const end = useRef<HTMLHeadingElement>(null)
 
-function VerdictPanel({
-  entry,
-  answered,
-  copy,
-  verdictId,
-  onGrade,
-  onAdvance,
-}: {
-  entry: ReviewEntry
-  answered: Answered
-  copy: ReviewCopy
-  verdictId: string
-  onGrade: (said: Verdict) => void
-  onAdvance: () => void
-}) {
-  const verdict = verdictOf(answered)
-  const panel = useRef<HTMLDivElement>(null)
-  const next = useRef<HTMLButtonElement>(null)
-
-  // The field that held the focus is gone, so the focus is placed rather than left to fall
-  // to the document, where the next keystroke reaches nothing and a reader who does not use
-  // a mouse has to walk the page again. On the button that continues the loop once a verdict
-  // stands, and on the panel itself while the reader is the one who has to decide.
   useEffect(() => {
-    ;(next.current ?? panel.current)?.focus()
-  }, [verdict])
+    if (reached) end.current?.focus()
+  }, [reached])
 
   return (
-    <div
-      ref={panel}
-      tabIndex={-1}
-      aria-describedby={verdictId}
-      className="flex flex-col gap-4 outline-none"
-    >
-      {/* Kept while the reader can still act on it, so grading does not remove what was
-          graded against. Hidden only while the cascade's correct verdict stands unchallenged.
-          The full item card is what the corpus adds here. */}
-      {answered.decided === 'correct' && answered.overridden === null ? null : (
-        <div className="flex flex-col gap-1">
-          <p className={MUTED}>{copy.expected}</p>
-          <p lang={entry.kind === 'reading' ? 'ja' : undefined} className="text-xl">
-            {entry.accepted.join(', ')}
-          </p>
-        </div>
-      )}
+    <ScreenShell>
+      <h1
+        ref={end}
+        tabIndex={-1}
+        className="animate-drift flex flex-1 items-center text-4xl leading-tight font-medium tracking-tight outline-none"
+      >
+        {label}
+      </h1>
+    </ScreenShell>
+  )
+}
 
-      {/* Every verdict the standing one is not: undecided offers both, and a decided
-          verdict offers the other one, which is the override. Read off the copy rather than
-          listed here, because the copy owes one label per verdict by type and a list written
-          beside it would answer a wider union with silence. */}
-      <div className="flex flex-wrap gap-2">
-        {gradesIn(copy)
-          .filter((said) => said !== verdict)
-          .map((said) => (
-            <button key={said} type="button" onClick={() => onGrade(said)} className={BUTTON}>
-              {copy.grade[said]}
-            </button>
-          ))}
-        {/* An answer no tier decided has no button here at all: it is graded first. */}
-        {verdict === null ? null : (
-          <button
-            ref={next}
-            type="button"
-            onClick={onAdvance}
-            aria-describedby={verdictId}
-            className={BUTTON}
+// What the strike and the colour say to a reader who can see them. Nothing until something has
+// been said about the card, then the verdict a tier reached, or the question put back to the
+// reader when none could.
+function spoken(answered: boolean, decided: Verdict | null, copy: ReviewCopy): string {
+  return !answered ? '' : decided === null ? copy.askSelfGrade : copy.verdict[decided]
+}
+
+// The card as a question: the field under the character until something has been said about
+// it, and gone once it was right, because there is then nothing left to compare it against
+// and the answer standing alone under the character is the whole point of the card opening.
+function Asked({
+  question,
+  copy,
+  subjectCopy,
+  answered,
+  decided,
+  foot,
+  onReveal,
+  onSubmit,
+  onEdit,
+}: {
+  question: Question
+  copy: ReviewCopy
+  subjectCopy: SubjectCopy
+  answered: boolean
+  decided: Verdict | null
+  foot?: ReactNode
+  onReveal: () => void
+  onSubmit: (raw: string) => void
+  onEdit: () => void
+}) {
+  return (
+    <SubjectCard
+      subject={question.subject}
+      copy={subjectCopy}
+      flow="review"
+      revealed={answered}
+      asked={question.kind}
+      onReveal={onReveal}
+      foot={foot}
+      answer={
+        answered && decided === 'correct' ? null : (
+          <AnswerField
+            key={`${question.subject.id}-${question.kind}`}
+            kind={question.kind}
+            label={copy.prompt[question.kind]}
+            unconverted={copy.unconverted}
+            // Every card, the first included. The field is remounted per question, so this
+            // fires on each one and the keyboard never has to be summoned.
+            autoFocus
+            judged={answered}
+            onSubmit={onSubmit}
+            onEdit={onEdit}
+          />
+        )
+      }
+    />
+  )
+}
+
+export function ReviewSession({
+  questions,
+  copy,
+  subjectCopy,
+}: {
+  questions: readonly Question[]
+  copy: ReviewCopy
+  subjectCopy: SubjectCopy
+}) {
+  const [index, setIndex] = useState(0)
+  const [decided, setDecided] = useState<Verdict | null>(null)
+  const [answered, setAnswered] = useState(false)
+  const [reviewed, setReviewed] = useState<readonly Reviewed[]>([])
+  const verdictId = useId()
+
+  const question = questions[index]
+  const upcoming = questions[index + 1]
+
+  // Counted from what the reader said rather than from the index, because a card they got
+  // wrong and one they got right are the same step through the deck.
+  const missed = reviewed.filter((entry) => entry.said === 'incorrect').length
+
+  const submit = async (asked: Question, raw: string) => {
+    const outcome = await runCascade(
+      { kind: asked.kind, answer: raw, accepted: asked.accepted },
+      null,
+    )
+
+    setDecided(outcome.verdict === 'undecided' ? null : outcome.verdict)
+    setAnswered(true)
+  }
+
+  // Pressing the dot is giving up rather than answering, so it opens the card and leaves the
+  // verdict to the reader: nothing was typed, and there is nothing for a tier to decide.
+  function giveUp() {
+    setDecided(null)
+    setAnswered(true)
+  }
+
+  // One gesture grades and moves on, which is what removes the grading bar: right is the
+  // reader saying the answer was right, left that it was wrong. Both halves are kept, since
+  // what the cascade produced cannot be rebuilt from the correction alone.
+  function decide(direction: SwipeDirection) {
+    setReviewed([...reviewed, { decided, said: direction === 'right' ? 'correct' : 'incorrect' }])
+    setAnswered(false)
+    setDecided(null)
+    setIndex(index + 1)
+  }
+
+  if (question === undefined) return <Finished label={copy.done} reached={index > 0} />
+
+  return (
+    <ScreenShell>
+      <SessionHeader questions={questions} index={index} />
+
+      {/* Mounted whether or not it holds anything, because a polite region has to be in the
+          document before its content changes: one inserted with its text already in it is the
+          case a screen reader routinely says nothing about. */}
+      <p role="status" id={verdictId} className="sr-only">
+        {spoken(answered, decided, copy)}
+      </p>
+
+      <div className="pb-safe relative flex min-h-0 flex-1 flex-col pt-3">
+        <div className="relative min-h-0 flex-1">
+          <SwipeDeck
+            cardKey={`${question.subject.id}-${question.kind}`}
+            onDecide={decide}
+            leftLabel={copy.grade.incorrect}
+            rightLabel={copy.grade.correct}
+            label={copy.askSelfGrade}
+            describedBy={verdictId}
+            disabled={!answered}
+            behind={
+              upcoming === undefined ? undefined : (
+                <SubjectCard
+                  subject={upcoming.subject}
+                  copy={subjectCopy}
+                  flow="review"
+                  revealed={false}
+                />
+              )
+            }
           >
-            {copy.next}
-          </button>
-        )}
+            <Asked
+              question={question}
+              copy={copy}
+              subjectCopy={subjectCopy}
+              answered={answered}
+              decided={decided}
+              foot={
+                answered ? (
+                  <SessionTally
+                    done={reviewed.filter((entry) => entry.said === 'correct').length}
+                    left={questions.length - index}
+                    missed={missed}
+                    copy={copy.tally}
+                  />
+                ) : undefined
+              }
+              onReveal={giveUp}
+              onSubmit={(raw) => {
+                void submit(question, raw)
+              }}
+              onEdit={() => setAnswered(false)}
+            />
+          </SwipeDeck>
+        </div>
       </div>
-    </div>
+
+      {/* Flush with the bottom of the screen and the last thing on it: three quantities on
+          one bar, what is passed, what was missed and what is left. The width is the quantity
+          and the colour says which, so there is no label and no digit. */}
+      <SessionRule done={index - missed} missed={missed} total={questions.length} />
+    </ScreenShell>
   )
 }

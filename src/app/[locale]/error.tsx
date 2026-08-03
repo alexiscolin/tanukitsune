@@ -3,14 +3,14 @@
 import { useParams } from 'next/navigation'
 
 import { copyFor } from '@/core/site-copy'
-import { PageShell } from '@/ui/atoms/page-shell'
+import { ScreenShell } from '@/ui/atoms/screen-shell'
 
 export default function SegmentError({ reset }: { error: Error; reset: () => void }) {
   const { locale } = useParams<{ locale: string }>()
   const copy = copyFor(locale)
 
   return (
-    <PageShell>
+    <ScreenShell>
       <h1 className="text-2xl font-semibold">{copy.error}</h1>
       <button
         type="button"
@@ -19,6 +19,6 @@ export default function SegmentError({ reset }: { error: Error; reset: () => voi
       >
         {copy.retry}
       </button>
-    </PageShell>
+    </ScreenShell>
   )
 }

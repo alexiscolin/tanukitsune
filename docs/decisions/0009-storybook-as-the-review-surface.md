@@ -10,7 +10,7 @@ revisit-where: https://storybook.js.org/docs/get-started/frameworks/nextjs-vite
 ## Context
 
 The review flow is specified as one route whose every step is a state rather than a page: the
-question, the refusal, the verdict, the item card, the self-grade, the end. Those six live in the
+question, the verdict, the self-grade, the end. Those live in the
 three components under `src/ui/`, and the combinatorics are in them, multiplied by theme, by viewport
 and by how long French runs.
 
@@ -56,7 +56,7 @@ machine in its own state, so a story cannot land on the verdict by passing a pro
 reader does. This is affordable because `src/core/grading/cascade.ts` is called with a null port in
 v0.1, which the call site states as a design decision rather than a stub: the cascade is a string
 comparison, with no network and no clock. Every state follows from a chosen answer. The refusal comes
-from non-kana on a reading item, which `src/ui/molecules/answer-input.tsx` counts, and the self-grade
+from non-kana on a reading item, which `src/ui/molecules/answer-field.tsx` counts, and the self-grade
 from a
 meaning the exact tier cannot place, which is undecided by construction. Nothing is mocked, and the
 transitions are exercised rather than assumed.

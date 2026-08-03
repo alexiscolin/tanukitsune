@@ -143,8 +143,8 @@ src/
 │   ├── grading/cascade.ts       the tiers, in cost order. Today the exact one decides or nobody does
 │   ├── grading/judge-port.ts    what the model tier will implement, declared before it exists
 │   ├── composition-gate.ts      when a keystroke becomes an answer, and when it does not
-│   ├── review-entry.ts          one question: a subject, what is asked of it, what it accepts
-│   ├── demo-queue.ts            the deck the loop runs on until real assignments arrive
+│   ├── subject.ts               a subject, what it means, what it reads, what a tier accepts
+│   ├── demo-deck.ts             the deck the loop runs on until real assignments arrive
 │   └── site-copy.ts             every string a reader sees, keyed by locale
 ├── data/                    the outside. Server only
 │   ├── db.ts                    a server Postgres, or the file-backed one, and which answered
@@ -154,7 +154,7 @@ src/
 ├── ui/                      the components, props only. A fourth layer, primitives/, holds
 │                            imported behaviour and arrives with the first widget needing it
 │   ├── atoms/                   appearance, no behaviour
-│   ├── molecules/               answer-input: romaji becomes kana here, and Enter is decided here
+│   ├── molecules/               answer-field: romaji becomes kana here, and Enter is decided here
 │   └── organisms/               review-session: the loop, question, verdict, next
 └── app/                     the routes. The only layer allowed to touch both data and ui
     ├── [locale]/                the session, its layout, its error and not-found pages
