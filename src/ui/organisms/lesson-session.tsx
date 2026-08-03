@@ -7,6 +7,7 @@ import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
 
 import { SessionRule } from '@/ui/atoms/session-rule'
 import type { StripItem } from '@/ui/molecules/deck-strip'
+import { SessionDone } from '@/ui/molecules/session-done'
 import { SessionHeader } from '@/ui/molecules/session-header'
 import { SessionStage } from '@/ui/molecules/session-stage'
 import { SubjectCard } from '@/ui/molecules/subject-card'
@@ -40,15 +41,7 @@ export function LessonSession({
   const subject = deck[index]
   const upcoming = deck[index + 1]
 
-  if (subject === undefined) {
-    return (
-      <ScreenShell>
-        <h1 className="animate-drift flex flex-1 items-center text-4xl leading-tight font-medium tracking-tight">
-          {copy.done}
-        </h1>
-      </ScreenShell>
-    )
-  }
+  if (subject === undefined) return <SessionDone label={copy.done} reached={index > 0} />
 
   return (
     <ScreenShell>
