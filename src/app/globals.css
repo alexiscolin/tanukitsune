@@ -13,18 +13,18 @@
   --color-surface-sunken: oklch(96.8% 0.012 62);
 
   --color-ink: oklch(33% 0.006 60);
-  --color-ink-muted: oklch(63% 0.014 62);
+  --color-ink-muted: oklch(54% 0.014 62);
 
   /* Felt rather than seen. The only line weight in the interface: a rule at rest is
      this, and a rule that means something is the brand inked over it. */
   --color-hairline: oklch(33% 0.006 60 / 0.07);
-  --color-ring: oklch(66% 0.184 30 / 0.45);
+  --color-ring: oklch(56% 0.184 30 / 0.45);
 
   /* One hue for every signal, spent once per screen at most. The soft form is the
      same hue at low alpha, for a glow rather than a fill. Sunrise is the other end
      of the one gradient the system owns. */
-  --color-brand: oklch(66% 0.184 30);
-  --color-brand-soft: oklch(66% 0.184 30 / 0.16);
+  --color-brand: oklch(56% 0.184 30);
+  --color-brand-soft: oklch(56% 0.184 30 / 0.16);
   --color-sunrise: oklch(79% 0.13 62);
 
   /* The two exceptions to the single hue, and they are the only ones. A perfect
@@ -32,17 +32,17 @@
      refusal has to be distinguishable from an action. */
   --color-success: oklch(60% 0.12 160);
   --color-success-foreground: oklch(99% 0.008 60);
-  --color-destructive: oklch(58% 0.2 25);
+  --color-destructive: oklch(56% 0.2 25);
 
   /* The mastery ramp. The more an item is known the further its colour recedes toward the
      colour of the text, so a list of stages reads as a gradient into the page rather than
      as six categories. On a dark ground the text is light, so the ramp runs the other way
      and the logic is unchanged. */
-  --color-srs-lesson: oklch(72% 0.012 60);
-  --color-srs-apprentice: oklch(66% 0.184 30);
-  --color-srs-guru: oklch(58% 0.148 28);
-  --color-srs-master: oklch(48% 0.104 27);
-  --color-srs-enlightened: oklch(39% 0.06 26);
+  --color-srs-lesson: oklch(54% 0.012 60);
+  --color-srs-apprentice: oklch(56% 0.184 30);
+  --color-srs-guru: oklch(50% 0.148 28);
+  --color-srs-master: oklch(44% 0.104 27);
+  --color-srs-enlightened: oklch(38% 0.06 26);
   --color-srs-burned: oklch(30% 0.024 40);
 
   /* The one categorical use of colour in the whole interface, and it is six pixels wide. Six
@@ -144,7 +144,7 @@
 
   /* The ramp runs the other way here, because on a dark ground the text is light: what is
      acquired still recedes toward the colour of the text, and the logic is unchanged. */
-  --color-srs-lesson: oklch(50% 0.008 60);
+  --color-srs-lesson: oklch(62% 0.008 60);
   --color-srs-apprentice: oklch(69% 0.175 32);
   --color-srs-guru: oklch(77% 0.138 34);
   --color-srs-master: oklch(84% 0.096 37);
