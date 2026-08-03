@@ -8,17 +8,15 @@
 // locale key, and it is replaced rather than grown.
 //
 // What is kept from the source is the structure and the characters; every French line is
-// ours, since docs/specs/v0.1.md refuses a corpus derived from their English.
+// ours, since docs/specs/v0.1.md refuses a corpus derived from their English, and the raw
+// payload stays in info/ which git ignores.
 
 import type { AnswerKind } from './answer-kind'
 import type { AcceptedAnswers } from './grading/judge-port'
+import { acceptedIn } from './subject'
 import type { Component, Subject } from './subject'
 
-// What is kept from them is the structure and the characters; every French line is ours,
-// since docs/specs/v0.1.md refuses a corpus derived from their English, and the raw payload
-// stays in info/ which git ignores.
-//
-// Between them they cover: a character with eight readings of which two are accepted, a word
+// Between them the six cover: a character with eight readings of which two are accepted, a word
 // with five meanings, a word six characters long, a word carrying eleven whitelisted synonyms
 // and four parts of speech, a radical with no character at all, and a vocabulary written in
 // kana.
@@ -263,7 +261,7 @@ export type Question = {
 // guarded against at the moment of grading.
 function ask(subject: Subject, kind: AnswerKind): Question | null {
   const glosses = kind === 'reading' ? subject.readings : subject.meanings
-  const shown = glosses.filter((gloss) => gloss.accepted).map((gloss) => gloss.text)
+  const shown = acceptedIn(glosses)
   const [first, ...rest] = kind === 'meaning' ? [...shown, ...subject.alsoAccepted] : shown
 
   return first === undefined ? null : { subject, kind, accepted: [first, ...rest] }
@@ -273,7 +271,9 @@ function ask(subject: Subject, kind: AnswerKind): Question | null {
 // back to back, the second is answered from the first rather than from memory, which is the
 // one thing a deck demonstrating retrieval must not do. Content the source has withdrawn is
 // never asked: a subject that must not be rendered must not be queued.
+const ASKABLE = DEMO_DECK.filter((subject) => !subject.hidden)
+
 export const DEMO_QUESTIONS: readonly Question[] = [
-  ...DEMO_DECK.filter((subject) => !subject.hidden).map((subject) => ask(subject, 'meaning')),
-  ...DEMO_DECK.filter((subject) => !subject.hidden).map((subject) => ask(subject, 'reading')),
+  ...ASKABLE.map((subject) => ask(subject, 'meaning')),
+  ...ASKABLE.map((subject) => ask(subject, 'reading')),
 ].filter((question): question is Question => question !== null)

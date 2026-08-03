@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react'
 
 import { Eyebrow } from '@/ui/atoms/session-chrome'
+import { acceptedIn, refusedIn } from '@/core/subject'
 import type { Component, Reading, Subject } from '@/core/subject'
 import type { SubjectCopy } from '@/core/site-copy'
 
@@ -32,12 +33,6 @@ function Block({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-// What a reader may see written somewhere and must not answer with. A different fact from the
-// meaning, which is why it survives the meaning moving out of the sheet.
-export function listedIn(subject: Subject): readonly string[] {
-  return subject.meanings.filter((gloss) => !gloss.accepted).map((gloss) => gloss.text)
-}
-
 // Grouped by kind and written in the script the convention gives each: katakana for a
 // reading borrowed from Chinese, hiragana for one that was already Japanese. The script
 // carries the distinction and the label only confirms it.
@@ -59,24 +54,22 @@ export function ReadingBlock({
     <>
       {kinds.map((kind) => {
         const mine = readings.filter((reading) => reading.type === kind)
-        const listed = mine.filter((reading) => !reading.accepted)
+        const answerable = acceptedIn(mine)
+        const listed = refusedIn(mine)
 
         return (
           <Block
             key={kind ?? 'plain'}
             label={kind === null ? copy.plainReading : copy.reading[kind]}
           >
-            {mine.every((reading) => !reading.accepted) ? null : (
+            {answerable.length === 0 ? null : (
               <p lang="ja" className="text-xl leading-relaxed">
-                {mine
-                  .filter((reading) => reading.accepted)
-                  .map((reading) => reading.text)
-                  .join(' · ')}
+                {answerable.join(' · ')}
               </p>
             )}
             {listed.length === 0 ? null : (
               <p lang="ja" className="text-sm text-[var(--color-ink-muted)]">
-                {listed.map((reading) => reading.text).join(' · ')}
+                {listed.join(' · ')}
                 <span className="eyebrow ml-2">{copy.alsoShown}</span>
               </p>
             )}
@@ -101,19 +94,17 @@ export function Line({
   label,
   values,
   struck,
-  separator = ', ',
 }: {
   label: string
   values: readonly string[]
   struck?: boolean
-  separator?: string
 }) {
   if (values.length === 0) return null
 
   return (
     <Block label={label}>
       <p className={`text-sm ${struck === true ? 'line-through opacity-60' : ''}`}>
-        {values.join(separator)}
+        {values.join(', ')}
       </p>
     </Block>
   )

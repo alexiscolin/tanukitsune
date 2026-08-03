@@ -134,6 +134,17 @@ export function bandOf(stage: number | null): Band | null {
   return 'burned'
 }
 
+// The split `accepted` draws, which the card, the deck and the grader all have to read the
+// same way: what a tier may take as an answer, and what a reader may see written somewhere
+// and must not answer with. `Reading` carries the same pair as `Gloss`, so both split here.
+export function acceptedIn(glosses: readonly Gloss[]): readonly string[] {
+  return glosses.filter((gloss) => gloss.accepted).map((gloss) => gloss.text)
+}
+
+export function refusedIn(glosses: readonly Gloss[]): readonly string[] {
+  return glosses.filter((gloss) => !gloss.accepted).map((gloss) => gloss.text)
+}
+
 // A lesson teaches and a review asks, and they are two flows rather than two states: the
 // summary endpoint returns them as separate lists, and an assignment is started before it is
 // ever reviewed. The card shows everything from the first frame in one and holds it back in

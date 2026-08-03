@@ -5,8 +5,8 @@ import Image from 'next/image'
 import { useState } from 'react'
 import type { ReactNode, UIEvent } from 'react'
 
-import { Line, Patterns, Prose, ReadingBlock, Sentences, Strip, Well, listedIn } from '@/ui/atoms/subject-blocks'
-import { bandOf } from '@/core/subject'
+import { Line, Patterns, Prose, ReadingBlock, Sentences, Strip, Well } from '@/ui/atoms/subject-blocks'
+import { acceptedIn, bandOf, refusedIn } from '@/core/subject'
 import type { AnswerKind } from '@/core/answer-kind'
 
 import type { Band, Flow, Subject } from '@/core/subject'
@@ -182,22 +182,21 @@ function Headline({
 }) {
   const answers = asked === 'reading' ? subject.readings : subject.meanings
 
+  const listed = refusedIn(subject.meanings)
+
   return (
     <>
       <p
         lang={asked === 'reading' ? 'ja' : undefined}
         className="text-center text-xl leading-tight font-medium tracking-tight text-balance"
       >
-        {answers
-          .filter((gloss) => gloss.accepted)
-          .map((gloss) => gloss.text)
-          .join(asked === 'reading' ? ' · ' : ', ')}
+        {acceptedIn(answers).join(asked === 'reading' ? ' · ' : ', ')}
       </p>
       {/* Under it and never as a section of its own: what these words are is a qualification
           of the line above them, and a heading would announce them as a second kind. */}
-      {asked === 'reading' || listedIn(subject).length === 0 ? null : (
+      {asked === 'reading' || listed.length === 0 ? null : (
         <p className="text-center text-sm text-[var(--color-ink-muted)]">
-          {listedIn(subject).join(', ')}
+          {listed.join(', ')}
           <span className="eyebrow ml-2">{copy.alsoShown}</span>
         </p>
       )}
@@ -294,7 +293,7 @@ function SubjectBody({
       {asked === 'reading' ? (
         <Line
           label={copy.meaning}
-          values={subject.meanings.filter((gloss) => gloss.accepted).map((gloss) => gloss.text)}
+          values={acceptedIn(subject.meanings)}
         />
       ) : null}
       <Prose label={copy.nuance} text={subject.nuance} />

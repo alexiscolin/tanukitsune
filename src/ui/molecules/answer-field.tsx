@@ -7,10 +7,6 @@ import { isJapanese, isKana, toKana } from 'wanakana'
 import type { AnswerKind } from '@/core/answer-kind'
 import { pressEnter } from '@/core/composition-gate'
 
-// The field of src/ui/molecules/answer-input.tsx with its appearance removed rather than
-// replaced. Its behaviour is unchanged, so whichever screen is promoted is held to the
-// tests that already cover it.
-//
 // There is no field to see: a rule, centred under the character, and the answer appearing on
 // it as it is typed. The rule is the brand at rest and the destructive colour when an answer
 // cannot be graded at all.
@@ -43,15 +39,10 @@ function convertReading(buffer: string, next: string, shown: string, atEnd: bool
 // Struck as well as coloured, because a verdict carried by hue alone is one a reader who
 // cannot separate those hues never receives, and the accessibility gate this project runs
 // refuses exactly that.
-function inkFor(judged: boolean, refused: boolean): string {
-  return judged || refused
-    ? 'text-[var(--color-destructive)] line-through decoration-2'
-    : 'text-[var(--color-ink)]'
-}
-
-function ruleFor(judged: boolean, refused: boolean): string {
-  return judged || refused ? 'bg-[var(--color-destructive)]' : 'bg-[var(--color-brand)]'
-}
+const STOOD_INK = 'text-[var(--color-ink)]'
+const FELL_INK = 'text-[var(--color-destructive)] line-through decoration-2'
+const STOOD_RULE = 'bg-[var(--color-brand)]'
+const FELL_RULE = 'bg-[var(--color-destructive)]'
 
 // Which of the two questions this is, and the only word on the screen. Under the rule rather
 // than over it, so the eye meets the character, then the empty line it has to fill, then what
@@ -140,6 +131,7 @@ export function AnswerField({
   }
 
   const refused = refusals > 0
+  const fell = judged || refused
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -168,14 +160,14 @@ export function AnswerField({
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck={false}
-          className={`ease-out-soft w-full bg-transparent pb-2 text-center text-2xl leading-snug font-medium tracking-tight transition-colors duration-500 outline-none ${inkFor(judged, refused)}`}
+          className={`ease-out-soft w-full bg-transparent pb-2 text-center text-2xl leading-snug font-medium tracking-tight transition-colors duration-500 outline-none ${fell ? FELL_INK : STOOD_INK}`}
         />
 
         {/* The rule is the field. It is the only thing drawn, it never changes width, and
             the caret sits on it whether or not anything has been typed. */}
         <span
           aria-hidden
-          className={`ease-out-soft absolute -bottom-px left-0 h-px w-full transition-colors duration-500 ${ruleFor(judged, refused)}`}
+          className={`ease-out-soft absolute -bottom-px left-0 h-px w-full transition-colors duration-500 ${fell ? FELL_RULE : STOOD_RULE}`}
         />
       </div>
 
