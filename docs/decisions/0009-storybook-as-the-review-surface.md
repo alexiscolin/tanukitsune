@@ -10,7 +10,7 @@ revisit-where: https://storybook.js.org/docs/get-started/frameworks/nextjs-vite
 ## Context
 
 The review flow is specified as one route whose every step is a state rather than a page: the
-question, the refusal, the verdict, the item card, the self-grade, the end. Those six live in the
+question, the verdict, the self-grade, the end. Those live in the
 three components under `src/ui/`, and the combinatorics are in them, multiplied by theme, by viewport
 and by how long French runs.
 

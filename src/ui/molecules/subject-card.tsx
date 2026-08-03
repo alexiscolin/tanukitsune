@@ -355,8 +355,9 @@ function RevealDot({
   copy: SubjectCopy
   onReveal: () => void
 }) {
-  const idle = revealed && !listens
-
+  // Revealed, the card has nothing left to give up, so the control is spent whether or not the
+  // subject carries audio: nothing plays it yet, and a control that is announced and answers to
+  // nothing is worse than one that says it is finished.
   return (
     <button
       type="button"
@@ -364,10 +365,10 @@ function RevealDot({
         event.stopPropagation()
         if (!revealed) onReveal()
       }}
-      disabled={idle}
-      aria-label={revealed ? copy.listen : copy.reveal}
+      disabled={revealed}
+      aria-label={revealed && listens ? copy.listen : copy.reveal}
       className={`pressable ease-out-soft grid size-9 shrink-0 place-items-center rounded-full bg-[var(--color-brand)] outline-none transition-opacity duration-700 focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--color-surface)] ${
-        idle ? 'opacity-30' : revealed ? '' : 'animate-breathe'
+        revealed ? 'opacity-30' : 'animate-breathe'
       }`}
     >
       {revealed && listens ? (

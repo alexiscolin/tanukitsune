@@ -17,7 +17,7 @@ import { acceptedIn } from './subject'
 import type { Component, Subject } from './subject'
 
 // Between them the six cover: a character with eight readings of which two are accepted, a word
-// with five meanings, a word six characters long, a word carrying eleven whitelisted synonyms
+// with five meanings, a word six characters long, a word carrying six whitelisted synonyms
 // and four parts of speech, a radical with no character at all, and a vocabulary written in
 // kana.
 
@@ -148,8 +148,8 @@ export const LONG: Subject = {
   readingNote: null,
 }
 
-// Eleven whitelisted synonyms and four parts of speech. None of the eleven is shown: a card
-// listing them would read as eleven meanings rather than as one meaning spelled eleven ways.
+// Six whitelisted synonyms and four parts of speech. None of the six is shown: a card listing
+// them would read as six meanings rather than as one meaning spelled six ways.
 export const MANY: Subject = {
   id: 2773,
   type: 'vocabulary',

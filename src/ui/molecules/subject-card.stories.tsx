@@ -34,7 +34,7 @@ export const ManyMeanings: Story = { args: { subject: VERB } }
 // Six characters, which is what decides the size of the glyph.
 export const LongWord: Story = { args: { subject: LONG } }
 
-// Four parts of speech, and eleven accepted synonyms that never reach the card.
+// Four parts of speech, and six accepted synonyms that never reach the card.
 export const ManyParts: Story = { args: { subject: MANY } }
 
 // No character at all: a vector served by the source, the one glyph that is not text.

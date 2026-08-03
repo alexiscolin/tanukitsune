@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
 export function ScreenShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen-safe flex flex-col">
-      <div className="mx-auto flex w-full max-w-xl flex-1 flex-col px-6 sm:px-8">{children}</div>
+      <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-6 sm:px-8">{children}</main>
     </div>
   )
 }
