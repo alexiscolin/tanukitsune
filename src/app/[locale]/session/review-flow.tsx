@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 
 import { answerRecord } from '@/core/review/answer-record'
 import type { AnsweredCard } from '@/core/review/answer-record'
-import type { Question } from '@/core/demo-deck'
+import type { Question } from '@/core/review/question'
 import type { Locale } from '@/core/locales'
 import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
 import { localOutbox } from '@/data/local/outbox'
@@ -13,26 +13,34 @@ import { ReviewSession } from '@/ui/organisms/review-session'
 // Where the review screen meets the store it writes to. It is a client component because the
 // store is the browser's, and a server component cannot hand a function to one.
 //
-// Demo mode runs the real write and submits nothing: the answer reaches the local queue because
-// that write is part of the flow being demonstrated, and nothing leaves the device.
-export function DemoReview({
+// The write is the same on both decks: the answer reaches the local queue before the card is
+// allowed to leave, and nothing is submitted anywhere yet. What differs is what a restart does to
+// that queue, which is why the deck says which one it is.
+export function ReviewFlow({
   locale,
   questions,
   copy,
   subjectCopy,
+  exitTo,
+  demo,
 }: {
   locale: Locale
   questions: readonly Question[]
   copy: ReviewCopy
   subjectCopy: SubjectCopy
+  exitTo: string
+  // The seeded deck, which starts from the top on every reload. A real account's answers are the
+  // one thing here that cannot be rebuilt from anywhere, so nothing empties them.
+  demo: boolean
 }) {
   const emptied = useRef<Promise<void> | null>(null)
 
-  // The queue nothing drains is emptied by the deck restarting, and a reload is the only restart
-  // there is. Held as a promise the write awaits, so a first answer cannot land in front of it.
+  // The demo's queue is drained by nothing, so the deck restarting is what empties it, and a
+  // reload is the only restart there is. Held as a promise the write awaits, so a first answer
+  // cannot land in front of it.
   useEffect(() => {
-    emptied.current ??= localOutbox.clear()
-  }, [])
+    if (demo) emptied.current ??= localOutbox.clear()
+  }, [demo])
 
   const write = async (card: AnsweredCard) => {
     await emptied.current
@@ -41,8 +49,8 @@ export function DemoReview({
       answerRecord(card, {
         id: crypto.randomUUID(),
         locale,
-        // The seeded deck carries no corpus and no version of one, which is the demo saying so
-        // rather than a row claiming a reference it was not graded against.
+        // No corpus exists for either deck yet, which is the row saying so rather than claiming a
+        // reference it was not graded against.
         corpusVersion: null,
         answeredAt: new Date(),
       }),
@@ -54,6 +62,7 @@ export function DemoReview({
       questions={questions}
       copy={copy}
       subjectCopy={subjectCopy}
+      exitTo={exitTo}
       onAnswered={write}
     />
   )

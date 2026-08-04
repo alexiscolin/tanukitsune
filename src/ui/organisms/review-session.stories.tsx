@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { userEvent, waitFor, within } from 'storybook/test'
 
+import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 
 import { DEMO_QUESTIONS, KANJI } from '@/core/demo-deck'
@@ -23,6 +24,7 @@ const meta = {
     questions: DEMO_QUESTIONS,
     copy: COPY.review,
     subjectCopy: COPY.subject,
+    exitTo: startPath('fr'),
     // The catalogue judges what the screen looks like, so the writer takes every answer here.
     // The state where one refuses is a story of its own below.
     onAnswered: () => Promise.resolve(),

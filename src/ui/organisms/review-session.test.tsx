@@ -2,8 +2,9 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { DEMO_QUESTIONS, KANJI } from '@/core/demo-deck'
-import type { Question } from '@/core/demo-deck'
+import type { Question } from '@/core/review/question'
 import type { AnsweredCard } from '@/core/review/answer-record'
+import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 
 import { ReviewSession } from './review-session'
@@ -35,6 +36,7 @@ function session(
       questions={questions}
       copy={COPY.review}
       subjectCopy={COPY.subject}
+      exitTo={startPath('fr')}
       onAnswered={onAnswered}
     />,
   )
@@ -169,6 +171,7 @@ describe('ReviewSession, moving on', () => {
         questions={[]}
         copy={COPY.review}
         subjectCopy={COPY.subject}
+        exitTo={startPath('fr')}
         onAnswered={() => Promise.resolve()}
       />,
     )
@@ -275,6 +278,7 @@ describe('ReviewSession, moving on', () => {
         questions={[]}
         copy={COPY.review}
         subjectCopy={COPY.subject}
+        exitTo={startPath('fr')}
         onAnswered={() => Promise.resolve()}
       />,
     )

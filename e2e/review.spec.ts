@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { DEMO_QUESTIONS } from '../src/core/demo-deck'
-import type { Question } from '../src/core/demo-deck'
+import type { Question } from '../src/core/review/question'
 import type { AnswerRecord } from '../src/core/review/answer-record'
 import { OUTBOX_DATABASE, OUTBOX_STORE } from '../src/data/local/outbox'
+import { sessionPath } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
 
 // The outbox, exercised through the browser's own IndexedDB rather than a substitute for it:
@@ -59,7 +60,7 @@ async function answerFirstCard(page: Page) {
 }
 
 test('an answer is in the browser database before the deck advances', async ({ page }) => {
-  await page.goto('/fr')
+  await page.goto(sessionPath('fr', 'review'))
   await answerFirstCard(page)
 
   const rows = await written(page)
@@ -80,7 +81,7 @@ test('an answer is in the browser database before the deck advances', async ({ p
 // queue anybody drains. The deck restarting is what empties it, and a reload is the only
 // restart there is.
 test('restarting the demo deck leaves an empty queue', async ({ page }) => {
-  await page.goto('/fr')
+  await page.goto(sessionPath('fr', 'review'))
   await answerFirstCard(page)
   await page.reload()
 

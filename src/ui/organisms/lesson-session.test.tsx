@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { KANJI } from '@/core/demo-deck'
+import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 
 import { LessonSession } from './lesson-session'
@@ -19,7 +20,7 @@ describe('LessonSession, ending', () => {
   // way a review's end does. Only once a step has been left: a batch that arrives empty was
   // never a lesson, and taking the focus as the page loads is what no screen here does.
   it('takes the focus to the end once the last card has been left', async () => {
-    render(<LessonSession deck={[KANJI]} copy={COPY.review} subjectCopy={COPY.subject} />)
+    render(<LessonSession deck={[KANJI]} copy={COPY.review} subjectCopy={COPY.subject} exitTo={startPath('fr')} />)
 
     fireEvent.keyDown(deck(), { key: 'ArrowRight' })
 
@@ -28,7 +29,7 @@ describe('LessonSession, ending', () => {
   })
 
   it('leaves the focus alone on a batch that arrives with nothing in it', () => {
-    render(<LessonSession deck={[]} copy={COPY.review} subjectCopy={COPY.subject} />)
+    render(<LessonSession deck={[]} copy={COPY.review} subjectCopy={COPY.subject} exitTo={startPath('fr')} />)
 
     expect(document.activeElement).toBe(document.body)
   })

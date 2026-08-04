@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
+import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 
 import { DEMO_DECK } from '@/core/demo-deck'
@@ -12,7 +13,12 @@ const COPY = copyFor('fr')
 
 const meta = {
   component: LessonSession,
-  args: { deck: DEMO_DECK, copy: COPY.review, subjectCopy: COPY.subject },
+  args: {
+    deck: DEMO_DECK,
+    copy: COPY.review,
+    subjectCopy: COPY.subject,
+    exitTo: startPath('fr'),
+  },
   parameters: { fullBleed: true },
 } satisfies Meta<typeof LessonSession>
 

@@ -189,9 +189,11 @@ directly, and the component is a shell that awaits it. There is no workaround to
 framework's own position, and end-to-end coverage is what it recommends in place of unit tests. A test
 constraint that produces the better structure anyway.
 
-**KnowledgeSource**: WaniKani is one implementation of an interface rather than a dependency. Three
-operations, ships in v0.1 as the shape of `data/wanikani`: list subjects and assignments, submit an
-answer, read an assignment back.
+**KnowledgeSource**: WaniKani is one implementation of an interface rather than a dependency, and it
+ships in v0.1 as the shape of `data/wanikani`. Its read half lists the subjects a session needs and
+what is waiting on them, holding the subscription ceiling behind the list rather than beside it,
+since a caller that has to remember to filter is a caller that will forget. Its write half, which
+submits an answer and reads the assignment back, arrives with the queue flush that needs both.
 
 Two abstractions exist before their third use, and they are the only two. `JudgePort` exists because
 the `core/` boundary rule makes the cascade otherwise unimplementable, and `KnowledgeSource` because
