@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { mentionedIn, toAssignment, toComponent, toSubject } from './payload'
+import { mentionedIn, toAssignment, toComponent, toStudyMaterial, toSubject } from './payload'
 import type { SubjectEntry } from './payload'
 
 // The wire as they send it, trimmed to the fields the mapping reads. Written here rather than
@@ -144,5 +144,28 @@ describe('toAssignment', () => {
     const assignment = toAssignment({ id: 80463007, data: { subject_id: 440, srs_stage: 0 } })
 
     expect(assignment.srsStage).toBe(0)
+  })
+})
+
+describe('toStudyMaterial', () => {
+  // The reader's own words about a subject: synonyms are answers beside the source's own, and the
+  // two notes are theirs alone. They arrive from a different endpoint and belong on the subject.
+  it('reads what the reader wrote about a subject', () => {
+    expect(
+      toStudyMaterial({
+        id: 65231,
+        data: {
+          subject_id: 451,
+          meaning_synonyms: ['en dessous'],
+          meaning_note: 'à ne pas confondre avec 上',
+          reading_note: null,
+        },
+      }),
+    ).toEqual({
+      subjectId: 451,
+      synonyms: ['en dessous'],
+      meaningNote: 'à ne pas confondre avec 上',
+      readingNote: null,
+    })
   })
 })

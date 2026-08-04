@@ -10,7 +10,9 @@ import { wanikaniSource } from './source'
 
 const API = 'https://api.wanikani.com/v2'
 
-const server = setupServer()
+// The reader's own words are read beside every subject list, and most of these cases are not
+// about them, so an account with none is the default rather than a handler in each.
+const server = setupServer(http.get(`${API}/study_materials`, () => page([])))
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'error' })
@@ -167,6 +169,34 @@ describe('wanikaniSource', () => {
 
     expect(subjects).toHaveLength(1201)
     expect(Math.max(...asked)).toBeLessThanOrEqual(500)
+  })
+
+  // What the reader wrote is theirs and arrives from a second endpoint, so a subject that reaches
+  // the card without it is one whose own synonyms the grader will refuse.
+  it("folds what the reader wrote onto the subject it is about", async () => {
+    server.use(
+      grants(10),
+      http.get(`${API}/subjects`, () => page([subject(451, 1)])),
+      http.get(`${API}/study_materials`, () =>
+        page([
+          {
+            id: 65231,
+            data: {
+              subject_id: 451,
+              meaning_synonyms: ['sous la ligne'],
+              meaning_note: 'à ne pas confondre avec 上',
+              reading_note: null,
+            },
+          },
+        ]),
+      ),
+    )
+
+    const [only] = await wanikaniSource('a-token').listSubjects([451])
+
+    expect(only?.synonyms).toEqual(['sous la ligne'])
+    expect(only?.meaningNote).toBe('à ne pas confondre avec 上')
+    expect(only?.readingNote).toBeNull()
   })
 
   // The ordinary state of a finished account. An empty filter is not a request for nothing, it is
