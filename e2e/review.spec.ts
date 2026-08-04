@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { DEMO_QUESTIONS } from '../src/core/demo-deck'
-import type { Question } from '../src/core/demo-deck'
+import type { Question } from '../src/core/review/question'
 import type { AnswerRecord } from '../src/core/review/answer-record'
 import { OUTBOX_DATABASE, OUTBOX_STORE } from '../src/data/local/outbox'
 import { sessionPath } from '../src/core/routes'

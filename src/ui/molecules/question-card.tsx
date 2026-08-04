@@ -4,8 +4,8 @@ import type { ReactNode } from 'react'
 
 import { AnswerField } from '@/ui/molecules/answer-field'
 import { SubjectCard } from '@/ui/molecules/subject-card'
-import { questionKey } from '@/core/demo-deck'
-import type { Question } from '@/core/demo-deck'
+import { questionKey } from '@/core/review/question'
+import type { Question } from '@/core/review/question'
 import type { Verdict } from '@/core/grading/judge-port'
 import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
 

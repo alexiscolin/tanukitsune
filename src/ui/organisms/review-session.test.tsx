@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { DEMO_QUESTIONS, KANJI } from '@/core/demo-deck'
-import type { Question } from '@/core/demo-deck'
+import type { Question } from '@/core/review/question'
 import type { AnsweredCard } from '@/core/review/answer-record'
 import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'

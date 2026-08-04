@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 
 import { answerRecord } from '@/core/review/answer-record'
 import type { AnsweredCard } from '@/core/review/answer-record'
-import type { Question } from '@/core/demo-deck'
+import type { Question } from '@/core/review/question'
 import type { Locale } from '@/core/locales'
 import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
 import { localOutbox } from '@/data/local/outbox'
