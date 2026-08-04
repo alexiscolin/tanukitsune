@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import { DEMO_QUESTIONS, KANJI } from '@/core/demo-deck'
 import type { Question } from '@/core/demo-deck'
+import type { AnsweredCard } from '@/core/review/answer-record'
 import { copyFor } from '@/core/site-copy'
 
 import { ReviewSession } from './review-session'
@@ -22,16 +23,37 @@ const MEANING = DEMO_QUESTIONS.filter(
 const PAIR = DEMO_QUESTIONS.filter((question) => question.subject.id === KANJI.id)
 
 // The prompt is a parameter rather than the meaning one always, because a deck opening on a
-// reading is the same screen asking the other of its two questions.
+// reading is the same screen asking the other of its two questions. The writer is one too,
+// since what a card does when the answer cannot be written is a state of this screen.
 function session(
   questions: readonly Question[] = MEANING,
   prompt: string = COPY.review.prompt.meaning,
+  onAnswered: (card: AnsweredCard) => Promise<void> = () => Promise.resolve(),
 ) {
   render(
-    <ReviewSession questions={questions} copy={COPY.review} subjectCopy={COPY.subject} />,
+    <ReviewSession
+      questions={questions}
+      copy={COPY.review}
+      subjectCopy={COPY.subject}
+      onAnswered={onAnswered}
+    />,
   )
 
   return screen.getByLabelText<HTMLInputElement>(prompt)
+}
+
+// Collects what the screen handed the writer, so a test reads the card rather than a spy.
+function recorder() {
+  const written: AnsweredCard[] = []
+
+  return {
+    written,
+    write: (card: AnsweredCard) => {
+      written.push(card)
+
+      return Promise.resolve()
+    },
+  }
 }
 
 const READING = PAIR.filter((question) => question.kind === 'reading')
@@ -142,7 +164,14 @@ describe('ReviewSession, moving on', () => {
   })
 
   it('ends where a session ends rather than on an empty card', () => {
-    render(<ReviewSession questions={[]} copy={COPY.review} subjectCopy={COPY.subject} />)
+    render(
+      <ReviewSession
+        questions={[]}
+        copy={COPY.review}
+        subjectCopy={COPY.subject}
+        onAnswered={() => Promise.resolve()}
+      />,
+    )
 
     expect(screen.getByText(COPY.review.done)).toBeTruthy()
   })
@@ -241,7 +270,14 @@ describe('ReviewSession, moving on', () => {
   })
 
   it('leaves the focus alone on a deck that arrives with nothing in it', () => {
-    render(<ReviewSession questions={[]} copy={COPY.review} subjectCopy={COPY.subject} />)
+    render(
+      <ReviewSession
+        questions={[]}
+        copy={COPY.review}
+        subjectCopy={COPY.subject}
+        onAnswered={() => Promise.resolve()}
+      />,
+    )
 
     expect(document.activeElement).toBe(document.body)
   })
@@ -341,5 +377,121 @@ describe('ReviewSession, moving on', () => {
     expect(await screen.findByText(COPY.review.unconverted)).toBeTruthy()
     expect(screen.queryByText(COPY.subject.nuance)).toBeNull()
     expect(deck().getAttribute('aria-disabled')).toBe('true')
+  })
+})
+
+describe('ReviewSession, writing the answer down', () => {
+  // What was asked, what was typed, what the cascade made of it and what the reader said
+  // instead. The tier tag is asserted by value because it is what makes the v0.2 measurement
+  // possible: a row saying a verdict without saying who reached it labels nothing.
+  it('hands over what the cascade decided beside what the reader said', async () => {
+    const { written, write } = recorder()
+    const field = session(PAIR, COPY.review.prompt.meaning, write)
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+    await screen.findByText(COPY.subject.nuance)
+    fireEvent.keyDown(deck(), { key: 'ArrowLeft' })
+    await screen.findByLabelText(COPY.review.prompt.reading)
+
+    expect(written).toEqual([
+      {
+        subjectId: KANJI.id,
+        kind: 'meaning',
+        answer: KANJI.meanings[0]?.text,
+        verdict: 'correct',
+        decidedBy: 'exact:2',
+        said: 'incorrect',
+        srsStageBefore: KANJI.srsStage,
+      },
+    ])
+  })
+
+  it('writes nothing typed and nothing decided when the reader gave up', async () => {
+    const { written, write } = recorder()
+
+    session(PAIR, COPY.review.prompt.meaning, write)
+    fireEvent.click(screen.getByRole('button', { name: COPY.subject.reveal }))
+    await screen.findByText(COPY.subject.nuance)
+    fireEvent.keyDown(deck(), { key: 'ArrowRight' })
+    await screen.findByLabelText(COPY.review.prompt.reading)
+
+    expect(written[0]?.answer).toBeNull()
+    expect(written[0]?.verdict).toBeNull()
+    expect(written[0]?.decidedBy).toBeNull()
+    expect(written[0]?.said).toBe('correct')
+  })
+
+  // An answer that is not durably written is not accepted. The deck waits on the write rather
+  // than racing it, so a reader never watches a card leave on an answer nobody kept.
+  it('holds the card until the answer has been written', async () => {
+    let release = () => {}
+    const held = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    const field = session(PAIR, COPY.review.prompt.meaning, () => held)
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+    await screen.findByText(COPY.subject.nuance)
+    fireEvent.keyDown(deck(), { key: 'ArrowRight' })
+    await settle()
+
+    expect(screen.queryByLabelText(COPY.review.prompt.reading)).toBeNull()
+
+    await act(async () => {
+      release()
+    })
+
+    expect(await screen.findByLabelText(COPY.review.prompt.reading)).toBeTruthy()
+  })
+
+  // A write that fails surfaces as a refusal on the card rather than as an answer the reader
+  // believes was counted: the card stays, nothing is tallied, and the gesture can be made again.
+  it('refuses the card rather than counting an answer it could not write', async () => {
+    const field = session(PAIR, COPY.review.prompt.meaning, () =>
+      Promise.reject(new Error('quota')),
+    )
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+    await screen.findByText(COPY.subject.nuance)
+    fireEvent.keyDown(deck(), { key: 'ArrowRight' })
+
+    expect(await screen.findByText(COPY.review.unwritten)).toBeTruthy()
+    expect(screen.queryByLabelText(COPY.review.prompt.reading)).toBeNull()
+    expect(tallyUnder(COPY.review.tally.done)).toBe('0')
+  })
+
+  it('says the refusal rather than only showing it', async () => {
+    const field = session(PAIR, COPY.review.prompt.meaning, () =>
+      Promise.reject(new Error('quota')),
+    )
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+    await screen.findByText(COPY.subject.nuance)
+    fireEvent.keyDown(deck(), { key: 'ArrowRight' })
+
+    await waitFor(() =>
+      expect(screen.getByRole('status').textContent).toBe(COPY.review.unwritten),
+    )
+  })
+
+  // The gesture is the retry: the card came back, so making it again writes the same answer
+  // rather than asking the reader to type it a second time.
+  it('writes the card on a second gesture once the writer takes it', async () => {
+    const { written, write } = recorder()
+    let refuse = true
+    const field = session(PAIR, COPY.review.prompt.meaning, (card) =>
+      refuse ? Promise.reject(new Error('quota')) : write(card),
+    )
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+    await screen.findByText(COPY.subject.nuance)
+    fireEvent.keyDown(deck(), { key: 'ArrowRight' })
+    await screen.findByText(COPY.review.unwritten)
+
+    refuse = false
+    fireEvent.keyDown(deck(), { key: 'ArrowRight' })
+
+    expect(await screen.findByLabelText(COPY.review.prompt.reading)).toBeTruthy()
+    expect(written).toHaveLength(1)
   })
 })
