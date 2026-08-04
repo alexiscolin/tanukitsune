@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { isLocale } from '@/core/locales'
 import { sessionPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
+import { FLOWS } from '@/core/subject'
 import { SessionStart } from '@/ui/organisms/session-start'
 
 import { waiting } from './waiting'
@@ -15,7 +16,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // The reader's own account where a token names one, the seeded deck otherwise, and the same
   // two decks the session then deals: a count read from somewhere else can disagree with what
   // the session opens on.
-  const queues = await waiting()
+  const queues = await waiting(FLOWS)
 
   return (
     <SessionStart

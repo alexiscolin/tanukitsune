@@ -1,9 +1,11 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
 
 import { DEMO_DECK, DEMO_QUESTIONS } from '../src/core/demo-deck'
-import { violationsOn } from './audit'
+import { sessionPath, startPath } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
+import { FLOWS } from '../src/core/subject'
 import type { Subject } from '../src/core/subject'
+import { violationsOn } from './audit'
 
 // The way in and the way out. Every step inside a session is covered by review.spec.ts and by
 // the unit tests; what is checked here is that a session is entered from the screen the installed
@@ -23,7 +25,7 @@ function faceOf(page: Page, subject: Subject): Locator {
 }
 
 test('the start screen says what is waiting in each flow', async ({ page }) => {
-  await page.goto('/fr')
+  await page.goto(startPath('fr'))
 
   await expect(page.getByRole('link', { name: new RegExp(COPY.start.flow.lesson) })).toContainText(
     `${DEMO_DECK.length}`,
@@ -34,7 +36,7 @@ test('the start screen says what is waiting in each flow', async ({ page }) => {
 })
 
 test('a lesson is entered from the start screen and its end leads back to it', async ({ page }) => {
-  await page.goto('/fr')
+  await page.goto(startPath('fr'))
   await page.getByRole('link', { name: new RegExp(COPY.start.flow.lesson) }).click()
 
   await expect(page).toHaveURL(/\/fr\/session\?flow=lesson$/)
@@ -58,7 +60,7 @@ test('a lesson is entered from the start screen and its end leads back to it', a
 test('a review is entered from the start screen and opens on its first question', async ({
   page,
 }) => {
-  await page.goto('/fr')
+  await page.goto(startPath('fr'))
   await page.getByRole('link', { name: new RegExp(COPY.start.flow.review) }).click()
 
   await expect(page).toHaveURL(/\/fr\/session\?flow=review$/)
@@ -71,8 +73,8 @@ test('a review is entered from the start screen and opens on its first question'
 // catalogue's frame carries neither the document's landmarks nor the identifiers the shell and the
 // deck share. It moved here when the loop stopped being what `/[locale]` serves.
 test('both flows are accessible where they are actually served', async ({ page }) => {
-  for (const flow of ['lesson', 'review']) {
-    await page.goto(`/fr/session?flow=${flow}`)
+  for (const flow of FLOWS) {
+    await page.goto(sessionPath('fr', flow))
 
     expect(await violationsOn(page)).toEqual([])
   }
@@ -81,7 +83,7 @@ test('both flows are accessible where they are actually served', async ({ page }
 // No step of the loop is reached by navigating, which includes a session nobody said the flow
 // of: a route that guessed one would start a session the reader did not ask for.
 test('a session with no flow named is not found', async ({ page }) => {
-  const response = await page.goto('/fr/session')
+  const response = await page.goto(`${startPath('fr')}/session`)
 
   expect(response?.status()).toBe(404)
 })

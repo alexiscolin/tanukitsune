@@ -13,9 +13,9 @@ import { ReviewSession } from '@/ui/organisms/review-session'
 // Where the review screen meets the store it writes to. It is a client component because the
 // store is the browser's, and a server component cannot hand a function to one.
 //
-// Demo mode runs the real write and submits nothing: the answer reaches the local queue because
-// that write is part of the flow being demonstrated, and nothing leaves the device.
-export function DemoReview({
+// The write is the same on both decks: the answer reaches the local queue before the card is
+// allowed to leave, and nothing is submitted anywhere yet.
+export function ReviewFlow({
   locale,
   questions,
   copy,
@@ -30,8 +30,9 @@ export function DemoReview({
 }) {
   const emptied = useRef<Promise<void> | null>(null)
 
-  // The queue nothing drains is emptied by the deck restarting, and a reload is the only restart
-  // there is. Held as a promise the write awaits, so a first answer cannot land in front of it.
+  // The demo's queue is drained by nothing, so the deck restarting is what empties it, and a
+  // reload is the only restart there is. Held as a promise the write awaits, so a first answer
+  // cannot land in front of it.
   useEffect(() => {
     emptied.current ??= localOutbox.clear()
   }, [])
@@ -43,8 +44,8 @@ export function DemoReview({
       answerRecord(card, {
         id: crypto.randomUUID(),
         locale,
-        // The seeded deck carries no corpus and no version of one, which is the demo saying so
-        // rather than a row claiming a reference it was not graded against.
+        // No corpus exists for either deck yet, which is the row saying so rather than claiming a
+        // reference it was not graded against.
         corpusVersion: null,
         answeredAt: new Date(),
       }),

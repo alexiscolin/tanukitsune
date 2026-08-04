@@ -83,15 +83,18 @@ export function wanikaniSource(token: string): KnowledgeSource {
     return subscription.active ? subscription.max_level_granted : 0
   }
 
+  // The batches are independent, so they are asked together: only the walk inside a collection is
+  // sequential, since the next URL comes out of the page before it. The request count is the same
+  // either way, which is what the sixty a minute are counted in.
   async function subjectsIn(ids: readonly number[]): Promise<SubjectEntry[]> {
-    const entries: SubjectEntry[] = []
+    const batches: Promise<SubjectEntry[]>[] = []
 
     for (let from = 0; from < ids.length; from += IDS_PER_REQUEST) {
       const batch = ids.slice(from, from + IDS_PER_REQUEST)
-      entries.push(...(await collect(subjectCollection, `/subjects?ids=${batch.join(',')}`)))
+      batches.push(collect(subjectCollection, `/subjects?ids=${batch.join(',')}`))
     }
 
-    return entries
+    return (await Promise.all(batches)).flat()
   }
 
   // What the subjects in hand mention, fetched in one pass and folded in: a card shows a
@@ -118,11 +121,12 @@ export function wanikaniSource(token: string): KnowledgeSource {
   async function listSubjects(ids: readonly number[]): Promise<readonly Subject[]> {
     if (ids.length === 0) return []
 
-    const granted = await ceiling()
+    // Asked together, since neither answer is needed to ask the other question.
+    const [granted, asked] = await Promise.all([ceiling(), subjectsIn(ids)])
     // Their reads are not filtered by the subscription and ours have to be: a free account is
     // sent the whole curriculum, and showing a level the reader's own plan does not include is
     // the one thing this client owes them.
-    const entries = (await subjectsIn(ids)).filter((entry) => entry.data.level <= granted)
+    const entries = asked.filter((entry) => entry.data.level <= granted)
 
     const named = await mentions(entries, granted)
 

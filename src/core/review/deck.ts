@@ -14,8 +14,9 @@ export function deckFor(
 
   return waiting.flatMap((assignment) => {
     const subject = known.get(assignment.subjectId)
-    // Content the source has withdrawn is filtered out of a queue rather than handled by a card,
-    // and both flows deal from here, so it leaves at the join rather than at one of the two.
+    // Content the source has withdrawn is filtered out of a queue rather than handled by a card.
+    // `questionsFor` holds the same line for a deck that never passed through here, which the
+    // seeded one does not.
     if (subject === undefined || subject.hidden) return []
 
     return [{ ...subject, srsStage: assignment.srsStage }]

@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next'
 
 import { DEFAULT_LOCALE } from './src/core/locales'
+import { startPath } from './src/core/routes'
 
 const config: NextConfig = {
   reactCompiler: true,
@@ -9,7 +10,9 @@ const config: NextConfig = {
   cacheComponents: false,
   // Every page lives under a locale segment, so the bare root has nowhere to go.
   redirects: () =>
-    Promise.resolve([{ source: '/', destination: `/${DEFAULT_LOCALE}`, permanent: false }]),
+    Promise.resolve([
+      { source: '/', destination: startPath(DEFAULT_LOCALE), permanent: false },
+    ]),
   // The three that cost nothing and need no per-request value. A full script-src
   // needs a nonce, which the prerendered locale layout cannot produce, so it is
   // an owed decision rather than a guess made here.
