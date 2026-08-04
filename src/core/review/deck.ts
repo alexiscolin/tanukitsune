@@ -1,6 +1,16 @@
 import type { Assignment } from '../knowledge-source'
 import type { Subject } from '../subject'
 
+// How much of a queue one sitting takes. The source hands back everything that is due, which is
+// the shape of their API rather than the shape of a day: a queue of hundreds is not a session, it
+// is a screen nobody finishes. Ten is the length until the reader chooses it themselves, which
+// docs/backlog.md holds for v0.1.1.
+export const SESSION_LENGTH = 10
+
+export function sessionOf(waiting: readonly Assignment[]): readonly Assignment[] {
+  return waiting.slice(0, SESSION_LENGTH)
+}
+
 // What a session is dealt, which neither half of the source's answer holds on its own: the queue
 // says what is waiting and in what order, the subjects say what each one is, and the stage is
 // what this reader has done with it. The join is here rather than in the route because it is a

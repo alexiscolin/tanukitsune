@@ -6,7 +6,7 @@ import { copyFor } from '@/core/site-copy'
 import { isFlow } from '@/core/subject'
 import { LessonSession } from '@/ui/organisms/lesson-session'
 
-import { waiting } from '../waiting'
+import { lessonDeck, reviewDeck } from '../waiting'
 import { ReviewFlow } from './review-flow'
 
 // The loop, whichever of the two flows is being run. Which one is a state of this route rather
@@ -29,29 +29,33 @@ export default async function SessionPage({
 
   const copy = copyFor(locale)
   const start = startPath(locale)
-  // The one flow being run, so the other's subjects are not fetched whole to build a deck this
-  // screen never opens.
-  const queues = await waiting([flow])
 
-  // Both screens carry their own shell, because they are full bleed and own their gutters.
-  if (flow === 'lesson')
+  // Both screens carry their own shell, because they are full bleed and own their gutters. Each
+  // asks for its own deck, so the other queue's subjects are never read to build cards nobody
+  // opens.
+  if (flow === 'lesson') {
+    const lesson = await lessonDeck()
+
     return (
       <LessonSession
-        deck={queues.lessons}
+        deck={lesson.cards}
         copy={copy.review}
         subjectCopy={copy.subject}
         exitTo={start}
       />
     )
+  }
+
+  const review = await reviewDeck()
 
   return (
     <ReviewFlow
       locale={locale}
-      questions={queues.reviews}
+      questions={review.cards}
       copy={copy.review}
       subjectCopy={copy.subject}
       exitTo={start}
-      demo={queues.demo}
+      demo={review.demo}
     />
   )
 }

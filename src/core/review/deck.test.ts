@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { KANJI, VERB } from '../demo-deck'
 import type { Assignment } from '../knowledge-source'
-import { deckFor } from './deck'
+import { deckFor, SESSION_LENGTH, sessionOf } from './deck'
 
 function waiting(subjectId: number, srsStage: number): Assignment {
   return { subjectId, srsStage }
@@ -41,5 +41,21 @@ describe('deckFor', () => {
     const deck = deckFor([waiting(KANJI.id, 0)], [{ ...KANJI, hidden: true }])
 
     expect(deck).toEqual([])
+  })
+})
+
+describe('sessionOf', () => {
+  // The source hands back everything that is due, which is the shape of their API and not of a
+  // day. A queue of hundreds is a screen nobody finishes.
+  it('takes one sitting from a queue longer than one', () => {
+    const queue = Array.from({ length: SESSION_LENGTH * 3 }, (_, index) => waiting(index + 1, 1))
+
+    expect(sessionOf(queue)).toHaveLength(SESSION_LENGTH)
+  })
+
+  it('takes the front of the queue, since that is what is most due', () => {
+    const queue = [waiting(11, 1), waiting(22, 2)]
+
+    expect(sessionOf(queue).map((entry) => entry.subjectId)).toEqual([11, 22])
   })
 })

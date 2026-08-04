@@ -24,14 +24,19 @@ function faceOf(page: Page, subject: Subject): Locator {
   return page.getByRole('img', { name: subject.meanings[0]?.text ?? '' })
 }
 
+// Counted in subjects rather than in questions, which is the number the source's own client shows
+// and the one the reader recognises: a kanji asked for its meaning and then its reading is one
+// item due, not two.
 test('the start screen says what is waiting in each flow', async ({ page }) => {
+  const asked = new Set(DEMO_QUESTIONS.map((question) => question.subject.id)).size
+
   await page.goto(startPath('fr'))
 
   await expect(page.getByRole('link', { name: new RegExp(COPY.start.flow.lesson) })).toContainText(
     `${DEMO_DECK.length}`,
   )
   await expect(page.getByRole('link', { name: new RegExp(COPY.start.flow.review) })).toContainText(
-    `${DEMO_QUESTIONS.length}`,
+    `${asked}`,
   )
 })
 
