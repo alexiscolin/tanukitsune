@@ -1,0 +1,20 @@
+CREATE TABLE "review_event" (
+	"id" text PRIMARY KEY NOT NULL,
+	"subject_id" text NOT NULL,
+	"locale" text NOT NULL,
+	"corpus_version" text,
+	"answered_at" timestamp with time zone NOT NULL,
+	"kind" text NOT NULL,
+	"answer" text,
+	"verdict" text,
+	"decided_by" text,
+	"correct" boolean NOT NULL,
+	"overridden_to" text,
+	"override_reason" text,
+	"assist" text,
+	"scheduled" text,
+	"srs_stage_before" integer,
+	"srs_stage_after" integer,
+	"applied_upstream" boolean,
+	"synced_at" timestamp with time zone
+);
