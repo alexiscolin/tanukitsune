@@ -49,9 +49,12 @@ export type Component = {
   readonly meaning: string
 }
 
+// The sentence and what it says, the second in whatever language the locale serves rather than
+// in one the field names: the same shape carries a generated French gloss and the source's own.
+// `Pattern` below reads the same way, which is where the word comes from.
 export type Sentence = {
   readonly ja: string
-  readonly fr: string
+  readonly gloss: string
 }
 
 // How the word is actually joined to a sentence, which is the thing a list of meanings never

@@ -25,7 +25,7 @@ export function SubjectSentences({
               {sentence.ja}
             </span>
             <span className="text-xs leading-relaxed text-[var(--color-ink-muted)]">
-              {sentence.fr}
+              {sentence.gloss}
             </span>
           </span>
         ))}
