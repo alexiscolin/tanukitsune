@@ -68,6 +68,34 @@ const assignmentEntry = z.object({
   }),
 })
 
+// What the reader wrote about a subject, which the source keeps apart from the subject because it
+// belongs to them and not to it.
+const studyMaterialEntry = z.object({
+  id: z.number(),
+  data: z.object({
+    subject_id: z.number(),
+    meaning_synonyms: z.array(z.string()),
+    meaning_note: z.string().nullable(),
+    reading_note: z.string().nullable(),
+  }),
+})
+
+export type StudyMaterial = {
+  readonly subjectId: number
+  readonly synonyms: readonly string[]
+  readonly meaningNote: string | null
+  readonly readingNote: string | null
+}
+
+export function toStudyMaterial(entry: z.infer<typeof studyMaterialEntry>): StudyMaterial {
+  return {
+    subjectId: entry.data.subject_id,
+    synonyms: entry.data.meaning_synonyms,
+    meaningNote: entry.data.meaning_note,
+    readingNote: entry.data.reading_note,
+  }
+}
+
 // The ceiling and whether it still stands. Both, because a lapsed subscription keeps the number
 // it reached and grants none of it.
 export const userPayload = z.object({
@@ -89,6 +117,7 @@ function collectionOf<Entry extends z.ZodType>(entry: Entry) {
 
 export const subjectCollection = collectionOf(subjectEntry)
 export const assignmentCollection = collectionOf(assignmentEntry)
+export const studyMaterialCollection = collectionOf(studyMaterialEntry)
 
 // What a card shows about a subject it merely mentions: a character and what it means. They
 // arrive as identifiers, so the subjects they name are fetched and folded in before anything

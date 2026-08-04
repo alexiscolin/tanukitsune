@@ -22,10 +22,15 @@ export function questionKey({ subject, kind }: Question): string {
 // refused in the same breath, and the whitelist is accepted without ever being shown. A
 // question with nothing acceptable cannot be asked at all, so it is dropped rather than
 // guarded against at the moment of grading.
+//
+// The reader's own synonyms are answers beside the source's, on the meaning alone: a grader that
+// refuses what the reader themselves declared right is one they stop trusting, and a synonym
+// offered for a reading would accept an answer in the wrong script entirely.
 function ask(subject: Subject, kind: AnswerKind): Question | null {
   const glosses = kind === 'reading' ? subject.readings : subject.meanings
   const shown = acceptedIn(glosses)
-  const [first, ...rest] = kind === 'meaning' ? [...shown, ...subject.alsoAccepted] : shown
+  const [first, ...rest] =
+    kind === 'meaning' ? [...shown, ...subject.alsoAccepted, ...subject.synonyms] : shown
 
   return first === undefined ? null : { subject, kind, accepted: [first, ...rest] }
 }
