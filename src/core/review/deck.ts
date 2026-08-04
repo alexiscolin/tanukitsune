@@ -7,6 +7,9 @@ import type { Subject } from '../subject'
 // docs/backlog.md holds for v0.1.1.
 export const SESSION_LENGTH = 10
 
+// The front of the queue as the source lists it, which is not the same as the most urgent: their
+// collections are paged by identifier and an assignment carries no order of its own here. Dealing
+// by how long an item has been due needs `available_at`, which docs/backlog.md holds.
 export function sessionOf(waiting: readonly Assignment[]): readonly Assignment[] {
   return waiting.slice(0, SESSION_LENGTH)
 }

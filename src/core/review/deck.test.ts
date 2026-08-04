@@ -53,7 +53,7 @@ describe('sessionOf', () => {
     expect(sessionOf(queue)).toHaveLength(SESSION_LENGTH)
   })
 
-  it('takes the front of the queue, since that is what is most due', () => {
+  it('takes the front of the queue as the source listed it', () => {
     const queue = [waiting(11, 1), waiting(22, 2)]
 
     expect(sessionOf(queue).map((entry) => entry.subjectId)).toEqual([11, 22])
