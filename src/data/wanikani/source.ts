@@ -170,13 +170,20 @@ async function listSubjects(token: string, ids: readonly number[]): Promise<read
 }
 
 async function listWaiting(token: string): Promise<Waiting> {
-  const [lessons, reviews] = await Promise.all([
+  const [granted, lessons, reviews] = await Promise.all([
+    ceiling(token),
     collect(token, assignmentCollection, '/assignments?immediately_available_for_lessons'),
     collect(token, assignmentCollection, '/assignments?immediately_available_for_review'),
   ])
 
-  // An assignment names a subject and not a level, so the ceiling is held where the subjects are
-  // read. What is waiting is what the source says is waiting.
+  // A subscription granting nothing leaves no queue: what is waiting is counted where a session
+  // is started from, and a count is a way in. One that deals nothing when the reader takes it is
+  // worse than an empty row.
+  //
+  // An assignment names a subject and not a level, so a ceiling between one and sixty is held
+  // where the subjects are read instead, and a queue can still name more than a deck deals.
+  if (granted === 0) return { lessons: [], reviews: [] }
+
   return { lessons: lessons.map(toAssignment), reviews: reviews.map(toAssignment) }
 }
 

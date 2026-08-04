@@ -21,7 +21,7 @@ type Dealt<Cards> = { readonly cards: Cards; readonly demo: boolean }
 // own client shows and the one the reader recognises: a kanji asked for its meaning and its
 // reading is one item due, not two. A session takes ten of them, so this is no longer the number
 // of cards the next session deals.
-export type Due = { readonly lessons: number; readonly reviews: number; readonly demo: boolean }
+type Due = { readonly lessons: number; readonly reviews: number; readonly demo: boolean }
 
 const DEMO_SUBJECTS_ASKED = new Set(DEMO_QUESTIONS.map((question) => question.subject.id)).size
 

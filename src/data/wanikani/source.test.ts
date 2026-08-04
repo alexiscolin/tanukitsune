@@ -10,9 +10,13 @@ import { wanikaniSource } from './source'
 
 const API = 'https://api.wanikani.com/v2'
 
-// The reader's own words are read beside every subject list, and most of these cases are not
-// about them, so an account with none is the default rather than a handler in each.
-const server = setupServer(http.get(`${API}/study_materials`, () => page([])))
+// Two answers most of these cases are not about: an account with nothing written on it, and a
+// subscription that grants the whole curriculum. Both are defaults rather than a handler in each,
+// and the cases that are about them say so by overriding.
+const server = setupServer(
+  http.get(`${API}/study_materials`, () => page([])),
+  grants(60),
+)
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'error' })
@@ -203,6 +207,20 @@ describe('wanikaniSource', () => {
   // a request for the whole curriculum, one page at a time.
   it('asks the source nothing when nothing is waiting', async () => {
     expect(await wanikaniSource('a-token').listSubjects([])).toEqual([])
+  })
+
+  // A queue is what the reader may study, and a subscription that grants nothing leaves none of
+  // it: an item counted as waiting is a way into a session, and one that grants nothing deals
+  // nothing when the reader takes it.
+  it('leaves no queue at all while the subscription is lapsed', async () => {
+    server.use(
+      grants(60, false),
+      http.get(`${API}/assignments`, () => page([{ id: 10, data: { subject_id: 440, srs_stage: 0 } }])),
+    )
+
+    const waiting = await wanikaniSource('a-token').listWaiting()
+
+    expect(waiting).toEqual({ lessons: [], reviews: [] })
   })
 
   it('reads the two lists apart, because a lesson teaches and a review asks', async () => {
