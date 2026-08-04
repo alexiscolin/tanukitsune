@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { DEMO_DECK, DEMO_QUESTIONS } from '@/core/demo-deck'
+import { DEMO_DECK, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
 import { sessionPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 
@@ -21,7 +21,7 @@ const meta = {
     demo: true,
     queues: {
       lesson: { count: DEMO_DECK.length, href: sessionPath('fr', 'lesson') },
-      review: { count: DEMO_QUESTIONS.length, href: sessionPath('fr', 'review') },
+      review: { count: DEMO_SUBJECTS_ASKED, href: sessionPath('fr', 'review') },
     },
   },
 } satisfies Meta<typeof SessionStart>

@@ -104,8 +104,7 @@ async function ceiling(token: string): Promise<number> {
 }
 
 // What the reader wrote about these subjects, which is a second endpoint because it is theirs
-// rather than the source's: synonyms are answers beside the source's own, and the two notes are
-// shown on the card and accepted as nothing.
+// rather than the source's.
 async function written(token: string, ids: readonly number[]): Promise<Map<number, StudyMaterial>> {
   const entries = await batched(
     token,
@@ -154,19 +153,7 @@ async function listSubjects(token: string, ids: readonly number[]): Promise<read
   const entries = asked.filter((entry) => entry.data.level <= granted)
   const named = await mentions(token, entries, granted)
 
-  return entries.map((entry) => {
-    const subject = toSubject(entry, named)
-    const own = mine.get(entry.id)
-
-    return own === undefined
-      ? subject
-      : {
-          ...subject,
-          synonyms: own.synonyms,
-          meaningNote: own.meaningNote,
-          readingNote: own.readingNote,
-        }
-  })
+  return entries.map((entry) => toSubject(entry, named, mine.get(entry.id)))
 }
 
 async function listWaiting(token: string): Promise<Waiting> {

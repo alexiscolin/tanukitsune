@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { DEMO_DECK, DEMO_QUESTIONS } from '@/core/demo-deck'
+import { DEMO_DECK, DEMO_QUESTIONS, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
 import { deckFor, sessionOf } from '@/core/review/deck'
 import { questionsFor } from '@/core/review/question'
 import type { Question } from '@/core/review/question'
@@ -22,8 +22,6 @@ type Dealt<Cards> = { readonly cards: Cards; readonly demo: boolean }
 // reading is one item due, not two. A session takes ten of them, so this is no longer the number
 // of cards the next session deals.
 type Due = { readonly lessons: number; readonly reviews: number; readonly demo: boolean }
-
-const DEMO_SUBJECTS_ASKED = new Set(DEMO_QUESTIONS.map((question) => question.subject.id)).size
 
 export async function due(): Promise<Due> {
   const token = env.WANIKANI_TOKEN

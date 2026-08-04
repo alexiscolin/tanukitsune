@@ -68,8 +68,6 @@ const assignmentEntry = z.object({
   }),
 })
 
-// What the reader wrote about a subject, which the source keeps apart from the subject because it
-// belongs to them and not to it.
 const studyMaterialEntry = z.object({
   id: z.number(),
   data: z.object({
@@ -176,10 +174,15 @@ function auxiliary(entry: SubjectEntry, kind: string): readonly string[] {
     .map((meaning) => meaning.meaning)
 }
 
-// The three groups `Subject` names, filled from the one that is upstream. What our corpus writes
-// in the reader's language and what the reader wrote themselves are absent here by definition,
-// and the caller is what joins them: this function knows the source and nothing else.
-export function toSubject(entry: SubjectEntry, mentioned: ReadonlyMap<number, Component>): Subject {
+// The three groups `Subject` names, filled from the two that are upstream: what the source sends
+// and what the reader wrote about it, which arrives from another endpoint and is joined here
+// rather than patched over the result. What our corpus writes in the reader's language is absent
+// by definition, since no corpus exists to write it.
+export function toSubject(
+  entry: SubjectEntry,
+  mentioned: ReadonlyMap<number, Component>,
+  own?: StudyMaterial,
+): Subject {
   const type = SUBJECT_TYPES[entry.object]
   if (type === undefined) throw new Error(`The source sent a subject of kind ${entry.object}.`)
 
@@ -213,9 +216,9 @@ export function toSubject(entry: SubjectEntry, mentioned: ReadonlyMap<number, Co
     hidden: entry.data.hidden_at !== null,
     // From the assignment rather than the subject, and joined by whoever holds both.
     srsStage: null,
-    synonyms: [],
-    meaningNote: null,
-    readingNote: null,
+    synonyms: own?.synonyms ?? [],
+    meaningNote: own?.meaningNote ?? null,
+    readingNote: own?.readingNote ?? null,
   }
 }
 

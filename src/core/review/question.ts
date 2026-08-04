@@ -23,9 +23,8 @@ export function questionKey({ subject, kind }: Question): string {
 // question with nothing acceptable cannot be asked at all, so it is dropped rather than
 // guarded against at the moment of grading.
 //
-// The reader's own synonyms are answers beside the source's, on the meaning alone: a grader that
-// refuses what the reader themselves declared right is one they stop trusting, and a synonym
-// offered for a reading would accept an answer in the wrong script entirely.
+// A synonym is the reader's word for the meaning, so it joins that question and not the reading,
+// where it would accept an answer in the wrong script entirely.
 function ask(subject: Subject, kind: AnswerKind): Question | null {
   const glosses = kind === 'reading' ? subject.readings : subject.meanings
   const shown = acceptedIn(glosses)

@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
 
-import { DEMO_DECK, DEMO_QUESTIONS } from '../src/core/demo-deck'
+import { DEMO_DECK, DEMO_SUBJECTS_ASKED } from '../src/core/demo-deck'
 import { sessionPath, startPath } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
 import { FLOWS } from '../src/core/subject'
@@ -28,15 +28,13 @@ function faceOf(page: Page, subject: Subject): Locator {
 // and the one the reader recognises: a kanji asked for its meaning and then its reading is one
 // item due, not two.
 test('the start screen says what is waiting in each flow', async ({ page }) => {
-  const asked = new Set(DEMO_QUESTIONS.map((question) => question.subject.id)).size
-
   await page.goto(startPath('fr'))
 
   await expect(page.getByRole('link', { name: new RegExp(COPY.start.flow.lesson) })).toContainText(
     `${DEMO_DECK.length}`,
   )
   await expect(page.getByRole('link', { name: new RegExp(COPY.start.flow.review) })).toContainText(
-    `${asked}`,
+    `${DEMO_SUBJECTS_ASKED}`,
   )
 })
 

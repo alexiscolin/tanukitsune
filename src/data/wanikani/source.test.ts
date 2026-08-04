@@ -77,7 +77,6 @@ describe('wanikaniSource', () => {
   // curriculum and calls it the whole one.
   it('follows the cursor until the source stops handing one back', async () => {
     server.use(
-      grants(10),
       http.get(`${API}/subjects`, ({ request }) => {
         const asked = new URL(request.url)
 
@@ -97,7 +96,6 @@ describe('wanikaniSource', () => {
   // loop, so it is followed only where it stays inside the source.
   it('refuses a cursor that leads anywhere but the source', async () => {
     server.use(
-      grants(10),
       http.get(`${API}/subjects`, () => page([subject(1, 1)], 'https://elsewhere.test/subjects')),
     )
 
@@ -159,7 +157,6 @@ describe('wanikaniSource', () => {
     const asked: number[] = []
 
     server.use(
-      grants(10),
       http.get(`${API}/subjects`, ({ request }) => {
         const ids = new URL(request.url).searchParams.get('ids')?.split(',') ?? []
         asked.push(ids.length)
@@ -179,7 +176,6 @@ describe('wanikaniSource', () => {
   // the card without it is one whose own synonyms the grader will refuse.
   it("folds what the reader wrote onto the subject it is about", async () => {
     server.use(
-      grants(10),
       http.get(`${API}/subjects`, () => page([subject(451, 1)])),
       http.get(`${API}/study_materials`, () =>
         page([

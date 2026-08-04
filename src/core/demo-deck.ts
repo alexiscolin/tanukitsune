@@ -249,3 +249,8 @@ export const KANA_VOCABULARY: Subject = {
 export const DEMO_DECK: readonly Subject[] = [KANJI, VERB, LONG, MANY, IMAGED, KANA_VOCABULARY]
 
 export const DEMO_QUESTIONS: readonly Question[] = questionsFor(DEMO_DECK)
+
+// How many subjects the seeded queue asks about, which is not how many questions it asks: a
+// subject with a reading is asked twice. Derived here beside what it is derived from, so the
+// screen, the catalogue and the suite cannot each count it their own way.
+export const DEMO_SUBJECTS_ASKED = new Set(DEMO_QUESTIONS.map((asked) => asked.subject.id)).size

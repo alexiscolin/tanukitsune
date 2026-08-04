@@ -35,42 +35,26 @@ export const corpusEntry = pgTable(
 // the flush reads a row written offline and fills the last three columns, so a field on one side
 // and not the other is a queue nothing can drain.
 export const reviewEvent = pgTable('review_event', {
-  // Client-generated, because the row is written offline where nothing can allocate one, and
-  // because it is what makes replaying a sync safe.
   id: text('id').primaryKey(),
   // Text for the reason `corpus_entry` gives beside the same column, and so the two join: their
   // identifiers are one implementation of what a subject is called, not the definition of it.
   subjectId: text('subject_id').notNull(),
-  // Which reference the answer was graded against. The table is append-only, so a verdict whose
-  // reference cannot be identified is a labelled case that can never be replayed.
   locale: text('locale').notNull(),
   corpusVersion: text('corpus_version'),
-  // The device clock, the only one available offline. A receipt time stamped server-side beside
-  // it is what makes an implausible interval detectable rather than fed to FSRS as fact.
   answeredAt: timestamp('answered_at', { withTimezone: true }).notNull(),
   kind: text('kind').notNull(),
-  // As submitted, before the normalisation each tier applies for its own comparison: a
-  // normalised answer freezes the rule that produced it, and on an append-only table that means
-  // the case can no longer be re-graded the day that rule changes.
   answer: text('answer'),
   verdict: text('verdict'),
-  // Which tier decided, carrying its own version, which is what makes the v0.2 measurement of
-  // the grader possible: a verdict with nobody behind it labels nothing.
   decidedBy: text('decided_by'),
-  // What counts, which is the reader's ruling and not the cascade's.
   correct: boolean('correct').notNull(),
-  // What the reader said instead, null where they said nothing else. That pair is the labelled
-  // disagreement every later eval rests on, and it cannot be reconstructed after the fact.
   overriddenTo: text('overridden_to'),
-  // Three saying how the answer was produced rather than what it was, present from the first
-  // migration because a column absent when a row is appended cannot be filled afterwards. No
-  // writer for the last two until v0.1.1.
+  // Three with no writer for the last two until v0.1.1, and here from the first migration because
+  // a column absent when a row is appended cannot be filled afterwards.
   overrideReason: text('override_reason'),
   assist: text('assist'),
   scheduled: text('scheduled'),
   srsStageBefore: integer('srs_stage_before'),
-  // The three the flush fills, and the only ones writable after the append. The stage comes back
-  // in the source's response and is never computed locally, so it cannot exist before then.
+  // The three the flush fills, nullable because the append happens offline and long before it.
   srsStageAfter: integer('srs_stage_after'),
   appliedUpstream: boolean('applied_upstream'),
   syncedAt: timestamp('synced_at', { withTimezone: true }),
