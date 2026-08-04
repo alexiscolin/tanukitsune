@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 
+import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 
 import { SessionDone } from './session-done'
@@ -8,7 +9,7 @@ import { SessionDone } from './session-done'
 const meta = {
   component: SessionDone,
   parameters: { fullBleed: true },
-  args: { label: copyFor('fr').review.done },
+  args: { copy: copyFor('fr').review, exitTo: startPath('fr') },
 } satisfies Meta<typeof SessionDone>
 
 export default meta

@@ -22,17 +22,19 @@ export function LessonSession({
   deck,
   copy,
   subjectCopy,
+  exitTo,
 }: {
   deck: readonly Subject[]
   copy: ReviewCopy
   subjectCopy: SubjectCopy
+  exitTo: string
 }) {
   const [index, setIndex] = useState(0)
 
   const subject = deck[index]
   const upcoming = deck[index + 1]
 
-  if (subject === undefined) return <SessionDone label={copy.done} reached={index > 0} />
+  if (subject === undefined) return <SessionDone copy={copy} reached={index > 0} exitTo={exitTo} />
 
   return (
     // A lesson misses nothing: the rule says how much of the batch is behind and no more.

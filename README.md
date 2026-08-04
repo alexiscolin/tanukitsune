@@ -147,6 +147,7 @@ src/
 │   ├── demo-deck.ts             the deck the loop runs on until real assignments arrive
 │   ├── review/answer-record.ts  the row one answer becomes, in the shape the table will hold
 │   ├── review/outbox-port.ts    the local queue, declared here and implemented in data/
+│   ├── routes.ts                the two paths, spelled once for the screens and the suite
 │   └── site-copy.ts             every string a reader sees, keyed by locale
 ├── data/                    the outside. The server's store, and the browser's
 │   ├── db.ts                    a server Postgres, or the file-backed one, and which answered
@@ -160,7 +161,8 @@ src/
 │   ├── molecules/               answer-field: romaji becomes kana here, and Enter is decided here
 │   └── organisms/               review-session: the loop, question, verdict, next
 └── app/                     the routes. The only layer allowed to touch both data and ui
-    ├── [locale]/                the session, its layout, its error and not-found pages
+    ├── [locale]/                where a session starts, the layout, the error and not-found pages
+    ├── [locale]/session/        the loop, in whichever of the two flows was asked for
     └── api/health/route.ts      what answered, which build, and whether the database is there
 e2e/                         Playwright: the routes against the production build, every story by
                              theme, and what the loop writes to the browser's own database
