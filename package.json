@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
+    "idb": "8.0.3",
     "next": "16.2.12",
     "pg": "8.22.0",
     "react": "19.2.8",

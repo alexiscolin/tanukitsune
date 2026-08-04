@@ -145,10 +145,13 @@ src/
 │   ├── composition-gate.ts      when a keystroke becomes an answer, and when it does not
 │   ├── subject.ts               a subject, what it means, what it reads, what a tier accepts
 │   ├── demo-deck.ts             the deck the loop runs on until real assignments arrive
+│   ├── review/answer-record.ts  the row one answer becomes, in the shape the table will hold
+│   ├── review/outbox-port.ts    the local queue, declared here and implemented in data/
 │   └── site-copy.ts             every string a reader sees, keyed by locale
-├── data/                    the outside. Server only
+├── data/                    the outside. The server's store, and the browser's
 │   ├── db.ts                    a server Postgres, or the file-backed one, and which answered
 │   ├── env.ts                   the environment, parsed once, at the boundary
+│   ├── local/outbox.ts          the answers, appended in the browser, before any of them is sent
 │   └── schema.ts                the tables, from which migrations are generated
 ├── ai/                      the model. Prompts, eval sets, and what implements core's ports
 ├── ui/                      the components, props only. A fourth layer, primitives/, holds
@@ -159,7 +162,8 @@ src/
 └── app/                     the routes. The only layer allowed to touch both data and ui
     ├── [locale]/                the session, its layout, its error and not-found pages
     └── api/health/route.ts      what answered, which build, and whether the database is there
-e2e/                         Playwright: the routes against the production build, every story by theme
+e2e/                         Playwright: the routes against the production build, every story by
+                             theme, and what the loop writes to the browser's own database
 drizzle/                     migrations, generated from the schema, never written by hand
 scripts/                     the gates a linter cannot express
 docs/                        everything argued rather than enforced
@@ -170,8 +174,9 @@ docs/                        everything argued rather than enforced
 One answer travels the whole thing and touches each layer once. A route hands the session its deck and
 its strings, the field turns what was typed into kana and decides that Enter meant an answer, the
 session hands that answer to the cascade, and the cascade decides or says it could not, which is what
-puts the question back to the reader. Nothing in that path reaches a database, which is why the loop
-works with no network.
+puts the question back to the reader. What the reader rules is then appended to the browser's own
+database before the card is allowed to leave. That is the only store in the path, which is why the
+loop works with no network, and the write is awaited, because an answer nobody kept is not an answer.
 
 The whole design is which of those may import which. **`core/` imports nothing**, so it declares ports
 instead: `JudgePort` for the grader, `KnowledgeSource` for WaniKani, both implemented further out. That

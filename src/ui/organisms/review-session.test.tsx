@@ -439,6 +439,7 @@ describe('ReviewSession, writing the answer down', () => {
 
     await act(async () => {
       release()
+      await held
     })
 
     expect(await screen.findByLabelText(COPY.review.prompt.reading)).toBeTruthy()
@@ -455,7 +456,8 @@ describe('ReviewSession, writing the answer down', () => {
     await screen.findByText(COPY.subject.nuance)
     fireEvent.keyDown(deck(), { key: 'ArrowRight' })
 
-    expect(await screen.findByText(COPY.review.unwritten)).toBeTruthy()
+    // Twice: on the card where the answer is, and in the region that speaks it.
+    expect(await screen.findAllByText(COPY.review.unwritten)).toHaveLength(2)
     expect(screen.queryByLabelText(COPY.review.prompt.reading)).toBeNull()
     expect(tallyUnder(COPY.review.tally.done)).toBe('0')
   })
@@ -486,7 +488,7 @@ describe('ReviewSession, writing the answer down', () => {
     answer(field, KANJI.meanings[0]?.text ?? '')
     await screen.findByText(COPY.subject.nuance)
     fireEvent.keyDown(deck(), { key: 'ArrowRight' })
-    await screen.findByText(COPY.review.unwritten)
+    await screen.findAllByText(COPY.review.unwritten)
 
     refuse = false
     fireEvent.keyDown(deck(), { key: 'ArrowRight' })

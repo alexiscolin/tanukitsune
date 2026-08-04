@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { userEvent, within } from 'storybook/test'
+import { userEvent, waitFor, within } from 'storybook/test'
 
 import { copyFor } from '@/core/site-copy'
 
@@ -19,7 +19,14 @@ async function answer(canvasElement: HTMLElement, typed: string) {
 // is that it has no frame, and push it past the viewport it must fit inside.
 const meta = {
   component: ReviewSession,
-  args: { questions: DEMO_QUESTIONS, copy: COPY.review, subjectCopy: COPY.subject },
+  args: {
+    questions: DEMO_QUESTIONS,
+    copy: COPY.review,
+    subjectCopy: COPY.subject,
+    // The catalogue judges what the screen looks like, so the writer takes every answer here.
+    // The state where one refuses is a story of its own below.
+    onAnswered: () => Promise.resolve(),
+  },
   parameters: { fullBleed: true },
 } satisfies Meta<typeof ReviewSession>
 
@@ -53,5 +60,21 @@ export const SelfGrade: Story = {
 export const GaveUp: Story = {
   play: async ({ canvasElement }) => {
     await userEvent.click(within(canvasElement).getByRole('button', { name: COPY.subject.reveal }))
+  },
+}
+
+// The answer was graded and could not be kept. The card stays where it was, the numbers it was
+// not added to stay beside the refusal, and the gesture that failed is the one that retries.
+export const Unwritten: Story = {
+  args: { onAnswered: () => Promise.reject(new Error('the local queue refused the answer')) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await answer(canvasElement, KANJI.meanings[0]?.text ?? '')
+    // The deck holds the focus the moment it will answer to one, so the grading gesture is
+    // reached by key rather than by finding the group again.
+    await userEvent.keyboard('{ArrowRight}')
+    // On the card and in the region that speaks it, which is two nodes holding one sentence.
+    await waitFor(() => canvas.getAllByText(COPY.review.unwritten))
   },
 }

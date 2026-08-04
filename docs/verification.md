@@ -49,7 +49,7 @@ readable floor would turn it into an instruction to write text nobody can read.
 `pnpm verify` is `gate` plus `check:sketches`, `check:tokens`, `check:review`, `check:tests`, `build`,
 `test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits
 outside both and runs in its own CI job, because it needs a browser and a database. It covers the two
-real routes and every catalogued state, in both themes.
+real routes, every catalogued state in both themes, and the one write the review loop makes.
 
 | Command | Tool | Catches |
 |---|---|---|
@@ -249,7 +249,9 @@ is the page showing the tokens against each other. Why a page each, and why the 
 
 The accessibility addon runs the audit per state for whoever has the catalogue open, and
 `e2e/catalogue.spec.ts` runs the same rules over every state in both themes for everyone else:
-`e2e/shell.spec.ts` audits the two real routes and neither enters the loop. What no gate holds is the
+`e2e/shell.spec.ts` audits the two real routes and neither enters the loop. `e2e/review.spec.ts` is
+what enters it, and it audits nothing: it asks the one question a substitute cannot answer, whether
+the answer is in the browser's database before the deck advances. What no gate holds is the
 appearance, which is recorded below under what is not covered.
 
 ## The token rule
@@ -301,6 +303,10 @@ without any of them running unprompted.
   [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md)
   defers baselines on purpose while the design moves, and taking them is a decision somebody makes
   rather than a date that passes.
+- The local store is covered where it works, not where it fails. `e2e/review.spec.ts` reads back what
+  a real IndexedDB kept, and nothing drives a quota refusal or a version upgrade. What is tested is
+  the screen's side of a refusal, against a writer that rejects, which is the interface half of it
+  and says nothing about the store.
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - A pass line is a record somebody wrote, not evidence a model ran. The gate refuses a merge nobody
   reviewed; it cannot refuse one somebody only claimed to have reviewed.

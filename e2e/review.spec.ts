@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { DEMO_QUESTIONS } from '../src/core/demo-deck'
+import type { Question } from '../src/core/demo-deck'
 import { OUTBOX_DATABASE, OUTBOX_STORE } from '../src/data/local/outbox'
 import { copyFor } from '../src/core/site-copy'
 
@@ -11,8 +12,15 @@ const COPY = copyFor('fr')
 
 // The deck asks every meaning before any reading, so the first two cards are two subjects
 // asked the same question rather than one subject asked twice.
-const [FIRST, SECOND] = DEMO_QUESTIONS
-if (FIRST === undefined || SECOND === undefined) throw new Error('The demo deck asks nothing.')
+function asked(position: number): Question {
+  const question = DEMO_QUESTIONS[position]
+  if (question === undefined) throw new Error('The demo deck asks fewer questions than this.')
+
+  return question
+}
+
+const FIRST = asked(0)
+const SECOND = asked(1)
 
 type Row = {
   readonly subjectId: number
@@ -39,11 +47,16 @@ function written(page: Page): Promise<readonly Row[]> {
   )
 }
 
+// Typed rather than filled, and graded from the keyboard: the field takes the focus on every
+// card and the deck takes it the moment a verdict stands, so neither is reached by pointing at
+// it. The deck also carries `aria-disabled` until something has been answered, and it is what
+// the field sits inside.
 async function answerFirstCard(page: Page) {
-  const field = page.getByLabel(COPY.review.prompt[FIRST.kind])
-  await field.fill(FIRST.accepted[0])
-  await field.press('Enter')
-  await page.getByRole('group', { name: COPY.review.askSelfGrade }).press('ArrowRight')
+  await expect(page.getByLabel(COPY.review.prompt[FIRST.kind])).toBeFocused()
+  await page.keyboard.type(FIRST.accepted[0])
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('group', { name: COPY.review.askSelfGrade })).toBeFocused()
+  await page.keyboard.press('ArrowRight')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(SECOND.subject.characters ?? '')
 }
 
