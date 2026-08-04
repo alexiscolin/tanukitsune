@@ -12,6 +12,9 @@ export type ReviewCopy = {
   // question is a type error rather than a blank label.
   readonly prompt: Record<AnswerKind, string>
   readonly unconverted: string
+  // When the answer could not be written to the local queue. The card stays and the gesture is
+  // the retry, so the line says what happened and what to do rather than only that it failed.
+  readonly unwritten: string
   // Keyed by the verdict for the reason the question is keyed by the kind: a verdict added
   // without its word is a type error rather than a blank line where the answer was judged.
   readonly verdict: Record<Verdict, string>
@@ -74,6 +77,7 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
     review: {
       prompt: { meaning: 'Sens', reading: 'Lecture' },
       unconverted: "Cette réponse n'est pas une lecture en kana.",
+      unwritten: 'Réponse non enregistrée. Refais le geste.',
       verdict: { correct: 'Juste', incorrect: 'Faux' },
       askSelfGrade: "Rien n'a pu trancher. C'était juste ?",
       grade: { correct: "C'était juste", incorrect: "C'était faux" },

@@ -5,7 +5,9 @@ import type { GradedAnswer, JudgePort, Verdict } from './judge-port'
 const EXACT_TIER = 'exact:2'
 const JUDGE_TIER = 'judge:1'
 
-type CascadeOutcome =
+// Named for the screen that holds it: the tier that decided is written to the review event
+// beside the verdict, so a screen keeping only the verdict would drop half of what it owes.
+export type CascadeOutcome =
   | { readonly verdict: Verdict; readonly decidedBy: typeof EXACT_TIER | typeof JUDGE_TIER }
   // Nobody decided, so nothing claims to have: the reader grades it and the
   // interface shows the item card while asking.
