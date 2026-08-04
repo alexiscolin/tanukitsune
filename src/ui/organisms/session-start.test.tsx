@@ -14,13 +14,14 @@ const QUEUES = {
   review: { count: 12, href: '/fr/session?flow=review' },
 }
 
-function startScreen(queues = QUEUES) {
+function startScreen(queues = QUEUES, demo = true) {
   render(
     <SessionStart
       title={COPY.title}
       tagline={COPY.tagline}
       copy={COPY.start}
       queues={queues}
+      demo={demo}
     />,
   )
 }
@@ -38,6 +39,15 @@ describe('SessionStart', () => {
     expect(lesson.textContent).toContain('6')
     expect(review.getAttribute('href')).toBe(QUEUES.review.href)
     expect(review.textContent).toContain('12')
+  })
+
+  // The promise is true of the seeded deck and of nothing else: a screen dealing somebody's own
+  // account while saying that everything stays on the device makes a promise the session breaks
+  // the moment the queue is flushed.
+  it('says nothing leaves the device only where the deck is the seeded one', () => {
+    startScreen(QUEUES, false)
+
+    expect(screen.queryByText(COPY.start.demo)).toBeNull()
   })
 
   // A session of nothing is not a session, and a control that leads to an empty deck lands the
