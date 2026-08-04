@@ -19,6 +19,10 @@ const optionalText = z.preprocess(
 // and the end-to-end expectation, through the rule above rather than around it.
 const schema = z.object({
   DATABASE_URL: optionalText,
+  // Optional because one public URL is both the demo and the product: with no token the demo
+  // deck is served, and only a deployment reviewing a real account holds one. Single user and
+  // unencrypted by decision, per the out-of-scope section of docs/specs/v0.1.md.
+  WANIKANI_TOKEN: optionalText,
   TANUKITSUNE_COMMIT: optionalText,
   TANUKITSUNE_BUILT_AT: optionalText,
 })

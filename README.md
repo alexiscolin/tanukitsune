@@ -147,12 +147,14 @@ src/
 │   ├── demo-deck.ts             the deck the loop runs on until real assignments arrive
 │   ├── review/answer-record.ts  the row one answer becomes, in the shape the table will hold
 │   ├── review/outbox-port.ts    the local queue, declared here and implemented in data/
+│   ├── knowledge-source.ts      where subjects and what is waiting come from, WaniKani being one
 │   ├── routes.ts                the two paths, spelled once for the screens and the suite
 │   └── site-copy.ts             every string a reader sees, keyed by locale
 ├── data/                    the outside. The server's store, and the browser's
 │   ├── db.ts                    a server Postgres, or the file-backed one, and which answered
 │   ├── env.ts                   the environment, parsed once, at the boundary
 │   ├── local/outbox.ts          the answers, appended in the browser, before any of them is sent
+│   ├── wanikani/                their payload parsed at the boundary, their pages followed
 │   └── schema.ts                the tables, from which migrations are generated
 ├── ai/                      the model. Prompts, eval sets, and what implements core's ports
 ├── ui/                      the components, props only. A fourth layer, primitives/, holds
