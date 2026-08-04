@@ -65,15 +65,14 @@ const assignmentEntry = z.object({
   data: z.object({
     subject_id: z.number(),
     srs_stage: z.number(),
-    available_at: z.string().nullable(),
-    started_at: z.string().nullable(),
   }),
 })
 
+// The ceiling and whether it still stands. Both, because a lapsed subscription keeps the number
+// it reached and grants none of it.
 export const userPayload = z.object({
   data: z.object({
-    level: z.number(),
-    subscription: z.object({ max_level_granted: z.number() }),
+    subscription: z.object({ max_level_granted: z.number(), active: z.boolean() }),
   }),
 })
 
@@ -192,10 +191,5 @@ export function toSubject(entry: SubjectEntry, mentioned: ReadonlyMap<number, Co
 }
 
 export function toAssignment(entry: z.infer<typeof assignmentEntry>): Assignment {
-  return {
-    subjectId: entry.data.subject_id,
-    srsStage: entry.data.srs_stage,
-    availableAt: entry.data.available_at === null ? null : new Date(entry.data.available_at),
-    startedAt: entry.data.started_at === null ? null : new Date(entry.data.started_at),
-  }
+  return { subjectId: entry.data.subject_id, srsStage: entry.data.srs_stage }
 }

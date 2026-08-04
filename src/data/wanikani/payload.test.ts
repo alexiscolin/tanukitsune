@@ -132,34 +132,17 @@ describe('mentionedIn', () => {
 })
 
 describe('toAssignment', () => {
-  it('reads the stage and the two moments as dates rather than strings', () => {
-    const assignment = toAssignment({
-      id: 80463006,
-      data: {
-        subject_id: 451,
-        srs_stage: 2,
-        available_at: '2026-08-04T10:00:00.000000Z',
-        started_at: '2026-07-30T09:00:00.000000Z',
-      },
-    })
+  it('names the subject and what the reader has done with it, and nothing else', () => {
+    const assignment = toAssignment({ id: 80463006, data: { subject_id: 451, srs_stage: 2 } })
 
-    expect(assignment).toMatchObject({ subjectId: 451, srsStage: 2 })
-    expect(assignment.availableAt?.toISOString()).toBe('2026-08-04T10:00:00.000Z')
+    expect(assignment).toEqual({ subjectId: 451, srsStage: 2 })
   })
 
-  // Zero is a subject unlocked and never studied, which is what makes it a lesson, and it has no
-  // moment it comes back at because it has never been away.
-  it('keeps a lesson without the moments a reviewed subject has', () => {
-    const assignment = toAssignment({
-      id: 80463007,
-      data: { subject_id: 440, srs_stage: 0, available_at: null, started_at: null },
-    })
+  // Zero is a subject unlocked and never studied, which is what makes it a lesson rather than a
+  // review, and it is the one stage the two queues are told apart by.
+  it('keeps the stage that makes a subject a lesson', () => {
+    const assignment = toAssignment({ id: 80463007, data: { subject_id: 440, srs_stage: 0 } })
 
-    expect(assignment).toEqual({
-      subjectId: 440,
-      srsStage: 0,
-      availableAt: null,
-      startedAt: null,
-    })
+    expect(assignment.srsStage).toBe(0)
   })
 })

@@ -6,7 +6,7 @@ import { wanikaniSource } from './source'
 
 // The transport against a server that answers like theirs, which is what MSW is here for: it
 // mocks third-party HTTP and never our own data layer. What is checked is what only a real
-// request can be wrong about, the headers, the cursor and the refusal.
+// request can be wrong about, the headers, the cursor, the ceiling and the refusal.
 
 const API = 'https://api.wanikani.com/v2'
 
@@ -39,9 +39,9 @@ function page(data: unknown[], next: string | null = null) {
   return HttpResponse.json({ pages: { next_url: next }, data })
 }
 
-function grants(level: number) {
+function grants(level: number, active = true) {
   return http.get(`${API}/user`, () =>
-    HttpResponse.json({ data: { level, subscription: { max_level_granted: level } } }),
+    HttpResponse.json({ data: { subscription: { max_level_granted: level, active } } }),
   )
 }
 
@@ -52,19 +52,19 @@ describe('wanikaniSource', () => {
     const seen: { authorization: string | null; revision: string | null }[] = []
 
     server.use(
-      http.get(`${API}/user`, ({ request }) => {
+      http.get(`${API}/assignments`, ({ request }) => {
         seen.push({
           authorization: request.headers.get('authorization'),
           revision: request.headers.get('wanikani-revision'),
         })
 
-        return HttpResponse.json({ data: { level: 3, subscription: { max_level_granted: 3 } } })
+        return page([])
       }),
     )
 
-    await wanikaniSource('a-token').grantedLevel()
+    await wanikaniSource('a-token').listWaiting()
 
-    expect(seen).toEqual([{ authorization: 'Bearer a-token', revision: '20170710' }])
+    expect(seen).toContainEqual({ authorization: 'Bearer a-token', revision: '20170710' })
   })
 
   // Their cursor is a URL they hand back, so a client that reads one page reads a truncated
@@ -81,9 +81,21 @@ describe('wanikaniSource', () => {
       }),
     )
 
-    const subjects = await wanikaniSource('a-token').listSubjects({ levels: [1] })
+    const subjects = await wanikaniSource('a-token').listSubjects([1, 2])
 
     expect(subjects.map((entry) => entry.id)).toEqual([1, 2])
+  })
+
+  // The cursor is a URL out of a response body, and it is carried with the reader's token on it.
+  // One naming another host is that token handed to whoever answered, and one naming itself is a
+  // loop, so it is followed only where it stays inside the source.
+  it('refuses a cursor that leads anywhere but the source', async () => {
+    server.use(
+      grants(10),
+      http.get(`${API}/subjects`, () => page([subject(1, 1)], 'https://elsewhere.test/subjects')),
+    )
+
+    await expect(wanikaniSource('a-token').listSubjects([1])).rejects.toThrow('elsewhere.test')
   })
 
   // Their reads are not filtered by the subscription and ours have to be: a free account is sent
@@ -95,9 +107,72 @@ describe('wanikaniSource', () => {
       http.get(`${API}/subjects`, () => page([subject(1, 3), subject(2, 4)])),
     )
 
-    const subjects = await wanikaniSource('a-token').listSubjects({ levels: [3, 4] })
+    const subjects = await wanikaniSource('a-token').listSubjects([1, 2])
 
     expect(subjects.map((entry) => entry.id)).toEqual([1])
+  })
+
+  // A lapsed subscription grants nothing, whatever level it granted while it was paid: the
+  // number stays where it was and the entitlement does not.
+  it('shows no level at all while the subscription is lapsed', async () => {
+    server.use(
+      grants(60, false),
+      http.get(`${API}/subjects`, () => page([subject(1, 1)])),
+    )
+
+    expect(await wanikaniSource('a-token').listSubjects([1])).toEqual([])
+  })
+
+  // What a subject mentions runs upward as well as down: a kanji names the vocabulary it appears
+  // in, which sits at levels the reader may not have been granted. The ceiling is the same one.
+  it('names no mentioned subject above the ceiling either', async () => {
+    server.use(
+      grants(3),
+      http.get(`${API}/subjects`, ({ request }) => {
+        const asked = new URL(request.url).searchParams.get('ids')
+
+        return asked === '1'
+          ? page([
+              {
+                ...subject(1, 3),
+                data: { ...subject(1, 3).data, amalgamation_subject_ids: [2] },
+              },
+            ])
+          : page([subject(2, 20)])
+      }),
+    )
+
+    const [only] = await wanikaniSource('a-token').listSubjects([1])
+
+    expect(only?.usedIn).toEqual([])
+  })
+
+  // The identifier filter travels in the URL, and a queue the size of a real account's is a URL
+  // that fails on its length rather than on its content.
+  it('asks for identifiers in batches a URL can carry', async () => {
+    const asked: number[] = []
+
+    server.use(
+      grants(10),
+      http.get(`${API}/subjects`, ({ request }) => {
+        const ids = new URL(request.url).searchParams.get('ids')?.split(',') ?? []
+        asked.push(ids.length)
+
+        return page(ids.map((id) => subject(Number(id), 1)))
+      }),
+    )
+
+    const many = Array.from({ length: 1201 }, (_, index) => index + 1)
+    const subjects = await wanikaniSource('a-token').listSubjects(many)
+
+    expect(subjects).toHaveLength(1201)
+    expect(Math.max(...asked)).toBeLessThanOrEqual(500)
+  })
+
+  // The ordinary state of a finished account. An empty filter is not a request for nothing, it is
+  // a request for the whole curriculum, one page at a time.
+  it('asks the source nothing when nothing is waiting', async () => {
+    expect(await wanikaniSource('a-token').listSubjects([])).toEqual([])
   })
 
   it('reads the two lists apart, because a lesson teaches and a review asks', async () => {
@@ -109,12 +184,7 @@ describe('wanikaniSource', () => {
         return page([
           {
             id: lessons ? 10 : 20,
-            data: {
-              subject_id: lessons ? 440 : 451,
-              srs_stage: lessons ? 0 : 4,
-              available_at: null,
-              started_at: null,
-            },
+            data: { subject_id: lessons ? 440 : 451, srs_stage: lessons ? 0 : 4 },
           },
         ])
       }),
@@ -130,8 +200,8 @@ describe('wanikaniSource', () => {
   // refusal the reader will actually meet. It propagates naming the status: a read that failed
   // quietly returns an empty queue, which reads exactly like a session with nothing left in it.
   it('propagates a refusal naming the status the source answered', async () => {
-    server.use(http.get(`${API}/user`, () => new HttpResponse(null, { status: 429 })))
+    server.use(http.get(`${API}/assignments`, () => new HttpResponse(null, { status: 429 })))
 
-    await expect(wanikaniSource('a-token').grantedLevel()).rejects.toThrow('answered 429')
+    await expect(wanikaniSource('a-token').listWaiting()).rejects.toThrow('answered 429')
   })
 })

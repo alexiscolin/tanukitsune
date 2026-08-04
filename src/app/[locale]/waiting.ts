@@ -32,9 +32,9 @@ export async function waiting(): Promise<Waiting> {
   const queues = await source.listWaiting()
   // One request for both queues rather than one each: they are asked of the same endpoint by
   // identifier, and a subject waiting in both is fetched once.
-  const subjects = await source.listSubjects({
-    ids: [...new Set([...queues.lessons, ...queues.reviews].map((entry) => entry.subjectId))],
-  })
+  const subjects = await source.listSubjects([
+    ...new Set([...queues.lessons, ...queues.reviews].map((entry) => entry.subjectId)),
+  ])
 
   return {
     lessons: deckFor(queues.lessons, subjects),

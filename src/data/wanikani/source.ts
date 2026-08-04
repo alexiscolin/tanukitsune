@@ -1,6 +1,6 @@
 import type { z } from 'zod'
 
-import type { KnowledgeSource, SubjectQuery, Waiting } from '@/core/knowledge-source'
+import type { KnowledgeSource, Waiting } from '@/core/knowledge-source'
 import type { Component, Subject } from '@/core/subject'
 
 import {
@@ -28,18 +28,14 @@ const API = 'https://api.wanikani.com/v2'
 // whatever revision they consider current, which is a payload nobody wrote a parser for.
 const REVISION = '20170710'
 
-// What a URL can hold, and what their identifier filter is worth asking for at once. The corpus
-// generation walks ten levels and every subject in them mentions others, so an unchunked list of
+// What a URL can hold, and what their identifier filter is worth asking for at once. A real
+// account waits on more than a thousand subjects across its two queues, so an unchunked list of
 // identifiers is a request that fails on its length rather than on its content.
 const IDS_PER_REQUEST = 500
 
 export function wanikaniSource(token: string): KnowledgeSource {
-  // Read once per source and held, because every list has to know the ceiling and asking again
-  // per list spends a request on an answer that cannot change inside one session.
-  let granted: Promise<number> | undefined
-
   async function read(path: string): Promise<unknown> {
-    const response = await fetch(path.startsWith('http') ? path : `${API}${path}`, {
+    const response = await fetch(path.startsWith(API) ? path : `${API}${path}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Wanikani-Revision': REVISION,
@@ -55,7 +51,10 @@ export function wanikaniSource(token: string): KnowledgeSource {
     return response.json()
   }
 
-  // Their cursor is a URL rather than a page number, so following it is the whole of paging.
+  // Their cursor is a URL rather than a page number, so following it is the whole of paging. It
+  // comes out of a response body and is carried with the reader's token on it, so it is followed
+  // only where it stays inside the source: a cursor naming another host is that token handed to
+  // whoever answered, and one naming its own page is a walk with no end.
   async function collect<Entry>(
     collection: z.ZodType<{ pages: { next_url: string | null }; data: Entry[] }>,
     first: string,
@@ -67,52 +66,65 @@ export function wanikaniSource(token: string): KnowledgeSource {
       const page = collection.parse(await read(next))
       entries.push(...page.data)
       next = page.pages.next_url
+
+      if (next !== null && !next.startsWith(`${API}/`))
+        throw new Error(`WaniKani handed back a cursor leaving the source: ${next}.`)
     }
 
     return entries
   }
 
-  async function grantedLevel(): Promise<number> {
-    granted ??= read('/user')
-      .then((payload) => userPayload.parse(payload).data.subscription.max_level_granted)
-      .catch((reason: unknown) => {
-        granted = undefined
+  // The ceiling the reader's own subscription sets. A lapsed one grants nothing whatever number
+  // it leaves behind: the level it reached while it was paid stays in the payload, and the
+  // entitlement does not survive it.
+  async function ceiling(): Promise<number> {
+    const { subscription } = userPayload.parse(await read('/user')).data
 
-        throw reason
-      })
-
-    return granted
+    return subscription.active ? subscription.max_level_granted : 0
   }
 
-  async function subjectsIn(query: SubjectQuery): Promise<SubjectEntry[]> {
-    const filter = 'ids' in query ? `ids=${query.ids.join(',')}` : `levels=${query.levels.join(',')}`
+  async function subjectsIn(ids: readonly number[]): Promise<SubjectEntry[]> {
+    const entries: SubjectEntry[] = []
 
-    return collect(subjectCollection, `/subjects?${filter}`)
+    for (let from = 0; from < ids.length; from += IDS_PER_REQUEST) {
+      const batch = ids.slice(from, from + IDS_PER_REQUEST)
+      entries.push(...(await collect(subjectCollection, `/subjects?ids=${batch.join(',')}`)))
+    }
+
+    return entries
   }
 
   // What the subjects in hand mention, fetched in one pass and folded in: a card shows a
   // character and what it means where the source sends an identifier, and a number is neither.
-  async function mentions(entries: readonly SubjectEntry[]): Promise<Map<number, Component>> {
+  // Held to the same ceiling, because what a subject mentions runs upward as well as down: a
+  // kanji names the vocabulary it appears in, which sits at levels the reader may not hold.
+  async function mentions(
+    entries: readonly SubjectEntry[],
+    granted: number,
+  ): Promise<Map<number, Component>> {
     const held = new Set(entries.map((entry) => entry.id))
     const wanted = [...new Set(entries.flatMap(mentionedIn))].filter((id) => !held.has(id))
     const named = new Map(entries.map((entry) => [entry.id, toComponent(entry)]))
 
-    for (let from = 0; from < wanted.length; from += IDS_PER_REQUEST) {
-      const batch = await subjectsIn({ ids: wanted.slice(from, from + IDS_PER_REQUEST) })
-      for (const entry of batch) named.set(entry.id, toComponent(entry))
-    }
+    for (const entry of await subjectsIn(wanted))
+      if (entry.data.level <= granted) named.set(entry.id, toComponent(entry))
 
     return named
   }
 
-  async function listSubjects(query: SubjectQuery): Promise<readonly Subject[]> {
-    const ceiling = await grantedLevel()
+  // Asking for nothing would be a request for everything: an empty identifier filter is not a
+  // narrower question, it is the whole collection one page at a time. The ordinary state of a
+  // finished account reaches here.
+  async function listSubjects(ids: readonly number[]): Promise<readonly Subject[]> {
+    if (ids.length === 0) return []
+
+    const granted = await ceiling()
     // Their reads are not filtered by the subscription and ours have to be: a free account is
     // sent the whole curriculum, and showing a level the reader's own plan does not include is
-    // the one thing this client owes them. Filtered before the mentions are resolved, so nothing
-    // beyond the ceiling is even fetched a second time.
-    const entries = (await subjectsIn(query)).filter((entry) => entry.data.level <= ceiling)
-    const named = await mentions(entries)
+    // the one thing this client owes them.
+    const entries = (await subjectsIn(ids)).filter((entry) => entry.data.level <= granted)
+
+    const named = await mentions(entries, granted)
 
     return entries.map((entry) => toSubject(entry, named))
   }
@@ -128,5 +140,5 @@ export function wanikaniSource(token: string): KnowledgeSource {
     return { lessons: lessons.map(toAssignment), reviews: reviews.map(toAssignment) }
   }
 
-  return { grantedLevel, listSubjects, listWaiting }
+  return { listSubjects, listWaiting }
 }

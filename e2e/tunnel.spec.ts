@@ -1,12 +1,14 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
 
 import { DEMO_DECK, DEMO_QUESTIONS } from '../src/core/demo-deck'
+import { violationsOn } from './audit'
 import { copyFor } from '../src/core/site-copy'
 import type { Subject } from '../src/core/subject'
 
 // The way in and the way out. Every step inside a session is covered by review.spec.ts and by
-// the unit tests; what is checked here is that a session is entered from the screen the
-// installed app opens on, and that its end leads back there rather than nowhere.
+// the unit tests; what is checked here is that a session is entered from the screen the installed
+// app opens on, that its end leads back there rather than nowhere, and that both flows pass the
+// audit where they are served rather than only as states in the catalogue.
 
 const COPY = copyFor('fr')
 
@@ -63,6 +65,17 @@ test('a review is entered from the start screen and opens on its first question'
   // The deck asks every meaning before any reading, so the first card is a meaning whatever
   // the deck grows to, and the field being focused is what says the review has started.
   await expect(page.getByLabel(COPY.review.prompt.meaning)).toBeFocused()
+})
+
+// The loop assembled under its layout, which is what no story can audit: a state rendered in the
+// catalogue's frame carries neither the document's landmarks nor the identifiers the shell and the
+// deck share. It moved here when the loop stopped being what `/[locale]` serves.
+test('both flows are accessible where they are actually served', async ({ page }) => {
+  for (const flow of ['lesson', 'review']) {
+    await page.goto(`/fr/session?flow=${flow}`)
+
+    expect(await violationsOn(page)).toEqual([])
+  }
 })
 
 // No step of the loop is reached by navigating, which includes a session nobody said the flow

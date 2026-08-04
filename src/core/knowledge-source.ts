@@ -13,9 +13,6 @@ export type Assignment = {
   // Zero while the subject is unlocked and never studied, which is what makes it a lesson. The
   // source sends no assignment at all for a subject that is still locked.
   readonly srsStage: number
-  // When it comes back up for review, which is null for a lesson nobody has started.
-  readonly availableAt: Date | null
-  readonly startedAt: Date | null
 }
 
 // The two lists, kept apart because a lesson teaches and a review asks, and because the source
@@ -25,18 +22,11 @@ export type Waiting = {
   readonly reviews: readonly Assignment[]
 }
 
-// By identifier for a session, which asks about what is waiting, and by level for the corpus
-// generation, which walks a curriculum. One shape rather than two operations, so a source
-// implements the question once.
-export type SubjectQuery =
-  | { readonly ids: readonly number[] }
-  | { readonly levels: readonly number[] }
-
 export type KnowledgeSource = {
-  // The highest level this reader's own subscription grants. Read rather than assumed: reads are
-  // not filtered upstream, so a free account is sent the whole curriculum and holding the line is
-  // ours. What it is for is in docs/framing.md, under what WaniKani actually gives us.
-  readonly grantedLevel: () => Promise<number>
-  readonly listSubjects: (query: SubjectQuery) => Promise<readonly Subject[]>
+  // By identifier, because what a session asks for is what is waiting. The subscription ceiling
+  // is held behind this rather than beside it: reads are not filtered upstream, and a caller that
+  // has to remember to filter is a caller that will forget. What that ceiling is for is in
+  // docs/framing.md, under what WaniKani actually gives us.
+  readonly listSubjects: (ids: readonly number[]) => Promise<readonly Subject[]>
   readonly listWaiting: () => Promise<Waiting>
 }

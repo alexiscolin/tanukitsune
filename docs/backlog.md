@@ -27,6 +27,8 @@ in [`ai-engineering.md`](ai-engineering.md).
 | Dark mode | none | |
 | `review_events` capture | none | Load-bearing. WaniKani stopped persisting review history in April 2023, so we are the system of record. Everything in later versions depends on data that only exists if collected from the first answer. |
 | Demo mode, no token | none | Seeded read-only deck. Without it a reviewer never sees the product. Ranked the highest-value artifact in the project. |
+| A windowed deck strip | none | The strip draws the current subject and its neighbours, and it is handed the whole queue: a real account waiting on 1300 questions ships 1.67 MB and 1300 elements to render five of them. The window the strip already draws is what the payload should follow. |
+| A cache over the source's reads | none | Both routes ask the account again on every navigation, around eight requests against the sixty a minute shared with what the flush will send. What is cacheable and for how long is the same question the flush answers, so it is decided with it rather than before. |
 
 ## v0.1.1
 

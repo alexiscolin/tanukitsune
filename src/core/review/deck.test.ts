@@ -5,7 +5,7 @@ import type { Assignment } from '../knowledge-source'
 import { deckFor } from './deck'
 
 function waiting(subjectId: number, srsStage: number): Assignment {
-  return { subjectId, srsStage, availableAt: null, startedAt: null }
+  return { subjectId, srsStage }
 }
 
 describe('deckFor', () => {
@@ -32,5 +32,14 @@ describe('deckFor', () => {
     const deck = deckFor([waiting(KANJI.id, 4), waiting(9999, 1)], [KANJI])
 
     expect(deck.map((subject) => subject.id)).toEqual([KANJI.id])
+  })
+
+  // Content the source has withdrawn is never rendered and never asked, which is a rule about
+  // the queue and not about the card: both flows deal from here, and one that kept it would
+  // teach a subject its own source has taken back.
+  it('drops what the source has withdrawn', () => {
+    const deck = deckFor([waiting(KANJI.id, 0)], [{ ...KANJI, hidden: true }])
+
+    expect(deck).toEqual([])
   })
 })
