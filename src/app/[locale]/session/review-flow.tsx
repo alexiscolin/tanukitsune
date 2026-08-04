@@ -14,19 +14,24 @@ import { ReviewSession } from '@/ui/organisms/review-session'
 // store is the browser's, and a server component cannot hand a function to one.
 //
 // The write is the same on both decks: the answer reaches the local queue before the card is
-// allowed to leave, and nothing is submitted anywhere yet.
+// allowed to leave, and nothing is submitted anywhere yet. What differs is what a restart does to
+// that queue, which is why the deck says which one it is.
 export function ReviewFlow({
   locale,
   questions,
   copy,
   subjectCopy,
   exitTo,
+  demo,
 }: {
   locale: Locale
   questions: readonly Question[]
   copy: ReviewCopy
   subjectCopy: SubjectCopy
   exitTo: string
+  // The seeded deck, which starts from the top on every reload. A real account's answers are the
+  // one thing here that cannot be rebuilt from anywhere, so nothing empties them.
+  demo: boolean
 }) {
   const emptied = useRef<Promise<void> | null>(null)
 
@@ -34,8 +39,8 @@ export function ReviewFlow({
   // reload is the only restart there is. Held as a promise the write awaits, so a first answer
   // cannot land in front of it.
   useEffect(() => {
-    emptied.current ??= localOutbox.clear()
-  }, [])
+    if (demo) emptied.current ??= localOutbox.clear()
+  }, [demo])
 
   const write = async (card: AnsweredCard) => {
     await emptied.current
