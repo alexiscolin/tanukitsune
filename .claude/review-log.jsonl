@@ -516,3 +516,9 @@
 {"date": "2026-08-04", "branch": "feat/wanikani-source", "reviewer": "code-review", "file": "playwright.config.ts", "line": 38, "outcome": "fixed"}
 {"date": "2026-08-04", "branch": "feat/wanikani-source", "reviewer": "code-review", "file": "src/app/[locale]/waiting.ts", "line": 44, "outcome": "dismissed", "reason": "Confirmed and not fixed here. With the entitlement read plainly it reaches a lapsed subscriber alone, whose queue counts levels they no longer hold and whose sitting takes the same filtered front ten every time, so the session ends before it starts. Holding the queue to the ceiling needs a subject-to-level map, which is the browser cache in docs/backlog.md, and the symptom is named in the entry beside it."}
 {"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "f834f10b21168419b716a3594f4fdd13b5511a37", "head": "8cef76137d031b9f1d4f9a2f19ababed2499e6c7"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "150d85331f0fa4b430994bb8465538fa435addf0", "head": "afb9c7f63206cc4f9816a92140083a95b301daee"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "150d85331f0fa4b430994bb8465538fa435addf0", "head": "a1abbe063b89b56542f640acfc890eedd04a99ed"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "0b45b6b0af1223aa7e7a4de0475f57432e93c0ef", "head": "d2c9ca5636fb972d5b3a41266496123a14e8a021"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "a0f5f8599e61e1eb42a14a87d697cd01a32097ca", "head": "537591ac1f98169a8d948261728a4dd70d1d42ee"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "64f6af429e63482aa6c7740f1c244e7d6f80df55", "head": "131013dd1976e757b56caef729e1c42b1a8a41f0"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "131013dd1976e757b56caef729e1c42b1a8a41f0", "head": "605b17f58a804831c4b80352ef4030b65c61143b"}
