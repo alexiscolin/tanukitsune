@@ -250,7 +250,9 @@ is the page showing the tokens against each other. Why a page each, and why the 
 The accessibility addon runs the audit per state for whoever has the catalogue open, and
 `e2e/catalogue.spec.ts` runs the same rules over every state in both themes for everyone else:
 `e2e/shell.spec.ts` audits the screen a session starts from and the not-found page, and neither
-enters the loop. Every audit is taken once the entrance animations have settled, since the vocabulary
+enters the loop. The server under all of them runs with no token, so what they read is the seeded
+deck: a suite asserting what is waiting against a real account passes or fails on somebody's study
+day, and the source itself is covered where a request can be checked, in `src/data/wanikani/`. Every audit is taken once the entrance animations have settled, since the vocabulary
 here is a fade and a frame of one measures the animation rather than the screen. `e2e/tunnel.spec.ts`
 is what enters a session from that screen, pages a batch to its end and leaves by the way out there,
 and it audits nothing. Neither does `e2e/review.spec.ts`, which asks the one question a substitute

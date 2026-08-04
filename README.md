@@ -22,9 +22,11 @@ Five of those nine run on a model: the mnemonics, the grading, the confusion pai
 comes next, and the tutor. The other four do not, and the section below names them beside five more
 places a model was refused outright. Knowing which is which is the whole design.
 
-> **Status: the review loop runs on a fixture deck, the product does not.** Answers are graded by the
-> exact tier and nothing else, they are kept on the device and sent nowhere, and no corpus, no judge
-> and no connection to a real account exist yet.
+> **Status: the loop runs on a real account, the French layer does not exist yet.** Subjects and what
+> is waiting are read from WaniKani where a token names an account, and from a seeded deck where none
+> does, which is what the public demo serves. Answers are graded by the exact tier and nothing else,
+> and they are kept on the device and sent nowhere. No corpus and no judge exist yet, so a card from a
+> real account carries the source's own English and none of the French this product is for.
 
 ## The nine that deliberately do not
 

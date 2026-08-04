@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation'
 
-import { DEMO_DECK, DEMO_QUESTIONS } from '@/core/demo-deck'
 import { isLocale } from '@/core/locales'
 import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 import { isFlow } from '@/core/subject'
 import { LessonSession } from '@/ui/organisms/lesson-session'
 
+import { waiting } from '../waiting'
 import { DemoReview } from './demo-review'
 
 // The loop, whichever of the two flows is being run. Which one is a state of this route rather
@@ -29,13 +29,13 @@ export default async function SessionPage({
 
   const copy = copyFor(locale)
   const start = startPath(locale)
+  const queues = await waiting()
 
   // Both screens carry their own shell, because they are full bleed and own their gutters.
-  // The deck is the seeded one until `KnowledgeSource` can supply assignments.
   if (flow === 'lesson')
     return (
       <LessonSession
-        deck={DEMO_DECK}
+        deck={queues.lessons}
         copy={copy.review}
         subjectCopy={copy.subject}
         exitTo={start}
@@ -45,7 +45,7 @@ export default async function SessionPage({
   return (
     <DemoReview
       locale={locale}
-      questions={DEMO_QUESTIONS}
+      questions={queues.reviews}
       copy={copy.review}
       subjectCopy={copy.subject}
       exitTo={start}

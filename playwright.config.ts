@@ -30,6 +30,11 @@ export default defineConfig({
     {
       command: `pnpm build && pnpm start -p ${PORT}`,
       url: baseURL,
+      // Demo mode, always: with a token the server deals whoever's account the machine happens
+      // to hold, and a suite that asserts what is waiting would then pass or fail on somebody's
+      // study day. Empty rather than absent, because a variable already set is what stops the
+      // environment file from putting the real one back.
+      env: { WANIKANI_TOKEN: '' },
       reuseExistingServer: process.env['CI'] === undefined,
       timeout: 180_000,
     },

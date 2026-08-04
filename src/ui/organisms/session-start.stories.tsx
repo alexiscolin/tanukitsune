@@ -18,6 +18,7 @@ const meta = {
     title: COPY.title,
     tagline: COPY.tagline,
     copy: COPY.start,
+    demo: true,
     queues: {
       lesson: { count: DEMO_DECK.length, href: sessionPath('fr', 'lesson') },
       review: { count: DEMO_QUESTIONS.length, href: sessionPath('fr', 'review') },
@@ -30,6 +31,12 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Waiting: Story = {}
+
+// An account of one's own, where the line about nothing leaving the device would be a promise
+// the session breaks.
+export const Account: Story = {
+  args: { demo: false, queues: { lesson: { count: 128, href: '#' }, review: { count: 1300, href: '#' } } },
+}
 
 export const NothingLeft: Story = {
   args: {

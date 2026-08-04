@@ -17,6 +17,7 @@ export function SessionStart({
   tagline,
   copy,
   queues,
+  demo,
 }: {
   title: string
   tagline: string
@@ -24,6 +25,9 @@ export function SessionStart({
   // What each flow has waiting and where it is entered. Keyed by the flow, so a flow the
   // product grows arrives with its count and its path or does not type-check.
   queues: Record<Flow, { count: number; href: string }>
+  // Whether this is the seeded deck. The promise that nothing leaves the device is only true
+  // of that one, and a screen dealing a real account must not make it.
+  demo: boolean
 }) {
   return (
     <ScreenShell>
@@ -42,7 +46,9 @@ export function SessionStart({
         </ul>
       </nav>
 
-      <p className="pb-safe eyebrow py-8 text-[var(--color-ink-muted)]">{copy.demo}</p>
+      {demo ? (
+        <p className="pb-safe eyebrow py-8 text-[var(--color-ink-muted)]">{copy.demo}</p>
+      ) : null}
     </ScreenShell>
   )
 }
