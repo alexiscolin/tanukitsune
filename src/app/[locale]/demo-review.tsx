@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { answerRecord } from '@/core/review/answer-record'
 import type { AnsweredCard } from '@/core/review/answer-record'
@@ -26,19 +26,18 @@ export function DemoReview({
   copy: ReviewCopy
   subjectCopy: SubjectCopy
 }) {
-  const outbox = useMemo(() => localOutbox(), [])
   const emptied = useRef<Promise<void> | null>(null)
 
   // The queue nothing drains is emptied by the deck restarting, and a reload is the only restart
   // there is. Held as a promise the write awaits, so a first answer cannot land in front of it.
   useEffect(() => {
-    emptied.current ??= outbox.clear()
-  }, [outbox])
+    emptied.current ??= localOutbox.clear()
+  }, [])
 
   const write = async (card: AnsweredCard) => {
     await emptied.current
 
-    await outbox.append(
+    await localOutbox.append(
       answerRecord(card, {
         id: crypto.randomUUID(),
         locale,

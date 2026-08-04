@@ -51,9 +51,13 @@ type Answer = {
 }
 
 // Undecided is not a verdict. It is the question handed back to the reader, so the card renders
-// nothing where a tier would have written one.
-function verdictOf(outcome: CascadeOutcome | null): Verdict | null {
-  return outcome === null || outcome.verdict === 'undecided' ? null : outcome.verdict
+// nothing where a tier would have written one, and the row records that nobody decided rather than
+// naming a tier that did not. Both halves are read off one branch, or the day a tier returns a
+// verdict without its tag the screen and the row would disagree about what happened.
+function decisionOf(outcome: CascadeOutcome | null): Pick<AnsweredCard, 'verdict' | 'decidedBy'> {
+  return outcome === null || outcome.verdict === 'undecided'
+    ? { verdict: null, decidedBy: null }
+    : { verdict: outcome.verdict, decidedBy: outcome.decidedBy }
 }
 
 // The card as the writer takes it. What the cascade produced and what the reader said are kept
@@ -61,14 +65,11 @@ function verdictOf(outcome: CascadeOutcome | null): Verdict | null {
 // event carries, on exactly the hard middle where a grader is worth correcting, and the tier
 // tag says who reached the half the reader ruled against.
 function answeredCard(asked: Question, answer: Answer | null, said: Verdict): AnsweredCard {
-  const outcome = answer?.outcome ?? null
-
   return {
     subjectId: asked.subject.id,
     kind: asked.kind,
     answer: answer?.typed ?? null,
-    verdict: verdictOf(outcome),
-    decidedBy: outcome !== null && 'decidedBy' in outcome ? outcome.decidedBy : null,
+    ...decisionOf(answer?.outcome ?? null),
     said,
     srsStageBefore: asked.subject.srsStage,
   }
@@ -77,11 +78,7 @@ function answeredCard(asked: Question, answer: Answer | null, said: Verdict): An
 // The three numbers a session has, and the refusal beside them when the answer could not be
 // kept. Beside rather than instead of: the card was not counted, and the count it was not added
 // to is the other half of that sentence.
-function cardFoot(
-  tally: { done: number; left: number; missed: number },
-  unwritten: boolean,
-  copy: ReviewCopy,
-) {
+function cardFoot(tally: ReturnType<typeof tallyOf>, unwritten: boolean, copy: ReviewCopy) {
   return (
     <span className="flex items-center gap-4">
       <SessionTally {...tally} copy={copy.tally} />
@@ -148,7 +145,7 @@ export function ReviewSession({
   const question = questions[index]
   const upcoming = questions[index + 1]
   const answered = answer !== null
-  const decided = verdictOf(answer?.outcome ?? null)
+  const { verdict: decided } = decisionOf(answer?.outcome ?? null)
 
   const tally = tallyOf(ruled, questions.length - index)
 

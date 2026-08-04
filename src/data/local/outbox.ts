@@ -23,26 +23,33 @@ type LocalSchema = DBSchema & {
 let opened: Promise<IDBPDatabase<LocalSchema>> | null = null
 
 function database(): Promise<IDBPDatabase<LocalSchema>> {
+  // A failure is not memoised, for the reason `db.ts` gives beside the same shape: caching the
+  // rejected promise would turn one blocked upgrade into a store that refuses every answer for
+  // as long as the page is open.
   opened ??= openDB<LocalSchema>(OUTBOX_DATABASE, VERSION, {
     upgrade: (db) => {
       // Keyed on the row's own identifier, which the client generates, so a replayed append
       // collides rather than overwriting the answer already there.
       db.createObjectStore(OUTBOX_STORE, { keyPath: 'id' })
     },
+  }).catch((reason: unknown) => {
+    opened = null
+
+    throw reason
   })
 
   return opened
 }
 
-export function localOutbox(): OutboxPort {
-  return {
-    // `add` rather than `put`: a duplicate identifier is a replay, and a store that accepted it
-    // silently would lose the row it replaced. The rejection reaches the card as a refusal.
-    append: async (record) => {
-      await (await database()).add(OUTBOX_STORE, record)
-    },
-    clear: async () => {
-      await (await database()).clear(OUTBOX_STORE)
-    },
-  }
+// One store per device, so one value rather than a factory returning a new object over the same
+// database on every call.
+export const localOutbox: OutboxPort = {
+  // `add` rather than `put`: a duplicate identifier is a replay, and a store that accepted it
+  // silently would lose the row it replaced. The rejection reaches the card as a refusal.
+  append: async (record) => {
+    await (await database()).add(OUTBOX_STORE, record)
+  },
+  clear: async () => {
+    await (await database()).clear(OUTBOX_STORE)
+  },
 }
