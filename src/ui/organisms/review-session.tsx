@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 
 import { SessionTally } from '@/ui/atoms/session-tally'
 import { stripItemFor } from '@/ui/molecules/deck-strip'
@@ -92,6 +92,25 @@ function cardFoot(
   )
 }
 
+// Counted from what the reader said rather than from the index, because a card they got wrong and
+// one they got right are the same step through the deck. Every number the screen shows is read off
+// this one list, so the rule at the foot and the tally on the card cannot disagree.
+function tallyOf(ruled: readonly Verdict[], left: number) {
+  return {
+    done: ruled.filter((verdict) => verdict === 'correct').length,
+    left,
+    missed: ruled.filter((verdict) => verdict === 'incorrect').length,
+  }
+}
+
+// The card under the one being graded, closed: the deck shows the next subject arriving, and there
+// is nothing behind the last one.
+function behind(upcoming: Question | undefined, copy: SubjectCopy) {
+  if (upcoming === undefined) return undefined
+
+  return <SubjectCard subject={upcoming.subject} copy={copy} flow="review" revealed={false} />
+}
+
 // Mounted whether or not it holds anything, because a polite region has to be in the document
 // before its content changes: one inserted with its text already in it is the case a screen
 // reader routinely says nothing about.
@@ -123,6 +142,7 @@ export function ReviewSession({
   const [answer, setAnswer] = useState<Answer | null>(null)
   const [unwritten, setUnwritten] = useState(false)
   const [ruled, setRuled] = useState<readonly Verdict[]>([])
+  const writing = useRef(false)
   const verdictId = useId()
 
   const question = questions[index]
@@ -130,25 +150,26 @@ export function ReviewSession({
   const answered = answer !== null
   const decided = verdictOf(answer?.outcome ?? null)
 
-  // Counted from what the reader said rather than from the index, because a card they got
-  // wrong and one they got right are the same step through the deck. Both numbers are read off
-  // the same list, so the rule at the foot and the tally on the card cannot disagree.
-  const tally = {
-    done: ruled.filter((verdict) => verdict === 'correct').length,
-    left: questions.length - index,
-    missed: ruled.filter((verdict) => verdict === 'incorrect').length,
+  const tally = tallyOf(ruled, questions.length - index)
+
+  // Every path that changes what has been said about the card goes through here, so a refusal
+  // cannot outlive the answer it was about: the region would otherwise keep announcing it over
+  // the verdict of the answer typed next.
+  function say(next: Answer | null) {
+    setAnswer(next)
+    setUnwritten(false)
   }
 
   const submit = async (asked: Question, raw: string) => {
     const graded = { kind: asked.kind, answer: raw, accepted: asked.accepted }
 
-    setAnswer({ typed: raw, outcome: await runCascade(graded, null) })
+    say({ typed: raw, outcome: await runCascade(graded, null) })
   }
 
   // Pressing the dot is giving up rather than answering, so it opens the card and leaves the
   // verdict to the reader: nothing was typed, and there is nothing for a tier to decide.
   function giveUp() {
-    setAnswer({ typed: null, outcome: null })
+    say({ typed: null, outcome: null })
   }
 
   // One gesture grades and moves on, which is what removes the grading bar: right is the
@@ -157,6 +178,12 @@ export function ReviewSession({
   // The deck waits on the write rather than racing it. A refusal leaves the card where it was,
   // still answered, so the same gesture writes the same answer rather than asking for it again.
   async function decide(asked: Question, direction: SwipeDirection) {
+    // The deck stays gradable while the write is in flight, and the gesture that started it has
+    // already reset itself. A second one landing before the first resolves would append the same
+    // card twice and count it once, both of them reading the ruling this one has not recorded yet.
+    if (writing.current) return
+    writing.current = true
+
     const said: Verdict = direction === 'right' ? 'correct' : 'incorrect'
 
     try {
@@ -165,11 +192,12 @@ export function ReviewSession({
       setUnwritten(true)
 
       return
+    } finally {
+      writing.current = false
     }
 
     setRuled([...ruled, said])
-    setUnwritten(false)
-    setAnswer(null)
+    say(null)
     setIndex(index + 1)
   }
 
@@ -193,16 +221,7 @@ export function ReviewSession({
         label={copy.askSelfGrade}
         describedBy={verdictId}
         disabled={!answered}
-        behind={
-          upcoming === undefined ? undefined : (
-            <SubjectCard
-              subject={upcoming.subject}
-              copy={subjectCopy}
-              flow="review"
-              revealed={false}
-            />
-          )
-        }
+        behind={behind(upcoming, subjectCopy)}
       >
         <QuestionCard
           question={question}
@@ -215,7 +234,7 @@ export function ReviewSession({
           onSubmit={(raw) => {
             void submit(question, raw)
           }}
-          onEdit={() => setAnswer(null)}
+          onEdit={() => say(null)}
         />
       </SwipeDeck>
     </SessionScreen>

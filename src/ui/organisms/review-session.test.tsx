@@ -476,6 +476,62 @@ describe('ReviewSession, writing the answer down', () => {
     )
   })
 
+  // The deck stays gradable while the write is in flight and the gesture that started it has
+  // already reset, so nothing but this refuses a second one. Two of them would append the card
+  // twice and count it once, since both read a ruling neither has recorded yet.
+  it('takes one gesture per card, whatever arrives while the write is in flight', async () => {
+    const { written, write } = recorder()
+    let release = () => {}
+    const held = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    const field = session(PAIR, COPY.review.prompt.meaning, (card) =>
+      held.then(() => write(card)),
+    )
+
+    answer(field, KANJI.meanings[0]?.text ?? '')
+    await screen.findByText(COPY.subject.nuance)
+    fireEvent.keyDown(deck(), { key: 'ArrowRight' })
+    await settle()
+    fireEvent.keyDown(deck(), { key: 'ArrowLeft' })
+    await settle()
+
+    await act(async () => {
+      release()
+      await held
+    })
+
+    // The second card is what makes the first one's ruling readable again: the foot of a card
+    // carries the tally, and the deck between two cards carries none.
+    const second = await screen.findByLabelText<HTMLInputElement>(COPY.review.prompt.reading)
+    answer(second, PAIR[1]?.accepted[0] ?? '')
+    await screen.findByText(COPY.review.tally.done)
+
+    expect(written).toHaveLength(1)
+    expect(tallyUnder(COPY.review.tally.done)).toBe('1')
+    expect(tallyUnder(COPY.review.tally.missed)).toBe('0')
+  })
+
+  // The refusal belongs to the answer it was about. A reader who types another one is told what
+  // that one was worth, and a region still announcing the refusal would be reading the wrong card.
+  it('drops the refusal when the reader answers again', async () => {
+    const field = session(READING, COPY.review.prompt.reading, () =>
+      Promise.reject(new Error('quota')),
+    )
+
+    answer(field, 'ねこ')
+    await screen.findByText(COPY.subject.nuance)
+    fireEvent.keyDown(deck(), { key: 'ArrowLeft' })
+    await screen.findAllByText(COPY.review.unwritten)
+
+    answer(screen.getByLabelText<HTMLInputElement>(COPY.review.prompt.reading), 'した')
+
+    await waitFor(() =>
+      expect(screen.getByRole('status').textContent).toBe(COPY.review.verdict.incorrect),
+    )
+    expect(screen.queryByText(COPY.review.unwritten)).toBeNull()
+  })
+
   // The gesture is the retry: the card came back, so making it again writes the same answer
   // rather than asking the reader to type it a second time.
   it('writes the card on a second gesture once the writer takes it', async () => {

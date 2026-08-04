@@ -143,8 +143,9 @@ dependency, for a gesture. Same record.
 
 ## Data
 
-Postgres, reached only from `data/`, which is server-only and does its own authorisation. Migrations
-are checked in and forward-only.
+Postgres, reached only from `data/`, whose server half is server-only and does its own authorisation.
+The other half is `data/local/`, the browser's store, which reaches no Postgres at all. Migrations are
+checked in and forward-only.
 
 **Locally it is PGlite**, which is PostgreSQL compiled to WebAssembly and reports itself as such. It is
 a directory in the working tree, opened in process: nothing to install, nothing to start, no daemon

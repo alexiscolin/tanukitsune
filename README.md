@@ -23,8 +23,8 @@ comes next, and the tutor. The other four do not, and the section below names th
 places a model was refused outright. Knowing which is which is the whole design.
 
 > **Status: the review loop runs on a fixture deck, the product does not.** Answers are graded by the
-> exact tier and nothing else, nothing is recorded, and no corpus, no judge and no connection to a real
-> account exist yet.
+> exact tier and nothing else, they are kept on the device and sent nowhere, and no corpus, no judge
+> and no connection to a real account exist yet.
 
 ## The nine that deliberately do not
 

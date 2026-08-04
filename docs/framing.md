@@ -316,8 +316,11 @@ compete, and the client can only arbitrate between them if it is told what is le
 
 This is the boundary that leaks secrets, and it is not the same as the module boundaries above.
 
-`data/` is a data access layer in the strict sense: server-only, performing its own authorisation,
-returning minimal shapes rather than rows. Only it reads the environment inside the running
+`data/` is a data access layer in the strict sense: performing its own authorisation, returning
+minimal shapes rather than rows. What of it reaches the server is server-only and imports
+`server-only` to say so, which is every module here but `data/local/`, the browser's own store: it
+holds nothing to authorise and no secret to leak, and a store on the device is unreachable from a
+server anyway. Only the server half reads the environment inside the running
 application. The migration configuration and the end-to-end expectation read one variable outside it,
 through the rule `data/` owns, because a tool that decides which database to open cannot ask the
 application which one it opened. The third of the five rules
