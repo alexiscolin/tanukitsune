@@ -1,6 +1,6 @@
 import type { AnswerKind } from './answer-kind'
 import type { Verdict } from './grading/judge-port'
-import type { Band, ReadingType, SubjectType } from './subject'
+import type { Band, Flow, ReadingType, SubjectType } from './subject'
 import { DEFAULT_LOCALE, isLocale } from './locales'
 import type { Locale } from './locales'
 
@@ -23,8 +23,21 @@ export type ReviewCopy = {
   readonly grade: Record<Verdict, string>
   readonly next: string
   readonly done: string
+  // The way out of the end, which every flow owes: a session that ends on a screen with no
+  // exit is one the reader leaves by reloading.
+  readonly back: string
   // The three numbers a session has, at the foot of the card.
   readonly tally: { readonly done: string; readonly left: string; readonly missed: string }
+}
+
+// The screen a session is started from. Keyed by the flow for the reason the question is
+// keyed by the kind: a flow added to the union without its word is a type error rather than a
+// row nobody named.
+export type StartCopy = {
+  readonly flow: Record<Flow, string>
+  // What demo mode is, said on the one screen a reader arrives on. The queue is written to
+  // the device and nothing is sent anywhere, and that is a promise rather than a limitation.
+  readonly demo: string
 }
 
 // Everything a subject card names about what it is showing. Apart from the review loop
@@ -61,6 +74,7 @@ export type SiteCopy = {
   readonly notFound: string
   readonly error: string
   readonly retry: string
+  readonly start: StartCopy
   readonly review: ReviewCopy
   readonly subject: SubjectCopy
 }
@@ -74,6 +88,10 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
     notFound: "Cette page n'existe pas.",
     error: 'Quelque chose a cassé de notre côté.',
     retry: 'Réessayer',
+    start: {
+      flow: { lesson: 'Leçons', review: 'Révisions' },
+      demo: 'Mode démo. Tout reste sur cet appareil.',
+    },
     review: {
       prompt: { meaning: 'Sens', reading: 'Lecture' },
       unconverted: "Cette réponse n'est pas une lecture en kana.",
@@ -83,6 +101,7 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
       grade: { correct: "C'était juste", incorrect: "C'était faux" },
       next: 'Suivant',
       done: 'Session terminée',
+      back: 'Revenir au départ',
       tally: { done: 'passées', left: 'restantes', missed: 'erreurs' },
     },
     subject: {

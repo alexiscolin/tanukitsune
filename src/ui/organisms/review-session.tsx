@@ -123,11 +123,13 @@ export function ReviewSession({
   questions,
   copy,
   subjectCopy,
+  exitTo,
   onAnswered,
 }: {
   questions: readonly Question[]
   copy: ReviewCopy
   subjectCopy: SubjectCopy
+  exitTo: string
   // Awaited before the deck advances, and a rejection keeps the card: an answer that is not
   // durably written is not accepted, so a quota that refused it surfaces here rather than as an
   // answer the reader believes was counted.
@@ -198,7 +200,7 @@ export function ReviewSession({
     setIndex(index + 1)
   }
 
-  if (question === undefined) return <SessionDone label={copy.done} reached={index > 0} />
+  if (question === undefined) return <SessionDone copy={copy} reached={index > 0} exitTo={exitTo} />
 
   return (
     <SessionScreen

@@ -149,4 +149,12 @@ export function refusedIn(glosses: readonly Gloss[]): readonly string[] {
 // summary endpoint returns them as separate lists, and an assignment is started before it is
 // ever reviewed. The card shows everything from the first frame in one and holds it back in
 // the other.
-export type Flow = 'lesson' | 'review'
+export const FLOWS = ['lesson', 'review'] as const
+
+export type Flow = (typeof FLOWS)[number]
+
+// What a route reads a flow out of a query string with. Named beside the union rather than at
+// the route, so a flow added to the list is served without anything else being remembered.
+export function isFlow(value: string): value is Flow {
+  return (FLOWS as readonly string[]).includes(value)
+}

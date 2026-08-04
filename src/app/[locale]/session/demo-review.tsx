@@ -20,11 +20,13 @@ export function DemoReview({
   questions,
   copy,
   subjectCopy,
+  exitTo,
 }: {
   locale: Locale
   questions: readonly Question[]
   copy: ReviewCopy
   subjectCopy: SubjectCopy
+  exitTo: string
 }) {
   const emptied = useRef<Promise<void> | null>(null)
 
@@ -54,6 +56,7 @@ export function DemoReview({
       questions={questions}
       copy={copy}
       subjectCopy={subjectCopy}
+      exitTo={exitTo}
       onAnswered={write}
     />
   )
