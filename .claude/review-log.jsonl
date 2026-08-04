@@ -481,3 +481,9 @@
 {"date": "2026-08-04", "branch": "feat/wanikani-source", "reviewer": "requirement-check", "file": "src/ui/organisms/session-start.tsx", "line": 28, "outcome": "dismissed", "reason": "The demo flag is the fourth thing in the range and it is the one the range creates the need for: the line promising that nothing leaves the device is false the moment a token deals a real account."}
 {"date": "2026-08-04", "branch": "feat/wanikani-source", "reviewer": "architecture-check", "file": "src/core/review/deck.ts", "line": 11, "outcome": "dismissed", "reason": "Two call sites rather than three, and the lens proposed watching rather than blocking: it carries the join both flows share, it is tested directly, and it is not a forwarding wrapper."}
 {"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "150d85331f0fa4b430994bb8465538fa435addf0", "head": "180e9b9b1d0f85f4d5b5f0776a6e13c53d46bb3a"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "reviewer": "simplify", "file": "src/app/[locale]/session/review-flow.tsx", "line": 37, "outcome": "fixed"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "reviewer": "simplify", "file": "src/app/[locale]/waiting.ts", "line": 27, "outcome": "fixed"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "reviewer": "simplify", "file": "src/app/[locale]/waiting.ts", "line": 17, "outcome": "fixed"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "reviewer": "simplify", "file": "src/data/wanikani/source.ts", "line": 89, "outcome": "fixed"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "reviewer": "simplify", "file": "e2e/tunnel.spec.ts", "line": 26, "outcome": "fixed"}
+{"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "2469ae8b7eac4536d03ccd77b03cb35d84476200", "head": "4689b48880a8075bdda8945f259fbef6b45c21e9"}
