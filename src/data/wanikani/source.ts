@@ -59,10 +59,18 @@ async function collect<Entry>(
   first: string,
 ): Promise<Entry[]> {
   const entries: Entry[] = []
+  const walked = new Set<string>()
   let next: string | null = first
 
   while (next !== null) {
-    const page = collection.parse(await read(token, next))
+    // Resolved before it is remembered, since the first path is relative and every cursor after
+    // it is absolute, and two spellings of one page would walk it twice before closing the loop.
+    const walkedTo = next.startsWith(API) ? next : `${API}${next}`
+    if (walked.has(walkedTo))
+      throw new Error(`WaniKani handed back a cursor it had already: ${walkedTo}.`)
+    walked.add(walkedTo)
+
+    const page = collection.parse(await read(token, walkedTo))
     entries.push(...page.data)
     next = page.pages.next_url
 
@@ -94,13 +102,13 @@ function subjectsIn(token: string, ids: readonly number[]): Promise<SubjectEntry
   return batched(token, subjectCollection, (batch) => `/subjects?ids=${batch.join(',')}`, ids)
 }
 
-// The ceiling the reader's own subscription sets. A lapsed one grants nothing whatever number it
-// leaves behind: the level it reached while it was paid stays in the payload, and the entitlement
-// does not survive it.
+// The ceiling the reader's own subscription sets, which is the whole of it: the source drops the
+// number to three when a subscription lapses and holds it there for an account that never had
+// one, so `active` says whether they are paying and nothing about what they may see. Gating on it
+// grants a free reader nothing at all, and their three levels are exactly what this client owes
+// them.
 async function ceiling(token: string): Promise<number> {
-  const { subscription } = userPayload.parse(await read(token, '/user')).data
-
-  return subscription.active ? subscription.max_level_granted : 0
+  return userPayload.parse(await read(token, '/user')).data.subscription.max_level_granted
 }
 
 // What the reader wrote about these subjects, which is a second endpoint because it is theirs
@@ -157,20 +165,14 @@ async function listSubjects(token: string, ids: readonly number[]): Promise<read
 }
 
 async function listWaiting(token: string): Promise<Waiting> {
-  const [granted, lessons, reviews] = await Promise.all([
-    ceiling(token),
+  const [lessons, reviews] = await Promise.all([
     collect(token, assignmentCollection, '/assignments?immediately_available_for_lessons'),
     collect(token, assignmentCollection, '/assignments?immediately_available_for_review'),
   ])
 
-  // A subscription granting nothing leaves no queue: what is waiting is counted where a session
-  // is started from, and a count is a way in. One that deals nothing when the reader takes it is
-  // worse than an empty row.
-  //
-  // An assignment names a subject and not a level, so a ceiling between one and sixty is held
-  // where the subjects are read instead, and a queue can still name more than a deck deals.
-  if (granted === 0) return { lessons: [], reviews: [] }
-
+  // An assignment names a subject and not a level, so the ceiling is held where the subjects are
+  // read, and a queue can name more than a deck deals. What that costs a lapsed subscriber is in
+  // docs/backlog.md.
   return { lessons: lessons.map(toAssignment), reviews: reviews.map(toAssignment) }
 }
 

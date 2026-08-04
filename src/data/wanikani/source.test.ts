@@ -45,9 +45,13 @@ function page(data: unknown[], next: string | null = null) {
   return HttpResponse.json({ pages: { next_url: next }, data })
 }
 
-function grants(level: number, active = true) {
+// The source holds `max_level_granted` at three for an account that is not paying and at sixty
+// for one that is, so the two are one number rather than a number and a flag.
+function grants(level: number) {
   return http.get(`${API}/user`, () =>
-    HttpResponse.json({ data: { subscription: { max_level_granted: level, active } } }),
+    HttpResponse.json({
+      data: { subscription: { max_level_granted: level, active: level > 3 } },
+    }),
   )
 }
 
@@ -116,15 +120,18 @@ describe('wanikaniSource', () => {
     expect(subjects.map((entry) => entry.id)).toEqual([1])
   })
 
-  // A lapsed subscription grants nothing, whatever level it granted while it was paid: the
-  // number stays where it was and the entitlement does not.
-  it('shows no level at all while the subscription is lapsed', async () => {
+  // A free account is not a lapsed one and neither is granted nothing: the source drops the number
+  // to three and keeps it there, so the three levels it names are what the reader may study. A
+  // client reading the paid flag instead serves them an empty app.
+  it('grants a free account the levels its own subscription names', async () => {
     server.use(
-      grants(60, false),
-      http.get(`${API}/subjects`, () => page([subject(1, 1)])),
+      grants(3),
+      http.get(`${API}/subjects`, () => page([subject(1, 3), subject(2, 4)])),
     )
 
-    expect(await wanikaniSource('a-token').listSubjects([1])).toEqual([])
+    const subjects = await wanikaniSource('a-token').listSubjects([1, 2])
+
+    expect(subjects.map((entry) => entry.id)).toEqual([1])
   })
 
   // What a subject mentions runs upward as well as down: a kanji names the vocabulary it appears
@@ -205,18 +212,15 @@ describe('wanikaniSource', () => {
     expect(await wanikaniSource('a-token').listSubjects([])).toEqual([])
   })
 
-  // A queue is what the reader may study, and a subscription that grants nothing leaves none of
-  // it: an item counted as waiting is a way into a session, and one that grants nothing deals
-  // nothing when the reader takes it.
-  it('leaves no queue at all while the subscription is lapsed', async () => {
+  // The cursor is followed only forward: a page naming one already walked is a loop with no end,
+  // and the walk is what carries the reader's token.
+  it('refuses a cursor it has already followed', async () => {
     server.use(
-      grants(60, false),
-      http.get(`${API}/assignments`, () => page([{ id: 10, data: { subject_id: 440, srs_stage: 0 } }])),
+      grants(60),
+      http.get(`${API}/subjects`, () => page([subject(1, 1)], `${API}/subjects?ids=1`)),
     )
 
-    const waiting = await wanikaniSource('a-token').listWaiting()
-
-    expect(waiting).toEqual({ lessons: [], reviews: [] })
+    await expect(wanikaniSource('a-token').listSubjects([1])).rejects.toThrow('already')
   })
 
   it('reads the two lists apart, because a lesson teaches and a review asks', async () => {

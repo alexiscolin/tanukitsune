@@ -37,7 +37,9 @@ export const corpusEntry = pgTable(
 export const reviewEvent = pgTable('review_event', {
   id: text('id').primaryKey(),
   // Text for the reason `corpus_entry` gives beside the same column, and so the two join: their
-  // identifiers are one implementation of what a subject is called, not the definition of it.
+  // identifiers are one implementation of what a subject is called, not the definition of it. The
+  // queued row carries the number the source sent, so the flush writes it as text rather than the
+  // column reading one back.
   subjectId: text('subject_id').notNull(),
   locale: text('locale').notNull(),
   corpusVersion: text('corpus_version'),
