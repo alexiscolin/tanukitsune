@@ -8,8 +8,8 @@
 IFS= read -rd '' input
 
 # Case is folded, a host resolving the same whatever the case. The tool is not tested: settings.json
-# selects this hook on Bash, and a matcher widened later should refuse more rather than less, which
-# a test here would turn into refusing less.
+# selects the event, `check:account` refuses a registration that is not Bash, and a test here would
+# only be able to narrow what that registration already decided.
 shopt -s nocasematch
 destination='://api\.wanikani\.com|(^|[^.[:alnum:]-])api\.wanikani\.com/'
 [[ $input =~ $destination ]] || exit 0

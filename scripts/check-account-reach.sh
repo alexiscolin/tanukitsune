@@ -3,8 +3,9 @@
 # refusal rests on is still there. A hook silent on every input is indistinguishable from one nothing
 # registered, which is the failure it exists to catch.
 #
-# Exit 3 rather than 1 when it cannot judge at all, as check-review-coverage.sh does: a run reporting
-# the guard as proven when nothing was tested is the one answer worse than a refusal.
+# Exit 3 when it cannot judge at all, as check-review-coverage.sh does, and 1 for everything it judges
+# and refuses, the registration included: a guard registered on the wrong event is a failure this can
+# see, not a question it cannot answer.
 
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
@@ -25,21 +26,21 @@ matcher=$(jq -r '
   | .matcher' "$settings")
 if [ "$matcher" != "Bash" ]; then
   printf 'probe "registration": the hook is registered on "%s" rather than on Bash\n' "$matcher" >&2
-  exit 3
+  exit 1
 fi
 
 jq -e '.permissions.deny | any(. == "WebFetch(domain:api.wanikani.com)")' "$settings" >/dev/null || {
   printf 'probe "deny": the API is no longer denied as a WebFetch destination\n' >&2
-  exit 3
+  exit 1
 }
 
 # A command is quoted text inside a JSON string, and two cases below carry quotes of their own. The
 # escaping is the one announce-shared-edit.sh writes, for its reason: malformed JSON is dropped
 # without a word, which would pass a case the real event never sends.
 payload() {
-  local command=${2//\\/\\\\}
+  local command=${1//\\/\\\\}
   command=${command//\"/\\\"}
-  printf '{"tool_name":"%s","tool_input":{"command":"%s"}}' "$1" "$command"
+  printf '{"tool_name":"Bash","tool_input":{"command":"%s"}}' "$command"
 }
 
 # `deny` when the decision must be printed, `silent` when nothing at all must be, which is how this
@@ -48,7 +49,7 @@ expect() {
   local label=$1 want=$2 command=$3
   local got
 
-  got=$(bash "$hook" 2>/dev/null <<< "$(payload Bash "$command")")
+  got=$(bash "$hook" 2>/dev/null <<< "$(payload "$command")")
 
   case $want in
     deny) [[ $got == *'"permissionDecision":"deny"'* ]] && return 0 ;;
@@ -68,6 +69,15 @@ expect 'a local route'           silent 'curl http://localhost:3000/api/health'
 expect 'the documentation host'  silent 'git commit -m "docs: cite https://docs.api.wanikani.com/20170710/"'
 expect 'the name in a search'    silent 'grep -rn wanikani src/'
 expect 'the host named in prose' silent 'git commit -m "docs: say what api.wanikani.com is"'
+
+# One payload past its first line, which pins how stdin is read: every case above is a single line and
+# would pass against a hook reading one line and dropping the rest, leaving an indented payload able
+# to carry the host where nothing would look for it.
+indented=$(printf '{\n  "tool_name": "Bash",\n  "tool_input": {\n    "command": "curl https://api.wanikani.com/v2/reviews"\n  }\n}')
+if [[ $(bash "$hook" 2>/dev/null <<< "$indented") != *'"permissionDecision":"deny"'* ]]; then
+  printf 'probe "the API past the first line": expected deny, got nothing\n' >&2
+  fail=1
+fi
 
 [ "$fail" -eq 0 ] && echo "account reach: proven"
 exit "$fail"

@@ -58,7 +58,7 @@ review loop makes.
 | `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires, and a marker naming work the backlog should hold |
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:contrast` | `check-contrast.mjs` | an ink token that falls under 4.5:1 on a ground it can land on, in either theme, and whether its own comparator still tells black on white from white on white |
-| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it, and still passes a call to a local route |
+| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it and wherever in the payload it sits, still passes a call to a local route, and is still registered on `Bash` beside a deny entry naming the API |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |
