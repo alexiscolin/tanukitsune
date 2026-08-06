@@ -555,3 +555,4 @@
 {"date": "2026-08-06", "branch": "chore/no-tool-reaches-the-account", "reviewer": "docs-conformity", "file": "docs/verification.md", "line": 49, "outcome": "fixed"}
 {"date": "2026-08-06", "branch": "chore/no-tool-reaches-the-account", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 131, "outcome": "fixed"}
 {"date": "2026-08-06", "branch": "chore/no-tool-reaches-the-account", "kind": "pass", "base": "2d5d74aec5c5d6cfc5b65698e40565205bc3302f", "head": "310f7455df137dbee6e8b80cb36c601891b117f6"}
+{"date": "2026-08-06", "branch": "chore/no-tool-reaches-the-account", "kind": "pass", "base": "a934181137cb41dc30497fd9e22f7fad30ef9908", "head": "86e781f457123701481d9c2b6bd5ee5090076fc9"}
