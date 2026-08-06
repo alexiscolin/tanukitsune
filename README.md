@@ -222,9 +222,10 @@ architecture decision records.
 This repository is built primarily with AI coding agents, and the method is part of the work.
 `AGENTS.md` carries the constraints a linter cannot express, five read-only review agents with
 disjoint lenses read a diff from a fresh context, one of them asking only whether the diff is what was
-asked for, a sixth reads the documentation against itself whenever it moves, and two hooks call no
-model at all: one forces a continuation when a turn would end on code that does not compile, the other
-names an edit reaching the token source or a component something already renders, and refuses nothing.
+asked for, a sixth reads the documentation against itself whenever it moves, and three hooks call no
+model at all: one forces a continuation when a turn would end on code that does not compile, one
+refuses a shell command carrying the WaniKani API as its destination, the third names an edit reaching
+the token source or a component something already renders, and refuses nothing.
 
 The deterministic gates hold on their own. **The semantic reading does not:** a required check refuses
 a merge whose commits no recorded pass covers, and that record is a line the party under review writes

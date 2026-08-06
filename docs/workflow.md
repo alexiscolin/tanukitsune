@@ -96,8 +96,9 @@ are the ones. If a file cannot be explained without rereading it, it is rewritte
 
 Of the events the tool offers, `Stop` is the one that carries weight for solo work. `PostToolUse` fires
 after every shell command and `PreToolUse` before one, a grain that describes a tool call rather than
-an intention, which leaves it good for nothing but a check costing nothing and deciding nothing. One
-such check is registered there, naming what an edit reaches and refusing none of them. `SubagentStop`
+an intention, which leaves it good for a check costing nothing and, where the call names its own
+destination, for refusing that one. Two are registered there: one names what an edit reaches and
+refuses none of them, the other refuses a command carrying the WaniKani API as its destination. `SubagentStop`
 fires per reviewer, which nothing here needs, and `TeammateIdle` only fires inside an agent team.
 
 The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
@@ -110,7 +111,9 @@ guard.** A hook can see that a shell command ran; it cannot see that the command
 pull request without recognising it from its text, and that text carries quoting, heredocs, aliases,
 environment prefixes and newlines that are separators. Every one of those is a way to match what should
 have been ignored or to ignore what should have matched, and each fix moves the failure rather than
-removing it. Where the question is a property of the branch instead, a required check answers it
+removing it. A host is the narrow exception, the text being the destination itself rather than a sign
+of an intention, and refusing one is still a fence rather than a guard: what walks around it is named
+where it is registered. Where the question is a property of the branch instead, a required check answers it
 exactly: whether a pass is on record does not depend on parsing anything.
 
 **The fast gate is what a hook can afford, and that decides its contents.** `pnpm gate` runs from a

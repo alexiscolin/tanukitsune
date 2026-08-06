@@ -21,7 +21,7 @@ same agreement as everything under `docs/`. Read and write the rest when asked.
 ```
 pnpm bootstrap             one command from a fresh clone to a running app
 pnpm dev
-pnpm build                 in verify: the only gate that evaluates server modules
+pnpm build                 in verify: the only gate that evaluates server modules, no token
 pnpm test                  unit tests over core/ and components, no database
 pnpm test path/to/file     one file
 pnpm test:e2e              Playwright: the routes, and every story driven and audited by theme
@@ -40,7 +40,7 @@ pnpm check:sketches        work left in src/ui/sketches, and the hook keeping th
 pnpm check:tests           a probe proving the test strength gate refuses a weakened test
 pnpm check:tokens          a probe proving the token rule refuses an arbitrary Tailwind value
 pnpm gate                  check:contrast, typecheck, check:docs, arch, lint: needs no database
-pnpm verify                gate, check:sketches, check:tokens, check:review, check:tests, build, test, knip, dupes
+pnpm verify                gate, check:account, check:sketches, check:tokens, check:review, check:tests, build, test, knip, dupes
 ```
 
 Run `pnpm verify` and show its output before saying work is done. Do not assert that something
