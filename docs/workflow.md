@@ -97,10 +97,9 @@ are the ones. If a file cannot be explained without rereading it, it is rewritte
 Of the events the tool offers, `Stop` is the one that carries weight for solo work. `PostToolUse` fires
 after every shell command and `PreToolUse` before one, a grain that describes a tool call rather than
 an intention, which leaves it good for a check costing nothing and for refusing a call that names its
-own destination. Two are registered there: one names what an edit reaches and
-refuses none of them, the other refuses a command carrying the WaniKani API as its destination.
-`SubagentStop` fires per reviewer, which nothing here needs, and `TeammateIdle` only fires inside an
-agent team.
+own destination. Two are registered there: one names what an edit reaches and refuses none of them,
+the other is the account guard. `SubagentStop` fires per reviewer, which nothing here needs, and
+`TeammateIdle` only fires inside an agent team.
 
 The compile hook is the highest return in this method: thirty minutes of setup, zero tokens, and it
 refuses the end of a turn on code that does not compile. What it runs, and what bounds that refusal to
