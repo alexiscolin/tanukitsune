@@ -46,10 +46,11 @@ It belongs beside `check:tokens` for the same reason that rule exists: `check:to
 arbitrary colour and names `src/app/globals.css` as the place to take one from, so a token under the
 readable floor would turn it into an instruction to write text nobody can read.
 
-`pnpm verify` is `gate` plus `check:sketches`, `check:tokens`, `check:review`, `check:tests`, `build`,
-`test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits
-outside both and runs in its own CI job, because it needs a browser and a database. It covers the two
-real routes, every catalogued state in both themes, and the one write the review loop makes.
+`pnpm verify` is `gate` plus `check:account`, `check:sketches`, `check:tokens`, `check:review`,
+`check:tests`, `build`, `test`, `knip` and `dupes`. `build` is the only gate that evaluates server
+modules. `test:e2e` sits outside both and runs in its own CI job, because it needs a browser and a
+database. It covers the two real routes, every catalogued state in both themes, and the one write the
+review loop makes.
 
 | Command | Tool | Catches |
 |---|---|---|
@@ -57,6 +58,7 @@ real routes, every catalogued state in both themes, and the one write the review
 | `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires, and a marker naming work the backlog should hold |
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:contrast` | `check-contrast.mjs` | an ink token that falls under 4.5:1 on a ground it can land on, in either theme, and whether its own comparator still tells black on white from white on white |
+| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it, and still passes a call to a local route |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |
@@ -67,10 +69,29 @@ real routes, every catalogued state in both themes, and the one write the review
 | `knip` | knip | unused exports, files and dependencies |
 | `dupes` | jscpd | literal copy-paste, 70 tokens and 8 lines at weak mode |
 
+## The permission layer
+
+`.claude/settings.json` refuses a tool call before it runs rather than judging its result, and a
+permission is carried by the session, so it binds every subagent that session spawns where an
+instruction in a prompt reaches only the agent reading it. It denies the `Read` tool the three
+environment files, where `WANIKANI_TOKEN` is filled in by hand, and `api.wanikani.com` as a `WebFetch`
+destination.
+
+The reader's WaniKani account holds real progress, and the deny list covers one path to it. The two
+others are the hook below refusing a shell command that names the API, and the empty `WANIKANI_TOKEN`
+that `pnpm verify` builds with, which `src/data/env.ts` reads as absent so the prerender of
+`/[locale]` deals the demo deck instead of calling the API with whatever token the machine holds.
+`playwright.config.ts` sets the same variable for the same reason. A build run outside `verify`
+carries the real token, which is why `pnpm build` is asked for while `pnpm verify` is allowed.
+
+Three paths are held by nothing: a command reaching the host without naming it, a host assembled from
+pieces so that neither a scheme nor a path sits against it, and a shell reading the token file, which
+only the `Read` tool is denied.
+
 ## The hooks
 
-Two are registered in `.claude/settings.json`, and neither calls a model. One refuses the end of a
-turn, the other refuses nothing and only names what an edit reaches.
+Three are registered in `.claude/settings.json`, and none calls a model. One refuses the end of a
+turn, one refuses a tool call, the third refuses nothing and only names what an edit reaches.
 
 **`.claude/hooks/verify.sh`** is registered in `.claude/settings.json`, on `Stop`, when the agent
 finishes a turn. It runs `pnpm gate` and refuses the end of the turn when it fails, and refuses it the
@@ -85,6 +106,17 @@ field is matched without `jq`, which `check:review` does require: this guard bou
 above, and the PATH thin enough to lose `pnpm` loses a packaged `jq` with it, so reading it through
 one would drop the bound in the environment that needs it. The consequence is that the guarantee is
 one forced continuation, not a loop until compliance.
+
+**`.claude/hooks/refuse-account-reach.sh`** runs on `PreToolUse` for `Bash` and refuses a command
+carrying `api.wanikani.com` as a destination, a scheme before it or a path after it, whichever client
+carries it. A call to a local route passes, and so do the bare name and the documentation host one
+label to its left, since a command carries everything it writes and a stricter match would refuse
+writing about the rule as readily as breaking it. What it cannot tell apart is a command that reaches
+the URL from one that only searches for it, so a search naming the URL is refused too, and the `Grep`
+tool answers that without a shell. It states `deny` rather than exiting 2, so the reason reaches the
+agent as a decision on the call instead of an error worth retrying. A permission entry cannot do this:
+a pattern matches a prefix, so refusing `curl` would refuse the local route the flush is verified
+against. `check:account` is its probe, and it reads the registration as well as the decision.
 
 **`.claude/hooks/announce-shared-edit.sh`** runs on `PreToolUse` for `Edit` and `Write`, and refuses
 nothing. It names two edits and stays silent on every other: `src/app/globals.css`, which every
