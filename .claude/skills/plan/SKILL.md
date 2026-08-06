@@ -1,24 +1,32 @@
 ---
 name: plan
-description: Turns a goal into the plan step 3 of docs/workflow.md asks for: slices, the files each touches, the interfaces it commits, its verification, the acceptance criteria it closes, and every stop it contains. Use before writing any code for a new piece of work.
+description: Turns a goal into a plan before any code: slices, the files each touches, the interfaces it commits, its verification, the acceptance criteria it closes, and every stop it contains.
+disable-model-invocation: true
 argument-hint: "[the goal]"
-allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git diff:*)
+allowed-tools: Read, Grep, Glob
 ---
 
 # Plan
 
-`docs/workflow.md` names two steps before any code: a spec by interview with an explicit out-of-scope
-section, then a plan naming files, interfaces and per-phase verification, edited by hand. This is the
-tool for both.
+`docs/workflow.md` asks for a plan before any code, naming files, interfaces and per-phase
+verification, edited by hand. This is the tool for it. The spec the cycle asks for first is a
+committed document and stays an interview the reader holds, so what happens here reads its criteria
+rather than writing them.
 
 **Nothing forces it.** `/pre-pr` is unavoidable because a required check refuses the merge without a
-pass on record; this one runs because the reader asks for it. What CI holds at the other end is that
-the description is not empty, which catches a plan nobody wrote and not a plan the work outgrew.
+pass on record; this one runs because the reader asks for it, which the frontmatter holds by refusing
+model invocation. What CI holds at the other end is that the description is not empty, which catches a
+plan nobody wrote and not a plan the work outgrew.
 
 Write no code here. The output is text the reader edits, and it ends up in the pull request
 description, which is where `docs/workflow.md` puts the plan and nowhere else: it is working material
 rather than a description of the system, so a committed plan is a document that will contradict the
 code later. Do not write it to a file in the repository.
+
+The cycle also asks for the research to reach the plan through subagents, so the searching does not
+fill the parent context. Nothing is delegated here: the steps below name four documents at most and
+read them directly. A goal that cannot be placed without searching the code first is what would
+change that.
 
 ## 1. Read the goal, and interview only if it is thin
 
@@ -31,8 +39,8 @@ stop stating goals at all.
 
 ## 2. Place it against what ships
 
-Read the acceptance criteria and the out-of-scope section of `docs/specs/v0.1.md`, and name which
-criteria the goal closes. **A goal matching no criterion is a finding, not a detail**: it is either out
+Read the acceptance criteria and the out-of-scope section of `docs/specs/v0.1.md`, those two sections
+rather than the file, and name which criteria the goal closes. **A goal matching no criterion is a finding, not a detail**: it is either out
 of scope, and adding it is a scope violation rather than initiative, or it is a criterion the spec
 lacks. Both are the reader's call, and both are cheaper before the plan than after the diff.
 
@@ -53,9 +61,9 @@ stop possible rather than what makes it fire.
 
 ## 4. Gather the stops
 
-Read `AGENTS.md`'s stop-and-ask list against each slice and name every stop it contains: a frozen
-interface, a token or an authorisation check, behaviour an existing test covers, a dependency, an
-abstraction under three call sites. **The reader rules on all of them here, in one pass.**
+`AGENTS.md` is already in context and carries the stop-and-ask list. Read it against each slice and
+name every stop it contains. It is not restated here, so it changes in one place. **The reader rules
+on all of them here, in one pass.**
 
 A stop raised mid-flight is legitimate only for what the plan could not foresee. A session that keeps
 interrupting the reader for decisions a plan could have gathered is one that skipped this step.

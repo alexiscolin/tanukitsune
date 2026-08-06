@@ -83,8 +83,8 @@ which slice you are attacking. If the agent starts improvising outside scope, "r
 `docs/specs/v0.1.md`, out of scope section" is enough to bring it back.
 
 **4.2 During the work.** Attention goes into the plan, not the diff. This is the one change that
-matters most. Read and edit the plan by hand, then let a fresh-context reviewer check the diff against
-it.
+matters most. Run `/plan` yourself with the goal, which it declares `disable-model-invocation` to
+hold, then read and edit the plan by hand and let a fresh-context reviewer check the diff against it.
 
 **4.3 Before every pull request.** Run `/pre-pr` yourself. It is deliberately not automatic: the skill
 declares `disable-model-invocation`, so an agent cannot trigger the skill, and nothing else spawns a
