@@ -17,7 +17,7 @@
     "arch": "depcruise src && bash scripts/check-boundaries.sh",
     "knip": "knip",
     "dupes": "jscpd src",
-    "check:account": "bash scripts/check-account-reach-probe.sh",
+    "check:account": "bash scripts/check-account-reach.sh",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:docs": "bash scripts/check-docs.sh",
     "check:review": "bash scripts/check-review-coverage-probe.sh",

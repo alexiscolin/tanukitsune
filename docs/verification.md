@@ -47,9 +47,10 @@ arbitrary colour and names `src/app/globals.css` as the place to take one from, 
 readable floor would turn it into an instruction to write text nobody can read.
 
 `pnpm verify` is `gate` plus `check:account`, `check:sketches`, `check:tokens`, `check:review`,
-`check:tests`, `build`, `test`, `knip` and `dupes`. `build` is the only gate that evaluates server modules. `test:e2e` sits
-outside both and runs in its own CI job, because it needs a browser and a database. It covers the two
-real routes, every catalogued state in both themes, and the one write the review loop makes.
+`check:tests`, `build`, `test`, `knip` and `dupes`. `build` is the only gate that evaluates server
+modules. `test:e2e` sits outside both and runs in its own CI job, because it needs a browser and a
+database. It covers the two real routes, every catalogued state in both themes, and the one write the
+review loop makes.
 
 | Command | Tool | Catches |
 |---|---|---|
@@ -57,7 +58,7 @@ real routes, every catalogued state in both themes, and the one write the review
 | `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires, and a marker naming work the backlog should hold |
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:contrast` | `check-contrast.mjs` | an ink token that falls under 4.5:1 on a ground it can land on, in either theme, and whether its own comparator still tells black on white from white on white |
-| `check:account` | `check-account-reach-probe.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it, and still passes a call to a local route |
+| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it, and still passes a call to a local route |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |
@@ -112,10 +113,10 @@ carries it. A call to a local route passes, and so do the bare name and the docu
 label to its left, since a command carries everything it writes and a stricter match would refuse
 writing about the rule as readily as breaking it. What it cannot tell apart is a command that reaches
 the URL from one that only searches for it, so a search naming the URL is refused too, and the `Grep`
-tool answers that without a shell. It
-states `deny` rather than exiting 2, so the reason reaches the agent as a decision on the call instead
-of an error worth retrying. A permission entry cannot do this: a pattern matches a prefix, so refusing
-`curl` would refuse the local route the flush is verified against. `check:account` is its probe.
+tool answers that without a shell. It states `deny` rather than exiting 2, so the reason reaches the
+agent as a decision on the call instead of an error worth retrying. A permission entry cannot do this:
+a pattern matches a prefix, so refusing `curl` would refuse the local route the flush is verified
+against. `check:account` is its probe, and it reads the registration as well as the decision.
 
 **`.claude/hooks/announce-shared-edit.sh`** runs on `PreToolUse` for `Edit` and `Write`, and refuses
 nothing. It names two edits and stays silent on every other: `src/app/globals.css`, which every
