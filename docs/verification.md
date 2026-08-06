@@ -58,7 +58,7 @@ review loop makes.
 | `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires, and a marker naming work the backlog should hold |
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:contrast` | `check-contrast.mjs` | an ink token that falls under 4.5:1 on a ground it can land on, in either theme, and whether its own comparator still tells black on white from white on white |
-| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it, and still passes a call to a local route |
+| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it and wherever in the payload it sits, still passes a call to a local route, and is still registered on `Bash` beside a deny entry naming the API |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |
@@ -78,7 +78,7 @@ environment files, where `WANIKANI_TOKEN` is filled in by hand, and `api.wanikan
 destination.
 
 The reader's WaniKani account holds real progress, and the deny list covers one path to it. The two
-others are the hook below refusing a shell command that names the API, and the empty `WANIKANI_TOKEN`
+others are the hook below, whose exact rule is stated there, and the empty `WANIKANI_TOKEN`
 that `pnpm verify` builds with, which `src/data/env.ts` reads as absent so the prerender of
 `/[locale]` deals the demo deck instead of calling the API with whatever token the machine holds.
 `playwright.config.ts` sets the same variable for the same reason. A build run outside `verify`
@@ -116,7 +116,8 @@ the URL from one that only searches for it, so a search naming the URL is refuse
 tool answers that without a shell. It states `deny` rather than exiting 2, so the reason reaches the
 agent as a decision on the call instead of an error worth retrying. A permission entry cannot do this:
 a pattern matches a prefix, so refusing `curl` would refuse the local route the flush is verified
-against. `check:account` is its probe, and it reads the registration as well as the decision.
+against. `check:account` is its probe, and it reads the registration and the deny entry as well as
+the decision, since a case answered by a hook nothing invokes proves nothing.
 
 **`.claude/hooks/announce-shared-edit.sh`** runs on `PreToolUse` for `Edit` and `Write`, and refuses
 nothing. It names two edits and stays silent on every other: `src/app/globals.css`, which every

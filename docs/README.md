@@ -68,8 +68,8 @@ hooks, none calling a model: one forces a continuation when a turn would end on 
 compile, one refuses a shell command carrying the WaniKani API as its destination, the third names an
 edit reaching the token source or a component something already renders, and refuses nothing.
 Alongside them, `review-log.jsonl` records what each lens found, whether it survived, and which range
-each pass read, which
-`scripts/review-stats.sh` reports and `scripts/check-review-coverage.sh` gates on.
+each pass read, which `scripts/review-stats.sh` reports and `scripts/check-review-coverage.sh` gates
+on.
 
 `REVIEW.md` at the root is the calibration for the hosted Code Review GitHub App, which reads it and
 posts on pull requests. Nothing else reads it: the local reviewers hold the same evidence bar in their
