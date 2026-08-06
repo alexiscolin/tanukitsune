@@ -1,9 +1,10 @@
 import type { Locale } from './locales'
 import type { Flow } from './subject'
 
-// The two paths docs/specs/v0.1.md names, spelled once. A screen linking to a session and the
-// route serving it are the same two strings, and the end-to-end suite navigates by them, so
-// three spellings of one path would let the suite pass against a route nobody reaches.
+// Every path docs/specs/v0.1.md names, spelled once: the two a reader navigates and the one a
+// queue posts to. A screen linking to a session and the route serving it are the same string, and
+// the end-to-end suite navigates by them, so two spellings of one path would let the suite pass
+// against a route nobody reaches.
 
 // Where a session starts, which is also the manifest's entry point: an installed app opens
 // here rather than inside yesterday's loop.

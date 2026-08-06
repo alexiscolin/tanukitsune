@@ -15,6 +15,13 @@
       "when": 1785824067378,
       "tag": "0001_little_bulldozer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786060322002,
+      "tag": "0002_greedy_rage",
+      "breakpoints": true
     }
   ]
 }

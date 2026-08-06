@@ -12,9 +12,12 @@ const PORT = 3117
 const baseURL = `http://127.0.0.1:${PORT}`
 
 // Fixed rather than random, a server reused across runs having been started with whatever this
-// was the first time. It guards a route against the internet, not against this suite.
-const SYNC_SECRET = 'end-to-end-sync-secret'
-process.env['TANUKITSUNE_SYNC_SECRET'] = SYNC_SECRET
+// was the first time. It guards a route against the internet, not against this suite. Only where
+// nothing set one, for the reason the token below carries: a value already in the environment is
+// what a server started by hand was started with, and overwriting it here would leave the suite
+// holding a secret that server never received.
+process.env['TANUKITSUNE_SYNC_SECRET'] ??= 'end-to-end-sync-secret'
+const SYNC_SECRET = process.env['TANUKITSUNE_SYNC_SECRET']
 
 // The catalogue answers on its own port, so a spec reaches a story by absolute URL while
 // every other spec keeps resolving against the application.

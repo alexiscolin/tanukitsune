@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { answerRecord } from '@/core/review/answer-record'
 import type { AnsweredCard, AnswerStamp } from '@/core/review/answer-record'
 
-import { parseBatch } from './review-batch'
+import { BATCH_LIMIT, parseBatch } from './review-batch'
 
 // What the browser sends is a row it wrote offline, so the shape is the queue's rather than a
 // wire format of its own, and the only difference between the two is what JSON can carry: a date
@@ -72,5 +72,33 @@ describe('parseBatch', () => {
 
   it('refuses an empty batch, a request with nothing to store being a caller mistake', () => {
     expect(parseBatch([])).toBeNull()
+  })
+
+  // The driver refuses a statement past its parameter ceiling, which a queue grown offline can
+  // reach, and a batch refused there is a 500 the sender can only answer by sending it again.
+  it('refuses a batch past what one statement can carry', () => {
+    const one = sent([answerRecord(CARD, STAMP)]) as unknown[]
+    const rows = Array.from({ length: BATCH_LIMIT }, () => one[0])
+
+    expect(parseBatch(rows)).toHaveLength(BATCH_LIMIT)
+    expect(parseBatch([...rows, one[0]])).toBeNull()
+  })
+
+  // The three the constructor derives from one ruling, so a row where they disagree is a row no
+  // session produced, and the table it would land in is never corrected.
+  it('refuses an override that contradicts what it overrode', () => {
+    const [row] = sent([answerRecord(CARD, STAMP)]) as Record<string, unknown>[]
+
+    expect(parseBatch([{ ...row, overriddenTo: 'incorrect' }])).toBeNull()
+    expect(parseBatch([{ ...row, verdict: null, overriddenTo: 'incorrect' }])).toBeNull()
+    expect(parseBatch([{ ...row, verdict: 'correct', overriddenTo: 'correct' }])).toBeNull()
+  })
+
+  it('takes an override that names the verdict it disagreed with', () => {
+    const [row] = sent([answerRecord(CARD, STAMP)]) as Record<string, unknown>[]
+
+    expect(
+      parseBatch([{ ...row, verdict: 'incorrect', correct: true, overriddenTo: 'correct' }]),
+    ).toHaveLength(1)
   })
 })

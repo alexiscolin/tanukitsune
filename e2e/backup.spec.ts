@@ -58,13 +58,13 @@ test('a queued answer becomes a durable row, and a replayed batch adds none', as
 
   const first = await request.post(BACKUP_PATH, { headers, data: batch })
   expect(first.status()).toBe(200)
-  expect(await first.json()).toEqual({ stored: batch.length, appended: batch.length })
+  expect(await first.json()).toEqual({ appended: batch.length })
 
-  // The same queue sent twice, which is what a lost acknowledgement produces. Every row is stored
-  // again as far as the caller is concerned, and the table gains nothing.
+  // The same queue sent twice, which is what a lost acknowledgement produces. Every row it names
+  // is durable either way, and the table gains nothing.
   const again = await request.post(BACKUP_PATH, { headers, data: batch })
   expect(again.status()).toBe(200)
-  expect(await again.json()).toEqual({ stored: batch.length, appended: 0 })
+  expect(await again.json()).toEqual({ appended: 0 })
 })
 
 test('the backup refuses a batch it cannot read', async ({ request }) => {

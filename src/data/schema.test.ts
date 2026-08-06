@@ -34,12 +34,24 @@ function snake(name: string): string {
   return name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
 }
 
+// The one column the queued row cannot carry, because a device stamping its own receipt time is
+// the thing that column exists to check. Named here rather than tolerated by a looser comparison,
+// so a second column arriving without a row behind it still fails.
+const STAMPED_BY_THE_SERVER = ['received_at']
+
 describe('review_event', () => {
-  it('holds every field the queued row carries, and no other', () => {
+  it('holds every field the queued row carries, and only what the server stamps besides', () => {
     const columns = Object.values(getTableColumns(reviewEvent)).map((column) => column.name)
     const fields = Object.keys(answerRecord(CARD, STAMP)).map(snake)
 
-    expect([...columns].sort()).toEqual([...fields].sort())
+    expect([...columns].sort()).toEqual([...fields, ...STAMPED_BY_THE_SERVER].sort())
+  })
+
+  it('defaults the receipt so no caller can send one', () => {
+    const received = getTableColumns(reviewEvent).receivedAt
+
+    expect(received.notNull).toBe(true)
+    expect(received.hasDefault).toBe(true)
   })
 
   // The three the flush fills. A column that refused a null could not take the row until an

@@ -9,10 +9,10 @@ import { reviewEvent } from './schema'
 // only record of an answer that will ever exist, which is why the append happens inside the
 // request rather than after the response, per docs/framing.md under mutation transport.
 
-// How many rows the table gained, which is not how many the caller sent: a replayed batch stores
-// every row it names and appends none. The caller needs the first number to drop what it holds
-// and the second is what makes a replay observable from outside.
-export type Appended = { readonly stored: number; readonly appended: number }
+// How many rows the table gained, which is not how many the caller sent: a replayed batch appends
+// none and every row it named is durable either way. The caller learns that from the status, so
+// the count is here for what nothing else can see from outside, whether a batch was new.
+export type Appended = { readonly appended: number }
 
 export async function appendAnswers(records: readonly AnswerRecord[]): Promise<Appended> {
   const rows = records.map((record) => ({
@@ -31,5 +31,5 @@ export async function appendAnswers(records: readonly AnswerRecord[]): Promise<A
     .onConflictDoNothing()
     .returning({ id: reviewEvent.id })
 
-  return { stored: records.length, appended: appended.length }
+  return { appended: appended.length }
 }
