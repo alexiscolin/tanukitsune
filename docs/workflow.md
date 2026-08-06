@@ -18,7 +18,8 @@ answer, not a verdict that closes a branch by itself.
 1. Fresh session. One task per session, clear between unrelated tasks.
 2. Spec by interview rather than by writing it yourself, with an explicit out-of-scope section.
 3. Fresh session. Research through subagents so the searching does not pollute the parent context,
-   then a plan naming files, interfaces and per-phase verification. Edit that plan by hand.
+   then a plan naming files, interfaces and per-phase verification, which `/plan` produces from a
+   goal. Edit that plan by hand.
 4. Interfaces committed first. Bodies get filled, contracts do not change. A contract change is a
    re-plan, not an implementation detail.
 5. Failing test committed before the implementation, so it cannot be edited away afterwards.

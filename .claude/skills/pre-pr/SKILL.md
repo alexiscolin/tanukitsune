@@ -64,7 +64,9 @@ question: the lenses say whether the change is sound, the walkthrough says what 
 the two costs the reader the only summary they have before opening the diff.
 
 Its output is the material for the pull request description, which the `subjects` job requires to carry
-the plan. Use it there rather than rewriting it.
+the plan. Use it there rather than rewriting it, beside the plan `/plan` produced before the work: the
+walkthrough says what was built and the plan says what was meant, and a description carrying only one
+of the two hides whichever moved.
 
 It writes nothing. **It produces no finding, so it appends no line to `.claude/review-log.jsonl` and it
 does not count among the lenses a pass records.** A description that entered the log would inflate the

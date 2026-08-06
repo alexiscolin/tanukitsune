@@ -522,3 +522,18 @@
 {"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "a0f5f8599e61e1eb42a14a87d697cd01a32097ca", "head": "537591ac1f98169a8d948261728a4dd70d1d42ee"}
 {"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "64f6af429e63482aa6c7740f1c244e7d6f80df55", "head": "131013dd1976e757b56caef729e1c42b1a8a41f0"}
 {"date": "2026-08-04", "branch": "feat/wanikani-source", "kind": "pass", "base": "131013dd1976e757b56caef729e1c42b1a8a41f0", "head": "605b17f58a804831c4b80352ef4030b65c61143b"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "requirement-check", "file": ".claude/skills/plan/SKILL.md", "line": 11, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "requirement-check", "file": ".claude/skills/plan/SKILL.md", "line": 5, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "requirement-check", "file": ".claude/skills/plan/SKILL.md", "line": 5, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "requirement-check", "file": "docs/workflow.md", "line": 20, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "regression-check", "file": ".claude/skills/plan/SKILL.md", "line": 1, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "regression-check", "file": ".claude/skills/plan/SKILL.md", "line": 5, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "regression-check", "file": ".claude/skills/pre-pr/SKILL.md", "line": 67, "outcome": "dismissed", "reason": "Step 4 now asks the pull request description to carry the plan beside the walkthrough, which a branch planned without the skill cannot produce. Requiring it is what this branch exists to obtain: a description carrying only the walkthrough says what was built and never what was meant, and the gap between the two is the thing the per-task cycle wants visible. A fallback clause would make the obligation optional on the branches that need it most."}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "architecture-check", "file": ".claude/skills/plan/SKILL.md", "line": 1, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "architecture-check", "file": ".claude/skills/plan/SKILL.md", "line": 56, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "performance-check", "file": ".claude/skills/plan/SKILL.md", "line": 34, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "performance-check", "file": ".claude/skills/plan/SKILL.md", "line": 56, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "performance-check", "file": ".claude/skills/plan/SKILL.md", "line": 3, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "docs-conformity", "file": ".claude/skills/plan/SKILL.md", "line": 3, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "reviewer": "docs-conformity", "file": "info/workflow-explique.md", "line": 90, "outcome": "fixed"}
+{"date": "2026-08-06", "branch": "chore/a-plan-before-the-code", "kind": "pass", "base": "51773ddfe451ceaab5e213b7e6c0b04927b27818", "head": "6d1d7d28e2a4431551e8e9b9fe337c8b2b6989d9"}

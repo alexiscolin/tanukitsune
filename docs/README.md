@@ -61,8 +61,10 @@ Agent configuration lives at the repository root: `AGENTS.md` is canonical and u
 `CLAUDE.md` imports it because Claude Code does not read `AGENTS.md`. Under `.claude/`: five reviewers
 with disjoint lenses, one of which reads intent rather than code, a sixth that reads documentation
 against itself and runs only when the branch touches markdown, `change-walkthrough`, which describes
-what a branch adds instead of judging it and reports no finding, two skills, `pre-pr` which runs the
-review sequence and `design` which runs a design session on one screen, and two hooks, neither calling
+what a branch adds instead of judging it and reports no finding, three skills, `plan` which turns a
+goal into the slices, files and stops the per-task cycle asks for before any code, `pre-pr` which runs
+the review sequence after it, and `design` which runs a design session on one screen, and two hooks,
+neither calling
 a model: one forces a continuation when a turn would end on code that does not compile, the other names
 an edit reaching the token source or a component something already renders, and refuses nothing.
 Alongside them, `review-log.jsonl`
@@ -81,8 +83,8 @@ which slice you are attacking. If the agent starts improvising outside scope, "r
 `docs/specs/v0.1.md`, out of scope section" is enough to bring it back.
 
 **4.2 During the work.** Attention goes into the plan, not the diff. This is the one change that
-matters most. Read and edit the plan by hand, then let a fresh-context reviewer check the diff against
-it.
+matters most. Run `/plan` yourself with the goal, which it declares `disable-model-invocation` to
+hold, then read and edit the plan by hand and let a fresh-context reviewer check the diff against it.
 
 **4.3 Before every pull request.** Run `/pre-pr` yourself. It is deliberately not automatic: the skill
 declares `disable-model-invocation`, so an agent cannot trigger the skill, and nothing else spawns a
