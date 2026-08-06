@@ -16,3 +16,11 @@ export function startPath(locale: Locale): string {
 export function sessionPath(locale: Locale, flow: Flow): string {
   return `/${locale}/session?flow=${flow}`
 }
+
+// Where a queued answer becomes durable. It carries no locale: nothing here is read by a person,
+// and a batch is the same batch whichever language the session ran in.
+export const BACKUP_PATH = '/api/review'
+
+// The secret travels in a header rather than in the body, so a refusal is decided before the
+// batch is read and a rejected request leaves no trace of what it was carrying.
+export const BACKUP_SECRET_HEADER = 'x-tanukitsune-sync'

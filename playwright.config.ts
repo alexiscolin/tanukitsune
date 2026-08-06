@@ -11,6 +11,11 @@ try {
 const PORT = 3117
 const baseURL = `http://127.0.0.1:${PORT}`
 
+// Fixed rather than random, a server reused across runs having been started with whatever this
+// was the first time. It guards a route against the internet, not against this suite.
+const SYNC_SECRET = 'end-to-end-sync-secret'
+process.env['TANUKITSUNE_SYNC_SECRET'] = SYNC_SECRET
+
 // The catalogue answers on its own port, so a spec reaches a story by absolute URL while
 // every other spec keeps resolving against the application.
 const CATALOGUE_PORT = 6017
@@ -36,7 +41,9 @@ export default defineConfig({
       // stops the environment file from putting the real one back. A server already answering on
       // this port is reused as it is, so one started by hand with a token is one the suite runs
       // against.
-      env: { WANIKANI_TOKEN: '' },
+      // The backup route is closed without a secret, so the server under test is started with
+      // one and the suite reads the same variable rather than repeating its value.
+      env: { WANIKANI_TOKEN: '', TANUKITSUNE_SYNC_SECRET: SYNC_SECRET },
       reuseExistingServer: process.env['CI'] === undefined,
       timeout: 180_000,
     },
