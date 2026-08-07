@@ -10,6 +10,11 @@ import type { AnswerRecord } from './answer-record'
 // radical is asked for its meaning alone, and a subject whose reading nothing accepts is never
 // asked for one. Deriving it here would need the subject, which this layer does not hold.
 
+// What a submission is worked out from, which is four fields of a row and not the row: the flush
+// reads rows back from the table, where the three fields it fills are already filled on the ones
+// it has sent. Naming what it reads keeps a reader from carrying eighteen columns to count two.
+export type Answered = Pick<AnswerRecord, 'id' | 'subjectId' | 'kind' | 'correct'>
+
 export type Asked = {
   // Their submission names the assignment rather than the subject, so a subject with no assignment
   // in hand cannot be sent at all.
@@ -28,14 +33,14 @@ export type Submission = {
   readonly answers: readonly string[]
 }
 
-function wrongIn(records: readonly AnswerRecord[], kind: AnswerKind): number {
+function wrongIn(records: readonly Answered[], kind: AnswerKind): number {
   return records.filter((record) => record.kind === kind && !record.correct).length
 }
 
 // Grouped in the order the subjects were first answered, so a sequence of submissions replays the
 // sitting rather than an order the grouping happened to produce. Scheduling is order dependent.
-function bySubject(records: readonly AnswerRecord[]): Map<number, AnswerRecord[]> {
-  const grouped = new Map<number, AnswerRecord[]>()
+function bySubject(records: readonly Answered[]): Map<number, Answered[]> {
+  const grouped = new Map<number, Answered[]>()
 
   for (const record of records) {
     const held = grouped.get(record.subjectId)
@@ -48,7 +53,7 @@ function bySubject(records: readonly AnswerRecord[]): Map<number, AnswerRecord[]
 }
 
 export function submissionsFor(
-  records: readonly AnswerRecord[],
+  records: readonly Answered[],
   asked: ReadonlyMap<number, Asked>,
 ): readonly Submission[] {
   return [...bySubject(records)].flatMap(([subjectId, answers]) => {

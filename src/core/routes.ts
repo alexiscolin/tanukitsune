@@ -22,6 +22,12 @@ export function sessionPath(locale: Locale, flow: Flow): string {
 // and a batch is the same batch whichever language the session ran in.
 export const BACKUP_PATH = '/api/review'
 
+// Where what the backup holds is worked out and sent on. It carries no locale for the reason the
+// backup does not: nothing here is read by a person. Two methods on one path, a read saying what is
+// left to send and a write sending one of them, because they are two halves of one subject rather
+// than two subjects.
+export const FLUSH_PATH = '/api/flush'
+
 // The secret travels in a header rather than in the body, so a refusal is decided before the
 // batch is read and a rejected request leaves no trace of what it was carrying.
 export const BACKUP_SECRET_HEADER = 'x-tanukitsune-sync'

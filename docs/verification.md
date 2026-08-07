@@ -50,7 +50,8 @@ readable floor would turn it into an instruction to write text nobody can read.
 `check:tests`, `build`, `test`, `knip` and `dupes`. `build` is the only gate that evaluates server
 modules. `test:e2e` sits outside both and runs in its own CI job, because it needs a browser and a
 database. It covers the two real routes, every catalogued state in both themes, and the two writes
-the product makes: what the loop queues in the browser and what the backup makes durable here.
+the product makes: what the loop queues in the browser and what the backup makes durable here, plus
+the flush that carries the second to the source.
 
 It builds once and starts four servers. Two are the same build twice: one holding no token, which
 deals the seeded deck every demo spec asserts, and one holding a token spent on `e2e/fake-source.ts`,
@@ -59,7 +60,8 @@ dealt is read from the token alone, so a single server could serve one of the tw
 third is the fake source itself and the fourth is the catalogue. The account is written as the wire
 and typed against the parsers in `src/data/wanikani/payload.ts`, so what a session upstream of the
 seeded deck drives is the source's own HTTP rather than a stand-in for it: its URLs, its revision
-header, its cursor walk and its parse.
+header, its cursor walk and its parse. It is also the only place `TANUKITSUNE_UPSTREAM_WRITE` is on,
+so the one suite that submits anything submits it to an account nobody owns.
 
 | Command | Tool | Catches |
 |---|---|---|

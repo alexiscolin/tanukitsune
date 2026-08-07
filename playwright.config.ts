@@ -32,7 +32,7 @@ export const accountURL = `http://127.0.0.1:${ACCOUNT_PORT}`
 
 // What that server reads instead of WaniKani, served by e2e/fake-source.ts.
 const SOURCE_PORT = 3119
-const sourceURL = `http://127.0.0.1:${SOURCE_PORT}`
+export const sourceURL = `http://127.0.0.1:${SOURCE_PORT}`
 
 export default defineConfig({
   testDir: './e2e',
@@ -84,6 +84,10 @@ export default defineConfig({
       env: {
         WANIKANI_TOKEN: 'nobody-owns-this',
         WANIKANI_API: `${sourceURL}/v2`,
+        // The one place the upstream write is on. A submission is irreversible and the source
+        // offers no sandbox, so the switch is off everywhere a real token could be held, and on
+        // here because what answers is a source that belongs to nobody.
+        TANUKITSUNE_UPSTREAM_WRITE: 'on',
         TANUKITSUNE_SYNC_SECRET: SYNC_SECRET,
       },
       reuseExistingServer: process.env['CI'] === undefined,

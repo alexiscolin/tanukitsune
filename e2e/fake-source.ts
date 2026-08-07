@@ -55,6 +55,17 @@ function bodyFor(url: URL): object | null {
   return null
 }
 
+// What a submission produced. Their created review carries an identifier that is always zero, so
+// the stage under the resources they updated is the whole of what a caller can read. Two stages up
+// from where the fixture put the assignment, which is a number no read serves and so cannot be
+// mistaken for one.
+const ADVANCED_TO = 5
+
+// Every submission this process took, in order. The suite reads it to assert that a session
+// replayed produces one set of submissions rather than two, which is an acceptance criterion no
+// assertion against our own tables can make: what must not happen twice is the call leaving here.
+const taken: unknown[] = []
+
 const port = Number(process.argv[2])
 
 createServer((request, response) => {
@@ -67,6 +78,7 @@ createServer((request, response) => {
   // Ours rather than theirs, and the only path answered unauthenticated: it says the process is
   // up, which is what the runner waits on before starting the server that reads it.
   if (url.pathname === '/') return answer(200, { listening: true })
+  if (url.pathname === '/taken') return answer(200, { taken })
 
   // The token is never checked for what it says, only that it was sent: this account belongs to
   // nobody, and what the suite is covering is that the source authenticates at all.
@@ -74,6 +86,26 @@ createServer((request, response) => {
     return answer(401, { error: 'No token was sent.' })
   if (request.headers['wanikani-revision'] !== REVISION)
     return answer(400, { error: 'No revision was pinned.' })
+
+  // The one write they take. What was sent is echoed under the review, so a spec can assert the
+  // counts the flush aggregated without the fake keeping any state of its own.
+  if (request.method === 'POST' && url.pathname === '/v2/reviews') {
+    let sent = ''
+
+    request.on('data', (chunk: Buffer) => (sent += chunk.toString()))
+
+    return request.on('end', () => {
+      const body: unknown = JSON.parse(sent === '' ? '{}' : sent)
+
+      taken.push(body)
+
+      answer(201, {
+        id: 0,
+        data: body,
+        resources_updated: { assignment: { data: { srs_stage: ADVANCED_TO } } },
+      })
+    })
+  }
 
   const body = bodyFor(url)
 

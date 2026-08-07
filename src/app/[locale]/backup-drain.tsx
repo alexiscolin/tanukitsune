@@ -3,7 +3,9 @@
 import { useEffect } from 'react'
 
 import { drain } from '@/core/review/drain'
+import { flush } from '@/core/review/flush'
 import { backupTo } from '@/data/local/backup'
+import { pendingAt, sendTo } from '@/data/local/flush'
 import { localOutbox } from '@/data/local/outbox'
 
 // The single flusher docs/framing.md asks for. Two tabs share one IndexedDB, so without the lock
@@ -16,6 +18,10 @@ const LEADER = 'tanukitsune-backup-drain'
 //
 // The three triggers are the ones docs/framing.md names: the page coming up, the network coming
 // back, and the tab coming back.
+//
+// The flush follows the drain under the same lock, and in that order: it reads the backed-up rows,
+// so an answer still on the device has nothing waiting for it upstream. One lock rather than two,
+// because the two are one sequence and a second tab holding either would run half of it.
 //
 // The secret arrives as a prop because only the server can read it. Rendering this component at all
 // is what says a backup is configured, so there is one branch and it is at the wiring, on a route
@@ -36,11 +42,14 @@ export function BackupDrain({ secret }: { secret: string }) {
       if (!navigator.onLine) return
 
       void navigator.locks
-        .request(LEADER, { ifAvailable: true }, (lock) =>
-          lock === null ? undefined : drain(localOutbox, backup),
-        )
-        // A drain that threw is a queue that kept its rows, which is what this design asks for on
-        // every other failure too. There is nothing to report and nothing to undo.
+        .request(LEADER, { ifAvailable: true }, async (lock) => {
+          if (lock === null) return
+
+          await drain(localOutbox, backup)
+          await flush(pendingAt(secret), sendTo(secret))
+        })
+        // A drain or a flush that threw leaves its rows where they were, which is what this design
+        // asks for on every other failure too. There is nothing to report and nothing to undo.
         .catch(() => undefined)
     }
 

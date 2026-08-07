@@ -32,6 +32,11 @@ const schema = z.object({
   // a deployment that lost the variable would otherwise accept a batch from anyone who found the
   // path, and an unreachable backup is a failure the reader sees where an open one is not.
   TANUKITSUNE_SYNC_SECRET: optionalText,
+  // Present means the flush may reach the source. Absent it runs whole and stops short of the
+  // submission, marking nothing: a submission is irreversible, it advances or drops a real SRS
+  // stage, and the source offers no sandbox. The end-to-end suite sets it against a source that
+  // belongs to nobody, which is the only place it is on.
+  TANUKITSUNE_UPSTREAM_WRITE: optionalText,
   TANUKITSUNE_COMMIT: optionalText,
   TANUKITSUNE_BUILT_AT: optionalText,
 })
