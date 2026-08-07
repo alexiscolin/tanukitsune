@@ -699,3 +699,10 @@
 {"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "reviewer": "performance-check", "file": "src/app/[locale]/hold-deck.tsx", "line": 24, "outcome": "dismissed", "reason": "The effect cannot re-run: the page is an async server component rendered once per request, and HoldDeck is its sibling rather than nested in the client tree, so it never receives new props after mount."}
 {"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "reviewer": "architecture-check", "file": "src/data/local/deck-cache.ts", "line": 14, "outcome": "dismissed", "reason": "One call site today, already ruled on: knip and the no-orphans rule refuse the paired read before its caller exists, so it lands in the slice that deals from the cache."}
 {"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "kind": "pass", "base": "02f8d694eb70e46537190fc2d492cbf93da8c98b", "head": "5f09849e3e9ecd3b827464cb0e1b3225888c8696"}
+{"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "reviewer": "code-review", "file": "src/data/local/database.ts", "line": 45, "outcome": "fixed"}
+{"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "reviewer": "code-review", "file": "src/data/local/database.ts", "line": 77, "outcome": "fixed"}
+{"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "reviewer": "code-review", "file": "e2e/cache.spec.ts", "line": 28, "outcome": "fixed"}
+{"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "reviewer": "code-review", "file": "e2e/cache.spec.ts", "line": 66, "outcome": "fixed"}
+{"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "reviewer": "code-review", "file": "e2e/session.ts", "line": 75, "outcome": "fixed"}
+{"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "reviewer": "code-review", "file": "src/app/[locale]/waiting.ts", "line": 67, "outcome": "fixed"}
+{"date": "2026-08-08", "branch": "feat/cache-the-deck-on-the-device", "kind": "pass", "base": "02f8d694eb70e46537190fc2d492cbf93da8c98b", "head": "f3952b499588b8d580c648105d4949979eb5b3c3"}
