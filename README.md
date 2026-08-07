@@ -63,11 +63,7 @@ Themes are a database column. Sentences come from an open corpus of real ones. P
 in your browser. Knowing which is which is the whole design, and every "no" is written down with its
 reason in [`backlog.md`](docs/backlog.md).
 
-The work that makes the other half safe to trust is in
-[`ai-engineering.md`](docs/ai-engineering.md): running the whole corpus as one batch job, checking
-the grader against a hand-labelled set, using a judge from a different model family than the
-generator, sampling the corpus for defects before it ships, and building guardrails into the shape of
-the system rather than into instructions.
+What makes the other half safe to trust is a longer list, and it is [further down](#the-ai-work).
 
 **We will publish two numbers rather than claim them**: how often the grader agrees with the
 hand-labelled set, and what FSRS really changes against WaniKani's fixed timing. Both come from
@@ -124,6 +120,37 @@ keeps working with no network, and we wait for that write, because an answer nob
 answer.
 
 The full map is in [`framing.md`](docs/framing.md), under architecture.
+
+## The AI work
+
+Any model writes one good memory trick. The job is the whole item set, at a quality nobody can read
+by hand, and a verdict a learner will believe. That job is the list below. Each line is argued in
+[`ai-engineering.md`](docs/ai-engineering.md).
+
+| Technique | How we use it |
+|---|---|
+| **Batch inference** | The whole corpus as one job. Restartable, keyed by item, written as it goes. Half the cost. |
+| **Structured output** | Zod schemas, strict, the provider's own path. A parse failure is counted, never turned into null. |
+| **Prompt versioning** | Prompts live in git with a version number, stamped on every row they produce. A test fails if a prompt changes without one. |
+| **Model cascade** | Exact match, then fuzzy match, then the model. Most answers never reach a model at all. |
+| **LLM as judge** | A closed set of verdicts plus a short reason, never a score. From a different model family than the generator, because a model rates its own family higher. |
+| **Calibration** | 150 to 250 hand-labelled cases. Agreement reported with its confidence interval, and false accepts counted apart from false rejects. |
+| **Evals** | Two sets: one to find out what is broken, one for the number we publish. Failures in production become new cases. |
+| **Acceptance sampling** | The quality gate on the corpus. Rubric, sample size and pass mark all fixed before the first run. |
+| **Verdict caching** | Keyed by item, answer, language, model, prompt version and corpus version. Your own correction deletes its own key, so a bad verdict cannot spread. |
+| **Prompt caching** | On the batch job and the tutor, checked against the cache token count rather than assumed. |
+| **RAG** | Exactly one use: the tutor, over a grammar corpus. Everything else that looks like retrieval is a database query. |
+| **Guardrails** | Built into the shape rather than asked for in words: closed output, no tools where untrusted text flows, machine checks on anything generated, model output never drawn as markup. |
+| **Observability** | Traces normalised as they arrive, because the standard names for them keep changing. Alerts on parse failures, refusals, retries, latency, cache hits, and how often you correct us. |
+| **Cost control** | A cap per person and a global one. Hitting it falls back to self-grading instead of failing. |
+| **Compliance** | Models pinned to dated versions, provenance on every generated row, and an EU AI Act marker that was a database column before there was any code. |
+| **MCP** | v0.4. Ships only if we can name a real user for it. |
+
+**Not used, on purpose.** No vector store, because the theme set is closed and a tagged column
+answers the question exactly. No semantic caching, because two words that sit close together in
+embedding space can have opposite verdicts, and the cached value *is* the judgement. No tools on the
+judge: no tools plus a closed output means an injected instruction can neither act nor leak. No A2A
+endpoint, because there is no other agent to talk to and it would be a facade.
 
 ## Built with coding agents
 
