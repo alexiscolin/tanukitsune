@@ -590,3 +590,4 @@
 {"date": "2026-08-07", "branch": "feat/durable-answer-backup", "reviewer": "docs-conformity", "file": "docs/verification.md", "line": 52, "outcome": "fixed"}
 {"date": "2026-08-07", "branch": "feat/durable-answer-backup", "reviewer": "docs-conformity", "file": "src/data/review-batch.ts", "line": 16, "outcome": "fixed"}
 {"date": "2026-08-07", "branch": "feat/durable-answer-backup", "kind": "pass", "base": "1d3ecc35d569016db256fcb3ab12cf68a907521d", "head": "81c0e734b6a787f59e26d4650bf8241e842aa595"}
+{"date": "2026-08-07", "branch": "feat/durable-answer-backup", "kind": "pass", "base": "8fb1debc3717361169e35fe7918102f5d49491c9", "head": "05ae3a40a0c5b9ea91f76202fcd682c060d52c69"}
