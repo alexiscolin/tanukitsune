@@ -660,3 +660,18 @@
 {"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "code-review", "file": "src/app/api/flush/route.ts", "line": 43, "outcome": "fixed"}
 {"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "code-review", "file": "src/core/routes.ts", "line": 26, "outcome": "fixed"}
 {"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "kind": "pass", "base": "40292ea6493ae2d255cebeb4fa68d7f690146475", "head": "8d258ac3e37131666a47c447749dcae8b87596c4"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "regression-check", "file": "package.json", "line": 33, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "security-check", "file": "package.json", "line": 33, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "security-check", "file": ".env.example", "line": 22, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "security-check", "file": ".gitignore", "line": 22, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "requirement-check", "file": ".gitignore", "line": 22, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "requirement-check", "file": "playwright.config.ts", "line": 35, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "architecture-check", "file": "drizzle.config.ts", "line": 17, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "architecture-check", "file": "src/data/db.ts", "line": 16, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "architecture-check", "file": "playwright.config.ts", "line": 95, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "performance-check", "file": "package.json", "line": 33, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "docs-conformity", "file": "docs/framing.md", "line": 331, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "regression-check", "file": "docs/verification.md", "line": 51, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "kind": "pass", "base": "11d0ca3a5f9d6b2fa9629034ee85618a32dec03c", "head": "e86d3ab559df3af9fd4f39a1cc4315834ee170aa"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "regression-check", "file": "package.json", "line": 33, "outcome": "dismissed", "reason": "Reconsidered in /simplify: the guard duplicated the decision drizzle.config.ts already makes and re-implemented asOptional in a shell string no gate reads. It also protected a door bootstrap.sh leaves open, migrating whatever DATABASE_URL names unconditionally."}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "kind": "pass", "base": "11d0ca3a5f9d6b2fa9629034ee85618a32dec03c", "head": "ab20dd5735e3a2ef2e4297b428cebdeeddbb8aa3"}

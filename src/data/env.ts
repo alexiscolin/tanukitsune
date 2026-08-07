@@ -15,10 +15,13 @@ const optionalText = z.preprocess(
 )
 
 // Parsed once, at the boundary. Nothing else in the application reads process.env.
-// What reads the raw variable outside the application is the migration configuration
+// What reads a raw variable outside the application is the migration configuration
 // and the end-to-end expectation, through the rule above rather than around it.
 const schema = z.object({
   DATABASE_URL: optionalText,
+  // Which directory the file-backed database opens, where no server one is named. Absent is the
+  // default beside the repository, and why a second one exists is in docs/verification.md.
+  TANUKITSUNE_LOCAL_DATABASE: optionalText,
   // Optional because one public URL is both the demo and the product: with no token the demo
   // deck is served, and only a deployment reviewing a real account holds one. Single user and
   // unencrypted by decision, per the out-of-scope section of docs/specs/v0.1.md.

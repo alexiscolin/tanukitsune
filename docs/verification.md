@@ -53,7 +53,7 @@ database. It covers the two real routes, every catalogued state in both themes, 
 the product makes: what the loop queues in the browser and what the backup makes durable here, plus
 the flush that carries the second to the source.
 
-It builds once and starts four servers. Two are the same build twice: one holding no token, which
+It builds once, migrates the second database where there is one, and starts four servers. Two are the same build twice: one holding no token, which
 deals the seeded deck every demo spec asserts, and one holding a token spent on `e2e/fake-source.ts`,
 which answers where WaniKani would and deals the account in `e2e/fake-account.ts`. Which deck is
 dealt is read from the token alone, so a single server could serve one of the two and not both. The
@@ -62,6 +62,13 @@ and typed against the parsers in `src/data/wanikani/payload.ts`, so what a sessi
 seeded deck drives is the source's own HTTP rather than a stand-in for it: its URLs, its revision
 header, its cursor walk and its parse. It is also the only place `TANUKITSUNE_UPSTREAM_WRITE` is on,
 so the one suite that submits anything submits it to an account nobody owns.
+
+The two application servers hold two databases where the environment names no server one, through
+`TANUKITSUNE_LOCAL_DATABASE`, which `src/data/db.ts` and `drizzle.config.ts` both read so migrations
+reach the directory the application opens. The file-backed driver is one process over one directory:
+two servers sharing it abort each other's queries and leave the directory unopenable. A deployment
+and CI name a server database instead, where two clients are ordinary, so this is a rule about a
+fresh clone rather than about production.
 
 | Command | Tool | Catches |
 |---|---|---|
