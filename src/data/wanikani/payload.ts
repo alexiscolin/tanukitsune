@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import type { Assignment } from '@/core/knowledge-source'
+import type { Advanced, Assignment } from '@/core/knowledge-source'
 import type { Component, Reading, Sentence, Subject, SubjectType } from '@/core/subject'
 
 // The wire, parsed at the boundary and never carried past it. A component reading snake_case off
@@ -223,5 +223,16 @@ export function toSubject(
 }
 
 export function toAssignment(entry: z.infer<typeof assignmentEntry>): Assignment {
-  return { subjectId: entry.data.subject_id, srsStage: entry.data.srs_stage }
+  return { id: entry.id, subjectId: entry.data.subject_id, srsStage: entry.data.srs_stage }
+}
+
+// What one submission produced. Their created review carries an identifier that is always zero, so
+// nothing here reads it: the stage the assignment landed on is the whole of what comes back, and it
+// sits under the resources they updated rather than in the review itself.
+export const reviewPayload = z.object({
+  resources_updated: z.object({ assignment: z.object({ data: z.object({ srs_stage: z.number() }) }) }),
+})
+
+export function toAdvanced(payload: z.infer<typeof reviewPayload>): Advanced {
+  return { srsStage: payload.resources_updated.assignment.data.srs_stage }
 }

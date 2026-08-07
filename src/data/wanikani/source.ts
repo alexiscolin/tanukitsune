@@ -1,13 +1,15 @@
 import type { z } from 'zod'
 
-import type { KnowledgeSource, Waiting } from '@/core/knowledge-source'
+import type { Advanced, KnowledgeSource, Waiting } from '@/core/knowledge-source'
 import type { Component, Subject } from '@/core/subject'
 
 import {
   assignmentCollection,
   mentionedIn,
+  reviewPayload,
   studyMaterialCollection,
   subjectCollection,
+  toAdvanced,
   toAssignment,
   toComponent,
   toStudyMaterial,
@@ -34,6 +36,9 @@ const API = 'https://api.wanikani.com/v2'
 // is any use without the other.
 type Client = { readonly token: string; readonly api: string }
 
+// What a caller hands in, which is the shape `KnowledgeSource` declares rather than a second one.
+type Submitted = Parameters<KnowledgeSource['submitReview']>[0]
+
 // Their shape is versioned by date and the header is not optional: without it the response is
 // whatever revision they consider current, which is a payload nobody wrote a parser for.
 const REVISION = '20170710'
@@ -43,9 +48,15 @@ const REVISION = '20170710'
 // identifiers is a request that fails on its length rather than on its content.
 const IDS_PER_REQUEST = 500
 
+// Both halves send the same two, so they are built once: a submission that reached them without
+// the revision is an item advanced on a shape nobody parsed.
+function headersFor(client: Client): Record<string, string> {
+  return { Authorization: `Bearer ${client.token}`, 'Wanikani-Revision': REVISION }
+}
+
 async function read(client: Client, path: string): Promise<unknown> {
   const response = await fetch(path.startsWith(client.api) ? path : `${client.api}${path}`, {
-    headers: { Authorization: `Bearer ${client.token}`, 'Wanikani-Revision': REVISION },
+    headers: headersFor(client),
   })
 
   // Loudly, and naming the status: a read that fails silently returns an empty queue, which is
@@ -55,6 +66,29 @@ async function read(client: Client, path: string): Promise<unknown> {
     throw new Error(`WaniKani answered ${response.status} for ${path.replace(client.api, '')}.`)
 
   return response.json()
+}
+
+// The one thing this client writes. Their created review carries an identifier that is always
+// zero, so nothing distinguishes one submission's answer from another's and a failure nobody can
+// classify is settled by reading the assignment again rather than by sending this twice.
+async function submitReview(client: Client, submission: Submitted): Promise<Advanced> {
+  const response = await fetch(`${client.api}/reviews`, {
+    method: 'POST',
+    headers: { ...headersFor(client), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      review: {
+        assignment_id: submission.assignmentId,
+        incorrect_meaning_answers: submission.incorrectMeanings,
+        incorrect_reading_answers: submission.incorrectReadings,
+      },
+    }),
+  })
+
+  // Named rather than swallowed, and the caller sorts them: their 422 says the item was not due,
+  // which is dropped and re-read, where everything else is left where it was.
+  if (!response.ok) throw new Error(`WaniKani answered ${response.status} for /reviews.`)
+
+  return toAdvanced(reviewPayload.parse(await response.json()))
 }
 
 // Their cursor is a URL rather than a page number, so following it is the whole of paging. It
@@ -190,5 +224,6 @@ export function wanikaniSource(token: string, api: string = API): KnowledgeSourc
   return {
     listSubjects: (ids) => listSubjects(client, ids),
     listWaiting: () => listWaiting(client),
+    submitReview: (submission) => submitReview(client, submission),
   }
 }

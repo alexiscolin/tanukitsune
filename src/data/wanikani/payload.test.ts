@@ -132,10 +132,12 @@ describe('mentionedIn', () => {
 })
 
 describe('toAssignment', () => {
-  it('names the subject and what the reader has done with it, and nothing else', () => {
+  // Three fields and no more: the subject, what the reader has done with it, and the identifier a
+  // submission names, the source advancing an assignment rather than a subject.
+  it('names the assignment, its subject and what the reader has done with it', () => {
     const assignment = toAssignment({ id: 80463006, data: { subject_id: 451, srs_stage: 2 } })
 
-    expect(assignment).toEqual({ subjectId: 451, srsStage: 2 })
+    expect(assignment).toEqual({ id: 80463006, subjectId: 451, srsStage: 2 })
   })
 
   // Zero is a subject unlocked and never studied, which is what makes it a lesson rather than a

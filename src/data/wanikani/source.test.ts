@@ -280,11 +280,11 @@ describe('wanikaniSource', () => {
   // A submission carries the same two headers a read does. Without the revision their answer is a
   // shape nobody parses, and a submission parsed wrong is an item advanced on a guess.
   it('sends the revision and the token when it submits', async () => {
-    let seen: Headers | null = null
+    const seen: Headers[] = []
 
     server.use(
       http.post(`${API}/reviews`, ({ request }) => {
-        seen = request.headers
+        seen.push(request.headers)
 
         return HttpResponse.json(
           { id: 0, resources_updated: { assignment: { data: { srs_stage: 1 } } } },
@@ -299,8 +299,8 @@ describe('wanikaniSource', () => {
       incorrectReadings: 0,
     })
 
-    expect(seen?.get('Wanikani-Revision')).toBe('20170710')
-    expect(seen?.get('Authorization')).toBe('Bearer a-token')
+    expect(seen[0]?.get('Wanikani-Revision')).toBe('20170710')
+    expect(seen[0]?.get('Authorization')).toBe('Bearer a-token')
   })
 
   // Their 422 means the item was not due, so the submission is dropped and the state re-read
