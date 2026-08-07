@@ -18,6 +18,9 @@ info/
 
 # Local file-backed Postgres, created by pnpm bootstrap.
 .postgres/
+.postgres-account/
+# Any copy of it, however it was named: the driver writes binary the repository must never carry.
+.postgres*
 
 # Playwright output.
 test-results/

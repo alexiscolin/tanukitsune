@@ -63,6 +63,13 @@ seeded deck drives is the source's own HTTP rather than a stand-in for it: its U
 header, its cursor walk and its parse. It is also the only place `TANUKITSUNE_UPSTREAM_WRITE` is on,
 so the one suite that submits anything submits it to an account nobody owns.
 
+The two application servers hold two databases where the environment names no server one, through
+`TANUKITSUNE_LOCAL_DATABASE`, which `src/data/db.ts` and `drizzle.config.ts` both read so migrations
+reach the directory the application opens. The file-backed driver is one process over one directory:
+two servers sharing it abort each other's queries and leave the directory unopenable. A deployment
+and CI name a server database instead, where two clients are ordinary, so this is a rule about a
+fresh clone rather than about production.
+
 | Command | Tool | Catches |
 |---|---|---|
 | `typecheck` | `tsc6` | type errors, under `strict` and `noUncheckedIndexedAccess` |

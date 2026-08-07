@@ -8,7 +8,14 @@ import * as schema from './schema'
 
 type Database = PgDatabase<PgQueryResultHKT, typeof schema>
 
+// Where the file-backed database lives when no server one is named. Configurable because pglite is
+// one process over one directory: two servers sharing it abort each other's queries, and the
+// end-to-end suite runs two. A deployment names a server database instead and never reaches this.
 const LOCAL_DATA_DIR = '.postgres'
+
+function localDataDir(): string {
+  return env.TANUKITSUNE_LOCAL_DATABASE ?? LOCAL_DATA_DIR
+}
 
 // A server Postgres when the environment names one, the local file-backed
 // database otherwise, which is what lets a fresh clone run with nothing
@@ -49,7 +56,7 @@ async function connect(): Promise<Database> {
     import('@electric-sql/pglite'),
     import('drizzle-orm/pglite'),
   ])
-  return drizzle(new PGlite(LOCAL_DATA_DIR), { schema })
+  return drizzle(new PGlite(localDataDir()), { schema })
 }
 
 // Which database answered, not only whether one did. A deployment that lost its
