@@ -40,7 +40,13 @@ export const sourceURL = `http://127.0.0.1:${SOURCE_PORT}`
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: true,
+  // One worker, so specs never run beside each other. Two of them drive the same account server and
+  // the same fake source, and a spec that makes that source unreachable is invisible to a spec
+  // rendering a session on the other side of it: the state they share is a process, not a fixture.
+  // The alternative is one file per server, which Playwright serialises, and that trades a file per
+  // subject for a file per process as the suite grows.
+  fullyParallel: false,
+  workers: 1,
   forbidOnly: Boolean(process.env['CI']),
   retries: process.env['CI'] === undefined ? 0 : 1,
   reporter: process.env['CI'] === undefined ? 'list' : 'github',

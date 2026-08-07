@@ -5,11 +5,10 @@ import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 import { isFlow } from '@/core/subject'
 import { env } from '@/data/env'
-import { LessonSession } from '@/ui/organisms/lesson-session'
-
 import { BackupDrain } from '../backup-drain'
 import { HoldDeck } from '../hold-deck'
 import { lessonDeck, reviewDeck } from '../waiting'
+import { LessonFlow } from './lesson-flow'
 import { ReviewFlow } from './review-flow'
 
 // The loop, whichever of the two flows is being run. Which one is a state of this route rather
@@ -44,7 +43,7 @@ export default async function SessionPage({
         {lesson.held !== null && (
           <HoldDeck flow="lesson" subjects={lesson.held.subjects} waiting={lesson.held.waiting} />
         )}
-        <LessonSession
+        <LessonFlow
           deck={lesson.cards}
           copy={copy.review}
           subjectCopy={copy.subject}

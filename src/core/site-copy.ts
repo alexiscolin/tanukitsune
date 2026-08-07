@@ -18,6 +18,9 @@ export type ReviewCopy = {
   // Keyed by the verdict for the reason the question is keyed by the kind: a verdict added
   // without its word is a type error rather than a blank line where the answer was judged.
   readonly verdict: Record<Verdict, string>
+  // When the account cannot be reached and the device holds nothing for this flow. There is no
+  // gesture that fixes it from here, so the line says what is missing rather than offering a retry.
+  readonly unreachable: string
   readonly askSelfGrade: string
   // One label per verdict, because each asks the same question: say what the answer was.
   readonly grade: Record<Verdict, string>
@@ -97,6 +100,7 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
       unconverted: "Cette réponse n'est pas une lecture en kana.",
       unwritten: 'Réponse non enregistrée. Refais le geste.',
       verdict: { correct: 'Juste', incorrect: 'Faux' },
+      unreachable: 'Hors ligne, et rien de cette série sur cet appareil.',
       askSelfGrade: "Rien n'a pu trancher. C'était juste ?",
       grade: { correct: "C'était juste", incorrect: "C'était faux" },
       next: 'Suivant',

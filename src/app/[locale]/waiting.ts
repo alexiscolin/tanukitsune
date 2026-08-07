@@ -24,6 +24,13 @@ function sourceFor(token: string) {
 // cleared when a deck restarts, and a screen dealing one while promising that nothing leaves the
 // device is worse than one saying nothing.
 //
+// Whether the source answered at all. A refusal is an answer and a defect this client is right to
+// raise; no answer is the case the device's cache exists for, so it is the only one caught here.
+// Null cards mean the screen deals from what it holds rather than from what arrived.
+function unreachable(reason: unknown): boolean {
+  return reason instanceof TypeError
+}
+
 // A real deck also carries what it was built from, which the cards no longer hold once they are
 // questions: the device keeps those so the same sitting can be dealt again with no network. Null on
 // the seeded deck, which is a constant already on the device and must not replace what an account
@@ -73,28 +80,40 @@ async function dealt(
   return { deck, waiting: sitting.filter((entry) => dealt.has(entry.subjectId)) }
 }
 
-export async function lessonDeck(): Promise<Dealt<readonly Subject[]>> {
+export async function lessonDeck(): Promise<Dealt<readonly Subject[] | null>> {
   const token = env.WANIKANI_TOKEN
   if (token === undefined) return { cards: DEMO_DECK, demo: true, held: null }
 
-  const sitting = await dealt(token, 'lesson')
+  try {
+    const sitting = await dealt(token, 'lesson')
 
-  return {
-    cards: sitting.deck,
-    demo: false,
-    held: { subjects: sitting.deck, waiting: sitting.waiting },
+    return {
+      cards: sitting.deck,
+      demo: false,
+      held: { subjects: sitting.deck, waiting: sitting.waiting },
+    }
+  } catch (reason) {
+    if (!unreachable(reason)) throw reason
+
+    return { cards: null, demo: false, held: null }
   }
 }
 
-export async function reviewDeck(): Promise<Dealt<readonly Question[]>> {
+export async function reviewDeck(): Promise<Dealt<readonly Question[] | null>> {
   const token = env.WANIKANI_TOKEN
   if (token === undefined) return { cards: DEMO_QUESTIONS, demo: true, held: null }
 
-  const sitting = await dealt(token, 'review')
+  try {
+    const sitting = await dealt(token, 'review')
 
-  return {
-    cards: questionsFor(sitting.deck),
-    demo: false,
-    held: { subjects: sitting.deck, waiting: sitting.waiting },
+    return {
+      cards: questionsFor(sitting.deck),
+      demo: false,
+      held: { subjects: sitting.deck, waiting: sitting.waiting },
+    }
+  } catch (reason) {
+    if (!unreachable(reason)) throw reason
+
+    return { cards: null, demo: false, held: null }
   }
 }
