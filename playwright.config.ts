@@ -24,6 +24,12 @@ process.env['TANUKITSUNE_SYNC_SECRET'] = SYNC_SECRET
 const CATALOGUE_PORT = 6017
 export const catalogueURL = `http://127.0.0.1:${CATALOGUE_PORT}`
 
+// The same application again, on its own port, dealing an account instead of the seeded deck.
+// Two servers rather than one, because which deck is dealt is read from the token alone: a
+// single server holding one would take the demo away from every spec that asserts it.
+const ACCOUNT_PORT = 3118
+export const accountURL = `http://127.0.0.1:${ACCOUNT_PORT}`
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -34,9 +40,11 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: devices['Desktop Chrome'] }],
   webServer: [
     // Against the production build, because the offline paths this suite exists to
-    // cover behave differently under the development server.
+    // cover behave differently under the development server. The build runs in the
+    // test:e2e script rather than here: two servers starting together would run two
+    // builds over one .next directory.
     {
-      command: `pnpm build && pnpm start -p ${PORT}`,
+      command: `pnpm start -p ${PORT}`,
       url: baseURL,
       // Demo mode for the server this file starts: with a token it deals whoever's account the
       // machine happens to hold, and a suite that asserts what is waiting would then pass or fail
