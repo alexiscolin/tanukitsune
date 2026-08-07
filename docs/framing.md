@@ -244,8 +244,11 @@ v0.2 opens; the schema that makes it possible ships in v0.1.
   server-side backup and tells the user plainly that the browser tab may still hold answers that were
   never sent.
 - **Background Sync does not exist on iOS and never has**, so the flush is an in-page paced drain
-  triggered on reconnect and on visibility change. Treating the browser's sync event as anything other
-  than a bonus on Chromium would promise behaviour the platform cannot deliver.
+  triggered when the page comes up, on reconnect and on visibility change. Treating the browser's sync
+  event as anything other than a bonus on Chromium would promise behaviour the platform cannot
+  deliver. The first of the three is what covers a reader who answered offline and closed the tab:
+  they reopen the application with the network already back and the tab already visible, so neither
+  event fires and only the page coming up does.
 - Multi-tab is a week-one case, not an edge case. A single sync leader elected through the Web Locks
   API.
 - The flush is a route handler taking a batch, not a server action, for the reasons given under

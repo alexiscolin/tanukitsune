@@ -1,11 +1,18 @@
 import { expect, test, type Page } from '@playwright/test'
 
-import { sessionPath } from '../src/core/routes'
+import { BACKUP_PATH, sessionPath } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
 import { asked, written } from './outbox'
 
 // The outbox, exercised through the browser's own IndexedDB rather than a substitute for it:
 // the store is the browser's, so a stand-in would prove that the stand-in works.
+
+// The backup is refused for every test here, so a row leaves the queue only where this file says
+// it does: what empties it below is the deck restarting, and a drain that took the row first would
+// let that pass without it. The drain is driven in `sync.spec.ts`, against the same store.
+test.beforeEach(async ({ context }) => {
+  await context.route(`**${BACKUP_PATH}`, (route) => route.abort())
+})
 
 const COPY = copyFor('fr')
 
@@ -39,13 +46,13 @@ test('an answer is in the browser database before the deck advances', async ({ p
     verdict: 'correct',
     correct: true,
   })
-  // Nothing leaves the device in demo mode, so the field the flush fills is empty.
+  // Filled by the flush to the source, which does not exist: the backup stores the row and never
+  // writes to it, so this stays empty for as long as nothing submits upstream.
   expect(rows[0]?.syncedAt).toBeNull()
 })
 
-// Demo mode runs the real write and submits nothing, so the queue it leaves behind is not a
-// queue anybody drains. The deck restarting is what empties it, and a reload is the only
-// restart there is.
+// The deck restarting is what empties the queue, and a reload is the only restart there is. With
+// the backup refused above, it is also the only thing that can have emptied it.
 test('restarting the demo deck leaves an empty queue', async ({ page }) => {
   await page.goto(sessionPath('fr', 'review'))
   await answerFirstCard(page)

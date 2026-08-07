@@ -289,8 +289,10 @@ day, and the source itself is covered where a request can be checked, in `src/da
 here is a fade and a frame of one measures the animation rather than the screen. `e2e/tunnel.spec.ts`
 is what enters a session from that screen, pages a batch to its end and leaves by the way out there,
 and it audits nothing. Neither does `e2e/review.spec.ts`, which asks the one question a substitute
-cannot answer, whether the answer is in the browser's database before the deck advances. What no gate holds is the
-appearance, which is recorded below under what is not covered.
+cannot answer, whether the answer is in the browser's database before the deck advances, nor
+`e2e/sync.spec.ts`, which asks what takes it back out when the network returns, when the tab does,
+and when a second tab is open. Both read that store through `e2e/outbox.ts`. What no gate holds is
+the appearance, which is recorded below under what is not covered.
 
 ## The token rule
 
@@ -345,6 +347,9 @@ without any of them running unprompted.
   a real IndexedDB kept, and nothing drives a quota refusal or a version upgrade. What is tested is
   the screen's side of a refusal, against a writer that rejects, which is the interface half of it
   and says nothing about the store.
+- A deployment with no backup configured is driven nowhere. The layout renders the component holding
+  the drain only where the secret is present, and the suite's server is started with one, so that
+  branch is read rather than tested.
 - The reviewers read a diff, so a regression whose cause lies in unchanged code is invisible to them.
 - A pass line is a record somebody wrote, not evidence a model ran. The gate refuses a merge nobody
   reviewed; it cannot refuse one somebody only claimed to have reviewed.
