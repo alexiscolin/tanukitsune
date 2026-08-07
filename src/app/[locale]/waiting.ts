@@ -64,7 +64,13 @@ async function dealt(
   const sitting = sessionOf(flow === 'lesson' ? queues.lessons : queues.reviews)
   const subjects = await source.listSubjects(sitting.map((entry) => entry.subjectId))
 
-  return { deck: deckFor(sitting, subjects), waiting: sitting }
+  const deck = deckFor(sitting, subjects)
+  // Only what the deck kept. `deckFor` drops an assignment whose subject the source withdrew or
+  // never sent, and a cached record naming one would let a later flush advance an item the reader
+  // was never asked.
+  const dealt = new Set(deck.map((subject) => subject.id))
+
+  return { deck, waiting: sitting.filter((entry) => dealt.has(entry.subjectId)) }
 }
 
 export async function lessonDeck(): Promise<Dealt<readonly Subject[]>> {

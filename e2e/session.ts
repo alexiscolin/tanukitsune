@@ -5,7 +5,7 @@ import type { Question } from '../src/core/review/question'
 import type { AnswerRecord } from '../src/core/review/answer-record'
 import { BACKUP_PATH } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
-import { OUTBOX_DATABASE, OUTBOX_STORE, VERSION } from '../src/data/local/database'
+import { OUTBOX_DATABASE, OUTBOX_STORE } from '../src/data/local/database'
 
 // What both suites driving a session need of it, held once: which question the seeded deck asks
 // where, how a card is answered, and the rows a real IndexedDB kept. `review.spec.ts` asks whether
@@ -57,29 +57,56 @@ export async function answerQuestion(page: Page, question: Question) {
   await page.keyboard.press('ArrowRight')
 }
 
-// The rows as the application wrote them, read through a connection of the suite's own. It is
-// closed before the rows are handed back: a connection left open blocks the version change the day
-// the store gains its second one.
-export function written(page: Page): Promise<readonly AnswerRecord[]> {
+// What a store holds, read through a connection of the suite's own and closed before the rows are
+// handed back: a connection left open blocks the version change a later page asks for.
+//
+// It never creates the database. An open that arrives before the application has made it would
+// create it empty, at whatever version was asked for, and the application's upgrade would then never
+// run: every store missing for the rest of that browser context. So an absent database and an absent
+// store both read as nothing, which is also what lets a caller poll rather than fail on the race
+// between a card taking focus and the effect that writes.
+export function readStore<Row>(page: Page, store: string): Promise<readonly Row[]> {
   return page.evaluate(
-    ([database, store, version]) =>
-      new Promise<AnswerRecord[]>((resolve, reject) => {
-        // At the version the application opens, never bare: a versionless open of a database that
-        // does not exist yet creates it at version one with no stores, which the upgrade ladder then
-        // reads as an outbox already made.
-        const opened = indexedDB.open(database, version)
-        opened.onerror = () => reject(new Error('The local database did not open.'))
-        opened.onsuccess = () => {
-          const all = opened.result.transaction(store).objectStore(store).getAll()
-          all.onsuccess = () => {
-            opened.result.close()
-            resolve(all.result as AnswerRecord[])
+    ([database, name]) =>
+      new Promise<Row[]>((resolve, reject) => {
+        void indexedDB.databases().then((made) => {
+          if (!made.some((one) => one.name === database)) {
+            resolve([])
+
+            return
           }
-          all.onerror = () => reject(new Error('The outbox did not read.'))
-        }
+
+          const opened = indexedDB.open(database)
+          opened.onerror = () => reject(new Error('The local database did not open.'))
+          opened.onsuccess = () => {
+            const db = opened.result
+
+            if (!db.objectStoreNames.contains(name)) {
+              db.close()
+              resolve([])
+
+              return
+            }
+
+            const all = db.transaction(name).objectStore(name).getAll()
+            all.onsuccess = () => {
+              db.close()
+              resolve(all.result as Row[])
+            }
+            all.onerror = () => {
+              db.close()
+              reject(new Error(`The ${name} store did not read.`))
+            }
+          }
+        })
       }),
-    [OUTBOX_DATABASE, OUTBOX_STORE, VERSION] as const,
+    [OUTBOX_DATABASE, store] as const,
   )
+}
+
+// The rows the loop queued, which is the one piece of local state nothing can rebuild.
+export function written(page: Page): Promise<readonly AnswerRecord[]> {
+  return readStore<AnswerRecord>(page, OUTBOX_STORE)
 }
 
 export function queueLength(page: Page): Promise<number> {

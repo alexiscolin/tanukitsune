@@ -2,11 +2,12 @@ import { expect, test, type Page } from '@playwright/test'
 
 import { sessionPath } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
-import { DECK_STORE, OUTBOX_DATABASE, VERSION } from '../src/data/local/database'
+import { DECK_STORE } from '../src/data/local/database'
 import type { HeldDeck } from '../src/data/local/database'
 import { toAssignment } from '../src/data/wanikani/payload'
 import { accountURL } from '../playwright.config'
 import { FAKE_LESSONS, FAKE_REVIEWS } from './fake-account'
+import { readStore } from './session'
 
 // What a session leaves behind on the device. Both routes read the source on the server per render
 // today, so a session cannot start without a network at all; the sitting it was dealt is the first
@@ -15,44 +16,16 @@ import { FAKE_LESSONS, FAKE_REVIEWS } from './fake-account'
 // It runs on the account server: the seeded deck is a constant already in the bundle, and a demo
 // render writes nothing at all.
 
-// Read through a connection of the suite's own, closed before the rows are handed back: a connection
-// left open blocks the version change every other spec's page then waits on. The same shape
-// `written` uses for the outbox.
-function held(page: Page): Promise<readonly HeldDeck[]> {
-  return page.evaluate(
-    ([database, store, version]) =>
-      new Promise<HeldDeck[]>((resolve, reject) => {
-        // At the version the application opens, never bare: a versionless open of a database that
-        // does not exist yet creates it at version one with no stores, and the upgrade ladder would
-        // then skip the outbox for ever on that profile.
-        const opened = indexedDB.open(database, version)
-        opened.onerror = () => reject(new Error('The local database did not open.'))
-        opened.onsuccess = () => {
-          if (!opened.result.objectStoreNames.contains(store)) {
-            opened.result.close()
-            reject(new Error(`The local database holds no store called ${store}.`))
-
-            return
-          }
-
-          const all = opened.result.transaction(store).objectStore(store).getAll()
-          all.onsuccess = () => {
-            opened.result.close()
-            resolve(all.result as HeldDeck[])
-          }
-          all.onerror = () => reject(new Error(`The ${store} store did not read.`))
-        }
-      }),
-    [OUTBOX_DATABASE, DECK_STORE, VERSION] as const,
-  )
-}
-
 const COPY = copyFor('fr')
 
 // The account deck asks every meaning before any reading, so its first card is a meaning. Asserted
 // against this deck rather than through the seeded deck's helper, which answers for the other one.
 async function firstCardReady(page: Page) {
   await expect(page.getByLabel(COPY.review.prompt.meaning)).toBeFocused()
+}
+
+function held(page: Page) {
+  return readStore<HeldDeck>(page, DECK_STORE)
 }
 
 function heldFor(decks: readonly HeldDeck[], flow: string) {
