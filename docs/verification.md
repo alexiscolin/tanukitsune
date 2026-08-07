@@ -79,10 +79,16 @@ destination.
 
 The reader's WaniKani account holds real progress, and the deny list covers one path to it. The two
 others are the hook below, whose exact rule is stated there, and the empty `WANIKANI_TOKEN`
-that `pnpm verify` builds with, which `src/data/env.ts` reads as absent so the prerender of
-`/[locale]` deals the demo deck instead of calling the API with whatever token the machine holds.
-`playwright.config.ts` sets the same variable for the same reason. A build run outside `verify`
-carries the real token, which is why `pnpm build` is asked for while `pnpm verify` is allowed.
+that `pnpm verify` builds with, which `src/data/env.ts` reads as absent: no route reads the account
+at build time, and the empty value is what holds that true whatever a route's rendering later
+becomes. `playwright.config.ts` sets the same variable on the server dealing the seeded deck, so a
+suite asserting what is waiting cannot pass or fail on somebody's study day. A build run outside
+`verify` carries the real token, which is why `pnpm build` is asked for while `pnpm verify` is
+allowed.
+
+Where the source answers is an argument rather than a constant, so the end-to-end suite can name a
+server of its own. Two things hold a deployment on the real host, and `check:account` proves both:
+naming nothing reaches it, and nothing committed names anything else.
 
 Three paths are held by nothing: a command reaching the host without naming it, a host assembled from
 pieces so that neither a scheme nor a path sits against it, and a shell reading the token file, which

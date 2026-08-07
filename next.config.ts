@@ -14,8 +14,7 @@ const config: NextConfig = {
       { source: '/', destination: startPath(DEFAULT_LOCALE), permanent: false },
     ]),
   // The three that cost nothing and need no per-request value. A full script-src
-  // needs a nonce, which the prerendered locale layout cannot produce, so it is
-  // an owed decision rather than a guess made here.
+  // needs a nonce, which is an owed decision rather than a guess made here.
   headers: () =>
     Promise.resolve([
       {

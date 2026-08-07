@@ -7,6 +7,12 @@ import { SessionStart } from '@/ui/organisms/session-start'
 
 import { due } from './waiting'
 
+// Rendered per request, because what is waiting is a fact about the reader's account at the moment
+// they open the app. Prerendered, this screen carried the counts the build read and never moved
+// again, so a deployment holding a token showed its deploy time rather than its queue. It also
+// called the account once per build, which is why a build had to be told not to.
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   if (!isLocale(locale)) notFound()
