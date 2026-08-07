@@ -367,10 +367,18 @@ external-store subscription, with ordinary component state for ephemeral interfa
 dependency for the database wrapper, `idb`, which wraps the native API in promises and stops there.
 No state library.
 
-Four stores: subjects, assignments and corpus rows as caches of server truth, replaced wholesale and
-never merged, the corpus keyed by subject and locale and warmed alongside the assignment prefetch so
-the item card never waits on a network; and the outbox, appended with client-generated identifiers so
-a duplicate throws rather than silently overwriting.
+Three stores. The sitting a flow was dealt, one record per flow holding its subjects and what it was
+waiting on, replaced whole and never merged: a session needs exactly one flow's sitting, so the flow
+is the key and a replacement is one write rather than a transaction across stores that can half
+fail. A subject in both queues is held twice, which is kilobytes at ten items a sitting and is what
+keeps the replacement whole. Corpus rows beside it, keyed by subject and locale and warmed alongside
+the prefetch so the item card never waits on a network. And the outbox, appended with
+client-generated identifiers so a duplicate throws rather than silently overwriting.
+
+The first two are caches of server truth, so eviction costs a download; the outbox is the opposite,
+and a row lost there is an answer that existed nowhere else. A schema version belongs to the database rather
+than to a store, so every store is opened from one module. A tab holding an outdated connection
+closes it when another asks to upgrade, rather than blocking that tab for as long as it lives.
 
 A queued entry is never written to after the append. It leaves the queue once the backup confirms it,
 and the three fields the flush fills, `synced_at`, `applied_upstream` and `srs_stage_after`, are

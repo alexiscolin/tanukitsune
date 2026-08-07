@@ -41,7 +41,9 @@ export default async function SessionPage({
 
     return (
       <>
-        <HoldDeck subjects={lesson.held.subjects} waiting={lesson.held.waiting} />
+        {lesson.held !== null && (
+          <HoldDeck flow="lesson" subjects={lesson.held.subjects} waiting={lesson.held.waiting} />
+        )}
         <LessonSession
           deck={lesson.cards}
           copy={copy.review}
@@ -65,7 +67,9 @@ export default async function SessionPage({
   return (
     <>
       {secret !== undefined && <BackupDrain secret={secret} />}
-      <HoldDeck subjects={review.held.subjects} waiting={review.held.waiting} />
+      {review.held !== null && (
+        <HoldDeck flow="review" subjects={review.held.subjects} waiting={review.held.waiting} />
+      )}
       <ReviewFlow
         locale={locale}
         questions={review.cards}

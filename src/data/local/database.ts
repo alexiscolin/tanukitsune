@@ -3,7 +3,7 @@ import type { DBSchema, IDBPDatabase } from 'idb'
 
 import type { Assignment } from '@/core/knowledge-source'
 import type { AnswerRecord } from '@/core/review/answer-record'
-import type { Subject } from '@/core/subject'
+import type { Flow, Subject } from '@/core/subject'
 
 // The browser's database, opened once and shared by every store in it. One database rather than one
 // per store, because a version belongs to the whole of it: two files calling `openDB` on this name
@@ -14,30 +14,38 @@ import type { Subject } from '@/core/subject'
 export const OUTBOX_DATABASE = 'tanukitsune'
 export const OUTBOX_STORE = 'outbox'
 
-// Caches of server truth beside the queue, so a sitting the reader has already opened can be dealt
-// again with no network. They are replaced wholesale and never merged, per docs/framing.md under
-// local state: eviction costs a download rather than data, which is what tells them apart from the
-// outbox, where a lost row is an answer that never existed anywhere else.
-export const SUBJECT_STORE = 'subjects'
-export const ASSIGNMENT_STORE = 'assignments'
+// What one sitting was dealt, kept so it can be dealt again with no network. A cache of server
+// truth, replaced wholesale and never merged, per docs/framing.md under local state: what a browser
+// evicts costs a download rather than an answer, which is what tells it apart from the outbox, where
+// a lost row is an answer that existed nowhere else.
+export const DECK_STORE = 'decks'
 
-// Two, because the caches arrived after the queue. A version belongs to the whole database, which is
-// why every store here is opened from this file rather than each opening its own.
+// One record per flow, because a lesson and a review are two sittings and the reader may hold both.
+// Keyed on the flow rather than on the subject: replacing a sitting is one write, and a subject
+// belonging to two sittings is held twice rather than shared, which is what keeps the replacement
+// wholesale.
+export type HeldDeck = {
+  readonly flow: Flow
+  readonly subjects: readonly Subject[]
+  readonly waiting: readonly Assignment[]
+}
+
 const VERSION = 2
 
 export type LocalSchema = DBSchema & {
   outbox: { key: string; value: AnswerRecord }
-  subjects: { key: number; value: Subject }
-  assignments: { key: number; value: Assignment }
+  decks: { key: Flow; value: HeldDeck }
 }
+
+// A tab holding the previous version blocks this one, and blocked is not an error: the request stays
+// pending for as long as that tab lives. Bounded rather than awaited, so a caller meets a refusal it
+// can show instead of a card that has silently stopped taking answers.
+const BLOCKED_TIMEOUT = 3_000
 
 let opened: Promise<IDBPDatabase<LocalSchema>> | null = null
 
-export function database(): Promise<IDBPDatabase<LocalSchema>> {
-  // A failure is not memoised, for the reason `db.ts` gives beside the same shape: caching the
-  // rejected promise would turn one blocked upgrade into a store that refuses every answer for
-  // as long as the page is open.
-  opened ??= openDB<LocalSchema>(OUTBOX_DATABASE, VERSION, {
+function open(): Promise<IDBPDatabase<LocalSchema>> {
+  return openDB<LocalSchema>(OUTBOX_DATABASE, VERSION, {
     // Every version from the one the device holds, because a browser that skipped a release arrives
     // here at any of them: a bare `if` on the newest would leave the stores of the one between
     // uncreated. `from` is zero on a device that has never opened this database.
@@ -46,14 +54,35 @@ export function database(): Promise<IDBPDatabase<LocalSchema>> {
       // collides rather than overwriting the answer already there.
       if (from < 1) db.createObjectStore(OUTBOX_STORE, { keyPath: 'id' })
 
-      if (from < 2) {
-        // Keyed on the subject the source names, which is what a queue holds and what a card is
-        // asked for, so a deck is rebuilt by identifier rather than by walking either store.
-        db.createObjectStore(SUBJECT_STORE, { keyPath: 'id' })
-        db.createObjectStore(ASSIGNMENT_STORE, { keyPath: 'subjectId' })
-      }
+      if (from < 2) db.createObjectStore(DECK_STORE, { keyPath: 'flow' })
     },
-  }).catch((reason: unknown) => {
+    // This connection is what a newer tab is waiting on. Closed rather than held, so the upgrade it
+    // asked for can run: a tab that keeps its connection open blocks every other tab in the profile.
+    blocking: () => {
+      void opened?.then((db) => {
+        db.close()
+        opened = null
+      })
+    },
+    terminated: () => {
+      opened = null
+    },
+  })
+}
+
+export function database(): Promise<IDBPDatabase<LocalSchema>> {
+  // A failure is not memoised, for the reason `db.ts` gives beside the same shape: caching the
+  // rejected promise would turn one blocked upgrade into a store that refuses every answer for
+  // as long as the page is open.
+  opened ??= Promise.race([
+    open(),
+    new Promise<never>((_, refuse) =>
+      setTimeout(
+        () => refuse(new Error('The local database is held open by another tab.')),
+        BLOCKED_TIMEOUT,
+      ),
+    ),
+  ]).catch((reason: unknown) => {
     opened = null
 
     throw reason

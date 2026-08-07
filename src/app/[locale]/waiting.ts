@@ -24,12 +24,16 @@ function sourceFor(token: string) {
 // device is worse than one saying nothing.
 //
 // A real deck also carries what it was built from, which the cards no longer hold once they are
-// questions: the device keeps those so the same sitting can be dealt again with no network. The
-// seeded deck carries none, being a constant already on the device.
+// questions: the device keeps those so the same sitting can be dealt again with no network. Null on
+// the seeded deck, which is a constant already on the device and must not replace what an account
+// left in the cache.
 type Dealt<Cards> = {
   readonly cards: Cards
   readonly demo: boolean
-  readonly held: { readonly subjects: readonly Subject[]; readonly waiting: readonly Assignment[] }
+  readonly held: {
+    readonly subjects: readonly Subject[]
+    readonly waiting: readonly Assignment[]
+  } | null
 }
 
 // What is waiting, counted in subjects rather than in questions, which is the number the source's
@@ -65,11 +69,9 @@ async function dealt(
   return { deck: deckFor(sitting, subjects), waiting: sitting }
 }
 
-const NOTHING_HELD = { subjects: [], waiting: [] } as const
-
 export async function lessonDeck(): Promise<Dealt<readonly Subject[]>> {
   const token = env.WANIKANI_TOKEN
-  if (token === undefined) return { cards: DEMO_DECK, demo: true, held: NOTHING_HELD }
+  if (token === undefined) return { cards: DEMO_DECK, demo: true, held: null }
 
   const sitting = await dealt(token, 'lesson')
 
@@ -82,7 +84,7 @@ export async function lessonDeck(): Promise<Dealt<readonly Subject[]>> {
 
 export async function reviewDeck(): Promise<Dealt<readonly Question[]>> {
   const token = env.WANIKANI_TOKEN
-  if (token === undefined) return { cards: DEMO_QUESTIONS, demo: true, held: NOTHING_HELD }
+  if (token === undefined) return { cards: DEMO_QUESTIONS, demo: true, held: null }
 
   const sitting = await dealt(token, 'review')
 
