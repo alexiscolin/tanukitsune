@@ -50,7 +50,18 @@ readable floor would turn it into an instruction to write text nobody can read.
 `check:tests`, `build`, `test`, `knip` and `dupes`. `build` is the only gate that evaluates server
 modules. `test:e2e` sits outside both and runs in its own CI job, because it needs a browser and a
 database. It covers the two real routes, every catalogued state in both themes, and the two writes
-the product makes: what the loop queues in the browser and what the backup makes durable here.
+the product makes: what the loop queues in the browser and what the backup makes durable here, plus
+the flush that carries the second to the source.
+
+It builds once and starts four servers. Two are the same build twice: one holding no token, which
+deals the seeded deck every demo spec asserts, and one holding a token spent on `e2e/fake-source.ts`,
+which answers where WaniKani would and deals the account in `e2e/fake-account.ts`. Which deck is
+dealt is read from the token alone, so a single server could serve one of the two and not both. The
+third is the fake source itself and the fourth is the catalogue. The account is written as the wire
+and typed against the parsers in `src/data/wanikani/payload.ts`, so what a session upstream of the
+seeded deck drives is the source's own HTTP rather than a stand-in for it: its URLs, its revision
+header, its cursor walk and its parse. It is also the only place `TANUKITSUNE_UPSTREAM_WRITE` is on,
+so the one suite that submits anything submits it to an account nobody owns.
 
 | Command | Tool | Catches |
 |---|---|---|
@@ -58,7 +69,7 @@ the product makes: what the loop queues in the browser and what the backup makes
 | `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires, and a marker naming work the backlog should hold |
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:contrast` | `check-contrast.mjs` | an ink token that falls under 4.5:1 on a ground it can land on, in either theme, and whether its own comparator still tells black on white from white on white |
-| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it and wherever in the payload it sits, still passes a call to a local route, and is still registered on `Bash` beside a deny entry naming the API |
+| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it and wherever in the payload it sits, still passes a call to a local route, is still registered on `Bash` beside a deny entry naming the API, and whether the source still falls back to that API and nothing committed points it elsewhere |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |
@@ -79,10 +90,16 @@ destination.
 
 The reader's WaniKani account holds real progress, and the deny list covers one path to it. The two
 others are the hook below, whose exact rule is stated there, and the empty `WANIKANI_TOKEN`
-that `pnpm verify` builds with, which `src/data/env.ts` reads as absent so the prerender of
-`/[locale]` deals the demo deck instead of calling the API with whatever token the machine holds.
-`playwright.config.ts` sets the same variable for the same reason. A build run outside `verify`
-carries the real token, which is why `pnpm build` is asked for while `pnpm verify` is allowed.
+that `pnpm verify` builds with, which `src/data/env.ts` reads as absent: no route reads the account
+at build time, and the empty value is what holds that true whatever a route's rendering later
+becomes. `playwright.config.ts` sets the same variable on the server dealing the seeded deck, so a
+suite asserting what is waiting cannot pass or fail on somebody's study day. A build run outside
+`verify` carries the real token, which is why `pnpm build` is asked for while `pnpm verify` is
+allowed.
+
+Where the source answers is an argument rather than a constant, so the end-to-end suite can name a
+server of its own. Two things hold a deployment on the real host, and `check:account` proves both:
+naming nothing reaches it, and nothing committed names anything else.
 
 Three paths are held by nothing: a command reaching the host without naming it, a host assembled from
 pieces so that neither a scheme nor a path sits against it, and a shell reading the token file, which

@@ -27,6 +27,7 @@
     "erasableSyntaxOnly": true,
     "isolatedModules": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "allowJs": true,
     "skipLibCheck": true,
     "incremental": true,

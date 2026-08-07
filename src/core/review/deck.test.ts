@@ -4,8 +4,10 @@ import { KANJI, VERB } from '../demo-deck'
 import type { Assignment } from '../knowledge-source'
 import { deckFor, SESSION_LENGTH, sessionOf } from './deck'
 
+// The identifier is what a submission names, and nothing here submits: the deck deals cards by
+// subject, so it is derived rather than passed and no case below has to carry one.
 function waiting(subjectId: number, srsStage: number): Assignment {
-  return { subjectId, srsStage }
+  return { id: subjectId * 10, subjectId, srsStage }
 }
 
 describe('deckFor', () => {

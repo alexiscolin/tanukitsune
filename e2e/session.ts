@@ -41,9 +41,16 @@ export async function cardReady(page: Page, position: number) {
 // It returns once the answer has been given, and says nothing about what followed. What a caller
 // waits for next is the question it is asking: the next card for one, the queue for the other.
 export async function answerCard(page: Page, position: number) {
-  const question = asked(position)
+  await answerQuestion(page, asked(position))
+}
 
-  await cardReady(page, position)
+// The same gesture against a question from any deck, the card in front being whichever the deck is
+// dealing. `answerCard` is this one plus the seeded deck's answer to which question that is.
+//
+// It waits for its own field rather than for a position, since the kind is what the label says and
+// a deck that is not the seeded one asks its readings at positions the seeded one does not.
+export async function answerQuestion(page: Page, question: Question) {
+  await expect(page.getByLabel(COPY.review.prompt[question.kind])).toBeFocused()
   await page.keyboard.type(question.accepted[0])
   await page.keyboard.press('Enter')
   await expect(page.getByRole('group', { name: COPY.review.askSelfGrade })).toBeFocused()

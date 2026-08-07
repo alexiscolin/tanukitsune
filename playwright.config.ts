@@ -24,6 +24,16 @@ process.env['TANUKITSUNE_SYNC_SECRET'] = SYNC_SECRET
 const CATALOGUE_PORT = 6017
 export const catalogueURL = `http://127.0.0.1:${CATALOGUE_PORT}`
 
+// The same application again, on its own port, dealing an account instead of the seeded deck.
+// Two servers rather than one, because which deck is dealt is read from the token alone: a
+// single server holding one would take the demo away from every spec that asserts it.
+const ACCOUNT_PORT = 3118
+export const accountURL = `http://127.0.0.1:${ACCOUNT_PORT}`
+
+// What that server reads instead of WaniKani, served by e2e/fake-source.ts.
+const SOURCE_PORT = 3119
+export const sourceURL = `http://127.0.0.1:${SOURCE_PORT}`
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -34,9 +44,11 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: devices['Desktop Chrome'] }],
   webServer: [
     // Against the production build, because the offline paths this suite exists to
-    // cover behave differently under the development server.
+    // cover behave differently under the development server. The build runs in the
+    // test:e2e script rather than here: two servers starting together would run two
+    // builds over one .next directory.
     {
-      command: `pnpm build && pnpm start -p ${PORT}`,
+      command: `pnpm start -p ${PORT}`,
       url: baseURL,
       // Demo mode for the server this file starts: with a token it deals whoever's account the
       // machine happens to hold, and a suite that asserts what is waiting would then pass or fail
@@ -47,6 +59,37 @@ export default defineConfig({
       // The backup route is closed without a secret, so the server under test is started with
       // one and the suite reads the same variable rather than repeating its value.
       env: { WANIKANI_TOKEN: '', TANUKITSUNE_SYNC_SECRET: SYNC_SECRET },
+      reuseExistingServer: process.env['CI'] === undefined,
+      timeout: 180_000,
+    },
+    // The account nobody owns, answering where WaniKani would. Started beside the server that
+    // reads it rather than before it: that server only calls out when it serves a page, and
+    // Playwright holds both until each answers.
+    {
+      command: `node --experimental-strip-types e2e/fake-source.ts ${SOURCE_PORT}`,
+      // Its liveness path rather than one of theirs, which would need the token and the revision
+      // the runner has no way to attach here.
+      url: sourceURL,
+      reuseExistingServer: process.env['CI'] === undefined,
+      timeout: 30_000,
+    },
+    // The same build again, dealing the account e2e/fake-account.ts describes. Two servers rather
+    // than one, because which deck is dealt is read from the token alone: a single server holding
+    // one would take the demo away from every spec that asserts it.
+    {
+      command: `pnpm start -p ${ACCOUNT_PORT}`,
+      url: accountURL,
+      // The token is what makes the server deal an account at all, and it is spent on a source
+      // that belongs to nobody, so what it says is worth exactly nothing.
+      env: {
+        WANIKANI_TOKEN: 'nobody-owns-this',
+        WANIKANI_API: `${sourceURL}/v2`,
+        // The one place the upstream write is on. A submission is irreversible and the source
+        // offers no sandbox, so the switch is off everywhere a real token could be held, and on
+        // here because what answers is a source that belongs to nobody.
+        TANUKITSUNE_UPSTREAM_WRITE: 'on',
+        TANUKITSUNE_SYNC_SECRET: SYNC_SECRET,
+      },
       reuseExistingServer: process.env['CI'] === undefined,
       timeout: 180_000,
     },

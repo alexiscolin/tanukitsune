@@ -36,6 +36,19 @@ jq -e '.permissions.deny | any(. == "WebFetch(domain:api.wanikani.com)")' "$sett
   fail=1
 }
 
+# Where the source answers is an argument, so the end-to-end suite can name a server of its own. What
+# holds a deployment on the real host is that naming nothing reaches it, and that nothing committed
+# names anything else: a default quietly moved, or a value in the file bootstrap copies, would point
+# a machine holding a real token at whoever answered.
+grep -qF "const API = 'https://api.wanikani.com/v2'" src/data/wanikani/source.ts || {
+  printf 'probe "default": the source no longer falls back to the real API\n' >&2
+  fail=1
+}
+grep -q '^[[:space:]]*WANIKANI_API=' .env.example && {
+  printf 'probe "committed": .env.example points the source away from the real API\n' >&2
+  fail=1
+}
+
 # A command is quoted text inside a JSON string, and the case naming a client that quotes its own
 # argument carries both a quote and a backslash. The escaping is the one announce-shared-edit.sh
 # writes, for its reason: malformed JSON is dropped without a word, which would pass a case the real

@@ -12,6 +12,12 @@ import { wanikaniSource } from '@/data/wanikani/source'
 // is the reader's own account, without one it is the seeded deck, which is what makes a single
 // public URL both the demo and the product.
 
+// Where the source answers, read here because this is the one place that decides where a deck
+// comes from. Absent is theirs, which is every deployment; the end-to-end suite names its own.
+function sourceFor(token: string) {
+  return wanikaniSource(token, env.WANIKANI_API)
+}
+
 // Which of the two decks this is. The start screen says so, a real account's answers are not
 // cleared when a deck restarts, and a screen dealing one while promising that nothing leaves the
 // device is worse than one saying nothing.
@@ -31,7 +37,7 @@ export async function due(): Promise<Due> {
   // One request per queue and no subject fetched at all: a count needs what is waiting and not
   // what each item is, which is the difference between the screen a session starts from opening
   // at once and it opening after the whole curriculum has been read.
-  const queues = await wanikaniSource(token).listWaiting()
+  const queues = await sourceFor(token).listWaiting()
 
   return { lessons: queues.lessons.length, reviews: queues.reviews.length, demo: false }
 }
@@ -39,7 +45,7 @@ export async function due(): Promise<Due> {
 // The subjects one sitting deals, and only those: the rest of the queue is fetched when the
 // reader comes back for it.
 async function dealt(token: string, flow: Flow): Promise<readonly Subject[]> {
-  const source = wanikaniSource(token)
+  const source = sourceFor(token)
   const queues = await source.listWaiting()
   const sitting = sessionOf(flow === 'lesson' ? queues.lessons : queues.reviews)
   const subjects = await source.listSubjects(sitting.map((entry) => entry.subjectId))

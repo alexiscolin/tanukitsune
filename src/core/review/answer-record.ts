@@ -73,6 +73,10 @@ export type AnswerRecord = {
   // The three the flush fills, on the backed-up row rather than on the queued one, which is never
   // written to after the append and leaves the device once the backup confirms it. The stage comes
   // back in the source's response and is never computed locally, so it cannot exist before then.
+  //
+  // `syncedAt` is stamped twice: once when a walk takes the row, which is what stops a second walk
+  // from sending it, and again with the outcome. `appliedUpstream` is the one that says whether it
+  // landed, so a row carrying a time and no verdict is one a walk took and never resolved.
   readonly srsStageAfter: number | null
   readonly appliedUpstream: boolean | null
   readonly syncedAt: Date | null
