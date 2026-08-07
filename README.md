@@ -25,8 +25,9 @@ places a model was refused outright. Knowing which is which is the whole design.
 > **Status: the loop runs on a real account, the French layer does not exist yet.** Subjects and what
 > is waiting are read from WaniKani where a token names an account, and from a seeded deck where none
 > does, which is what the public demo serves. Answers are graded by the exact tier and nothing else,
-> and they are kept on the device and sent nowhere. No corpus and no judge exist yet, so a card from a
-> real account carries the source's own English and none of the French this product is for.
+> and they are kept on the device until a configured backup takes them, and sent to WaniKani never.
+> No corpus and no judge exist yet, so a card from a real account carries the source's own English
+> and none of the French this product is for.
 
 ## The nine that deliberately do not
 
@@ -150,7 +151,7 @@ src/
 │   ├── review/answer-record.ts  the row one answer becomes, in the shape the table will hold
 │   ├── review/outbox-port.ts    the local queue, declared here and implemented in data/
 │   ├── knowledge-source.ts      where subjects and what is waiting come from, WaniKani being one
-│   ├── routes.ts                the two paths, spelled once for the screens and the suite
+│   ├── routes.ts                the paths a screen or the queue uses, spelled once for both
 │   └── site-copy.ts             every string a reader sees, keyed by locale
 ├── data/                    the outside. The server's store, and the browser's
 │   ├── db.ts                    a server Postgres, or the file-backed one, and which answered

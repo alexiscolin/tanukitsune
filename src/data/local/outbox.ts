@@ -49,6 +49,14 @@ export const localOutbox: OutboxPort = {
   append: async (record) => {
     await (await database()).add(OUTBOX_STORE, record)
   },
+  list: async () => (await database()).getAll(OUTBOX_STORE),
+  // One transaction for the whole batch. Removing some rows and leaving others would leave the
+  // queue believing part of a batch never arrived, and send those rows a second time.
+  remove: async (ids) => {
+    const removing = (await database()).transaction(OUTBOX_STORE, 'readwrite')
+
+    await Promise.all([...ids.map((id) => removing.store.delete(id)), removing.done])
+  },
   clear: async () => {
     await (await database()).clear(OUTBOX_STORE)
   },

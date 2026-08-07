@@ -86,14 +86,14 @@ implementation detail.
 
 ## Reporting to the reader
 
-Report top down, in replies as much as in documents: what changed for the system, then the mechanism,
-then the file, the function, the flag. The reader works at the level of decisions and you at the level
-of exit codes, so a detail with no attachment point cannot be judged, and what cannot be judged cannot
-be relied on.
+Report top down, in replies as much as in documents: what changed for the reader, then the mechanism,
+then the file. Write for someone meeting the project today, simply and completely, and stop rather
+than name a function nobody asked about. Depth is given when it is asked for, and then in full, files
+and architecture included. A reply the reader has to mine is one they stop reading.
 
-Every name carries its referent on first appearance, functions, variables, fields, scripts and packages
-included. A recursion guard names what recurses, a flag names who sets it, and two things of a kind are
-named by their file rather than by an ordinal. This changes the order and adds a clause, not the length.
+Every name carries its referent on first appearance, fields, scripts and packages included. A
+recursion guard names what recurses and a flag names who sets it, so a detail with no attachment
+point cannot be judged, and what cannot be judged cannot be relied on.
 
 ## Stop and ask
 

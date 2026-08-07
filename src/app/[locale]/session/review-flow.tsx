@@ -14,8 +14,8 @@ import { ReviewSession } from '@/ui/organisms/review-session'
 // store is the browser's, and a server component cannot hand a function to one.
 //
 // The write is the same on both decks: the answer reaches the local queue before the card is
-// allowed to leave, and nothing is submitted anywhere yet. What differs is what a restart does to
-// that queue, which is why the deck says which one it is.
+// allowed to leave, and it leaves the device only through the drain mounted beside this. What
+// differs is what a restart does to that queue, which is why the deck says which one it is.
 export function ReviewFlow({
   locale,
   questions,
@@ -35,9 +35,9 @@ export function ReviewFlow({
 }) {
   const emptied = useRef<Promise<void> | null>(null)
 
-  // The demo's queue is drained by nothing, so the deck restarting is what empties it, and a
-  // reload is the only restart there is. Held as a promise the write awaits, so a first answer
-  // cannot land in front of it.
+  // The deck restarting is what empties the demo's queue, whatever the drain has or has not taken
+  // from it first, and a reload is the only restart there is. Held as a promise the write awaits,
+  // so a first answer cannot land in front of it.
   useEffect(() => {
     if (demo) emptied.current ??= localOutbox.clear()
   }, [demo])

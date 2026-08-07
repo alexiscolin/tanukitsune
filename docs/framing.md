@@ -243,9 +243,14 @@ v0.2 opens; the schema that makes it possible ships in v0.1.
   handling is recovery instead. A first run in standalone mode with an empty outbox rehydrates from the
   server-side backup and tells the user plainly that the browser tab may still hold answers that were
   never sent.
-- **Background Sync does not exist on iOS and never has**, so the flush is an in-page paced drain
-  triggered on reconnect and on visibility change. Treating the browser's sync event as anything other
-  than a bonus on Chromium would promise behaviour the platform cannot deliver.
+- **Background Sync does not exist on iOS and never has**, so both the drain that backs a queue up
+  and the flush that submits it are in-page, triggered when the page comes up, on reconnect and on
+  visibility change. Treating the browser's sync
+  event as anything other than a bonus on Chromium would promise behaviour the platform cannot
+  deliver. The first of the three is what covers a reader who answered offline and closed the tab:
+  they come back with the network already restored and the tab already visible, so neither event
+  fires, and the queue leaves as their next session opens rather than waiting for them to switch
+  away and back.
 - Multi-tab is a week-one case, not an edge case. A single sync leader elected through the Web Locks
   API.
 - The flush is a route handler taking a batch, not a server action, for the reasons given under
@@ -320,9 +325,9 @@ This is the boundary that leaks secrets, and it is not the same as the module bo
 
 `data/` is a data access layer in the strict sense: performing its own authorisation, returning
 minimal shapes rather than rows. What of it reaches the server is server-only and imports
-`server-only` to say so, which is every module here but `data/local/`, the browser's own store: it
-holds nothing to authorise and no secret to leak, and a store on the device is unreachable from a
-server anyway. Only the server half reads the environment inside the running
+`server-only` to say so, which is every module here but `data/local/`, the browser's half: a store on
+the device is unreachable from a server, and what it sends carries the secret it was handed rather
+than one it read, nothing there being able to reach the environment. Only the server half reads the environment inside the running
 application. The migration configuration and the end-to-end expectation read one variable outside it,
 through the rule `data/` owns, because a tool that decides which database to open cannot ask the
 application which one it opened. The third of the five rules
@@ -367,9 +372,10 @@ never merged, the corpus keyed by subject and locale and warmed alongside the as
 the item card never waits on a network; and the outbox, appended with client-generated identifiers so
 a duplicate throws rather than silently overwriting.
 
-After an entry is appended, exactly three fields are writable: `synced_at`, `applied_upstream`, and
-`srs_stage_after`, which cannot exist before the flush because the stage comes back in WaniKani's
-response and is never computed locally. The answer payload and the verdict are never touched.
+A queued entry is never written to after the append. It leaves the queue once the backup confirms it,
+and the three fields the flush fills, `synced_at`, `applied_upstream` and `srs_stage_after`, are
+filled on the backed-up row: the stage comes back in WaniKani's response and is never computed
+locally, so none of the three can exist while the answer is still on the device.
 
 The flush is strictly serial and oldest first, because scheduling is order dependent, paced from the
 rate-limit headers rather than a fixed sleep since reads and writes share one budget, and holds a
