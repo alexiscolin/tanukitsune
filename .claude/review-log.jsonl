@@ -673,3 +673,5 @@
 {"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "docs-conformity", "file": "docs/framing.md", "line": 331, "outcome": "fixed"}
 {"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "regression-check", "file": "docs/verification.md", "line": 51, "outcome": "fixed"}
 {"date": "2026-08-07", "branch": "fix/one-database-per-server", "kind": "pass", "base": "11d0ca3a5f9d6b2fa9629034ee85618a32dec03c", "head": "e86d3ab559df3af9fd4f39a1cc4315834ee170aa"}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "reviewer": "regression-check", "file": "package.json", "line": 33, "outcome": "dismissed", "reason": "Reconsidered in /simplify: the guard duplicated the decision drizzle.config.ts already makes and re-implemented asOptional in a shell string no gate reads. It also protected a door bootstrap.sh leaves open, migrating whatever DATABASE_URL names unconditionally."}
+{"date": "2026-08-07", "branch": "fix/one-database-per-server", "kind": "pass", "base": "11d0ca3a5f9d6b2fa9629034ee85618a32dec03c", "head": "ab20dd5735e3a2ef2e4297b428cebdeeddbb8aa3"}
