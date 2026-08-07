@@ -23,9 +23,8 @@ export function sessionPath(locale: Locale, flow: Flow): string {
 export const BACKUP_PATH = '/api/review'
 
 // Where what the backup holds is worked out and sent on. It carries no locale for the reason the
-// backup does not: nothing here is read by a person. Two methods on one path, a read saying what is
-// left to send and a write sending one of them, because they are two halves of one subject rather
-// than two subjects.
+// backup does not: nothing here is read by a person. One method taking no body, because what is owed
+// is worked out from the rows the server holds rather than named by whoever calls.
 export const FLUSH_PATH = '/api/flush'
 
 // The secret travels in a header rather than in the body, so a refusal is decided before the

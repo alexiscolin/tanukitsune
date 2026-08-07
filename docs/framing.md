@@ -377,12 +377,23 @@ and the three fields the flush fills, `synced_at`, `applied_upstream` and `srs_s
 filled on the backed-up row: the stage comes back in WaniKani's response and is never computed
 locally, so none of the three can exist while the answer is still on the device.
 
-The flush is strictly serial and oldest first, because scheduling is order dependent, and holds a
-single-flusher lock so two tabs cannot double-send. The lock and the trigger are in the page rather
-than in the service worker; the walk itself is in the route the page calls, which is where the token
-is and where the rows are, an answer having left the device once the backup confirmed it. Pacing it
-from the rate-limit headers is in [`backlog.md`](backlog.md) rather than built: it sends one
-submission per subject and reads nothing back about the budget it spends.
+The flush is strictly serial and oldest first, because scheduling is order dependent. Two walks
+cannot send one subject twice, and what makes that true is the row rather than a lock: a walk takes
+the rows for a submission in one atomic statement before it sends anything, so of two reaching the
+same rows exactly one is handed them. The single-flusher lock the page holds is a courtesy on top,
+saving a second tab the request; it cannot be the guarantee, living in one browser profile and not
+outliving the call.
+
+The lock and the trigger are in the page rather than in the service worker; the walk itself is in the
+route the page calls, which is where the token is and where the rows are, an answer having left the
+device once the backup confirmed it. Pacing it from the rate-limit headers is in
+[`backlog.md`](backlog.md) rather than built: it sends one submission per subject and reads nothing
+back about the budget it spends.
+
+A walk that dies between taking rows and resolving them leaves them taken, and nothing puts them
+back: they carry a time and no verdict, which is a state nothing else produces, and they are never
+sent. That is the shape this trades for, since the alternative frees a claim a live walk may still be
+holding. Surfacing them is part of the queue surface in [`backlog.md`](backlog.md).
 
 This is the transactional outbox pattern, whose usual mitigation for at-least-once delivery is an
 idempotent consumer. That mitigation is unavailable here, which is why an ambiguous outcome is

@@ -6,7 +6,13 @@ import type { Asked, Submission } from '@/core/review/submission'
 import { submissionsFor } from '@/core/review/submission'
 import type { Subject } from '@/core/subject'
 import { env } from '@/data/env'
-import { markDropped, markSent, unsentAnswers } from '@/data/review-events'
+import {
+  claimForFlush,
+  markDropped,
+  markSent,
+  releaseClaim,
+  unsentAnswers,
+} from '@/data/review-events'
 import { holdsSecret } from '@/data/sync-secret'
 import { wanikaniSource } from '@/data/wanikani/source'
 
@@ -19,9 +25,10 @@ import { wanikaniSource } from '@/data/wanikani/source'
 // the reads that say what is owed cost six upstream requests, and paying them once a sitting is the
 // difference between a flush and a queue of them.
 
-// Their 422 says the item is no longer due, which is a drop and not a failure: the answer keeps its
-// outcome in our history marked as not applied, and the submissions behind it are still owed.
-const NOT_DUE = 422
+// The status they answer for an item that is no longer due. They answer it for a request they cannot
+// read at all as well, and nothing in the status tells the two apart, so it never decides anything
+// on its own: what decides is whether the assignment is still waiting afterwards.
+const REFUSED = 422
 
 // What the source will accept for one subject, which neither half of its answer holds alone: the
 // assignment carries the identifier a submission names, and the subject carries which questions it
@@ -38,10 +45,12 @@ function askedOf(
     const assignmentId = assignments.get(subject.id)
     if (assignmentId === undefined) continue
 
-    asked.set(subject.id, {
-      assignmentId,
-      asks: questionsFor([subject]).map((question) => question.kind),
-    })
+    const asks = questionsFor([subject]).map((question) => question.kind)
+
+    // A subject the source has withdrawn is asked nothing at all, and nothing is not a set every
+    // answer satisfies: readiness over an empty list is vacuously true, which would submit whatever
+    // partial rows the reader happened to leave.
+    if (asks.length > 0) asked.set(subject.id, { assignmentId, asks })
   }
 
   return asked
@@ -71,34 +80,21 @@ export async function POST(request: Request): Promise<Response> {
     const subjects = await source.listSubjects(
       queued.filter((entry) => wanted.has(entry.subjectId)).map((entry) => entry.subjectId),
     )
+    const asked = askedOf(queued, subjects)
 
-    return submissionsFor(unsent, askedOf(queued, subjects))
+    // An answer whose subject is waiting for nothing can never be submitted: the item was finished
+    // elsewhere, or it belongs to the seeded deck, or it sits above what the subscription grants.
+    // Dropped rather than left, because a row nothing can resolve is one every later flush reads
+    // again, and a walk that finds only those still pays the source for asking.
+    await markDropped(unsent.filter((row) => !asked.has(row.subjectId)).map((row) => row.id))
+
+    return submissionsFor(unsent, asked)
   }
 
-  const send = async (submission: Submission): Promise<Sent> => {
-    try {
-      const advanced = await source.submitReview(submission)
-
-      await markSent(submission.answers, advanced.srsStage, new Date())
-
-      return 'applied'
-    } catch (refused) {
-      return settle(submission, refused)
-    }
-  }
-
+  // Their created review carries no identifier worth reading back, so nothing about a failure says
+  // what happened upstream. The assignment is read again instead, which answers it for every failure
+  // at once: an item still waiting was not advanced, whatever the status said.
   const settle = async (submission: Submission, refused: unknown): Promise<Sent> => {
-    // Dropped rather than retried, per docs/specs/v0.1.md under offline and sync: the item is not
-    // due, so resending it would never succeed and would hold everything behind it for ever.
-    if (refused instanceof Error && refused.message.includes(`answered ${NOT_DUE}`)) {
-      await markDropped(submission.answers)
-
-      return 'dropped'
-    }
-
-    // Everything else is uncertain, and their created review carries no identifier worth reading
-    // back. So the assignment is read again rather than the submission sent again: an item that is
-    // no longer waiting is one this submission advanced, whatever the network said.
     const stillWaiting = await source
       .listWaiting()
       .then((queues) =>
@@ -106,12 +102,53 @@ export async function POST(request: Request): Promise<Response> {
       )
       .catch(() => true)
 
-    if (stillWaiting) return 'held'
+    // Held rather than dropped, and that includes a refusal we cannot read: a request they could not
+    // parse answers the same status as an item that is not due, and this is the difference between
+    // them. Holding keeps the answers, where dropping on a defect of ours discards them for ever.
+    // The claim goes back with them, since this walk is the one holding it.
+    if (stillWaiting) {
+      await releaseClaim(submission.answers)
 
-    // Applied, and the stage it landed on is unreadable from here: the answer that carried it was
-    // the one that was lost. The row records that it was applied and leaves the stage unfilled,
-    // which is the honest shape rather than a number nobody read.
+      return 'held'
+    }
+
+    // Not waiting and refused: the item was already finished, so nothing here advanced it. The row
+    // records that it never reached them, which docs/framing.md calls a drop rather than an error.
+    if (refused instanceof Error && refused.message.includes(`answered ${REFUSED}`)) {
+      await markDropped(submission.answers)
+
+      return 'dropped'
+    }
+
+    // Not waiting and lost in flight: the submission landed and the answer carrying its stage is
+    // what went missing. The row records that it was applied and leaves the stage unfilled, which is
+    // the honest shape rather than a number nobody read.
     await markSent(submission.answers, null, new Date())
+
+    return 'applied'
+  }
+
+  const send = async (submission: Submission): Promise<Sent> => {
+    // Taken before it is sent, and the taking is atomic: two walks reaching these rows means exactly
+    // one of them is handed the rows and the other is handed nothing. The Web Lock the page holds
+    // cannot make that true, living in one browser profile and not outliving the request, and a
+    // submission is irreversible, so this is where it is made true instead.
+    const at = new Date()
+
+    if ((await claimForFlush(submission.answers, at)) !== submission.answers.length)
+      return 'held'
+
+    let advanced
+
+    try {
+      advanced = await source.submitReview(submission)
+    } catch (refused) {
+      return settle(submission, refused)
+    }
+
+    // Outside the attempt, so a database that failed here is not read as a source that refused: the
+    // submission landed, and reading it as a refusal would send it again.
+    await markSent(submission.answers, advanced.srsStage, new Date())
 
     return 'applied'
   }
