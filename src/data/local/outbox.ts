@@ -1,45 +1,10 @@
-import { openDB } from 'idb'
-import type { DBSchema, IDBPDatabase } from 'idb'
-
-import type { AnswerRecord } from '@/core/review/answer-record'
 import type { OutboxPort } from '@/core/review/outbox-port'
 
-// The browser's half of the data layer, and the only file here that runs on the device rather
-// than on the server. It holds the one piece of local state nothing can rebuild: an answer,
-// written before the interface accepts it and kept until a flush has taken it.
-//
-// Named here and read by the end-to-end suite, which opens the same database the application
-// wrote: two spellings of one name would let the suite pass against a store nobody uses.
-export const OUTBOX_DATABASE = 'tanukitsune'
-export const OUTBOX_STORE = 'outbox'
+import { database, OUTBOX_STORE } from './database'
 
-// The stores the caches will join, so their arrival is an upgrade rather than a second database.
-const VERSION = 1
-
-type LocalSchema = DBSchema & {
-  outbox: { key: string; value: AnswerRecord }
-}
-
-let opened: Promise<IDBPDatabase<LocalSchema>> | null = null
-
-function database(): Promise<IDBPDatabase<LocalSchema>> {
-  // A failure is not memoised, for the reason `db.ts` gives beside the same shape: caching the
-  // rejected promise would turn one blocked upgrade into a store that refuses every answer for
-  // as long as the page is open.
-  opened ??= openDB<LocalSchema>(OUTBOX_DATABASE, VERSION, {
-    upgrade: (db) => {
-      // Keyed on the row's own identifier, which the client generates, so a replayed append
-      // collides rather than overwriting the answer already there.
-      db.createObjectStore(OUTBOX_STORE, { keyPath: 'id' })
-    },
-  }).catch((reason: unknown) => {
-    opened = null
-
-    throw reason
-  })
-
-  return opened
-}
+// The one piece of local state nothing can rebuild: an answer, written before the interface accepts
+// it and kept until a flush has taken it. The database it sits in is opened in database.ts, which
+// every store here shares.
 
 // One store per device, so one value rather than a factory returning a new object over the same
 // database on every call.

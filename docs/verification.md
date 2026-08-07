@@ -49,9 +49,9 @@ readable floor would turn it into an instruction to write text nobody can read.
 `pnpm verify` is `gate` plus `check:account`, `check:sketches`, `check:tokens`, `check:review`,
 `check:tests`, `build`, `test`, `knip` and `dupes`. `build` is the only gate that evaluates server
 modules. `test:e2e` sits outside both and runs in its own CI job, because it needs a browser and a
-database. It covers the two real routes, every catalogued state in both themes, and the two writes
-the product makes: what the loop queues in the browser and what the backup makes durable here, plus
-the flush that carries the second to the source.
+database. It covers the two real routes, every catalogued state in both themes, and the three writes
+the product makes: what the loop queues in the browser, what a session leaves cached there, and what
+the backup makes durable here, plus the flush that carries the last to the source.
 
 It builds once, migrates the second database where there is one, and starts four servers. Two are the same build twice: one holding no token, which
 deals the seeded deck every demo spec asserts, and one holding a token spent on `e2e/fake-source.ts`,
@@ -307,7 +307,7 @@ is the page showing the tokens against each other. Why a page each, and why the 
 The accessibility addon runs the audit per state for whoever has the catalogue open, and
 `e2e/catalogue.spec.ts` runs the same rules over every state in both themes for everyone else:
 `e2e/shell.spec.ts` audits the screen a session starts from and the not-found page, and neither
-enters the loop. The server under all of them runs with no token, so what they read is the seeded
+enters the loop. The server under most of them runs with no token, so what they read is the seeded
 deck: a suite asserting what is waiting against a real account passes or fails on somebody's study
 day, and the source itself is covered where a request can be checked, in `src/data/wanikani/`. Every audit is taken once the entrance animations have settled, since the vocabulary
 here is a fade and a frame of one measures the animation rather than the screen. `e2e/tunnel.spec.ts`
@@ -315,7 +315,10 @@ is what enters a session from that screen, pages a batch to its end and leaves b
 and it audits nothing. Neither does `e2e/review.spec.ts`, which asks the one question a substitute
 cannot answer, whether the answer is in the browser's database before the deck advances, nor
 `e2e/sync.spec.ts`, which asks what takes it back out when the network returns, when the tab does,
-and when a second tab is open. Both answer a card and read that store through `e2e/session.ts`. What
+and when a second tab is open. Both answer a card and read that store through `e2e/session.ts`.
+`e2e/cache.spec.ts` reads the other browser store, asking what a session dealt from an account leaves
+behind: one record per flow, the two flows held apart, and a sitting dealt twice replaced rather than
+merged. It runs against the account server, a demo render writing nothing at all. What
 no gate holds is the appearance, which is recorded below under what is not covered.
 
 ## The token rule
