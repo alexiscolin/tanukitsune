@@ -244,6 +244,80 @@ describe('wanikaniSource', () => {
     expect(waiting.reviews.map((entry) => entry.subjectId)).toEqual([451])
   })
 
+  // Their unit is the assignment and two counts of wrong answers, where ours is a row per
+  // question, so what leaves here is what their API takes and not what the queue holds.
+  it('submits a review against the assignment, with a count per kind', async () => {
+    let sent: unknown = null
+
+    server.use(
+      http.post(`${API}/reviews`, async ({ request }) => {
+        sent = await request.json()
+
+        return HttpResponse.json(
+          { id: 0, resources_updated: { assignment: { data: { srs_stage: 5 } } } },
+          { status: 201 },
+        )
+      }),
+    )
+
+    const advanced = await wanikaniSource('a-token').submitReview({
+      assignmentId: 8002,
+      incorrectMeanings: 1,
+      incorrectReadings: 2,
+    })
+
+    expect(sent).toEqual({
+      review: {
+        assignment_id: 8002,
+        incorrect_meaning_answers: 1,
+        incorrect_reading_answers: 2,
+      },
+    })
+    // The stage they landed the item on, which is theirs to decide and is never computed here.
+    expect(advanced.srsStage).toBe(5)
+  })
+
+  // A submission carries the same two headers a read does. Without the revision their answer is a
+  // shape nobody parses, and a submission parsed wrong is an item advanced on a guess.
+  it('sends the revision and the token when it submits', async () => {
+    let seen: Headers | null = null
+
+    server.use(
+      http.post(`${API}/reviews`, ({ request }) => {
+        seen = request.headers
+
+        return HttpResponse.json(
+          { id: 0, resources_updated: { assignment: { data: { srs_stage: 1 } } } },
+          { status: 201 },
+        )
+      }),
+    )
+
+    await wanikaniSource('a-token').submitReview({
+      assignmentId: 8001,
+      incorrectMeanings: 0,
+      incorrectReadings: 0,
+    })
+
+    expect(seen?.get('Wanikani-Revision')).toBe('20170710')
+    expect(seen?.get('Authorization')).toBe('Bearer a-token')
+  })
+
+  // Their 422 means the item was not due, so the submission is dropped and the state re-read
+  // rather than sent again. What this layer owes is the status, named, so the caller can tell that
+  // case from a network that dropped.
+  it('propagates a refused submission naming the status', async () => {
+    server.use(http.post(`${API}/reviews`, () => new HttpResponse(null, { status: 422 })))
+
+    await expect(
+      wanikaniSource('a-token').submitReview({
+        assignmentId: 8001,
+        incorrectMeanings: 0,
+        incorrectReadings: 0,
+      }),
+    ).rejects.toThrow('answered 422')
+  })
+
   // Sixty requests a minute are shared between what we read and what we send, so this is the
   // refusal the reader will actually meet. It propagates naming the status: a read that failed
   // quietly returns an empty queue, which reads exactly like a session with nothing left in it.
