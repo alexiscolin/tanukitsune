@@ -6,6 +6,7 @@ import { questionsFor } from '@/core/review/question'
 import type { Question } from '@/core/review/question'
 import type { Assignment } from '@/core/knowledge-source'
 import type { Flow, Subject } from '@/core/subject'
+import type { HeldDeck } from '@/data/local/database'
 import { env } from '@/data/env'
 import { wanikaniSource } from '@/data/wanikani/source'
 
@@ -30,10 +31,7 @@ function sourceFor(token: string) {
 type Dealt<Cards> = {
   readonly cards: Cards
   readonly demo: boolean
-  readonly held: {
-    readonly subjects: readonly Subject[]
-    readonly waiting: readonly Assignment[]
-  } | null
+  readonly held: Omit<HeldDeck, 'flow'> | null
 }
 
 // What is waiting, counted in subjects rather than in questions, which is the number the source's

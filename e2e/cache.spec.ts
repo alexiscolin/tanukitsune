@@ -1,12 +1,12 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { sessionPath } from '../src/core/routes'
-import { DECK_STORE, OUTBOX_DATABASE } from '../src/data/local/database'
+import { copyFor } from '../src/core/site-copy'
+import { DECK_STORE, OUTBOX_DATABASE, VERSION } from '../src/data/local/database'
 import type { HeldDeck } from '../src/data/local/database'
 import { toAssignment } from '../src/data/wanikani/payload'
 import { accountURL } from '../playwright.config'
 import { FAKE_LESSONS, FAKE_REVIEWS } from './fake-account'
-import { cardReady } from './session'
 
 // What a session leaves behind on the device. Both routes read the source on the server per render
 // today, so a session cannot start without a network at all; the sitting it was dealt is the first
@@ -20,9 +20,12 @@ import { cardReady } from './session'
 // `written` uses for the outbox.
 function held(page: Page): Promise<readonly HeldDeck[]> {
   return page.evaluate(
-    ([database, store]) =>
+    ([database, store, version]) =>
       new Promise<HeldDeck[]>((resolve, reject) => {
-        const opened = indexedDB.open(database)
+        // At the version the application opens, never bare: a versionless open of a database that
+        // does not exist yet creates it at version one with no stores, and the upgrade ladder would
+        // then skip the outbox for ever on that profile.
+        const opened = indexedDB.open(database, version)
         opened.onerror = () => reject(new Error('The local database did not open.'))
         opened.onsuccess = () => {
           if (!opened.result.objectStoreNames.contains(store)) {
@@ -40,8 +43,16 @@ function held(page: Page): Promise<readonly HeldDeck[]> {
           all.onerror = () => reject(new Error(`The ${store} store did not read.`))
         }
       }),
-    [OUTBOX_DATABASE, DECK_STORE] as const,
+    [OUTBOX_DATABASE, DECK_STORE, VERSION] as const,
   )
+}
+
+const COPY = copyFor('fr')
+
+// The account deck asks every meaning before any reading, so its first card is a meaning. Asserted
+// against this deck rather than through the seeded deck's helper, which answers for the other one.
+async function firstCardReady(page: Page) {
+  await expect(page.getByLabel(COPY.review.prompt.meaning)).toBeFocused()
 }
 
 function heldFor(decks: readonly HeldDeck[], flow: string) {
@@ -50,7 +61,7 @@ function heldFor(decks: readonly HeldDeck[], flow: string) {
 
 test('a session dealt online leaves its sitting on the device', async ({ page }) => {
   await page.goto(`${accountURL}${sessionPath('fr', 'review')}`)
-  await cardReady(page, 0)
+  await firstCardReady(page)
 
   await expect.poll(async () => (await held(page)).length, { timeout: 10_000 }).toBeGreaterThan(0)
 
@@ -68,7 +79,7 @@ test('a session dealt online leaves its sitting on the device', async ({ page })
 // not hold, each render evicting the other's sitting.
 test('a lesson and a review are held apart', async ({ page }) => {
   await page.goto(`${accountURL}${sessionPath('fr', 'review')}`)
-  await cardReady(page, 0)
+  await firstCardReady(page)
   await expect.poll(async () => (await held(page)).length, { timeout: 10_000 }).toBe(1)
 
   await page.goto(`${accountURL}${sessionPath('fr', 'lesson')}`)
@@ -84,11 +95,11 @@ test('a lesson and a review are held apart', async ({ page }) => {
 // union of both. What a browser evicts here costs a download, so nothing is worth merging for.
 test('a sitting dealt twice is replaced rather than merged', async ({ page }) => {
   await page.goto(`${accountURL}${sessionPath('fr', 'review')}`)
-  await cardReady(page, 0)
+  await firstCardReady(page)
   await expect.poll(async () => (await held(page)).length, { timeout: 10_000 }).toBe(1)
 
   await page.reload()
-  await cardReady(page, 0)
+  await firstCardReady(page)
 
   const decks = await held(page)
 

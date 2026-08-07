@@ -129,7 +129,7 @@ rule, so server components buy it nothing.
 
 **So it is an installable web app, and the data lives in two places on purpose.** Postgres is where the
 corpus is generated, shared and cached across users, and where `review_events` is backed up. IndexedDB
-holds everything the review loop touches with no network: the cached subjects and assignments, a local
+holds everything the review loop touches with no network: the sitting each flow was dealt, a local
 copy of the corpus rows for the locale in use, and the outbox of answers. The corpus is in both, and
 deliberately so, since the item card has to appear on a wrong answer offline; the local copy is a cache
 replaced wholesale on a corpus version bump, not a second source of truth. The test for where a piece

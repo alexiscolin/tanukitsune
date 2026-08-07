@@ -30,22 +30,38 @@ export type HeldDeck = {
   readonly waiting: readonly Assignment[]
 }
 
-const VERSION = 2
+// Exported because the end-to-end suite opens this database too. A versionless open creates it at
+// version one with no stores, and the ladder below would then skip the outbox for ever.
+export const VERSION = 2
 
 export type LocalSchema = DBSchema & {
   outbox: { key: string; value: AnswerRecord }
   decks: { key: Flow; value: HeldDeck }
 }
 
-// A tab holding the previous version blocks this one, and blocked is not an error: the request stays
-// pending for as long as that tab lives. Bounded rather than awaited, so a caller meets a refusal it
-// can show instead of a card that has silently stopped taking answers.
+// A tab holding an outdated connection blocks this one, and blocked is not an error: the request
+// stays pending for as long as that tab lives. Bounded rather than awaited, so a caller meets a
+// refusal it can show instead of a card that has silently stopped taking answers.
 const BLOCKED_TIMEOUT = 3_000
 
 let opened: Promise<IDBPDatabase<LocalSchema>> | null = null
 
-function open(): Promise<IDBPDatabase<LocalSchema>> {
-  return openDB<LocalSchema>(OUTBOX_DATABASE, VERSION, {
+export function database(): Promise<IDBPDatabase<LocalSchema>> {
+  if (opened !== null) return opened
+
+  // This attempt's own connection, not whatever the module holds. An attempt abandoned on the
+  // timeout still resolves later, and closing the memoised one instead would take down the
+  // connection in use while the abandoned one went on holding the next upgrade.
+  let self: IDBPDatabase<LocalSchema> | null = null
+  let waited: ReturnType<typeof setTimeout>
+
+  // Only where this attempt is still the one being held: a later, successful attempt must not have
+  // its memo cleared by an earlier one giving up.
+  const drop = (): void => {
+    if (opened === held) opened = null
+  }
+
+  const opening = openDB<LocalSchema>(OUTBOX_DATABASE, VERSION, {
     // Every version from the one the device holds, because a browser that skipped a release arrives
     // here at any of them: a bare `if` on the newest would leave the stores of the one between
     // uncreated. `from` is zero on a device that has never opened this database.
@@ -59,34 +75,43 @@ function open(): Promise<IDBPDatabase<LocalSchema>> {
     // This connection is what a newer tab is waiting on. Closed rather than held, so the upgrade it
     // asked for can run: a tab that keeps its connection open blocks every other tab in the profile.
     blocking: () => {
-      void opened?.then((db) => {
-        db.close()
-        opened = null
-      })
+      self?.close()
+      drop()
     },
-    terminated: () => {
-      opened = null
-    },
+    terminated: drop,
   })
-}
 
-export function database(): Promise<IDBPDatabase<LocalSchema>> {
+  void opening.then(
+    (db) => {
+      self = db
+      // Arrived after the wait below gave up, so nothing will ever use it and nothing else would
+      // close it. Left open it holds the next upgrade, which is the tab this timeout exists for.
+      if (opened !== held) db.close()
+    },
+    // Answered through `held` below, which is what a caller awaits.
+    () => undefined,
+  )
+
+  const refusal = new Promise<never>((_, refuse) => {
+    waited = setTimeout(
+      () => refuse(new Error('The local database is held open by another tab.')),
+      BLOCKED_TIMEOUT,
+    )
+  })
+
   // A failure is not memoised, for the reason `db.ts` gives beside the same shape: caching the
-  // rejected promise would turn one blocked upgrade into a store that refuses every answer for
-  // as long as the page is open.
-  opened ??= Promise.race([
-    open(),
-    new Promise<never>((_, refuse) =>
-      setTimeout(
-        () => refuse(new Error('The local database is held open by another tab.')),
-        BLOCKED_TIMEOUT,
-      ),
-    ),
-  ]).catch((reason: unknown) => {
-    opened = null
+  // rejected promise would turn one blocked upgrade into a store that refuses every answer for as
+  // long as the page is open. The timer is cleared either way, so a page that opened cleanly is not
+  // still holding one three seconds later.
+  const held: Promise<IDBPDatabase<LocalSchema>> = Promise.race([opening, refusal])
+    .finally(() => clearTimeout(waited))
+    .catch((reason: unknown) => {
+      drop()
 
-    throw reason
-  })
+      throw reason
+    })
 
-  return opened
+  opened = held
+
+  return held
 }

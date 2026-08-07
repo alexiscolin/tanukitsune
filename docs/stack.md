@@ -160,8 +160,9 @@ carries the argument.
 
 IndexedDB through `idb`, which is a promise wrapper over the native API and nothing more. Dexie is the
 other candidate and it is a query layer with its own schema and migration model, which duplicates the
-one Drizzle already provides on the server and adds a second way to describe a store. Four stores: subjects, assignments and corpus rows as caches
-of server truth replaced wholesale, and the outbox appended with client-generated identifiers. No state
+one Drizzle already provides on the server and adds a second way to describe a store. Three stores: the sitting a flow was dealt and the corpus
+rows as caches of server truth replaced wholesale, and the outbox appended with client-generated
+identifiers. What each holds is in [`framing.md`](framing.md) under local state. No state
 library.
 
 Drizzle is the query layer and drizzle-kit writes the migrations: the schema is TypeScript, which is

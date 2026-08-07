@@ -5,7 +5,7 @@ import type { Question } from '../src/core/review/question'
 import type { AnswerRecord } from '../src/core/review/answer-record'
 import { BACKUP_PATH } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
-import { OUTBOX_DATABASE, OUTBOX_STORE } from '../src/data/local/database'
+import { OUTBOX_DATABASE, OUTBOX_STORE, VERSION } from '../src/data/local/database'
 
 // What both suites driving a session need of it, held once: which question the seeded deck asks
 // where, how a card is answered, and the rows a real IndexedDB kept. `review.spec.ts` asks whether
@@ -62,9 +62,12 @@ export async function answerQuestion(page: Page, question: Question) {
 // the store gains its second one.
 export function written(page: Page): Promise<readonly AnswerRecord[]> {
   return page.evaluate(
-    ([database, store]) =>
+    ([database, store, version]) =>
       new Promise<AnswerRecord[]>((resolve, reject) => {
-        const opened = indexedDB.open(database)
+        // At the version the application opens, never bare: a versionless open of a database that
+        // does not exist yet creates it at version one with no stores, which the upgrade ladder then
+        // reads as an outbox already made.
+        const opened = indexedDB.open(database, version)
         opened.onerror = () => reject(new Error('The local database did not open.'))
         opened.onsuccess = () => {
           const all = opened.result.transaction(store).objectStore(store).getAll()
@@ -75,7 +78,7 @@ export function written(page: Page): Promise<readonly AnswerRecord[]> {
           all.onerror = () => reject(new Error('The outbox did not read.'))
         }
       }),
-    [OUTBOX_DATABASE, OUTBOX_STORE] as const,
+    [OUTBOX_DATABASE, OUTBOX_STORE, VERSION] as const,
   )
 }
 
