@@ -44,17 +44,17 @@ export function BackupDrain({ secret }: { secret: string }) {
         .catch(() => undefined)
     }
 
-    const onReturn = () => {
-      if (document.visibilityState === 'visible') run()
-    }
-
     run()
     window.addEventListener('online', run)
-    document.addEventListener('visibilitychange', onReturn)
+    // Both directions of the change, and the tab leaving is the one that matters. A reader who was
+    // online throughout meets no other trigger after the page came up: they answer a whole session
+    // against a queue nothing has looked at since it was empty, and closing the tab is the first
+    // event since. Coming back is covered because the same listener sees it.
+    document.addEventListener('visibilitychange', run)
 
     return () => {
       window.removeEventListener('online', run)
-      document.removeEventListener('visibilitychange', onReturn)
+      document.removeEventListener('visibilitychange', run)
     }
   }, [secret])
 

@@ -55,14 +55,14 @@ test('an answer given offline reaches the backup when the network returns', asyn
   expect(batches.flat().map((row) => row.id)).toEqual(queued.map((row) => row.id))
 })
 
-// The second trigger, and the one covering a reader who answered with no network and left the tab
-// rather than reconnecting in front of it. The event is dispatched rather than produced by
-// backgrounding the tab, so what this holds is that the listener is on `document` and that it
-// drains while the page is visible.
+// The second trigger, and the one that carries most of the queue: a reader who stayed online meets
+// no other event after the page came up, so the tab going away or coming back is what takes the
+// session they just finished. The event is dispatched rather than produced by backgrounding the
+// tab, so what this holds is that the listener is on `document`.
 //
 // The answer is given with the network up, and nothing sends it: no drain runs on an append, and
-// the page came up before it existed. So the return to the tab is the only thing that can have.
-test('returning to the tab drains what is still queued', async ({ page, context }) => {
+// the page came up before it existed. So the visibility change is the only thing that can have.
+test('the tab changing visibility drains what is still queued', async ({ page, context }) => {
   const batches = postedBy(context)
 
   await page.goto(sessionPath('fr', 'review'))
