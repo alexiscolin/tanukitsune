@@ -30,6 +30,10 @@ export const catalogueURL = `http://127.0.0.1:${CATALOGUE_PORT}`
 const ACCOUNT_PORT = 3118
 export const accountURL = `http://127.0.0.1:${ACCOUNT_PORT}`
 
+// What that server reads instead of WaniKani, served by e2e/fake-source.ts.
+const SOURCE_PORT = 3119
+const sourceURL = `http://127.0.0.1:${SOURCE_PORT}`
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -55,6 +59,33 @@ export default defineConfig({
       // The backup route is closed without a secret, so the server under test is started with
       // one and the suite reads the same variable rather than repeating its value.
       env: { WANIKANI_TOKEN: '', TANUKITSUNE_SYNC_SECRET: SYNC_SECRET },
+      reuseExistingServer: process.env['CI'] === undefined,
+      timeout: 180_000,
+    },
+    // The account nobody owns, answering where WaniKani would. Started beside the server that
+    // reads it rather than before it: that server only calls out when it serves a page, and
+    // Playwright holds both until each answers.
+    {
+      command: `node --experimental-strip-types e2e/fake-source.ts ${SOURCE_PORT}`,
+      // Its liveness path rather than one of theirs, which would need the token and the revision
+      // the runner has no way to attach here.
+      url: sourceURL,
+      reuseExistingServer: process.env['CI'] === undefined,
+      timeout: 30_000,
+    },
+    // The same build again, dealing the account e2e/fake-account.ts describes. Two servers rather
+    // than one, because which deck is dealt is read from the token alone: a single server holding
+    // one would take the demo away from every spec that asserts it.
+    {
+      command: `pnpm start -p ${ACCOUNT_PORT}`,
+      url: accountURL,
+      // The token is what makes the server deal an account at all, and it is spent on a source
+      // that belongs to nobody, so what it says is worth exactly nothing.
+      env: {
+        WANIKANI_TOKEN: 'nobody-owns-this',
+        WANIKANI_API: `${sourceURL}/v2`,
+        TANUKITSUNE_SYNC_SECRET: SYNC_SECRET,
+      },
       reuseExistingServer: process.env['CI'] === undefined,
       timeout: 180_000,
     },

@@ -5,7 +5,7 @@ import type {
   studyMaterialCollection,
   subjectCollection,
   userPayload,
-} from './payload'
+} from '../src/data/wanikani/payload'
 
 // The account the end-to-end suite reviews, which is nobody's. Every session the suite could run
 // before this was the seeded deck, because a server started with a token deals whoever's account
@@ -13,8 +13,9 @@ import type {
 // study day.
 //
 // Written as the wire rather than as `Subject` and `Assignment`, and typed against the parsers in
-// payload.ts, so the source's own HTTP is what the suite drives: the revision header, the cursor
-// walk, the subscription ceiling and the parse all run exactly as they do against theirs.
+// src/data/wanikani/payload.ts, so the source's own HTTP is what the suite drives: the revision
+// header, the cursor walk, the subscription ceiling and the parse all run exactly as they do
+// against theirs.
 //
 // The identifiers are five digits and start at 9001, far from the levels one to five the seeded
 // deck is drawn from, so a card belonging to the wrong deck names itself.

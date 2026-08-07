@@ -2,7 +2,8 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [
     "src/app/**/{page,layout,route,error,not-found,loading}.{ts,tsx}",
-    "src/**/*.test.{ts,tsx}"
+    "src/**/*.test.{ts,tsx}",
+    "e2e/fake-source.ts"
   ],
   "project": [
     "src/**/*.{ts,tsx,css}",

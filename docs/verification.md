@@ -52,13 +52,22 @@ modules. `test:e2e` sits outside both and runs in its own CI job, because it nee
 database. It covers the two real routes, every catalogued state in both themes, and the two writes
 the product makes: what the loop queues in the browser and what the backup makes durable here.
 
+It builds once and starts four servers. Two are the same build twice: one holding no token, which
+deals the seeded deck every demo spec asserts, and one holding a token spent on `e2e/fake-source.ts`,
+which answers where WaniKani would and deals the account in `e2e/fake-account.ts`. Which deck is
+dealt is read from the token alone, so a single server could serve one of the two and not both. The
+third is the fake source itself and the fourth is the catalogue. The account is written as the wire
+and typed against the parsers in `src/data/wanikani/payload.ts`, so what a session upstream of the
+seeded deck drives is the source's own HTTP rather than a stand-in for it: its URLs, its revision
+header, its cursor walk and its parse.
+
 | Command | Tool | Catches |
 |---|---|---|
 | `typecheck` | `tsc6` | type errors, under `strict` and `noUncheckedIndexedAccess` |
 | `lint` | ESLint with type information | floating promises, `any`, stale hook dependencies, volume tripwires, and a marker naming work the backlog should hold |
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:contrast` | `check-contrast.mjs` | an ink token that falls under 4.5:1 on a ground it can land on, in either theme, and whether its own comparator still tells black on white from white on white |
-| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it and wherever in the payload it sits, still passes a call to a local route, and is still registered on `Bash` beside a deny entry naming the API |
+| `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it and wherever in the payload it sits, still passes a call to a local route, is still registered on `Bash` beside a deny entry naming the API, and whether the source still falls back to that API and nothing committed points it elsewhere |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |

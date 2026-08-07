@@ -23,6 +23,11 @@ const schema = z.object({
   // deck is served, and only a deployment reviewing a real account holds one. Single user and
   // unencrypted by decision, per the out-of-scope section of docs/specs/v0.1.md.
   WANIKANI_TOKEN: optionalText,
+  // Where the source answers. Absent everywhere but the end-to-end suite, which names a server of
+  // its own so a session can be driven against an account nobody owns. Absent is what points the
+  // source at the real API, so a deployment that sets nothing reaches WaniKani and one that sets
+  // this reaches whatever it named.
+  WANIKANI_API: optionalText,
   // What the backup route requires of a caller. Absent closes that route rather than opening it:
   // a deployment that lost the variable would otherwise accept a batch from anyone who found the
   // path, and an unreachable backup is a failure the reader sees where an open one is not.

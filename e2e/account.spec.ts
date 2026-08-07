@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { sessionPath, startPath } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
-import { FAKE_LESSONS, FAKE_REVIEWS, firstReviewed } from '../src/data/wanikani/fake-account'
+import { FAKE_LESSONS, FAKE_REVIEWS, firstReviewed } from './fake-account'
 import { accountURL } from '../playwright.config'
 
 // A session dealt from an account rather than from the seeded deck. Every other spec here drives
