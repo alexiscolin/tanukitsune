@@ -11,14 +11,26 @@ import type { Submission } from './submission'
 // being order dependent.
 export type Pending = () => Promise<readonly Submission[]>
 
-// True means the source took it and the row it answers for has been marked. Anything else is one
-// answer: the submission stays pending. Nothing here tells a refusal from a network that dropped,
-// because neither is a reason to send the same submission twice.
-export type Send = (submission: Submission) => Promise<boolean>
+// What became of one submission, and the three are not two: the source refusing an item that is no
+// longer due is a drop rather than a failure, so the answer keeps its outcome in our history marked
+// as not applied and the walk carries on past it. Anything else holds, and holding stops the walk:
+// sending the rest would advance the newest while the oldest waited.
+export type Sent = 'applied' | 'dropped' | 'held'
+
+export type Send = (submission: Submission) => Promise<Sent>
 
 // Strictly serial, because scheduling is order dependent: two submissions in flight advance two
 // items in whatever order the network settles them. It stops where it failed rather than sending
 // past it, so the newest never land while the oldest wait.
-export async function flush(pending: Pending, send: Send): Promise<void> {
-  for (const submission of await pending()) if (!(await send(submission))) return
+export async function flush(pending: Pending, send: Send): Promise<Sent[]> {
+  const outcomes: Sent[] = []
+
+  for (const submission of await pending()) {
+    const outcome = await send(submission)
+
+    outcomes.push(outcome)
+    if (outcome === 'held') return outcomes
+  }
+
+  return outcomes
 }

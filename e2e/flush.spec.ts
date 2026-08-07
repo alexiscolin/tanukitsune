@@ -8,10 +8,15 @@ import { toAssignment, toSubject } from '../src/data/wanikani/payload'
 import { accountURL, sourceURL } from '../playwright.config'
 import { FAKE_REVIEWS, FAKE_SUBJECTS } from './fake-account'
 import { copyFor } from '../src/core/site-copy'
+import { asOptional } from '../src/data/optional-text'
 import { answerQuestion } from './session'
 import { sessionPath } from '../src/core/routes'
 
 const COPY = copyFor('fr')
+
+// The secret the server under test was started with, read rather than written twice: a literal here
+// would pass against a server holding another value.
+const SECRET = asOptional(process.env['TANUKITSUNE_SYNC_SECRET']) ?? ''
 
 // The flush, end to end and against a source that belongs to nobody: a session is answered, the
 // queue is backed up, and what the backup holds reaches the source. It runs on the account server
@@ -40,8 +45,22 @@ async function taken(request: { get: (url: string) => Promise<{ json: () => Prom
 }
 
 test('the flush refuses a caller carrying no secret', async ({ request }) => {
-  expect((await request.get(`${accountURL}${FLUSH_PATH}`)).status()).toBe(401)
-  expect((await request.post(`${accountURL}${FLUSH_PATH}`, { data: {} })).status()).toBe(401)
+  expect((await request.post(`${accountURL}${FLUSH_PATH}`)).status()).toBe(401)
+})
+
+// Nothing a caller sends names an assignment or a count: what is owed is worked out from the rows
+// this server holds. A body is accepted and ignored, which is what says the derivation is the only
+// source of a submission.
+test('the flush takes no instruction from its caller', async ({ request }) => {
+  const before = (await taken(request)).length
+
+  const answered = await request.post(`${accountURL}${FLUSH_PATH}`, {
+    headers: { 'x-tanukitsune-sync': SECRET },
+    data: { assignmentId: 8002, incorrectMeanings: 99, incorrectReadings: 99, answers: ['x'] },
+  })
+
+  expect(answered.ok()).toBe(true)
+  expect(await taken(request)).toHaveLength(before)
 })
 
 test('a session answered reaches the source once, and a replay sends nothing more', async ({

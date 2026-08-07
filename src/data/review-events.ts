@@ -2,7 +2,7 @@ import 'server-only'
 
 import type { AnswerRecord } from '@/core/review/answer-record'
 
-import { and, inArray, isNotNull, isNull } from 'drizzle-orm'
+import { and, inArray, isNull } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { ANSWER_KINDS } from '@/core/answer-kind'
@@ -67,33 +67,34 @@ export async function unsentAnswers(): Promise<readonly Answered[]> {
     .parse(rows)
 }
 
-// Whether any of these rows has already been told to the source. Read before a submission rather
-// than after it: their created review carries no identifier worth reading back, so a submission
-// sent twice cannot be told from one sent once and the second advances the item again.
-export async function sentAlready(ids: readonly string[]): Promise<boolean> {
-  const marked = await (await db())
-    .select({ id: reviewEvent.id })
-    .from(reviewEvent)
-    .where(and(inArray(reviewEvent.id, [...ids]), isNotNull(reviewEvent.appliedUpstream)))
-    .limit(1)
-
-  return marked.length > 0
-}
-
 // The three the flush fills, written on the backed-up row rather than on the queued one, which is
 // never written to after the append. The stage comes back in the source's answer and is never
 // computed here, so none of the three can exist before this call.
 //
 // Only rows still unsent are touched: a replayed flush that reached the source twice would
 // otherwise overwrite a stage with an older one, and the append-only table has no way back.
-export async function markSent(
+export function markSent(
   ids: readonly string[],
-  srsStageAfter: number,
+  srsStageAfter: number | null,
   syncedAt: Date,
+): Promise<number> {
+  return mark(ids, { srsStageAfter, appliedUpstream: true, syncedAt })
+}
+
+// The source refused the item as no longer due. The answer keeps its outcome in our history and
+// says it never reached them, which docs/framing.md calls a drop rather than an error: there is no
+// stage, because none was produced.
+export function markDropped(ids: readonly string[]): Promise<number> {
+  return mark(ids, { srsStageAfter: null, appliedUpstream: false, syncedAt: null })
+}
+
+async function mark(
+  ids: readonly string[],
+  outcome: { srsStageAfter: number | null; appliedUpstream: boolean; syncedAt: Date | null },
 ): Promise<number> {
   const marked = await (await db())
     .update(reviewEvent)
-    .set({ srsStageAfter, appliedUpstream: true, syncedAt })
+    .set(outcome)
     .where(and(inArray(reviewEvent.id, [...ids]), isNull(reviewEvent.appliedUpstream)))
     .returning({ id: reviewEvent.id })
 

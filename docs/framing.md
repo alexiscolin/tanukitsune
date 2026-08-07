@@ -314,10 +314,10 @@ the request.
 
 **Reads cross the same boundary as writes.** The token is server-side, so the browser never talks to
 WaniKani directly and an in-page loop would never see an upstream response header. Subject and
-assignment fetches go through the same server proxy as the flush, and that proxy returns the upstream
-remaining and reset values to the client. That is what makes pacing from the rate limit possible at
-all: one budget of sixty per minute covers reads and writes, so a draining backlog and a refresh
-compete, and the client can only arbitrate between them if it is told what is left.
+assignment fetches go through the same server proxy as the flush. One budget of sixty per minute
+covers reads and writes, so a draining backlog and a refresh compete for it, and whatever arbitrates
+between them has to be told what is left. That is why the proxy is the place the remaining and reset
+values would be read, and [`backlog.md`](backlog.md) holds the entry that would read them.
 
 ### The server and client boundary
 
@@ -377,10 +377,12 @@ and the three fields the flush fills, `synced_at`, `applied_upstream` and `srs_s
 filled on the backed-up row: the stage comes back in WaniKani's response and is never computed
 locally, so none of the three can exist while the answer is still on the device.
 
-The flush is strictly serial and oldest first, because scheduling is order dependent, paced from the
-rate-limit headers rather than a fixed sleep since reads and writes share one budget, and holds a
-single-flusher lock so two tabs cannot double-send. It runs in the page rather than the service
-worker.
+The flush is strictly serial and oldest first, because scheduling is order dependent, and holds a
+single-flusher lock so two tabs cannot double-send. The lock and the trigger are in the page rather
+than in the service worker; the walk itself is in the route the page calls, which is where the token
+is and where the rows are, an answer having left the device once the backup confirmed it. Pacing it
+from the rate-limit headers is in [`backlog.md`](backlog.md) rather than built: it sends one
+submission per subject and reads nothing back about the budget it spends.
 
 This is the transactional outbox pattern, whose usual mitigation for at-least-once delivery is an
 idempotent consumer. That mitigation is unavailable here, which is why an ambiguous outcome is

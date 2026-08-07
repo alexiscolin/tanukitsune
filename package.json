@@ -30,7 +30,7 @@
     "storybook:build": "storybook build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "test:e2e": "pnpm build && playwright test"
+    "test:e2e": "WANIKANI_TOKEN= pnpm build && playwright test"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
