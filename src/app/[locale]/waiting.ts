@@ -4,6 +4,7 @@ import { DEMO_DECK, DEMO_QUESTIONS, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck
 import { deckFor, sessionOf } from '@/core/review/deck'
 import { questionsFor } from '@/core/review/question'
 import type { Question } from '@/core/review/question'
+import type { Assignment } from '@/core/knowledge-source'
 import type { Flow, Subject } from '@/core/subject'
 import { env } from '@/data/env'
 import { wanikaniSource } from '@/data/wanikani/source'
@@ -21,7 +22,15 @@ function sourceFor(token: string) {
 // Which of the two decks this is. The start screen says so, a real account's answers are not
 // cleared when a deck restarts, and a screen dealing one while promising that nothing leaves the
 // device is worse than one saying nothing.
-type Dealt<Cards> = { readonly cards: Cards; readonly demo: boolean }
+//
+// A real deck also carries what it was built from, which the cards no longer hold once they are
+// questions: the device keeps those so the same sitting can be dealt again with no network. The
+// seeded deck carries none, being a constant already on the device.
+type Dealt<Cards> = {
+  readonly cards: Cards
+  readonly demo: boolean
+  readonly held: { readonly subjects: readonly Subject[]; readonly waiting: readonly Assignment[] }
+}
 
 // What is waiting, counted in subjects rather than in questions, which is the number the source's
 // own client shows and the one the reader recognises: a kanji asked for its meaning and its
@@ -44,25 +53,42 @@ export async function due(): Promise<Due> {
 
 // The subjects one sitting deals, and only those: the rest of the queue is fetched when the
 // reader comes back for it.
-async function dealt(token: string, flow: Flow): Promise<readonly Subject[]> {
+async function dealt(
+  token: string,
+  flow: Flow,
+): Promise<{ readonly deck: readonly Subject[]; readonly waiting: readonly Assignment[] }> {
   const source = sourceFor(token)
   const queues = await source.listWaiting()
   const sitting = sessionOf(flow === 'lesson' ? queues.lessons : queues.reviews)
   const subjects = await source.listSubjects(sitting.map((entry) => entry.subjectId))
 
-  return deckFor(sitting, subjects)
+  return { deck: deckFor(sitting, subjects), waiting: sitting }
 }
+
+const NOTHING_HELD = { subjects: [], waiting: [] } as const
 
 export async function lessonDeck(): Promise<Dealt<readonly Subject[]>> {
   const token = env.WANIKANI_TOKEN
-  if (token === undefined) return { cards: DEMO_DECK, demo: true }
+  if (token === undefined) return { cards: DEMO_DECK, demo: true, held: NOTHING_HELD }
 
-  return { cards: await dealt(token, 'lesson'), demo: false }
+  const sitting = await dealt(token, 'lesson')
+
+  return {
+    cards: sitting.deck,
+    demo: false,
+    held: { subjects: sitting.deck, waiting: sitting.waiting },
+  }
 }
 
 export async function reviewDeck(): Promise<Dealt<readonly Question[]>> {
   const token = env.WANIKANI_TOKEN
-  if (token === undefined) return { cards: DEMO_QUESTIONS, demo: true }
+  if (token === undefined) return { cards: DEMO_QUESTIONS, demo: true, held: NOTHING_HELD }
 
-  return { cards: questionsFor(await dealt(token, 'review')), demo: false }
+  const sitting = await dealt(token, 'review')
+
+  return {
+    cards: questionsFor(sitting.deck),
+    demo: false,
+    held: { subjects: sitting.deck, waiting: sitting.waiting },
+  }
 }

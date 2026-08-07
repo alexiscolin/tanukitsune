@@ -8,6 +8,7 @@ import { env } from '@/data/env'
 import { LessonSession } from '@/ui/organisms/lesson-session'
 
 import { BackupDrain } from '../backup-drain'
+import { HoldDeck } from '../hold-deck'
 import { lessonDeck, reviewDeck } from '../waiting'
 import { ReviewFlow } from './review-flow'
 
@@ -39,12 +40,15 @@ export default async function SessionPage({
     const lesson = await lessonDeck()
 
     return (
-      <LessonSession
-        deck={lesson.cards}
-        copy={copy.review}
-        subjectCopy={copy.subject}
-        exitTo={start}
-      />
+      <>
+        <HoldDeck subjects={lesson.held.subjects} waiting={lesson.held.waiting} />
+        <LessonSession
+          deck={lesson.cards}
+          copy={copy.review}
+          subjectCopy={copy.subject}
+          exitTo={start}
+        />
+      </>
     )
   }
 
@@ -61,6 +65,7 @@ export default async function SessionPage({
   return (
     <>
       {secret !== undefined && <BackupDrain secret={secret} />}
+      <HoldDeck subjects={review.held.subjects} waiting={review.held.waiting} />
       <ReviewFlow
         locale={locale}
         questions={review.cards}
