@@ -5,7 +5,7 @@ import type { Question } from '../src/core/review/question'
 import type { AnswerRecord } from '../src/core/review/answer-record'
 import { BACKUP_PATH } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
-import { OUTBOX_DATABASE, OUTBOX_STORE } from '../src/data/local/outbox'
+import { OUTBOX_DATABASE, OUTBOX_STORE } from '../src/data/local/database'
 
 // What both suites driving a session need of it, held once: which question the seeded deck asks
 // where, how a card is answered, and the rows a real IndexedDB kept. `review.spec.ts` asks whether
