@@ -370,9 +370,10 @@ never merged, the corpus keyed by subject and locale and warmed alongside the as
 the item card never waits on a network; and the outbox, appended with client-generated identifiers so
 a duplicate throws rather than silently overwriting.
 
-After an entry is appended, exactly three fields are writable: `synced_at`, `applied_upstream`, and
-`srs_stage_after`, which cannot exist before the flush because the stage comes back in WaniKani's
-response and is never computed locally. The answer payload and the verdict are never touched.
+A queued entry is never written to after the append. It leaves the queue once the backup confirms it,
+and the three fields the flush fills, `synced_at`, `applied_upstream` and `srs_stage_after`, are
+filled on the backed-up row: the stage comes back in WaniKani's response and is never computed
+locally, so none of the three can exist while the answer is still on the device.
 
 The flush is strictly serial and oldest first, because scheduling is order dependent, paced from the
 rate-limit headers rather than a fixed sleep since reads and writes share one budget, and holds a

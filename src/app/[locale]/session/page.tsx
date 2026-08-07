@@ -4,8 +4,10 @@ import { isLocale } from '@/core/locales'
 import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 import { isFlow } from '@/core/subject'
+import { env } from '@/data/env'
 import { LessonSession } from '@/ui/organisms/lesson-session'
 
+import { BackupDrain } from '../backup-drain'
 import { lessonDeck, reviewDeck } from '../waiting'
 import { ReviewFlow } from './review-flow'
 
@@ -47,15 +49,26 @@ export default async function SessionPage({
   }
 
   const review = await reviewDeck()
+  // Read here because only the server can, and served to the page that sends it. Absent means no
+  // backup is configured and no drain starts at all, which is the one branch there is.
+  //
+  // It rides this route rather than the layout because this one is rendered per request, the flow
+  // arriving in the query. A layout carrying the secret would be prerendered with whatever the
+  // build held, which puts a secret in a document a shared cache may keep and leaves a deployment
+  // that set the variable afterwards with a drain that never starts.
+  const secret = env.TANUKITSUNE_SYNC_SECRET
 
   return (
-    <ReviewFlow
-      locale={locale}
-      questions={review.cards}
-      copy={copy.review}
-      subjectCopy={copy.subject}
-      exitTo={start}
-      demo={review.demo}
-    />
+    <>
+      {secret !== undefined && <BackupDrain secret={secret} />}
+      <ReviewFlow
+        locale={locale}
+        questions={review.cards}
+        copy={copy.review}
+        subjectCopy={copy.subject}
+        exitTo={start}
+        demo={review.demo}
+      />
+    </>
   )
 }

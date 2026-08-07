@@ -185,9 +185,11 @@ the choice comes down to price.
 **The v0.1 topology is single user with a public demo, and those two facts do not sit together by
 default.** The author's token lives in the server environment, and the same deployment serves a demo
 that anyone can reach. So the flush route and the backup route authenticate with a shared secret read
-from that same environment, checked inside each handler rather than in a matcher, and the demo path
-reaches neither. No route on the public deployment reads the WaniKani token, and that is an acceptance
-criterion rather than an intention.
+from that same environment, checked inside each handler rather than in a matcher. What the secret
+gates is the deployment and not the deck: a deployment that configures one backs up the sessions it
+serves, and one that configures none, which is what a demo alone is, reaches neither route. No route
+on the public deployment reads the WaniKani token, and that is an acceptance criterion rather than an
+intention.
 
 Secrets live in the host environment, are read by `data/` and by the corpus generator only, and never
 at build time. Model spend is capped per user and globally, as configuration rather than as a code

@@ -1,8 +1,8 @@
-import { expect, test, type BrowserContext, type Page } from '@playwright/test'
+import { expect, test, type BrowserContext } from '@playwright/test'
 
 import { BACKUP_PATH, sessionPath } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
-import { asked, written } from './outbox'
+import { answerCard, asked, queueLength, written } from './session'
 
 // The drain, driven through a real browser because everything it stands on is one: the queue is
 // IndexedDB, the triggers are the platform's own events, and the single leader is a Web Lock. What
@@ -34,24 +34,6 @@ function postedBy(context: BrowserContext): SentRow[][] {
   return batches
 }
 
-function queueLength(page: Page): Promise<number> {
-  return written(page).then((rows) => rows.length)
-}
-
-// One card, answered from the keyboard the way `review.spec.ts` drives it, and left where this
-// suite starts from: the answer durably in the queue. The queue is what says the card is done,
-// rather than the next card appearing, because the row is what everything below watches.
-async function answerCard(page: Page, position: number, queued: number) {
-  const question = asked(position)
-
-  await expect(page.getByLabel(COPY.review.prompt[question.kind])).toBeFocused()
-  await page.keyboard.type(question.accepted[0])
-  await page.keyboard.press('Enter')
-  await expect(page.getByRole('group', { name: COPY.review.askSelfGrade })).toBeFocused()
-  await page.keyboard.press('ArrowRight')
-  await expect.poll(() => queueLength(page)).toBe(queued)
-}
-
 // The acceptance criterion the product is built around: a session finishes with no network and
 // syncs when it comes back. Airplane mode reaches the page as `online`, which is what the drain
 // listens for.
@@ -63,7 +45,8 @@ test('an answer given offline reaches the backup when the network returns', asyn
 
   await page.goto(sessionPath('fr', 'review'))
   await context.setOffline(true)
-  await answerCard(page, 0, 1)
+  await answerCard(page, 0)
+  await expect.poll(() => queueLength(page)).toBe(1)
 
   const queued = await written(page)
   // Nothing is attempted while the network is gone. A send recorded here is one the reader paid
@@ -86,7 +69,8 @@ test('returning to the tab drains what is still queued', async ({ page, context 
 
   await page.goto(sessionPath('fr', 'review'))
   await context.setOffline(true)
-  await answerCard(page, 0, 1)
+  await answerCard(page, 0)
+  await expect.poll(() => queueLength(page)).toBe(1)
   await context.setOffline(false)
   await expect.poll(() => queueLength(page)).toBe(0)
 
@@ -94,7 +78,8 @@ test('returning to the tab drains what is still queued', async ({ page, context 
 
   // A second answer with no reconnection after it, so the queue is emptied by the return to the
   // tab or by nothing at all.
-  await answerCard(page, 1, 1)
+  await answerCard(page, 1)
+  await expect.poll(() => queueLength(page)).toBe(1)
 
   await page.evaluate(() => {
     document.dispatchEvent(new Event('visibilitychange'))
@@ -129,7 +114,8 @@ test('two tabs sharing one queue send it once', async ({ context }) => {
   // answers. Its own restart would otherwise take the answer away.
   await expect(follower.getByLabel(COPY.review.prompt[asked(0).kind])).toBeFocused()
 
-  await answerCard(leader, 0, 1)
+  await answerCard(leader, 0)
+  await expect.poll(() => queueLength(leader)).toBe(1)
 
   // One reconnection for the context, so both tabs are offered the same queue at the same moment.
   await context.setOffline(true)
@@ -139,7 +125,7 @@ test('two tabs sharing one queue send it once', async ({ context }) => {
   release()
 
   await expect.poll(() => queueLength(leader)).toBe(0)
-  // The follower takes the lock once the leader has let it go and finds a queue with nothing in
-  // it. A tab that had read the queue alongside the leader would have sent this row twice.
+  // The follower found the lock taken and gave up. A tab that had read the queue alongside the
+  // leader would have sent this row twice.
   expect(batches).toHaveLength(1)
 })

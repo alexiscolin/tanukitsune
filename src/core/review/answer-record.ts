@@ -70,7 +70,8 @@ export type AnswerRecord = {
   readonly scheduled: null
 
   readonly srsStageBefore: number | null
-  // The three the flush fills, and the only fields writable after the append. The stage comes
+  // The three the flush fills, on the backed-up row rather than on the queued one, which is never
+  // written to after the append and leaves the device once the backup confirms it. The stage comes
   // back in the source's response and is never computed locally, so it cannot exist before then.
   readonly srsStageAfter: number | null
   readonly appliedUpstream: boolean | null

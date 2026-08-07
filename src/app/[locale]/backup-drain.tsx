@@ -12,6 +12,12 @@ import { localOutbox } from '@/data/local/outbox'
 // coming from the device, but the request is made and the reader pays for it either way.
 const LEADER = 'tanukitsune-backup-drain'
 
+// What one send may take before the queue treats it as unreachable. A request has no deadline of
+// its own, so a connection that opens and never answers would hold the lock for as long as the tab
+// lives and stop that tab draining again. Generous rather than tight: this bounds a hang, and a
+// slow network is not one.
+const SEND_TIMEOUT = 30_000
+
 // Where the queue meets the network. It renders nothing and exists to hold the listeners, and it
 // is a client component because the store, the events and the lock are all the browser's.
 //
@@ -21,7 +27,8 @@ const LEADER = 'tanukitsune-backup-drain'
 // their queue would sit there until they happened to switch away and back.
 //
 // The secret arrives as a prop because only the server can read it. Rendering this component at
-// all is what says a backup is configured, so there is one branch and it is at the wiring.
+// all is what says a backup is configured, so there is one branch and it is at the wiring, on a
+// route rendered per request for the reasons given there.
 export function BackupDrain({ secret }: { secret: string }) {
   useEffect(() => {
     const backup = async (batch: readonly AnswerRecord[]) => {
@@ -29,18 +36,21 @@ export function BackupDrain({ secret }: { secret: string }) {
         method: 'POST',
         headers: { 'content-type': 'application/json', [BACKUP_SECRET_HEADER]: secret },
         body: JSON.stringify(batch),
+        signal: AbortSignal.timeout(SEND_TIMEOUT),
       }).catch(() => null)
 
       return stored !== null && stored.ok
     }
 
-    // The lock is held across the whole drain, and a tab that cannot take it waits rather than
-    // giving up: by the time it runs, the leader has removed what it sent, so the follower reads
-    // an empty queue and sends nothing. That is the same outcome as skipping, and it needs no
-    // second rule for what a tab does when it loses.
+    // A tab that cannot take the lock gives up rather than queueing behind the leader. Waiting
+    // would be harmless once, but every reconnection and every return to the tab asks again, so a
+    // slow send would leave a queue of drains that all run against what the leader already
+    // emptied, or all repost the same batch to a server that just refused it.
     const run = () => {
       void navigator.locks
-        .request(LEADER, () => drain(localOutbox, backup))
+        .request(LEADER, { ifAvailable: true }, (lock) =>
+          lock === null ? undefined : drain(localOutbox, backup),
+        )
         // A drain that threw is a queue that kept its rows, which is what this design asks for on
         // every other failure too. There is nothing to report and nothing to undo.
         .catch(() => undefined)
