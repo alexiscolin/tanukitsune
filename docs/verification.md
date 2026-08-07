@@ -53,7 +53,7 @@ database. It covers the two real routes, every catalogued state in both themes, 
 the product makes: what the loop queues in the browser and what the backup makes durable here, plus
 the flush that carries the second to the source.
 
-It builds once and starts four servers. Two are the same build twice: one holding no token, which
+It builds once, migrates the second database where there is one, and starts four servers. Two are the same build twice: one holding no token, which
 deals the seeded deck every demo spec asserts, and one holding a token spent on `e2e/fake-source.ts`,
 which answers where WaniKani would and deals the account in `e2e/fake-account.ts`. Which deck is
 dealt is read from the token alone, so a single server could serve one of the two and not both. The

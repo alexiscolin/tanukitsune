@@ -17,9 +17,9 @@ CLAUDE.local.md
 info/
 
 # Local file-backed Postgres, created by pnpm bootstrap.
-.postgres/
-.postgres-account/
-# Any copy of it, however it was named: the driver writes binary the repository must never carry.
+# Every database the file-backed driver opens, by prefix: it writes binary the repository must never
+# carry, and the directory is named by a variable, so the prefix is what src/data/local-data-dir.ts
+# constrains a caller to.
 .postgres*
 
 # Playwright output.

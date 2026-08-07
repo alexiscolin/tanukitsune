@@ -30,9 +30,9 @@ export const catalogueURL = `http://127.0.0.1:${CATALOGUE_PORT}`
 const ACCOUNT_PORT = 3118
 export const accountURL = `http://127.0.0.1:${ACCOUNT_PORT}`
 
-// Named here and migrated by the test:e2e script, which has to reach the same directory this
-// starts the server with.
-export const ACCOUNT_DATABASE = '.postgres-account'
+// Repeated in scripts/migrate-e2e.sh, which migrates it: a shell script cannot import a constant,
+// so the two carry the literal and the prefix is what .gitignore holds either way.
+const ACCOUNT_DATABASE = '.postgres-account'
 
 // What that server reads instead of WaniKani, served by e2e/fake-source.ts.
 const SOURCE_PORT = 3119

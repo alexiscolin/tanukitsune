@@ -328,7 +328,7 @@ minimal shapes rather than rows. What of it reaches the server is server-only an
 `server-only` to say so, which is every module here but `data/local/`, the browser's half: a store on
 the device is unreachable from a server, and what it sends carries the secret it was handed rather
 than one it read, nothing there being able to reach the environment. Only the server half reads the environment inside the running
-application. The migration configuration and the end-to-end expectation read one variable outside it,
+application. The migration configuration and the end-to-end expectation read outside it,
 through the rule `data/` owns, because a tool that decides which database to open cannot ask the
 application which one it opened. The third of the five rules
 above follows from this: **`ui/` may not import a module that imports `server-only`**, which the
