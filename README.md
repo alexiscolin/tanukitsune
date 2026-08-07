@@ -167,9 +167,11 @@ src/
 └── app/                     the routes. The only layer allowed to touch both data and ui
     ├── [locale]/                where a session starts, the layout, the error and not-found pages
     ├── [locale]/session/        the loop, in whichever of the two flows was asked for
-    └── api/health/route.ts      what answered, which build, and whether the database is there
+    ├── api/health/route.ts      what answered, which build, and whether the database is there
+    └── api/review/route.ts      where a queued answer becomes a durable row
 e2e/                         Playwright: the routes against the production build, every story by
-                             theme, and what the loop writes to the browser's own database
+                             theme, what the loop writes to the browser's own database, and what
+                             the backup makes durable in ours
 drizzle/                     migrations, generated from the schema, never written by hand
 scripts/                     the gates a linter cannot express
 docs/                        everything argued rather than enforced

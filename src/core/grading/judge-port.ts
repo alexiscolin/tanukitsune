@@ -16,7 +16,9 @@ export type GradedAnswer = {
 // What a tier concludes about an answer. Named beside the port for the reason the tuple
 // above is: the cascade that produces one and the screen that holds it until the reader
 // disagrees must not spell it apart.
-export type Verdict = 'correct' | 'incorrect'
+export const VERDICTS = ['correct', 'incorrect'] as const
+
+export type Verdict = (typeof VERDICTS)[number]
 
 // Declared here rather than in ai/, so core/ never learns that a model exists.
 // ai/ implements it, app/ wires the two, and the cascade is tested with a fake.

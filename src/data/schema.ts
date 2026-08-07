@@ -55,6 +55,11 @@ export const reviewEvent = pgTable('review_event', {
   overrideReason: text('override_reason'),
   assist: text('assist'),
   scheduled: text('scheduled'),
+  // The server's own clock beside the device's, which is what makes an implausible interval
+  // detectable rather than fed to FSRS as fact: `answered_at` is the only clock available offline
+  // and a device clock can be wrong. Defaulted rather than sent, a caller stamping its own receipt
+  // being the thing this exists to check.
+  receivedAt: timestamp('received_at', { withTimezone: true }).notNull().defaultNow(),
   srsStageBefore: integer('srs_stage_before'),
   // The three the flush fills, nullable because the append happens offline and long before it.
   srsStageAfter: integer('srs_stage_after'),

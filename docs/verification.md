@@ -49,8 +49,8 @@ readable floor would turn it into an instruction to write text nobody can read.
 `pnpm verify` is `gate` plus `check:account`, `check:sketches`, `check:tokens`, `check:review`,
 `check:tests`, `build`, `test`, `knip` and `dupes`. `build` is the only gate that evaluates server
 modules. `test:e2e` sits outside both and runs in its own CI job, because it needs a browser and a
-database. It covers the two real routes, every catalogued state in both themes, and the one write the
-review loop makes.
+database. It covers the two real routes, every catalogued state in both themes, and the two writes
+the product makes: what the loop queues in the browser and what the backup makes durable here.
 
 | Command | Tool | Catches |
 |---|---|---|

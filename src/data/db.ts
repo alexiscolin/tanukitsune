@@ -16,7 +16,9 @@ const LOCAL_DATA_DIR = '.postgres'
 // production bundle.
 let connection: Promise<Database> | undefined
 
-function db(): Promise<Database> {
+// Exported for the modules that write, which reach the connection rather than opening one: two
+// pools against one database is the outage a serverless ceiling is counted per instance to avoid.
+export function db(): Promise<Database> {
   // A failed connection is not memoised. Caching the rejected promise would turn
   // one transient outage into a permanently broken process.
   connection ??= connect().catch((reason: unknown) => {
