@@ -652,3 +652,11 @@
 {"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "docs-conformity", "file": "docs/framing.md", "line": 380, "outcome": "fixed"}
 {"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "docs-conformity", "file": "docs/framing.md", "line": 227, "outcome": "fixed"}
 {"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "kind": "pass", "base": "40292ea6493ae2d255cebeb4fa68d7f690146475", "head": "d42f2afdc5fa048e08d4dd5cfb27471a91a1bbec"}
+{"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "code-review", "file": "src/app/api/flush/route.ts", "line": 63, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "code-review", "file": "e2e/flush.spec.ts", "line": 54, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "code-review", "file": "src/app/api/flush/route.ts", "line": 65, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "code-review", "file": "src/app/api/flush/route.ts", "line": 79, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "code-review", "file": "src/app/api/flush/route.ts", "line": 93, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "code-review", "file": "src/app/api/flush/route.ts", "line": 43, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "reviewer": "code-review", "file": "src/core/routes.ts", "line": 26, "outcome": "fixed"}
+{"date": "2026-08-07", "branch": "feat/fake-wanikani-source", "kind": "pass", "base": "40292ea6493ae2d255cebeb4fa68d7f690146475", "head": "8d258ac3e37131666a47c447749dcae8b87596c4"}
