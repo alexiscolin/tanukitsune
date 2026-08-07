@@ -1,10 +1,8 @@
-// Where the file-backed database lives when no server one is named, and the name of the variable
-// that moves it. One rule, two readers, for the reason optional-text.ts gives beside the same shape:
-// src/data/db.ts opens the directory and drizzle.config.ts migrates it, and a default carried twice
-// is how a migration comes to be applied somewhere the application never opens.
+// Where the file-backed database lives when no server one is named. Here rather than in db.ts
+// because that module is server-only and drizzle.config.ts cannot import it, which is the reason
+// optional-text.ts gives for its own existence: a default carried twice is how a migration comes to
+// be applied somewhere the application never opens.
 //
-// The name is constrained to this prefix because .gitignore is what stops a database being
-// committed, and it holds by prefix rather than by knowing every name a caller may choose.
+// The name a caller may move it to is not constrained by anything here. What holds a database out of
+// the repository is the .postgres prefix in .gitignore, so a caller keeps to it.
 export const LOCAL_DATA_DIR = '.postgres'
-
-export const LOCAL_DATA_DIR_VARIABLE = 'TANUKITSUNE_LOCAL_DATABASE'

@@ -30,8 +30,8 @@ export const catalogueURL = `http://127.0.0.1:${CATALOGUE_PORT}`
 const ACCOUNT_PORT = 3118
 export const accountURL = `http://127.0.0.1:${ACCOUNT_PORT}`
 
-// Repeated in scripts/migrate-e2e.sh, which migrates it: a shell script cannot import a constant,
-// so the two carry the literal and the prefix is what .gitignore holds either way.
+// Repeated by the test:e2e script, which migrates it before this server opens it: a package script
+// is shell and cannot import a constant.
 const ACCOUNT_DATABASE = '.postgres-account'
 
 // What that server reads instead of WaniKani, served by e2e/fake-source.ts.
@@ -88,9 +88,8 @@ export default defineConfig({
       env: {
         WANIKANI_TOKEN: 'nobody-owns-this',
         WANIKANI_API: `${sourceURL}/v2`,
-        // Its own file-backed database, because pglite is one process over one directory and this
-        // is the second server. Ignored where the environment names a server database, which is
-        // what CI does, Postgres taking two clients without complaint.
+        // Its own file-backed database, for the reason docs/verification.md gives: this is the
+        // second server, and that driver is one process over one directory.
         TANUKITSUNE_LOCAL_DATABASE: ACCOUNT_DATABASE,
         // The one place the upstream write is on. A submission is irreversible and the source
         // offers no sandbox, so the switch is off everywhere a real token could be held, and on

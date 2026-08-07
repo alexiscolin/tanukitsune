@@ -9,8 +9,6 @@ import * as schema from './schema'
 
 type Database = PgDatabase<PgQueryResultHKT, typeof schema>
 
-
-
 // A server Postgres when the environment names one, the local file-backed
 // database otherwise, which is what lets a fresh clone run with nothing
 // installed. Imported dynamically so the local driver never reaches a
@@ -50,9 +48,8 @@ async function connect(): Promise<Database> {
     import('@electric-sql/pglite'),
     import('drizzle-orm/pglite'),
   ])
-  // Configurable because pglite is one process over one directory: two servers sharing it abort
-  // each other's queries, and the end-to-end suite runs two. A deployment names a server database
-  // instead and never reaches this line.
+  // Configurable because this driver is one process over one directory, and the end-to-end suite
+  // runs two servers. docs/verification.md carries the whole of it.
   return drizzle(new PGlite(env.TANUKITSUNE_LOCAL_DATABASE ?? LOCAL_DATA_DIR), { schema })
 }
 
