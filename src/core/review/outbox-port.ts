@@ -9,7 +9,14 @@ import type { AnswerRecord } from './answer-record'
 // not accepted, so the card refuses instead of advancing.
 export type OutboxPort = {
   readonly append: (record: AnswerRecord) => Promise<void>
-  // What a restart empties. Nothing else does: the queue is append-only, and a row leaves it
-  // only once the flush that drains it exists.
+  // Every row at once rather than a page of them. The order answers are replayed in belongs to
+  // the drain, where a unit test can read it, rather than to an index only a browser has; and a
+  // queue is one reader's unsent answers, which is tens of rows.
+  readonly list: () => Promise<readonly AnswerRecord[]>
+  // What the drain calls once the backup holds those rows, and the only way a row leaves the
+  // queue on its own account. The queue stays append-only: nothing here rewrites a row.
+  readonly remove: (ids: readonly string[]) => Promise<void>
+  // What a restart empties, which is the demo deck and nothing else. A real account's answers
+  // leave through `remove` alone.
   readonly clear: () => Promise<void>
 }

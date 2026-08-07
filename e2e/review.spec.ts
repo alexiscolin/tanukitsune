@@ -1,50 +1,16 @@
 import { expect, test, type Page } from '@playwright/test'
 
-import { DEMO_QUESTIONS } from '../src/core/demo-deck'
-import type { Question } from '../src/core/review/question'
-import type { AnswerRecord } from '../src/core/review/answer-record'
-import { OUTBOX_DATABASE, OUTBOX_STORE } from '../src/data/local/outbox'
 import { sessionPath } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
+import { asked, written } from './outbox'
 
 // The outbox, exercised through the browser's own IndexedDB rather than a substitute for it:
 // the store is the browser's, so a stand-in would prove that the stand-in works.
 
 const COPY = copyFor('fr')
 
-// The deck asks every meaning before any reading, so the first two cards are two subjects
-// asked the same question rather than one subject asked twice.
-function asked(position: number): Question {
-  const question = DEMO_QUESTIONS[position]
-  if (question === undefined) throw new Error('The demo deck asks fewer questions than this.')
-
-  return question
-}
-
 const FIRST = asked(0)
 const SECOND = asked(1)
-
-// The rows as the application wrote them, read through a connection of the suite's own. It is
-// closed before the rows are handed back: a connection left open blocks the version change the day
-// the store gains its second one.
-function written(page: Page): Promise<readonly AnswerRecord[]> {
-  return page.evaluate(
-    ([database, store]) =>
-      new Promise<AnswerRecord[]>((resolve, reject) => {
-        const opened = indexedDB.open(database)
-        opened.onerror = () => reject(new Error('The local database did not open.'))
-        opened.onsuccess = () => {
-          const all = opened.result.transaction(store).objectStore(store).getAll()
-          all.onsuccess = () => {
-            opened.result.close()
-            resolve(all.result as AnswerRecord[])
-          }
-          all.onerror = () => reject(new Error('The outbox did not read.'))
-        }
-      }),
-    [OUTBOX_DATABASE, OUTBOX_STORE] as const,
-  )
-}
 
 // Typed rather than filled, and graded from the keyboard: the field takes the focus on every
 // card and the deck takes it the moment a verdict stands, so neither is reached by pointing at
