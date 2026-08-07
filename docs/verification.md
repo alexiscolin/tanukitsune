@@ -291,8 +291,8 @@ is what enters a session from that screen, pages a batch to its end and leaves b
 and it audits nothing. Neither does `e2e/review.spec.ts`, which asks the one question a substitute
 cannot answer, whether the answer is in the browser's database before the deck advances, nor
 `e2e/sync.spec.ts`, which asks what takes it back out when the network returns, when the tab does,
-and when a second tab is open. Both answer a card and read that store through `e2e/session.ts`. What no gate holds is
-the appearance, which is recorded below under what is not covered.
+and when a second tab is open. Both answer a card and read that store through `e2e/session.ts`. What
+no gate holds is the appearance, which is recorded below under what is not covered.
 
 ## The token rule
 

@@ -1,8 +1,7 @@
 import { expect, test, type BrowserContext } from '@playwright/test'
 
 import { BACKUP_PATH, sessionPath } from '../src/core/routes'
-import { copyFor } from '../src/core/site-copy'
-import { answerCard, asked, queueLength, written } from './session'
+import { answerCard, BACKUP_ROUTE, cardReady, queueLength, written } from './session'
 
 // The drain, driven through a real browser because everything it stands on is one: the queue is
 // IndexedDB, the triggers are the platform's own events, and the single leader is a Web Lock. What
@@ -12,10 +11,6 @@ import { answerCard, asked, queueLength, written } from './session'
 // The deck is the seeded one, the server under this suite holding no token, and the backup is
 // configured. That is the only branch there is: what decides whether answers leave the device is
 // the shared secret, never which deck dealt them.
-
-const BACKUP = `**${BACKUP_PATH}`
-
-const COPY = copyFor('fr')
 
 // A batch as it left the browser. Only the identifiers are read: what a row carries is the route's
 // business and is asserted where the route is.
@@ -64,29 +59,23 @@ test('an answer given offline reaches the backup when the network returns', asyn
 // rather than reconnecting in front of it. The event is dispatched rather than produced by
 // backgrounding the tab, so what this holds is that the listener is on `document` and that it
 // drains while the page is visible.
+//
+// The answer is given with the network up, and nothing sends it: no drain runs on an append, and
+// the page came up before it existed. So the return to the tab is the only thing that can have.
 test('returning to the tab drains what is still queued', async ({ page, context }) => {
   const batches = postedBy(context)
 
   await page.goto(sessionPath('fr', 'review'))
-  await context.setOffline(true)
   await answerCard(page, 0)
   await expect.poll(() => queueLength(page)).toBe(1)
-  await context.setOffline(false)
-  await expect.poll(() => queueLength(page)).toBe(0)
-
-  const sentOnReconnect = batches.length
-
-  // A second answer with no reconnection after it, so the queue is emptied by the return to the
-  // tab or by nothing at all.
-  await answerCard(page, 1)
-  await expect.poll(() => queueLength(page)).toBe(1)
+  expect(batches).toEqual([])
 
   await page.evaluate(() => {
     document.dispatchEvent(new Event('visibilitychange'))
   })
 
   await expect.poll(() => queueLength(page)).toBe(0)
-  expect(batches).toHaveLength(sentOnReconnect + 1)
+  expect(batches).toHaveLength(1)
 })
 
 // Multi-tab is a week-one case rather than an edge case, per docs/specs/v0.1.md. Two pages in one
@@ -101,18 +90,19 @@ test('two tabs sharing one queue send it once', async ({ context }) => {
   const held = new Promise<void>((resolve) => {
     release = resolve
   })
-  await context.route(BACKUP, async (route) => {
+  await context.route(BACKUP_ROUTE, async (route) => {
     await held
     await route.continue()
   })
 
-  const leader = await context.newPage()
-  const follower = await context.newPage()
-  await leader.goto(sessionPath('fr', 'review'))
-  await follower.goto(sessionPath('fr', 'review'))
+  const [leader, follower] = await Promise.all([context.newPage(), context.newPage()])
+  await Promise.all([
+    leader.goto(sessionPath('fr', 'review')),
+    follower.goto(sessionPath('fr', 'review')),
+  ])
   // The demo deck empties the queue when it starts, so the second tab is up before the first one
   // answers. Its own restart would otherwise take the answer away.
-  await expect(follower.getByLabel(COPY.review.prompt[asked(0).kind])).toBeFocused()
+  await cardReady(follower, 0)
 
   await answerCard(leader, 0)
   await expect.poll(() => queueLength(leader)).toBe(1)

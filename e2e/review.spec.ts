@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
-import { BACKUP_PATH, sessionPath } from '../src/core/routes'
-import { answerCard, asked, queueLength, written } from './session'
+import { sessionPath } from '../src/core/routes'
+import { answerCard, asked, BACKUP_ROUTE, queueLength, written } from './session'
 
 // The outbox, exercised through the browser's own IndexedDB rather than a substitute for it:
 // the store is the browser's, so a stand-in would prove that the stand-in works.
@@ -40,7 +40,7 @@ test('restarting the demo deck leaves an empty queue', async ({ page, context })
   // The backup is refused for this test alone, so the restart is the only thing that can have
   // emptied the queue. Refusing it for the file would take the drain out of the run above, which
   // is the configuration the product ships.
-  await context.route(`**${BACKUP_PATH}`, (route) => route.abort())
+  await context.route(BACKUP_ROUTE, (route) => route.abort())
 
   await page.goto(sessionPath('fr', 'review'))
   await answerFirstCard(page)

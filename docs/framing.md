@@ -247,8 +247,9 @@ v0.2 opens; the schema that makes it possible ships in v0.1.
   triggered when the page comes up, on reconnect and on visibility change. Treating the browser's sync
   event as anything other than a bonus on Chromium would promise behaviour the platform cannot
   deliver. The first of the three is what covers a reader who answered offline and closed the tab:
-  they reopen the application with the network already back and the tab already visible, so neither
-  event fires and only the page coming up does.
+  they come back with the network already restored and the tab already visible, so neither event
+  fires, and the queue leaves as their next session opens rather than waiting for them to switch
+  away and back.
 - Multi-tab is a week-one case, not an edge case. A single sync leader elected through the Web Locks
   API.
 - The flush is a route handler taking a batch, not a server action, for the reasons given under

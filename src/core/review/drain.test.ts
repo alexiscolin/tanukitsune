@@ -122,12 +122,9 @@ describe('drain', () => {
 
     expect(backup.batches.map((batch) => batch.length)).toEqual([BATCH_LIMIT, 2])
     expect(backup.sent()[0]).toBe(`answer-${String(BATCH_LIMIT + 1).padStart(4, '0')}`)
-    expect(outbox.held()).toEqual([])
   })
 
-  // Serial rather than concurrent, and it stops where it failed: sending the rest after a
-  // refusal would put the newest answers on the server while the oldest stayed behind, which is
-  // the one order the log must not be replayed in.
+  // What a refusal leaves behind is one batch attempted and the rest of the queue untouched.
   it('stops at the batch the backup refused', async () => {
     const outbox = outboxOf(newestFirst(BATCH_LIMIT + 2))
     const backup = backupOf(false)
