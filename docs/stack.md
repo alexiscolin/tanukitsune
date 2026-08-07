@@ -183,8 +183,9 @@ charge, which [ADR 0004](decisions/0004-free-forever.md) guarantees. Nothing bey
 the choice comes down to price.
 
 **The v0.1 topology is single user with a public demo, and those two facts do not sit together by
-default.** The author's token lives in the server environment, and the same deployment serves a demo
-that anyone can reach. So the flush route and the backup route authenticate with a shared secret read
+default.** The author's token lives in the server environment, and a deployment holding one deals
+that account to whoever reaches it, so the demo is a second deployment holding none rather than a
+path through the first. The flush route and the backup route authenticate with a shared secret read
 from that same environment, checked inside each handler rather than in a matcher. What the secret
 gates is the deployment and not the deck: a deployment that configures one backs up the sessions it
 serves, and one that configures none, which is what a demo alone is, reaches neither route. No route

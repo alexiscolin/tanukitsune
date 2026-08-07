@@ -243,8 +243,9 @@ v0.2 opens; the schema that makes it possible ships in v0.1.
   handling is recovery instead. A first run in standalone mode with an empty outbox rehydrates from the
   server-side backup and tells the user plainly that the browser tab may still hold answers that were
   never sent.
-- **Background Sync does not exist on iOS and never has**, so the flush is an in-page paced drain
-  triggered when the page comes up, on reconnect and on visibility change. Treating the browser's sync
+- **Background Sync does not exist on iOS and never has**, so both the drain that backs a queue up
+  and the flush that submits it are in-page, triggered when the page comes up, on reconnect and on
+  visibility change. Treating the browser's sync
   event as anything other than a bonus on Chromium would promise behaviour the platform cannot
   deliver. The first of the three is what covers a reader who answered offline and closed the tab:
   they come back with the network already restored and the tab already visible, so neither event
@@ -324,9 +325,9 @@ This is the boundary that leaks secrets, and it is not the same as the module bo
 
 `data/` is a data access layer in the strict sense: performing its own authorisation, returning
 minimal shapes rather than rows. What of it reaches the server is server-only and imports
-`server-only` to say so, which is every module here but `data/local/`, the browser's own store: it
-holds nothing to authorise and no secret to leak, and a store on the device is unreachable from a
-server anyway. Only the server half reads the environment inside the running
+`server-only` to say so, which is every module here but `data/local/`, the browser's half: a store on
+the device is unreachable from a server, and what it sends carries the secret it was handed rather
+than one it read, nothing there being able to reach the environment. Only the server half reads the environment inside the running
 application. The migration configuration and the end-to-end expectation read one variable outside it,
 through the rule `data/` owns, because a tool that decides which database to open cannot ask the
 application which one it opened. The third of the five rules
