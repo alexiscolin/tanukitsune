@@ -25,3 +25,10 @@ export const BACKUP_PATH = '/api/review'
 // The secret travels in a header rather than in the body, so a refusal is decided before the
 // batch is read and a rejected request leaves no trace of what it was carrying.
 export const BACKUP_SECRET_HEADER = 'x-tanukitsune-sync'
+
+// How many rows one request may carry, spelled beside the path for the same reason: a sender
+// paging at one number against a boundary refusing at another meets a refusal that resending
+// cannot clear. Postgres binds one parameter per column per row and refuses a statement past
+// 65535 of them, which an eighteen-column row reaches somewhere past three thousand; the room
+// between that and this is what a column added later may spend.
+export const BATCH_LIMIT = 500

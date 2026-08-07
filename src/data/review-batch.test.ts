@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest'
 import { answerRecord } from '@/core/review/answer-record'
 import type { AnsweredCard, AnswerStamp } from '@/core/review/answer-record'
 
-import { BATCH_LIMIT, parseBatch } from './review-batch'
+import { BATCH_LIMIT } from '@/core/routes'
+
+import { parseBatch } from './review-batch'
 
 // What the browser sends is a row it wrote offline, so the shape is the queue's rather than a
 // wire format of its own, and the only difference between the two is what JSON can carry: a date

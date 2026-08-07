@@ -77,6 +77,15 @@ export type AnswerRecord = {
   readonly syncedAt: Date | null
 }
 
+// Whether a row is one this constructor could have produced. The three fields below are derived
+// from a single ruling, so a row where they disagree is one no session ever held, and a boundary
+// reading a row back from a device needs the same rule rather than its own reading of it.
+export function ruledConsistently(record: AnswerRecord): boolean {
+  const said = record.correct ? 'correct' : 'incorrect'
+
+  return record.overriddenTo === (record.verdict !== null && said !== record.verdict ? said : null)
+}
+
 export function answerRecord(card: AnsweredCard, stamp: AnswerStamp): AnswerRecord {
   // A reader ruling where no tier could is not disagreeing with one, so that row carries what
   // they said in `correct` and overrides nothing. Reading it as an override would put a

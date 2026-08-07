@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
+import { asOptional } from './src/data/optional-text'
+
 // The runner asserts on which driver answered, so it has to read the same file
 // the server under test reads.
 try {
@@ -11,13 +13,11 @@ try {
 const PORT = 3117
 const baseURL = `http://127.0.0.1:${PORT}`
 
-// Fixed rather than random, a server reused across runs having been started with whatever this
-// was the first time. It guards a route against the internet, not against this suite. Only where
-// nothing set one, for the reason the token below carries: a value already in the environment is
-// what a server started by hand was started with, and overwriting it here would leave the suite
-// holding a secret that server never received.
-process.env['TANUKITSUNE_SYNC_SECRET'] ??= 'end-to-end-sync-secret'
-const SYNC_SECRET = process.env['TANUKITSUNE_SYNC_SECRET']
+// Fixed rather than random, a server reused across runs having been started with whatever this was
+// the first time, and only where the environment named none: a secret already there is what a
+// server started by hand holds. Empty counts as none, through the rule optional-text.ts owns.
+const SYNC_SECRET = asOptional(process.env['TANUKITSUNE_SYNC_SECRET']) ?? 'end-to-end-sync-secret'
+process.env['TANUKITSUNE_SYNC_SECRET'] = SYNC_SECRET
 
 // The catalogue answers on its own port, so a spec reaches a story by absolute URL while
 // every other spec keeps resolving against the application.
