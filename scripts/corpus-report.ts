@@ -20,9 +20,7 @@ import {
 import type { Decomposition } from '../src/core/corpus/decomposition.ts'
 import { partsTaught } from '../src/core/corpus/taught.ts'
 import { readComponentNames, readDecompositions } from '../src/data/corpus/artifact.ts'
-import { readInventoryFile } from '../src/data/corpus/inventory.ts'
-
-const INVENTORY = 'corpus/.inventory.json'
+import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
 const locale = process.argv[2] ?? 'fr'
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
@@ -31,7 +29,7 @@ const names = readComponentNames(readFileSync(`corpus/${locale}/components.json`
 const shapeOf = (character: string) => decompositions.get(character) ?? []
 const isNameable = (component: string) => names[component] !== undefined
 
-const { read, unplaced, unnamedByShape } = existsSync(INVENTORY) ? againstCurriculum() : againstShape()
+const { read, unplaced, unnamedByShape } = existsSync(INVENTORY_FILE) ? againstCurriculum() : againstShape()
 
 report('characters read', String(read.length))
 report('characters the source does not fully state', list(read.filter((one) => !isFullyStated(one)).map(named)))
@@ -47,7 +45,7 @@ if (unnamedByShape.length > 0) {
 // Against the curriculum: the parts of a story are the components the reader has been dealt a card
 // for, per docs/decisions/0013-the-curriculum-decides-the-parts.md.
 function againstCurriculum() {
-  const { upTo, subjects } = readInventoryFile(readFileSync(INVENTORY, 'utf8'))
+  const { upTo, subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
   const byId = new Map(subjects.map((subject) => [subject.id, subject]))
 
   process.stdout.write(`inventory: ${subjects.length} subjects to level ${upTo}\n`)

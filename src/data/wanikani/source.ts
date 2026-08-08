@@ -3,7 +3,7 @@ import type { z } from 'zod'
 import type { Advanced, KnowledgeSource, Waiting } from '@/core/knowledge-source'
 import type { Component, Subject } from '@/core/subject'
 
-import { collect, headersFor, read } from './paging'
+import { API, collect, headersFor, read } from './paging'
 import type { Client } from './paging'
 
 import {
@@ -38,10 +38,6 @@ type Submitted = Parameters<KnowledgeSource['submitReview']>[0]
 // identifiers is a request that fails on its length rather than on its content.
 const IDS_PER_REQUEST = 500
 
-// Where the source answers, which is theirs unless a caller names another. Absent is what a
-// deployment gets, so nothing has to be set for the real API to be the one reached; the
-// end-to-end suite names its own, so a session can be driven against an account nobody owns.
-const API = 'https://api.wanikani.com/v2'
 
 // The one thing this client writes. Their created review carries an identifier that is always
 // zero, so nothing distinguishes one submission's answer from another's and a failure nobody can

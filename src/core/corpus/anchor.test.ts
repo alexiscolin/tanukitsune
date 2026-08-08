@@ -72,4 +72,12 @@ describe('distanceBetween', () => {
   it('charges for a sound that is there on one side only', () => {
     expect(distanceBetween(phonemesOf('こう'), phonemesOf('こ'))).toBeGreaterThan(0)
   })
+
+  // The direction that is easy to get wrong: an anchor longer than the reading shares nothing on the
+  // sounds it adds, and a distance that stops charging at the last one calls a long unrelated word a
+  // near match.
+  it('charges the same for a longer anchor as for a longer reading', () => {
+    expect(distanceBetween(['a'], ['b', 'k', 'd'])).toBe(1)
+    expect(distanceBetween(['b', 'k', 'd'], ['a'])).toBe(1)
+  })
 })

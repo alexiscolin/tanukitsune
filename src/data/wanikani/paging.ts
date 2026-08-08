@@ -7,6 +7,12 @@ import type { z } from 'zod'
 // The two a request needs, carried together because neither is any use without the other.
 export type Client = { readonly token: string; readonly api: string }
 
+// Where the source answers, which is theirs unless a caller names another. Absent is what a
+// deployment gets, so nothing has to be set for the real API to be the one reached; the
+// end-to-end suite names its own, so a session can be driven against an account nobody owns.
+// Held here rather than in either reader, so one default answers for both and one probe guards it.
+export const API = 'https://api.wanikani.com/v2'
+
 // Their shape is versioned by date and the header is not optional: without it the response is
 // whatever revision they consider current, which is a payload nobody wrote a parser for.
 const REVISION = '20170710'

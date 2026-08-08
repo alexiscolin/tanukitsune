@@ -110,7 +110,10 @@ export function distanceBetween(reading: readonly string[], anchor: readonly str
   const longest = Math.max(reading.length, anchor.length)
   if (longest === 0) return 0
 
-  let previous = anchor.map((_, index) => index)
+  // One cell wider than the anchor, which is the row of deletions before a single sound has been
+  // compared. A row the width of the anchor charges nothing for the last one, and an anchor longer
+  // than the reading then scores as a near match on sounds it does not share.
+  let previous = Array.from({ length: anchor.length + 1 }, (_, index) => index)
 
   for (const [row, left] of reading.entries()) {
     const current = [row + 1]

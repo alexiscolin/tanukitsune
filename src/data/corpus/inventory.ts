@@ -66,6 +66,10 @@ function taken(entry: SubjectEntry): InventorySubject {
   }
 }
 
+// Where the command writes it and the report reads it, named once so a moved file is a compile error
+// rather than a report that silently answers the other question.
+export const INVENTORY_FILE = 'corpus/.inventory.json'
+
 // Read back from the file the inventory command wrote, so a report and a generation both work from
 // one fetch rather than asking the account again for something that did not change.
 const file = z.object({
