@@ -1,7 +1,23 @@
 import { describe, expect, it } from 'vitest'
 
-import type { ComponentNames, Decomposition } from './decomposition'
-import { collidingNames, isFullyStated, unnamedComponents } from './decomposition'
+import type { ComponentNames, Decomposition, Glyph } from './decomposition'
+import {
+  collidingNames,
+  flatten,
+  holdsTooManyParts,
+  isFullyStated,
+  MOST_PARTS,
+  unnamedComponents,
+} from './decomposition'
+
+function glyph(component: string | null, ...parts: readonly Glyph[]): Glyph {
+  return { component, position: null, parts }
+}
+
+// 語 as the source states it: 言 on the left, 吾 on the right, and 吾 made of 五 and 口.
+const GO = [glyph('言'), glyph('吾', glyph('五'), glyph('口'))]
+
+const nameable = (...known: readonly string[]) => (component: string) => known.includes(component)
 
 function character(char: string, ...components: readonly (string | null)[]): Decomposition {
   return { character: char, parts: components.map((component) => ({ component, position: null })) }
@@ -33,6 +49,62 @@ describe('unnamedComponents', () => {
   // entry in the work list that no amount of work removes. `isFullyStated` is what reports those.
   it('ignores a part the decomposition leaves unstated', () => {
     expect(unnamedComponents([character('鳥', null, '灬')], { ...NAMES, 灬: 'le feu' })).toEqual([])
+  })
+})
+
+describe('flatten', () => {
+  it('keeps a part the locale can name', () => {
+    const flat = flatten('語', GO, nameable('言', '吾'))
+
+    expect(flat.parts.map((part) => part.component)).toEqual(['言', '吾'])
+  })
+
+  // 吾 is a character the reader has no picture of, so a story resting on it rests on nothing. One
+  // level down are three things that can be seen.
+  it('opens a part the locale cannot name into the parts it is made of', () => {
+    const flat = flatten('語', GO, nameable('言', '五', '口'))
+
+    expect(flat.parts.map((part) => part.component)).toEqual(['言', '五', '口'])
+  })
+
+  // Opening it further would say the character is made of strokes, which is true and useless.
+  it('keeps a part nothing can name and nothing can open', () => {
+    const flat = flatten('語', GO, nameable('言'))
+
+    expect(flat.parts.map((part) => part.component)).toEqual(['言', '五', '口'])
+  })
+
+  // The story runs in the order the parts occur, so the reader reads the character the way the
+  // mnemonic was written. An expansion inherits the place of the part it replaced.
+  it('keeps the order the character puts its parts in', () => {
+    const flat = flatten('休', [glyph('亻'), glyph('木')], nameable('亻', '木'))
+
+    expect(flat.parts.map((part) => part.component)).toEqual(['亻', '木'])
+  })
+
+  // A group with no character is opened where it holds parts, since those can be named, and kept
+  // where it holds none, since it is the edge of what the data states.
+  it('opens a nameless group holding parts and keeps one holding none', () => {
+    const opened = flatten('鳥', [glyph(null, glyph('灬'))], nameable('灬'))
+    const kept = flatten('鳥', [glyph(null), glyph('灬')], nameable('灬'))
+
+    expect(opened.parts.map((part) => part.component)).toEqual(['灬'])
+    expect(kept.parts.map((part) => part.component)).toEqual([null, '灬'])
+  })
+})
+
+describe('holdsTooManyParts', () => {
+  // Past four the reader holds a list rather than a scene, and the interaction that does the
+  // remembering has nowhere to happen.
+  it('reports a character opened into more parts than one story carries', () => {
+    const many = Array.from({ length: MOST_PARTS + 1 }, (_, index) => glyph(String(index)))
+    const flat = flatten('X', many, () => true)
+
+    expect(holdsTooManyParts(flat)).toBe(true)
+  })
+
+  it('says nothing about a character within it', () => {
+    expect(holdsTooManyParts(flatten('語', GO, nameable('言', '吾')))).toBe(false)
   })
 })
 

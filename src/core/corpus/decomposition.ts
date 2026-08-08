@@ -30,6 +30,30 @@ export type Glyph = {
 // name is the language half of the corpus and the decomposition is the neutral half.
 export type ComponentNames = Readonly<Record<string, string>>
 
+// How many parts one story can carry. Beyond this the reader is holding a list rather than a scene,
+// and the interaction that does the remembering has nowhere to happen. Reported rather than enforced:
+// a character that genuinely needs more is a decision, not a defect to be trimmed away silently.
+export const MOST_PARTS = 4
+
+// Which depth a mnemonic names. The source states 語 as 言 and 吾, and 吾 is a character the reader has
+// no picture of, so the story would rest on something meaningless. Expanding it gives 言, 五 and 口,
+// which are three things that can be seen. So a part is kept where the locale can name it, and opened
+// where it cannot, down to whatever the reader can already picture.
+//
+// A part nothing can name and nothing can open is kept as it is: it belongs in the report that says
+// what the locale still owes, not in a silence.
+export function flatten(
+  _character: string,
+  _parts: readonly Glyph[],
+  _isNameable: (component: string) => boolean,
+): Decomposition {
+  return { character: _character, parts: [] }
+}
+
+export function holdsTooManyParts(_decomposition: Decomposition): boolean {
+  return false
+}
+
 // Components no name covers, which is what a mnemonic would otherwise have to leave anonymous.
 // Deduplicated and ordered, so the report is a list of work rather than a list of occurrences.
 export function unnamedComponents(
