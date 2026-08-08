@@ -292,6 +292,10 @@ What a token fetches is a copy held for the account that already has it, on its 
 local cache is a working copy rather than a publication. The rule is what keeps the two apart without
 deciding each case again: our generated layer is publishable in any language because it is ours, and a
 mnemonic written by the upstream source is not, in any language, whether it is copied or rewritten from.
+The decomposition travelling in those chunks is KanjiVG's rather than ours, under a share-alike licence
+that reaches the decomposition and not the text generated from it, with the attribution it obliges and
+the separation that keeps the two apart in
+[`decisions/0012-kanjivg-for-the-decomposition.md`](decisions/0012-kanjivg-for-the-decomposition.md).
 Whether the subject list itself may travel in a public chunk is the one question the rule does not
 answer, and it is an open decision in [`decisions/`](decisions/) rather than a reading to make here.
 

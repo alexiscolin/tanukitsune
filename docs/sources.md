@@ -50,6 +50,75 @@ without express written permission. A Tofugu staff member confirmed in February 
 requires the app to be completely free:
 [community.wanikani.com/t/73627](https://community.wanikani.com/t/73627).
 
+## The corpus
+
+**WaniKani claims the decomposition, not only the prose.** The
+[API reference](https://docs.api.wanikani.com/) names "mnemonics, hints and relationships" as content
+covered by copyright, so their choice of which parts make up a character is claimed alongside the text.
+Their component names are their own invention, stated on
+[radical names](https://knowledge.wanikani.com/wanikani/japanese/radical-names/): they do not use the
+traditional set and made up their own where none fit.
+
+**Their own position is that mnemonics cannot be translated.** Localising would mean rewriting every
+one from the ground up:
+[language options](https://knowledge.wanikani.com/wanikani/language-options/).
+
+**One anchor per reading, and the whole set rewritten when it changes.** Their consistency policy is
+stated once, by their founder, in
+[community.wanikani.com/t/33972/569](https://community.wanikani.com/t/33972/569).
+
+**KanjiVG is CC BY-SA 3.0** and carries its licence and attribution terms in its own data header:
+[kanjivg.tagaini.net](https://kanjivg.tagaini.net/). The counts in
+[`decisions/0012-kanjivg-for-the-decomposition.md`](decisions/0012-kanjivg-for-the-decomposition.md)
+were measured against the [r20240807 release](https://github.com/KanjiVG/kanjivg/releases) and
+KANJIDIC2 grades 1 to 8, folding radical forms onto their kanji through Unicode's
+[EquivalentUnifiedIdeograph](https://www.unicode.org/Public/UCD/latest/ucd/EquivalentUnifiedIdeograph.txt).
+
+**Kanji Alive's radical table is CC BY 4.0**, and is the only redistributable set of component names
+that exists: [credits](https://kanjialive.com/credits/),
+[the table itself](https://github.com/kanjialive/kanji-data-media/blob/master/language-data/japanese-radicals.csv).
+
+**KANJIDIC2 is CC BY-SA 4.0** and carries French glosses for the jouyou set:
+[EDRDG licence](https://www.edrdg.org/edrdg/licence.html),
+[KANJIDIC](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project).
+
+**Lexique gives phonemic transcription, syllable structure and frequency for French**, which is what
+lets an anchor be checked on pronunciation rather than on spelling: [lexique.org](http://www.lexique.org/).
+
+**Interaction is what makes an image memorable, not bizarreness.** Wollen, Weber and Lowry crossed the
+two orthogonally and only interaction raised recall: *Cognitive Psychology* 3, 518-523 (1972),
+[sciencedirect.com/science/article/abs/pii/0010028572900205](https://www.sciencedirect.com/science/article/abs/pii/0010028572900205).
+
+**The bizarreness effect appears in mixed lists and not in pure ones.** McDaniel and Einstein,
+*Journal of Experimental Psychology: LMC* 12, 54-65 (1986). A corpus is a pure list, so the effect
+self-cancels at scale. The delayed benefit that survives is mediated by humour rather than strangeness:
+Worthen and Deschamps, *British Journal of Psychology* 99, 461-471 (2008),
+[pubmed.ncbi.nlm.nih.gov/18433519](https://pubmed.ncbi.nlm.nih.gov/18433519/).
+
+**Elaboration helps only when it is precise.** Stein and Bransford, *Journal of Verbal Learning and
+Verbal Behavior* 18, 769-777 (1979),
+[sciencedirect.com/science/article/abs/pii/S002253717990481X](https://www.sciencedirect.com/science/article/abs/pii/S002253717990481X).
+
+**The encoding has to match the question.** Morris, Bransford and Franks established that semantic
+encoding loses to phonological encoding when the test is phonological: *Journal of Verbal Learning and
+Verbal Behavior* 16, 519-533 (1977),
+[sciencedirect.com/science/article/abs/pii/S0022537177800169](https://www.sciencedirect.com/science/article/abs/pii/S0022537177800169).
+This is why the meaning and the reading get separate mnemonics.
+
+**A cue loses power as the number of items it covers grows.** Cue overload, Watkins and Watkins (1975),
+and the fan effect, Anderson (1974),
+[en.wikipedia.org/wiki/Fan_effect](https://en.wikipedia.org/wiki/Fan_effect). This is the argument for
+allocating anchors across the whole curriculum rather than per release.
+
+**Supplied keywords beat self-generated ones**, which is what makes a generated corpus defensible at
+all: Hall, Wilson and Patterson, *Journal of Educational Psychology* 73, 345-357 (1981),
+[doi.org/10.1037/0022-0663.73.3.345](https://doi.org/10.1037/0022-0663.73.3.345).
+
+**Overgenerate and rank is the published shape for this task**:
+[arXiv 2409.13952](https://arxiv.org/abs/2409.13952) ranks keyword mnemonics on imageability and
+orthographic distance, and [PhoniTale, arXiv 2507.05444](https://arxiv.org/abs/2507.05444) aligns on
+IPA before generating.
+
 ## Platform constraints
 
 **Async Server Components cannot be unit tested.** Official position, still current in the Next.js 16
@@ -186,3 +255,9 @@ Recorded so they do not creep back in.
 - Hiring statistics about AI and interviews. Same problem, no methodology found behind any of them.
 - A2A production adoption depth. The organisation counts are vendor-published, and "supported by" is
   not "used in production by".
+- That a mnemonic makes a character stick for longer. The study closest to this product, Wang and
+  Thomas on imagery mnemonics for Chinese characters, *Language Learning* 42, 359-376 (1992), found no
+  advantage beyond immediate recall at two days and one week, and nothing found since overturns it for
+  logographic characters. What is claimed instead is faster initial acquisition and a higher
+  first-retrieval success rate, with spaced retrieval doing the rest, and the number that will settle
+  it is measured from `review_event` rather than asserted.

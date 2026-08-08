@@ -30,6 +30,7 @@ is invisible. Naming the condition and the page to check turns it into a schedul
 | [0009](0009-storybook-as-the-review-surface.md) | Storybook as the review surface, catalogued by state |
 | [0010](0010-behaviour-imported-appearance-written.md) | Behaviour imported, appearance written: no copied skin, native first, Base UI for the rest |
 | [0011](0011-a-page-per-component-and-the-tokens-beside-them.md) | A page per component, and the tokens beside them |
+| [0012](0012-kanjivg-for-the-decomposition.md) | KanjiVG for the decomposition, and component names we write ourselves |
 
 ## Decided, argued in prose
 
@@ -55,9 +56,10 @@ genuinely challenged, written then, with the challenge as its context.
 
 Each has a consequence that gets expensive once code exists.
 
-1. **Corpus terms and licence.** It blocks publishing the corpus and blocks committing the demo seed,
-   which is the deliverable this project ranks highest, and the answer has to be settled before either
-   is public rather than after.
+1. **Whether the subject list itself may travel in a public chunk.** The licence the corpus is
+   published under is settled in [0012](0012-kanjivg-for-the-decomposition.md), and what it leaves
+   open is narrower: the chunks are public and carry the identifiers and characters a session is dealt
+   from. It blocks publication rather than generation.
 2. **Model selection per surface.** Nothing anywhere names a model, while `generated_by` must carry a
    real identifier for the transparency obligation and retirement invalidates both the cache and the
    calibration. Carries `revisit-when` set to the earliest published retirement date and
