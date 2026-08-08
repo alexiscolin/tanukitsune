@@ -24,21 +24,37 @@ export type ComponentNames = Readonly<Record<string, string>>
 // Components no name covers, which is what a mnemonic would otherwise have to leave anonymous.
 // Deduplicated and ordered, so the report is a list of work rather than a list of occurrences.
 export function unnamedComponents(
-  _decompositions: readonly Decomposition[],
-  _names: ComponentNames,
+  decompositions: readonly Decomposition[],
+  names: ComponentNames,
 ): readonly string[] {
-  return []
+  const missing = new Set<string>()
+
+  for (const { parts } of decompositions) {
+    for (const { component } of parts) {
+      if (component !== null && names[component] === undefined) missing.add(component)
+    }
+  }
+
+  return [...missing]
 }
 
 // One name on two components, which costs more than an ugly name: the whole value of naming a part
 // is that the same part is called the same thing everywhere, and its converse is that two parts are
 // never called the same thing.
-export function collidingNames(_names: ComponentNames): readonly string[] {
-  return []
+export function collidingNames(names: ComponentNames): readonly string[] {
+  const seen = new Set<string>()
+  const collisions = new Set<string>()
+
+  for (const name of Object.values(names)) {
+    if (seen.has(name)) collisions.add(name)
+    seen.add(name)
+  }
+
+  return [...collisions]
 }
 
 // Whether every part of a character carries a component. False is not a defect in the data so much as
 // the edge of what it states, and it decides which characters a model may compose from.
-export function isFullyStated(_decomposition: Decomposition): boolean {
-  return true
+export function isFullyStated(decomposition: Decomposition): boolean {
+  return decomposition.parts.every(({ component }) => component !== null)
 }
