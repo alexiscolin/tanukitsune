@@ -31,6 +31,7 @@ is invisible. Naming the condition and the page to check turns it into a schedul
 | [0010](0010-behaviour-imported-appearance-written.md) | Behaviour imported, appearance written: no copied skin, native first, Base UI for the rest |
 | [0011](0011-a-page-per-component-and-the-tokens-beside-them.md) | A page per component, and the tokens beside them |
 | [0012](0012-kanjivg-for-the-decomposition.md) | KanjiVG for the decomposition, and component names we write ourselves |
+| [0013](0013-the-curriculum-decides-the-parts.md) | The curriculum decides which parts a mnemonic names |
 
 ## Decided, argued in prose
 
