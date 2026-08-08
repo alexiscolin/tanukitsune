@@ -1,8 +1,10 @@
 import { z } from 'zod'
 
-// The extension is written here and nowhere else in src/, because the corpus commands run this file
+// The extensions are written here and nowhere else in src/, because the corpus commands run this file
 // through Node directly rather than through a bundler, and an extensionless specifier resolves to
-// nothing there. One parser for their payload is worth one unusual import.
+// nothing there. One parser for their payload, and one guarded walk, are worth two unusual imports.
+import { collect } from '../wanikani/paging.ts'
+import type { Client } from '../wanikani/paging.ts'
 import { subjectCollection } from '../wanikani/payload.ts'
 import type { SubjectEntry } from '../wanikani/payload.ts'
 
@@ -38,34 +40,14 @@ export type InventorySubject = {
   readonly componentIds: readonly number[]
 }
 
-export type Client = { readonly token: string; readonly api: string }
-
-// Their shape is versioned by date and the header is not optional, the same pin the product's own
-// reader holds: without it the answer is whatever revision they consider current, which is a payload
-// nobody wrote a parser for.
-const REVISION = '20170710'
-
 export async function readInventory(
   client: Client,
   upTo: number,
 ): Promise<readonly InventorySubject[]> {
   const levels = Array.from({ length: upTo }, (_, index) => index + 1).join(',')
-  const subjects: InventorySubject[] = []
+  const entries = await collect(client, subjectCollection, `${client.api}/subjects?levels=${levels}`)
 
-  let next: string | null = `${client.api}/subjects?levels=${levels}`
-
-  while (next !== null) {
-    const response = await fetch(next, {
-      headers: { Authorization: `Bearer ${client.token}`, 'Wanikani-Revision': REVISION },
-    })
-    if (!response.ok) throw new Error(`the source answered ${response.status} for ${next}`)
-
-    const page = subjectCollection.parse(await response.json())
-    subjects.push(...page.data.map(taken))
-    next = page.pages.next_url
-  }
-
-  return subjects
+  return entries.map(taken)
 }
 
 // Only what the corpus asks of a subject. Everything else their payload carries is content of theirs

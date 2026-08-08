@@ -7,8 +7,8 @@ import { toRomaji } from 'wanakana'
 // check that compares spellings answers a question nobody asked, and the French side has its own
 // pronunciation derived from a lexicon for the same reason.
 //
-// The kana are turned into Hepburn by the converter the answer field already uses, so there is one
-// romanisation in the project rather than two that drift.
+// The kana are turned into Hepburn by `wanakana`, which the answer field also depends on for the
+// other direction, per ADR 0007. One package for both, rather than a romanisation of our own.
 
 // A small kana is not a mora. It rides on the one before it, and a count that gives it one of its own
 // turns ちょう into three, which is the length that separates two different words.

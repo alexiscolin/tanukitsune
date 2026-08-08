@@ -29,6 +29,10 @@ the anchor's phonemes as derived rather than as claimed, and the components the 
 The structured fields are not decoration: a check that has to recover the anchor from prose is a check
 that breaks on the first sentence written differently.
 
+The table holding them widens when the generator lands rather than now, per
+[`specs/v0.1.md`](specs/v0.1.md): a column added before anything fills it is a shape nobody has
+tested, and the migration belongs with the code that writes the rows.
+
 ## Where the material lives
 
 **One machine, one folder of material per locale.** The pipeline is written once and takes the locale
@@ -40,9 +44,10 @@ labelled sample. Adding a language is a folder and a locale entry, never a secon
 The checks are written once and run against whichever folder they are given, so a language added is
 covered the day it arrives rather than the day someone remembers it.
 
-**Nothing under `src/core/corpus/` knows any language but Japanese**, which is the one being taught
-and is therefore constant. The rules there compare sounds, count morae, name the parts a reader can
-picture and refuse an allocation that gives one cue two answers. What a particular language can and
+**No rule under `src/core/corpus/` is about one language.** The rules there compare sounds, count
+morae, name the parts a reader can picture and refuse an allocation that gives one cue two answers.
+Japanese is written into them, being the language taught and therefore constant, and the table of
+sounds they compare against is the IPA, which every language draws from and none owns. What a particular language can and
 cannot do is material: `corpus/fr/components.json` holds what French calls each component,
 `corpus/fr/phonology.json` holds the sounds French cannot begin a word with, and the anchors and cast
 land beside them. A second language is those files and no code, which is the test to apply to anything
@@ -131,7 +136,11 @@ the advice WaniKani gives its own readers.
 
 ## What is checked
 
-Three families, run in cost order. Deterministic first, because it costs nothing and catches the two
+Three families, run in cost order, and this section describes the whole set rather than what runs
+today: the rules that judge a sound anchor and an allocation are written and tested, and the command
+that puts them in front of a generated card arrives with the generator.
+
+Deterministic first, because it costs nothing and catches the two
 failures that actually harm a learner: a wrong reading taught, and a sound association that does not
 hold in French.
 
@@ -171,7 +180,9 @@ generator, since a model rates its own family's output higher. And no gate until
 
 ## The command
 
-One command, the locale as a parameter, re-runnable by reflex.
+One command, the locale as a parameter, re-runnable by reflex. Three of its steps exist today,
+`corpus:decomposition`, `corpus:inventory` and `corpus:report`; the generation itself is the shape the
+rest of this section describes and the next thing built, so nothing here is runnable end to end yet.
 
 It reads the subject list and takes the item count from it rather than from an estimate, generates
 through the batch API, validates, writes by subject as it goes, publishes the chunks and then the

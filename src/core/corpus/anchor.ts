@@ -1,8 +1,13 @@
-// Whether a French word can stand for a Japanese reading, judged on sounds rather than on spelling.
+// Whether a word of the reader's language can stand for a Japanese reading, judged on sounds rather
+// than on spelling.
 //
-// The anchor's own pronunciation is derived from a French lexicon before it reaches here, never taken
-// from what a model claimed it to be: the gap between the two is a hallucinated pronunciation, and it
-// is the cheapest one in the whole pipeline to catch.
+// The anchor's own pronunciation is derived from that language's lexicon before it reaches here, never
+// taken from what a model claimed it to be: the gap between the two is a hallucinated pronunciation,
+// and it is the cheapest one in the whole pipeline to catch.
+//
+// Nothing here is about one language. The table below is the IPA, which every language draws from and
+// none owns, and it grows as languages arrive; what a given language cannot do arrives as an argument,
+// from that locale's own material.
 
 // Three features for a consonant and four for a vowel, which is enough to say how far apart two
 // sounds are without pretending to a precision nothing downstream uses. What matters is that a
