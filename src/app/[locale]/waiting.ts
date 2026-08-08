@@ -56,21 +56,26 @@ async function dealt(
   return { deck, waiting: sitting.filter((entry) => kept.has(entry.subjectId)) }
 }
 
-// What one sitting is, for whoever asks. The seeded deck says so and carries nothing: it is a
-// constant already in the bundle, so sending it would be sending the client what it already holds.
-export type Sitting =
-  | { readonly demo: true }
-  | {
-      readonly demo: false
-      readonly subjects: readonly Subject[]
-      readonly waiting: readonly Assignment[]
-    }
+// What one sitting is, for whoever asks. Which deck a deployment serves is not asked here: it is
+// the same answer for every reader of it, so the shell carries it and this route never needs to be
+// reached to know it.
+export type Sitting = {
+  readonly subjects: readonly Subject[]
+  readonly waiting: readonly Assignment[]
+}
 
 export async function dealtFor(flow: Flow): Promise<Sitting> {
   const token = env.WANIKANI_TOKEN
-  if (token === undefined) return { demo: true }
+  if (token === undefined) return { subjects: [], waiting: [] }
 
   const sitting = await dealt(token, flow)
 
-  return { demo: false, subjects: sitting.deck, waiting: sitting.waiting }
+  return { subjects: sitting.deck, waiting: sitting.waiting }
+}
+
+// Which of the two decks this deployment serves. Deployment configuration rather than account data,
+// so it travels in the shell: the seeded deck is a constant already in the bundle, and a demo that
+// needed a request to know it was the demo would be the one deployment that cannot open offline.
+export function servesDemo(): boolean {
+  return env.WANIKANI_TOKEN === undefined
 }

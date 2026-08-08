@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { answerRecord } from '../src/core/review/answer-record'
 import type { AnsweredCard, AnswerStamp } from '../src/core/review/answer-record'
-import { BACKUP_PATH, BACKUP_SECRET_HEADER } from '../src/core/routes'
+import { BACKUP_PATH, BACKUP_SECRET_COOKIE } from '../src/core/routes'
 import { asOptional } from '../src/data/optional-text'
 
 // The backup route against the database the application actually opens, because Postgres is
@@ -46,7 +46,7 @@ test('the backup refuses a request carrying no secret', async ({ request }) => {
 
 test('the backup refuses a request carrying the wrong secret', async ({ request }) => {
   const response = await request.post(BACKUP_PATH, {
-    headers: { [BACKUP_SECRET_HEADER]: `${SECRET}-not-it` },
+    headers: { cookie: `${BACKUP_SECRET_COOKIE}=${SECRET}-not-it` },
     data: [queued(crypto.randomUUID())],
   })
 
@@ -57,7 +57,7 @@ test('a queued answer becomes a durable row, and a replayed batch adds none', as
   request,
 }) => {
   const batch = [queued(crypto.randomUUID()), queued(crypto.randomUUID())]
-  const headers = { [BACKUP_SECRET_HEADER]: SECRET }
+  const headers = { cookie: `${BACKUP_SECRET_COOKIE}=${SECRET}` }
 
   const first = await request.post(BACKUP_PATH, { headers, data: batch })
   expect(first.status()).toBe(200)
@@ -70,7 +70,7 @@ test('a queued answer becomes a durable row, and a replayed batch adds none', as
 
 test('the backup refuses a batch it cannot read', async ({ request }) => {
   const response = await request.post(BACKUP_PATH, {
-    headers: { [BACKUP_SECRET_HEADER]: SECRET },
+    headers: { cookie: `${BACKUP_SECRET_COOKIE}=${SECRET}` },
     data: [{ id: crypto.randomUUID() }],
   })
 

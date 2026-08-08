@@ -23,13 +23,13 @@ const LEADER = 'tanukitsune-backup-drain'
 // because the two are one sequence and a second tab holding either would run half of it. What it
 // sends is worked out on the server, so the trigger is the whole of what lives here.
 //
-// The secret arrives as a prop because only the server can read it. Rendering this component at all
-// is what says a backup is configured, so there is one branch and it is at the wiring, on a route
-// rendered per request for the reasons given there.
-export function BackupDrain({ secret }: { secret: string }) {
+// Rendering this component at all is what says a backup is configured, so there is one branch and it
+// is at the wiring. It carries no secret: the browser holds one the page cannot read, set by the
+// route the screen asks its sitting from.
+export function BackupDrain() {
   useEffect(() => {
-    const backup = backupTo(secret)
-    const flush = flushTo(secret)
+    const backup = backupTo()
+    const flush = flushTo()
 
     // A tab that cannot take the lock gives up rather than queueing behind the leader. Waiting
     // would be harmless once, but every reconnection and every return to the tab asks again, so a
@@ -66,7 +66,7 @@ export function BackupDrain({ secret }: { secret: string }) {
       window.removeEventListener('online', run)
       document.removeEventListener('visibilitychange', run)
     }
-  }, [secret])
+  }, [])
 
   return null
 }

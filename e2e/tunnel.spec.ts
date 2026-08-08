@@ -76,8 +76,14 @@ test('a review is entered from the start screen and opens on its first question'
 // catalogue's frame carries neither the document's landmarks nor the identifiers the shell and the
 // deck share. It moved here when the loop stopped being what `/[locale]` serves.
 test('both flows are accessible where they are actually served', async ({ page }) => {
+  const [first] = DEMO_DECK
+  if (first === undefined) throw new Error('The seeded deck deals nothing.')
+
   for (const flow of FLOWS) {
     await page.goto(sessionPath('fr', flow))
+    // The cards before the audit. The page is one shell for everyone and the sitting arrives one
+    // request after the document, so auditing on arrival is auditing an empty body.
+    await expect(faceOf(page, first)).toBeVisible()
 
     expect(await violationsOn(page)).toEqual([])
   }

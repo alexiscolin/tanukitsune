@@ -25,16 +25,19 @@ export function ReviewFlow({
   copy,
   subjectCopy,
   exitTo,
+  demo,
 }: {
   locale: Locale
   copy: ReviewCopy
   subjectCopy: SubjectCopy
   exitTo: string
+  // The seeded deck, which starts from the top on every reload. A real account's answers are the one
+  // thing here that cannot be rebuilt from anywhere, so nothing empties them. It arrives in the
+  // shell rather than over the network: which deck a deployment serves is the same for every reader
+  // of it, and a demo that had to ask would be the one deployment that cannot open offline.
+  demo: boolean
 }) {
   const sitting = useSitting('review')
-  // The seeded deck starts from the top on every reload. A real account's answers are the one thing
-  // here that cannot be rebuilt from anywhere, so nothing empties them.
-  const demo = sitting.ready && sitting.demo
   const emptied = useRef<Promise<void> | null>(null)
 
   // The deck restarting is what empties the demo's queue, whatever the drain has or has not taken
@@ -63,14 +66,17 @@ export function ReviewFlow({
   // before the cards it holds arrive.
   if (!sitting.ready) return null
 
-  const dealt = sitting.demo ? DEMO_QUESTIONS : questionsFor(sitting.deck)
-
-  if (dealt.length === 0)
+  // Nothing was reached and the device holds nothing, which is the one state that is not a session.
+  // An account that answered with an empty queue is a session the reader has finished, and that
+  // ends on the screen that says so rather than on a line about the network.
+  if (!sitting.reached && !demo && sitting.deck.length === 0)
     return (
       <ScreenShell>
         <p className="flex flex-1 items-center text-[var(--color-ink-muted)]">{copy.unreachable}</p>
       </ScreenShell>
     )
+
+  const dealt = demo ? DEMO_QUESTIONS : questionsFor(sitting.deck)
 
   return (
     <ReviewSession

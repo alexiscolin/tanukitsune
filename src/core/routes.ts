@@ -32,9 +32,14 @@ export const DECK_PATH = '/api/deck'
 // is worked out from the rows the server holds rather than named by whoever calls.
 export const FLUSH_PATH = '/api/flush'
 
-// The secret travels in a header rather than in the body, so a refusal is decided before the
-// batch is read and a rejected request leaves no trace of what it was carrying.
-export const BACKUP_SECRET_HEADER = 'x-tanukitsune-sync'
+// The secret travels in a cookie the browser sets aside and script cannot read, rather than in a
+// value the page carries. A page carrying it puts it in the document, and a document is what the
+// service worker holds on disk: the copy would outlive the tab, the rotation and the reader.
+//
+// It is still a cookie any visitor is handed, so it stops a caller who found the route without the
+// page and nothing more. What would stop a person is authentication, which docs/specs/v0.1.md puts
+// out of scope for this version.
+export const BACKUP_SECRET_COOKIE = 'tanukitsune-sync'
 
 // How many rows one request may carry, spelled beside the path for the same reason: a sender
 // paging at one number against a boundary refusing at another meets a refusal that resending

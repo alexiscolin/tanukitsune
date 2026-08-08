@@ -6,6 +6,8 @@ import { copyFor } from '@/core/site-copy'
 import { isFlow } from '@/core/subject'
 import { env } from '@/data/env'
 
+import { servesDemo } from '../waiting'
+
 import { BackupDrain } from '../backup-drain'
 import { LessonFlow } from './lesson-flow'
 import { ReviewFlow } from './review-flow'
@@ -37,16 +39,30 @@ export default async function SessionPage({
 
   // Both screens carry their own shell, because they are full bleed and own their gutters.
   if (flow === 'lesson')
-    return <LessonFlow copy={copy.review} subjectCopy={copy.subject} exitTo={start} />
+    return (
+      <LessonFlow
+        copy={copy.review}
+        subjectCopy={copy.subject}
+        exitTo={start}
+        demo={servesDemo()}
+      />
+    )
 
-  // Read here because only the server can, and served to the page that sends it. Absent means no
-  // backup is configured and no drain starts at all, which is the one branch there is.
+  // Read to decide whether a drain starts at all, and for nothing else: absent means no backup is
+  // configured, which is the one branch there is. The value never leaves the server now, so the
+  // document this renders carries nothing a cache must not keep.
   const secret = env.TANUKITSUNE_SYNC_SECRET
 
   return (
     <>
-      {secret !== undefined && <BackupDrain secret={secret} />}
-      <ReviewFlow locale={locale} copy={copy.review} subjectCopy={copy.subject} exitTo={start} />
+      {secret !== undefined && <BackupDrain />}
+      <ReviewFlow
+        locale={locale}
+        copy={copy.review}
+        subjectCopy={copy.subject}
+        exitTo={start}
+        demo={servesDemo()}
+      />
     </>
   )
 }

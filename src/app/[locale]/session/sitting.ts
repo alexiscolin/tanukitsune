@@ -12,22 +12,37 @@ import { heldDeck, holdDeck } from '@/data/local/deck-cache'
 // is asked for here: from the account where it can be reached, and from the device where it cannot.
 // A sitting that arrived is written back, which is what makes the next time work with no network.
 //
-// Three answers rather than two. Not yet is what the first paint is, and a screen reading it as
-// nothing would show the offline line for a frame before the cards it holds arrive.
+// `reached` is not `deck.length > 0`. An account that answered with nothing is a queue the reader
+// has finished, which ends the session; a device holding nothing is a session that cannot start.
+// The two look the same and read the opposite, so the screen is told which it met.
 export type Sitting =
   | { readonly ready: false }
-  | { readonly ready: true; readonly demo: true }
-  | { readonly ready: true; readonly demo: false; readonly deck: readonly Subject[] }
+  | { readonly ready: true; readonly reached: boolean; readonly deck: readonly Subject[] }
 
-// What the route answers, which is the shape waiting.ts declares on the other side of it.
-type Answered =
-  | { demo: true }
-  | { demo: false; subjects: readonly Subject[]; waiting: readonly Assignment[] }
+// What one call may take before the device answers instead. A request has no deadline of its own,
+// so a socket that opens and never replies would leave the screen blank for as long as the tab
+// lives, with a complete sitting unread beside it.
+const ASK_TIMEOUT = 10_000
 
+type Answered = { subjects: readonly Subject[]; waiting: readonly Assignment[] }
+
+// The status this route answers where the source did not, which is the offline case seen from the
+// server side of it.
+const UNREACHED = 503
+
+// Null where nothing answered, which is the case the device holds a sitting for: no network here,
+// or no source there. Anything else is a defect this client is right to raise rather than to read as
+// offline, because a stale deck answered into the queue is rows the flush will push at an account
+// that refused them.
 async function fromAccount(flow: Flow): Promise<Answered | null> {
-  const answered = await fetch(`${DECK_PATH}?flow=${flow}`).catch(() => null)
+  const answered = await fetch(`${DECK_PATH}?flow=${flow}`, {
+    signal: AbortSignal.timeout(ASK_TIMEOUT),
+  }).catch(() => null)
 
-  return answered?.ok === true ? ((await answered.json()) as Answered) : null
+  if (answered === null || answered.status === UNREACHED) return null
+  if (!answered.ok) throw new Error(`The deck route answered ${answered.status}.`)
+
+  return (await answered.json()) as Answered
 }
 
 export function useSitting(flow: Flow): Sitting {
@@ -43,14 +58,8 @@ export function useSitting(flow: Flow): Sitting {
     void (async () => {
       const answered = await fromAccount(flow)
 
-      if (answered?.demo === true) {
-        settle({ ready: true, demo: true })
-
-        return
-      }
-
       if (answered !== null) {
-        settle({ ready: true, demo: false, deck: deckFor(answered.waiting, answered.subjects) })
+        settle({ ready: true, reached: true, deck: deckFor(answered.waiting, answered.subjects) })
         // Held after the screen has what it needs, so a slow write never delays a card. A cache
         // that could not be written is a session that will need a network next time, which is
         // where it already is.
@@ -59,13 +68,11 @@ export function useSitting(flow: Flow): Sitting {
         return
       }
 
-      // Nothing answered, which is what the device holds a sitting for. An empty deck is what the
-      // screen shows its offline line on, and a cache that will not read is one of those.
       const held = await heldDeck(flow).catch(() => null)
 
       settle({
         ready: true,
-        demo: false,
+        reached: false,
         deck: held === null ? [] : deckFor(held.waiting, held.subjects),
       })
     })()

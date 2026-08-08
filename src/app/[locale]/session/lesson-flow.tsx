@@ -14,23 +14,28 @@ export function LessonFlow({
   copy,
   subjectCopy,
   exitTo,
+  demo,
 }: {
   copy: ReviewCopy
   subjectCopy: SubjectCopy
   exitTo: string
+  // Which deck this deployment serves, carried in the shell for the reason review-flow.tsx gives.
+  demo: boolean
 }) {
   const sitting = useSitting('lesson')
 
   if (!sitting.ready) return null
 
-  const deck = sitting.demo ? DEMO_DECK : sitting.deck
-
-  if (deck.length === 0)
+  // Nothing reached and nothing held, which is the one state that is not a session. An account that
+  // answered with an empty queue ends on the screen that says the session is finished.
+  if (!sitting.reached && !demo && sitting.deck.length === 0)
     return (
       <ScreenShell>
         <p className="flex flex-1 items-center text-[var(--color-ink-muted)]">{copy.unreachable}</p>
       </ScreenShell>
     )
+
+  const deck = demo ? DEMO_DECK : sitting.deck
 
   return <LessonSession deck={deck} copy={copy} subjectCopy={subjectCopy} exitTo={exitTo} />
 }

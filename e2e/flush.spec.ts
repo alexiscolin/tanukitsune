@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 import { deckFor } from '../src/core/review/deck'
 import { questionsFor } from '../src/core/review/question'
 import type { Question } from '../src/core/review/question'
-import { FLUSH_PATH } from '../src/core/routes'
+import { BACKUP_SECRET_COOKIE, FLUSH_PATH } from '../src/core/routes'
 import { toAssignment, toSubject } from '../src/data/wanikani/payload'
 import { accountURL, sourceURL } from '../playwright.config'
 import { FAKE_REVIEWS, FAKE_SUBJECTS } from './fake-account'
@@ -74,7 +74,7 @@ test('the flush takes no instruction from its caller', async ({ request }) => {
   const before = (await taken(request)).length
 
   const answered = await request.post(`${accountURL}${FLUSH_PATH}`, {
-    headers: { 'x-tanukitsune-sync': SECRET },
+    headers: { cookie: `${BACKUP_SECRET_COOKIE}=${SECRET}` },
     data: { assignmentId: 8002, incorrectMeanings: 99, incorrectReadings: 99, answers: ['x'] },
   })
 
