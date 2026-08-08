@@ -9,7 +9,7 @@ import type { Locale } from '@/core/locales'
 import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
 import { localOutbox } from '@/data/local/outbox'
 import { DEMO_QUESTIONS } from '@/core/demo-deck'
-import { ScreenShell } from '@/ui/atoms/screen-shell'
+import { SessionUnreachable } from '@/ui/molecules/session-unreachable'
 import { ReviewSession } from '@/ui/organisms/review-session'
 
 import { useSitting } from './sitting'
@@ -70,11 +70,7 @@ export function ReviewFlow({
   // An account that answered with an empty queue is a session the reader has finished, and that
   // ends on the screen that says so rather than on a line about the network.
   if (!sitting.reached && !demo && sitting.deck.length === 0)
-    return (
-      <ScreenShell>
-        <p className="flex flex-1 items-center text-[var(--color-ink-muted)]">{copy.unreachable}</p>
-      </ScreenShell>
-    )
+    return <SessionUnreachable copy={copy} exitTo={exitTo} />
 
   const dealt = demo ? DEMO_QUESTIONS : questionsFor(sitting.deck)
 

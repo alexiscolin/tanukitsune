@@ -27,6 +27,11 @@ export const BACKUP_PATH = '/api/review'
 // route takes it that way: a lesson and a review are one thing asked two ways.
 export const DECK_PATH = '/api/deck'
 
+// Where the start screen asks how much is waiting. Separate from the deck, because a count needs
+// what is waiting and not what each item is, which is the difference between that screen opening at
+// once and it opening after the whole curriculum has been read.
+export const DUE_PATH = '/api/due'
+
 // Where what the backup holds is worked out and sent on. It carries no locale for the reason the
 // backup does not: nothing here is read by a person. One method taking no body, because what is owed
 // is worked out from the rows the server holds rather than named by whoever calls.

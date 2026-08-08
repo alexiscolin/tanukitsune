@@ -9,9 +9,8 @@ import { accountURL } from '../playwright.config'
 import { FAKE_LESSONS, FAKE_REVIEWS } from './fake-account'
 import { readStore } from './session'
 
-// What a session leaves behind on the device. Both routes read the source on the server per render
-// today, so a session cannot start without a network at all; the sitting it was dealt is the first
-// half of the answer, and the shell the service worker serves is the second.
+// What a session leaves behind on the device. The sitting it was dealt is one half of opening with
+// no network, and the shell the service worker holds is the other.
 //
 // It runs on the account server: the seeded deck is a constant already in the bundle, and a demo
 // render writes nothing at all.

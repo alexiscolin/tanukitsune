@@ -14,7 +14,7 @@ const QUEUES = {
   review: { count: 12, href: '/fr/session?flow=review' },
 }
 
-function startScreen(queues = QUEUES, demo = true) {
+function startScreen(queues = QUEUES, demo = true, pending = false) {
   render(
     <SessionStart
       title={COPY.title}
@@ -22,6 +22,7 @@ function startScreen(queues = QUEUES, demo = true) {
       copy={COPY.start}
       queues={queues}
       demo={demo}
+      pending={pending}
     />,
   )
 }
@@ -58,5 +59,15 @@ describe('SessionStart', () => {
 
     expect(screen.queryByRole('link', { name: new RegExp(COPY.start.flow.lesson) })).toBeNull()
     expect(screen.getByText(COPY.start.flow.lesson)).toBeTruthy()
+  })
+
+  // Nothing has been counted yet, which is every first paint now that the counts are asked for
+  // rather than rendered. A zero would tell the reader they are done before anything looked, and a
+  // way in would lead to a deck nobody fetched.
+  it('offers no way in and no number before anything has been counted', () => {
+    startScreen(QUEUES, true, true)
+
+    expect(screen.queryByRole('link', { name: new RegExp(COPY.start.flow.review) })).toBeNull()
+    expect(screen.queryByText('12')).toBeNull()
   })
 })

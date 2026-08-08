@@ -30,6 +30,8 @@ function faceOf(page: Page, subject: Subject): Locator {
 test('the start screen says what is waiting in each flow', async ({ page }) => {
   await page.goto(startPath('fr'))
 
+  // The counts one request after the document, the page being one shell for every reader: a
+  // figure dash stands in until they arrive, and asserting on arrival is asserting on that.
   await expect(page.getByRole('link', { name: new RegExp(COPY.start.flow.lesson) })).toContainText(
     `${DEMO_DECK.length}`,
   )

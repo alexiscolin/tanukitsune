@@ -418,10 +418,12 @@ assets, and the corpus chunks, which need no strategy of their own because an im
 on sight and never revalidated. Nothing else, precisely because the review session is a single client
 route rather than a series of navigations.
 
-The shell is a document carrying no deck. A page that rendered the reader's sitting would be a page
-per reader, and a cache holding one would be holding an account; the screen asks for its sitting
-separately, from the account where it can be reached and from the device where it cannot. That is
-also what lets the same document serve a session with no network at all.
+The shell is a document carrying nothing of an account: no deck on the session screens, and no counts
+on the one a session starts from. A page that rendered either would be a page per reader, and a cache
+holding it would be holding an account. Each screen asks for what it needs separately, from the
+account where it can be reached and from the device where it cannot, which is also what lets the same
+document serve with no network at all. What the shell does carry is deployment configuration, which
+deck is served and whether a backup is set, because that is one answer for every reader of it.
 
 Update timing matters more than it usually does: activating a new worker mid-session is visible in a
 timed loop, so a waiting worker is held until the session ends or the application is backgrounded.

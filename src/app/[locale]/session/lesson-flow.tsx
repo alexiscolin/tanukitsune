@@ -2,7 +2,7 @@
 
 import { DEMO_DECK } from '@/core/demo-deck'
 import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
-import { ScreenShell } from '@/ui/atoms/screen-shell'
+import { SessionUnreachable } from '@/ui/molecules/session-unreachable'
 import { LessonSession } from '@/ui/organisms/lesson-session'
 
 import { useSitting } from './sitting'
@@ -29,11 +29,7 @@ export function LessonFlow({
   // Nothing reached and nothing held, which is the one state that is not a session. An account that
   // answered with an empty queue ends on the screen that says the session is finished.
   if (!sitting.reached && !demo && sitting.deck.length === 0)
-    return (
-      <ScreenShell>
-        <p className="flex flex-1 items-center text-[var(--color-ink-muted)]">{copy.unreachable}</p>
-      </ScreenShell>
-    )
+    return <SessionUnreachable copy={copy} exitTo={exitTo} />
 
   const deck = demo ? DEMO_DECK : sitting.deck
 

@@ -318,7 +318,9 @@ cannot answer, whether the answer is in the browser's database before the deck a
 and when a second tab is open. Both answer a card and read that store through `e2e/session.ts`.
 `e2e/offline.spec.ts` is the one that cuts the network: it asks whether a session opens and deals
 with none at all, whether a sitting already held is dealt when the account cannot be reached, and
-whether the app offers itself for installation from where a session starts. Installing it is the
+whether the app offers itself for installation from where a session starts. What it cannot drive is
+the install prompt itself, nor the worker's own recovery from an asset a build no longer serves, and
+both are named below under what is not covered. Installing it is the
 manual pass below, no driver being able to accept that prompt. `e2e/cache.spec.ts` reads the other
 browser store, asking what a session dealt from an account leaves
 behind: one record per flow, the two flows held apart, and a sitting dealt twice replaced rather than
@@ -369,6 +371,12 @@ without any of them running unprompted.
 
 ## What is not covered
 
+- The service worker recovering from an asset a build no longer serves. It purges every cache,
+  unregisters and reloads once, and nothing drives it: a suite would have to publish a build, hold a
+  client on it, and publish another. It is the only thing between a stale client and a blank screen,
+  so it is named here rather than assumed.
+- The install prompt. No driver accepts one, which is why the manual pass below is what closes the
+  installed-app criteria rather than the suite.
 - The catalogue has no visual baseline. `test:e2e` drives every story and audits it, so a state that
   stops arriving or loses a contrast is refused, but a state that arrives looking wrong is not.
   [`decisions/0009-storybook-as-the-review-surface.md`](decisions/0009-storybook-as-the-review-surface.md)

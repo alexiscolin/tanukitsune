@@ -21,7 +21,7 @@ function sourceFor(token: string) {
 // own client shows and the one the reader recognises: a kanji asked for its meaning and its
 // reading is one item due, not two. A session takes ten of them, so this is no longer the number
 // of cards the next session deals.
-type Due = { readonly lessons: number; readonly reviews: number; readonly demo: boolean }
+export type Due = { readonly lessons: number; readonly reviews: number; readonly demo: boolean }
 
 export async function due(): Promise<Due> {
   const token = env.WANIKANI_TOKEN
