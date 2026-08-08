@@ -1,44 +1,20 @@
 import 'server-only'
 
-import { DEMO_DECK, DEMO_QUESTIONS, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
-import { deckFor, sessionOf } from '@/core/review/deck'
-import { questionsFor } from '@/core/review/question'
-import type { Question } from '@/core/review/question'
+import { DEMO_DECK, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
 import type { Assignment } from '@/core/knowledge-source'
+import { deckFor, sessionOf } from '@/core/review/deck'
 import type { Flow, Subject } from '@/core/subject'
-import type { HeldDeck } from '@/data/local/database'
 import { env } from '@/data/env'
 import { wanikaniSource } from '@/data/wanikani/source'
 
-// What the two routes deal, and the one place that decides where it comes from. With a token it
-// is the reader's own account, without one it is the seeded deck, which is what makes a single
-// public URL both the demo and the product.
+// Where a deck comes from, and the one place that decides. With a token it is the reader's own
+// account, without one it is the seeded deck, which is what makes a single public URL both the demo
+// and the product.
 
-// Where the source answers, read here because this is the one place that decides where a deck
-// comes from. Absent is theirs, which is every deployment; the end-to-end suite names its own.
+// Where the source answers. Absent is theirs, which is every deployment; the end-to-end suite names
+// its own.
 function sourceFor(token: string) {
   return wanikaniSource(token, env.WANIKANI_API)
-}
-
-// Which of the two decks this is. The start screen says so, a real account's answers are not
-// cleared when a deck restarts, and a screen dealing one while promising that nothing leaves the
-// device is worse than one saying nothing.
-//
-// Whether the source answered at all. A refusal is an answer and a defect this client is right to
-// raise; no answer is the case the device's cache exists for, so it is the only one caught here.
-// Null cards mean the screen deals from what it holds rather than from what arrived.
-function unreachable(reason: unknown): boolean {
-  return reason instanceof TypeError
-}
-
-// A real deck also carries what it was built from, which the cards no longer hold once they are
-// questions: the device keeps those so the same sitting can be dealt again with no network. Null on
-// the seeded deck, which is a constant already on the device and must not replace what an account
-// left in the cache.
-type Dealt<Cards> = {
-  readonly cards: Cards
-  readonly demo: boolean
-  readonly held: Omit<HeldDeck, 'flow'> | null
 }
 
 // What is waiting, counted in subjects rather than in questions, which is the number the source's
@@ -75,45 +51,26 @@ async function dealt(
   // Only what the deck kept. `deckFor` drops an assignment whose subject the source withdrew or
   // never sent, and a cached record naming one would let a later flush advance an item the reader
   // was never asked.
-  const dealt = new Set(deck.map((subject) => subject.id))
+  const kept = new Set(deck.map((subject) => subject.id))
 
-  return { deck, waiting: sitting.filter((entry) => dealt.has(entry.subjectId)) }
+  return { deck, waiting: sitting.filter((entry) => kept.has(entry.subjectId)) }
 }
 
-export async function lessonDeck(): Promise<Dealt<readonly Subject[] | null>> {
-  const token = env.WANIKANI_TOKEN
-  if (token === undefined) return { cards: DEMO_DECK, demo: true, held: null }
-
-  try {
-    const sitting = await dealt(token, 'lesson')
-
-    return {
-      cards: sitting.deck,
-      demo: false,
-      held: { subjects: sitting.deck, waiting: sitting.waiting },
+// What one sitting is, for whoever asks. The seeded deck says so and carries nothing: it is a
+// constant already in the bundle, so sending it would be sending the client what it already holds.
+export type Sitting =
+  | { readonly demo: true }
+  | {
+      readonly demo: false
+      readonly subjects: readonly Subject[]
+      readonly waiting: readonly Assignment[]
     }
-  } catch (reason) {
-    if (!unreachable(reason)) throw reason
 
-    return { cards: null, demo: false, held: null }
-  }
-}
-
-export async function reviewDeck(): Promise<Dealt<readonly Question[] | null>> {
+export async function dealtFor(flow: Flow): Promise<Sitting> {
   const token = env.WANIKANI_TOKEN
-  if (token === undefined) return { cards: DEMO_QUESTIONS, demo: true, held: null }
+  if (token === undefined) return { demo: true }
 
-  try {
-    const sitting = await dealt(token, 'review')
+  const sitting = await dealt(token, flow)
 
-    return {
-      cards: questionsFor(sitting.deck),
-      demo: false,
-      held: { subjects: sitting.deck, waiting: sitting.waiting },
-    }
-  } catch (reason) {
-    if (!unreachable(reason)) throw reason
-
-    return { cards: null, demo: false, held: null }
-  }
+  return { demo: false, subjects: sitting.deck, waiting: sitting.waiting }
 }

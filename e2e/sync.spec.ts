@@ -39,6 +39,10 @@ test('an answer given offline reaches the backup when the network returns', asyn
   const batches = postedBy(context)
 
   await page.goto(sessionPath('fr', 'review'))
+  // The card before the network goes, because the page is one shell for everyone and the sitting
+  // arrives one request after the document: cutting the network first is testing that a deck never
+  // fetched cannot be answered, which is a different sentence.
+  await cardReady(page, 0)
   await context.setOffline(true)
   await answerCard(page, 0)
   await expect.poll(() => queueLength(page)).toBe(1)

@@ -22,6 +22,11 @@ export function sessionPath(locale: Locale, flow: Flow): string {
 // and a batch is the same batch whichever language the session ran in.
 export const BACKUP_PATH = '/api/review'
 
+// Where a screen asks what its sitting is. It carries no locale, a deck being the same deck
+// whichever language it is shown in, and the flow travels as a query for the reason the session
+// route takes it that way: a lesson and a review are one thing asked two ways.
+export const DECK_PATH = '/api/deck'
+
 // Where what the backup holds is worked out and sent on. It carries no locale for the reason the
 // backup does not: nothing here is read by a person. One method taking no body, because what is owed
 // is worked out from the rows the server holds rather than named by whoever calls.
