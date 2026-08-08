@@ -40,6 +40,11 @@ labelled sample. Adding a language is a folder and a locale entry, never a secon
 The checks are written once and run against whichever folder they are given, so a language added is
 covered the day it arrives rather than the day someone remembers it.
 
+The decomposition is the neutral half and lives in `corpus/decomposition.json`, one line per character
+so a diff names what moved, written by `pnpm corpus:decomposition` from the pinned release and
+carrying its attribution in its own header, since the obligation follows the file rather than the
+repository. Everything else under `corpus/` belongs to a locale.
+
 ## The world
 
 **Keys.** KANJIDIC2 carries French glosses under a redistributable licence for the jouyou set, the
