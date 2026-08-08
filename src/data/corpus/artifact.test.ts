@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { readDecompositions } from './artifact'
+import { readComponentNames, readDecompositions } from './artifact'
 
 const FILE = `{
 "header":{"source":"KanjiVG","licence":"CC BY-SA 4.0"},
@@ -30,5 +30,23 @@ describe('readDecompositions', () => {
   // rather than a state to render around. It fails where it is read, with the reason.
   it('refuses a file that is not the artifact', () => {
     expect(() => readDecompositions('{"characters":"none"}')).toThrow()
+  })
+})
+
+describe('readComponentNames', () => {
+  it('reads what the locale calls each component', () => {
+    const names = readComponentNames('{"header":{},"names":{"亻":"le passant","木":"l\'arbre"}}')
+
+    expect(names['亻']).toBe('le passant')
+  })
+
+  // A locale that has named nothing yet is a locale at the start of its work, not a broken file. The
+  // report is what says how much of it is left.
+  it('reads a locale that has named nothing', () => {
+    expect(readComponentNames('{"header":{},"names":{}}')).toEqual({})
+  })
+
+  it('refuses a file that is not a name list', () => {
+    expect(() => readComponentNames('{"names":{"亻":3}}')).toThrow()
   })
 })
