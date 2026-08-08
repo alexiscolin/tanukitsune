@@ -17,6 +17,15 @@ export type Decomposition = {
   readonly parts: readonly Part[]
 }
 
+// The decomposition as the source states it, which is a tree rather than a list: 語 holds 言 and 吾,
+// and 吾 holds 五 and 口 in turn. Which depth a mnemonic names is a rule about what the reader can
+// already picture, not a fact about the character, so it is applied to this rather than baked into it.
+export type Glyph = {
+  readonly component: string | null
+  readonly position: string | null
+  readonly parts: readonly Glyph[]
+}
+
 // What one locale calls each component, keyed by the component itself. Written per locale, because a
 // name is the language half of the corpus and the decomposition is the neutral half.
 export type ComponentNames = Readonly<Record<string, string>>
