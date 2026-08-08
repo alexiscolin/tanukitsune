@@ -316,7 +316,11 @@ and it audits nothing. Neither does `e2e/review.spec.ts`, which asks the one que
 cannot answer, whether the answer is in the browser's database before the deck advances, nor
 `e2e/sync.spec.ts`, which asks what takes it back out when the network returns, when the tab does,
 and when a second tab is open. Both answer a card and read that store through `e2e/session.ts`.
-`e2e/cache.spec.ts` reads the other browser store, asking what a session dealt from an account leaves
+`e2e/offline.spec.ts` is the one that cuts the network: it asks whether a session opens and deals
+with none at all, whether a sitting already held is dealt when the account cannot be reached, and
+whether the app offers itself for installation from where a session starts. Installing it is the
+manual pass below, no driver being able to accept that prompt. `e2e/cache.spec.ts` reads the other
+browser store, asking what a session dealt from an account leaves
 behind: one record per flow, the two flows held apart, and a sitting dealt twice replaced rather than
 merged. It runs against the account server, a demo render writing nothing at all. What
 no gate holds is the appearance, which is recorded below under what is not covered.

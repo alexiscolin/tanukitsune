@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { sessionPath } from '../src/core/routes'
+import { sessionPath, startPath } from '../src/core/routes'
 import { copyFor } from '../src/core/site-copy'
 import { DECK_STORE } from '../src/data/local/database'
 import type { HeldDeck } from '../src/data/local/database'
@@ -21,6 +21,28 @@ async function reachable(request: { get: (url: string) => Promise<unknown> }, is
 
 test.afterEach(async ({ request }) => {
   await reachable(request, true)
+})
+
+// Installable, which is what puts the app on a home screen and what takes its storage out of
+// Safari's seven-day eviction. The install itself is the manual pass on a physical device, which
+// docs/verification.md holds as the release gate; what is checkable here is what it is offered.
+test('the app offers itself for installation, opening where a session starts', async ({
+  request,
+}) => {
+  const answered = await request.get(`${accountURL}/manifest.webmanifest`)
+
+  expect(answered.ok()).toBe(true)
+
+  const manifest = (await answered.json()) as {
+    start_url: string
+    display: string
+    icons: { sizes: string }[]
+  }
+
+  // Where a session starts rather than inside one, which is the criterion.
+  expect(manifest.start_url).toBe(startPath('fr'))
+  expect(manifest.display).toBe('standalone')
+  expect(manifest.icons.map((icon) => icon.sizes).sort()).toEqual(['192x192', '512x512'])
 })
 
 test('a session opens and deals with no network at all', async ({ page, context }) => {
