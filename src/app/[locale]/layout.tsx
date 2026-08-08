@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 
 import { DEFAULT_LOCALE, isLocale, LOCALES } from '@/core/locales'
 import { copyFor } from '@/core/site-copy'
+
+import { KeepOffline } from './keep-offline'
 import '../globals.css'
 
 // Sets the attribute and the colour scheme in the same tick. The second is what
@@ -39,7 +41,10 @@ export default async function LocaleLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: APPLY_THEME }} />
       </head>
-      <body>{children}</body>
+      <body>
+        <KeepOffline />
+        {children}
+      </body>
     </html>
   )
 }

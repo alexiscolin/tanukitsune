@@ -23,6 +23,25 @@ test.afterEach(async ({ request }) => {
   await reachable(request, true)
 })
 
+test('a session opens and deals with no network at all', async ({ page, context }) => {
+  await page.goto(`${accountURL}${sessionPath('fr', 'review')}`)
+  await expect(page.getByLabel(COPY.review.prompt.meaning)).toBeFocused()
+
+  // The worker holds the shell, and the device holds the sitting. Waited for rather than assumed:
+  // a worker that has not taken control yet answers nothing.
+  await page.waitForFunction(() => navigator.serviceWorker.controller !== null)
+  await expect
+    .poll(async () => (await readStore<HeldDeck>(page, DECK_STORE)).length, { timeout: 10_000 })
+    .toBe(1)
+
+  await context.setOffline(true)
+  await page.reload()
+
+  // The document came from the worker and the cards from the device. Nothing about the screen says
+  // so, which is the point: a session that opens is a session, whatever answered.
+  await expect(page.getByLabel(COPY.review.prompt.meaning)).toBeFocused()
+})
+
 test('a sitting already held is dealt when the account cannot be reached', async ({
   page,
   request,

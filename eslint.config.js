@@ -138,4 +138,24 @@ export default tseslint.config(
     },
     rules: { ...tseslint.configs.disableTypeChecked.rules, 'no-console': 'off' },
   },
+
+  {
+    // The service worker is plain JavaScript served as written rather than compiled, so it sits
+    // outside the TypeScript project and the type-aware rules have nothing to read. Linted all the
+    // same, because it is the one file here that runs with no build step behind it.
+    files: ['public/*.js'],
+    extends: [tseslint.configs.disableTypeChecked],
+    languageOptions: {
+      // The project service reads tsconfig, which does not include this file and must not: adding
+      // it would put a worker's globals into the application's type space.
+      parserOptions: { projectService: false, project: false },
+      globals: {
+        caches: 'readonly',
+        fetch: 'readonly',
+        Request: 'readonly',
+        self: 'readonly',
+        URL: 'readonly',
+      },
+    },
+  },
 )
