@@ -43,15 +43,24 @@ export const MOST_PARTS = 4
 // A part nothing can name and nothing can open is kept as it is: it belongs in the report that says
 // what the locale still owes, not in a silence.
 export function flatten(
-  _character: string,
-  _parts: readonly Glyph[],
-  _isNameable: (component: string) => boolean,
+  character: string,
+  parts: readonly Glyph[],
+  isNameable: (component: string) => boolean,
 ): Decomposition {
-  return { character: _character, parts: [] }
+  return { character, parts: parts.flatMap((part) => named(part, isNameable)) }
 }
 
-export function holdsTooManyParts(_decomposition: Decomposition): boolean {
-  return false
+function named(glyph: Glyph, isNameable: (component: string) => boolean): readonly Part[] {
+  const { component, position } = glyph
+
+  if (component !== null && isNameable(component)) return [{ component, position }]
+  if (glyph.parts.length === 0) return [{ component, position }]
+
+  return glyph.parts.flatMap((part) => named(part, isNameable))
+}
+
+export function holdsTooManyParts(decomposition: Decomposition): boolean {
+  return decomposition.parts.length > MOST_PARTS
 }
 
 // Components no name covers, which is what a mnemonic would otherwise have to leave anonymous.
