@@ -15,13 +15,36 @@ export type Allocated = {
   readonly phonemes: readonly string[]
 }
 
-export function notInjective(_allocation: readonly Allocated[]): readonly string[] {
-  return []
+// Both directions, because they break differently. Two readings on one anchor give the reader one cue
+// for two answers; one reading on two anchors gives them two stories for one answer, and the second is
+// the one they will not have read.
+export function notInjective(allocation: readonly Allocated[]): readonly string[] {
+  const readingsOf = new Map<string, Set<string>>()
+  const anchorsOf = new Map<string, Set<string>>()
+
+  for (const { reading, anchor } of allocation) {
+    readingsOf.set(anchor, (readingsOf.get(anchor) ?? new Set()).add(reading))
+    anchorsOf.set(reading, (anchorsOf.get(reading) ?? new Set()).add(anchor))
+  }
+
+  return [...readingsOf, ...anchorsOf].filter(([, held]) => held.size > 1).map(([one]) => one)
 }
 
+// Two readings whose anchors sound the same are one cue pointing at both, which is a cue pointing at
+// neither. It is the failure that only appears at scale, and only to something looking at the whole
+// allocation at once.
 export function confusablePairs(
-  _allocation: readonly Allocated[],
-  _minimum: number,
+  allocation: readonly Allocated[],
+  minimum: number,
 ): readonly (readonly [string, string])[] {
-  return []
+  const pairs: (readonly [string, string])[] = []
+
+  for (const [index, one] of allocation.entries()) {
+    for (const other of allocation.slice(index + 1)) {
+      if (one.reading === other.reading) continue
+      if (distanceBetween(one.phonemes, other.phonemes) < minimum) pairs.push([one.reading, other.reading])
+    }
+  }
+
+  return pairs
 }
