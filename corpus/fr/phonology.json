@@ -1,0 +1,7 @@
+{
+  "header": {
+    "what": "What French can and cannot do with sounds, read by the checks that judge an anchor. The rules live in the engine; this file is what makes them French.",
+    "cannotStart": "French has no /h/ phoneme at all, so hôtel is said without one; it has no /ɸ/, and no native onset for the two affricates. An anchor claiming one of these matches only on paper."
+  },
+  "cannotStart": ["h", "ɸ", "ts", "tɕ"]
+}

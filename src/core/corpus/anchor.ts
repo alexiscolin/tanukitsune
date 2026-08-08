@@ -61,11 +61,6 @@ const VOWELS: Record<string, readonly string[]> = {
   'ɑ̃': ['open', 'back', 'unrounded', 'nasal'],
 }
 
-// What French has no way to begin a word with. An anchor that claims one of these is claiming a sound
-// its own language does not make, and hôtel is the case that catches everyone: it is said without an
-// h at all, so the match exists only on paper.
-const FRENCH_CANNOT_START = new Set(['h', 'ɸ', 'ts', 'tɕ'])
-
 // One feature apart, on either scale. Wider and voicing alone would separate two anchors that a
 // learner hears as the same; narrower and no anchor in the language would ever qualify.
 const NEAR = 1 / 3
@@ -87,10 +82,18 @@ export function agreesAtTheStart(reading: readonly string[], anchor: readonly st
   return between(readingVowel, anchorVowel) <= NEAR
 }
 
-export function impossibleOnset(reading: readonly string[], anchor: readonly string[]): string | null {
+// What a language cannot begin a word with is a fact about that language, so it arrives from the
+// locale's own material rather than from here: this file knows how sounds compare, not which ones
+// French happens to lack. An anchor claiming a sound its language does not make is the failure that
+// catches everyone, hôtel being said without any h at all, so the match exists only on paper.
+export function impossibleOnset(
+  reading: readonly string[],
+  anchor: readonly string[],
+  cannotStart: readonly string[],
+): string | null {
   const [onset] = reading
 
-  if (onset === undefined || !FRENCH_CANNOT_START.has(onset)) return null
+  if (onset === undefined || !cannotStart.includes(onset)) return null
 
   return anchor[0] === onset ? null : onset
 }

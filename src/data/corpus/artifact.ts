@@ -29,3 +29,12 @@ const nameList = z.object({ names: z.record(z.string(), z.string()) })
 export function readComponentNames(json: string): ComponentNames {
   return nameList.parse(JSON.parse(json)).names
 }
+
+// What a language cannot do with sounds. The checks that judge an anchor are the engine's and know
+// nothing about French; this is what makes them French, and what a second language replaces without
+// a line of code changing.
+const phonology = z.object({ cannotStart: z.array(z.string()) })
+
+export function readPhonology(json: string): { readonly cannotStart: readonly string[] } {
+  return phonology.parse(JSON.parse(json))
+}

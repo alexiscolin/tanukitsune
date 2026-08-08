@@ -13,7 +13,7 @@ import type { SubjectEntry } from '../wanikani/payload'
 // theirs: they stay on the machine that generated and never travel into anything published, which is
 // the rule in docs/framing.md about what a public chunk may carry.
 
-export type InventoryReading = {
+type InventoryReading = {
   readonly value: string
   readonly type: string | null
   readonly primary: boolean

@@ -27,18 +27,28 @@ describe('agreesAtTheStart', () => {
 })
 
 describe('impossibleOnset', () => {
+  // Which sounds a language cannot begin with comes from that language's own material, so the rule
+  // reads the same for German the day German arrives. These are French's.
+  const FRENCH = ['h', 'ɸ', 'ts', 'tɕ']
+
   // The failure this whole file exists for: French has no /h/, so hôtel is said without one and an
   // anchor claiming it sounds like は is claiming a sound its own language cannot make.
-  it('names the sound French cannot make when an anchor claims it', () => {
-    expect(impossibleOnset(phonemesOf('は'), HOTEL)).toBe('h')
+  it('names the sound the language cannot make when an anchor claims it', () => {
+    expect(impossibleOnset(phonemesOf('は'), HOTEL, FRENCH)).toBe('h')
   })
 
   it('names it for the affricate French has no onset for', () => {
-    expect(impossibleOnset(phonemesOf('つ'), SUR)).toBe('ts')
+    expect(impossibleOnset(phonemesOf('つ'), SUR, FRENCH)).toBe('ts')
   })
 
   it('says nothing when the anchor really carries the sound', () => {
-    expect(impossibleOnset(phonemesOf('か'), CAR)).toBe(null)
+    expect(impossibleOnset(phonemesOf('か'), CAR, FRENCH)).toBe(null)
+  })
+
+  // A language that can begin with it has nothing to answer for, which is what makes the rule the
+  // engine's and the list the locale's.
+  it('says nothing when the language can begin with that sound', () => {
+    expect(impossibleOnset(phonemesOf('は'), HOTEL, [])).toBe(null)
   })
 })
 

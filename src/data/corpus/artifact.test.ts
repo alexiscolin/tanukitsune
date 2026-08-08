@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { readComponentNames, readDecompositions } from './artifact'
+import { readComponentNames, readDecompositions, readPhonology } from './artifact'
 
 const FILE = `{
 "header":{"source":"KanjiVG","licence":"CC BY-SA 4.0"},
@@ -48,5 +48,17 @@ describe('readComponentNames', () => {
 
   it('refuses a file that is not a name list', () => {
     expect(() => readComponentNames('{"names":{"亻":3}}')).toThrow()
+  })
+})
+
+describe('readPhonology', () => {
+  // The list is the locale's and the rule is the engine's, so a second language is a folder rather
+  // than a branch in the code.
+  it('reads what the language cannot begin a word with', () => {
+    expect(readPhonology('{"cannotStart":["h","ts"]}').cannotStart).toEqual(['h', 'ts'])
+  })
+
+  it('refuses a file that names no such list', () => {
+    expect(() => readPhonology('{}')).toThrow()
   })
 })

@@ -7,7 +7,7 @@
 // `component` is null where the source carries a group with no character behind it. The part is
 // really there, in the strokes and in the shape, and nothing can name it: a character holding one is
 // reported rather than generated from as though its parts were known.
-export type Part = {
+type Part = {
   readonly component: string | null
   readonly position: string | null
 }

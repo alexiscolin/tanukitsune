@@ -40,6 +40,14 @@ labelled sample. Adding a language is a folder and a locale entry, never a secon
 The checks are written once and run against whichever folder they are given, so a language added is
 covered the day it arrives rather than the day someone remembers it.
 
+**Nothing under `src/core/corpus/` knows any language but Japanese**, which is the one being taught
+and is therefore constant. The rules there compare sounds, count morae, name the parts a reader can
+picture and refuse an allocation that gives one cue two answers. What a particular language can and
+cannot do is material: `corpus/fr/components.json` holds what French calls each component,
+`corpus/fr/phonology.json` holds the sounds French cannot begin a word with, and the anchors and cast
+land beside them. A second language is those files and no code, which is the test to apply to anything
+added here: if German would need a branch, it belongs in the folder rather than in the engine.
+
 The decomposition is the neutral half and lives in `corpus/decomposition.json`, one line per character
 so a diff names what moved, written by `pnpm corpus:decomposition` from the pinned release and
 carrying its attribution in its own header, since the obligation follows the file rather than the
