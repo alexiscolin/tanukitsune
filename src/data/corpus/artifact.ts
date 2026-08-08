@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import type { Glyph } from '@/core/corpus/decomposition'
+import type { ComponentNames, Glyph } from '@/core/corpus/decomposition'
 
 // Reads back what `scripts/import-decomposition.ts` wrote. The artifact is committed, so this is the
 // only door between the corpus and a file nobody edits by hand.
@@ -20,4 +20,12 @@ const artifact = z.object({ characters: z.record(z.string(), z.array(glyph)) })
 
 export function readDecompositions(json: string): ReadonlyMap<string, readonly Glyph[]> {
   return new Map(Object.entries(artifact.parse(JSON.parse(json)).characters))
+}
+
+// What one locale calls each component, which is the half of the decomposition that is written here
+// rather than imported, no set of names existing under a licence that permits redistribution.
+const nameList = z.object({ names: z.record(z.string(), z.string()) })
+
+export function readComponentNames(json: string): ComponentNames {
+  return nameList.parse(JSON.parse(json)).names
 }
