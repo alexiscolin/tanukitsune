@@ -18,6 +18,10 @@ import { heldDeck, holdDeck } from '@/data/local/deck-cache'
 export type Sitting =
   | { readonly ready: false }
   | { readonly ready: true; readonly reached: boolean; readonly deck: readonly Subject[] }
+  // A refusal rather than silence. It is handed back rather than thrown from here, because a throw
+  // inside an effect reaches no boundary: the screen throws it while rendering, which is what the
+  // error page is for and what a blank tab is not.
+  | { readonly ready: true; readonly broke: Error }
 
 // What one call may take before the device answers instead. A request has no deadline of its own,
 // so a socket that opens and never replies would leave the screen blank for as long as the tab
@@ -45,10 +49,20 @@ async function fromAccount(flow: Flow): Promise<Answered | null> {
   return (await answered.json()) as Answered
 }
 
-export function useSitting(flow: Flow): Sitting {
-  const [sitting, setSitting] = useState<Sitting>({ ready: false })
+// Asked only where there is an account to ask. The seeded deck is a constant in this bundle, so a
+// demo that asked would wait on a request for cards it already holds, and would write an empty
+// sitting over whatever the device was keeping for a real one.
+export function useSitting(flow: Flow, ask: boolean): Sitting {
+  // Settled before the first paint where there is nothing to ask, rather than settled by an effect:
+  // the seeded deck is already here, and a state that starts unready would blank the screen for a
+  // frame to announce a request nobody made.
+  const [sitting, setSitting] = useState<Sitting>(
+    ask ? { ready: false } : { ready: true, reached: true, deck: [] },
+  )
 
   useEffect(() => {
+    if (!ask) return
+
     let wanted = true
 
     const settle = (next: Sitting) => {
@@ -56,7 +70,13 @@ export function useSitting(flow: Flow): Sitting {
     }
 
     void (async () => {
-      const answered = await fromAccount(flow)
+      const answered = await fromAccount(flow).catch((broke: unknown) => {
+        settle({ ready: true, broke: broke instanceof Error ? broke : new Error(String(broke)) })
+
+        return undefined
+      })
+
+      if (answered === undefined) return
 
       if (answered !== null) {
         settle({ ready: true, reached: true, deck: deckFor(answered.waiting, answered.subjects) })
@@ -80,7 +100,7 @@ export function useSitting(flow: Flow): Sitting {
     return () => {
       wanted = false
     }
-  }, [flow])
+  }, [ask, flow])
 
   return sitting
 }

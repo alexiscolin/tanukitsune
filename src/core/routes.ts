@@ -32,6 +32,10 @@ export const DECK_PATH = '/api/deck'
 // once and it opening after the whole curriculum has been read.
 export const DUE_PATH = '/api/due'
 
+// Where the queue asks for the right to post, which is the cookie below. Separate from both routes
+// a screen asks, because a deployment serving the seeded deck asks for neither and still backs up.
+export const SYNC_PATH = '/api/sync'
+
 // Where what the backup holds is worked out and sent on. It carries no locale for the reason the
 // backup does not: nothing here is read by a person. One method taking no body, because what is owed
 // is worked out from the rows the server holds rather than named by whoever calls.

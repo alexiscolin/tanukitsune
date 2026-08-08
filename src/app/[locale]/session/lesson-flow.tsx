@@ -22,9 +22,12 @@ export function LessonFlow({
   // Which deck this deployment serves, carried in the shell for the reason review-flow.tsx gives.
   demo: boolean
 }) {
-  const sitting = useSitting('lesson')
+  const sitting = useSitting('lesson', !demo)
 
   if (!sitting.ready) return null
+  // Thrown while rendering, which is the only place an error boundary can see it. An effect that
+  // rejected leaves a screen that never settles, and a reader meets a blank tab with no way back.
+  if ('broke' in sitting) throw sitting.broke
 
   // Nothing reached and nothing held, which is the one state that is not a session. An account that
   // answered with an empty queue ends on the screen that says the session is finished.

@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 
 import { drain } from '@/core/review/drain'
+import { SYNC_PATH } from '@/core/routes'
 import { backupTo } from '@/data/local/backup'
 import { flushTo } from '@/data/local/flush'
 import { localOutbox } from '@/data/local/outbox'
@@ -30,6 +31,10 @@ export function BackupDrain() {
   useEffect(() => {
     const backup = backupTo()
     const flush = flushTo()
+    // The right to post, asked for once and kept by the browser. Awaited before the first send
+    // rather than raced with it: a queue carried over from a previous visit is drained the moment
+    // this mounts, and a send that outran the cookie is one refusal the reader pays for.
+    const allowed = fetch(SYNC_PATH).catch(() => undefined)
 
     // A tab that cannot take the lock gives up rather than queueing behind the leader. Waiting
     // would be harmless once, but every reconnection and every return to the tab asks again, so a
@@ -46,6 +51,7 @@ export function BackupDrain() {
         .request(LEADER, { ifAvailable: true }, async (lock) => {
           if (lock === null) return
 
+          await allowed
           await drain(localOutbox, backup)
           await flush()
         })

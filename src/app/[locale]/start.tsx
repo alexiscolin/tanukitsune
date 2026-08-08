@@ -24,8 +24,11 @@ export function Start({
   demo: boolean
 }) {
   const counts = useWaitingCounts(
-    demo ? { ready: true, lessons: DEMO_DECK.length, reviews: DEMO_SUBJECTS_ASKED } : null,
+    demo ? { counted: true, lessons: DEMO_DECK.length, reviews: DEMO_SUBJECTS_ASKED } : null,
   )
+
+  // Thrown while rendering, which is the only place the error boundary can see it.
+  if (counts.broke !== undefined) throw counts.broke
 
   return (
     <SessionStart
@@ -33,7 +36,7 @@ export function Start({
       tagline={copy.tagline}
       copy={copy.start}
       demo={demo}
-      pending={!counts.ready}
+      pending={!counts.counted}
       queues={{
         lesson: { count: counts.lessons, href: sessionPath(locale, 'lesson') },
         review: { count: counts.reviews, href: sessionPath(locale, 'review') },

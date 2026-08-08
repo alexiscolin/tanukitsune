@@ -1,7 +1,5 @@
 import { dealtFor } from '@/app/[locale]/waiting'
 import { isFlow } from '@/core/subject'
-import { secretCookie } from '@/data/sync-secret'
-
 // What this answers where the source did not. Distinct from a five hundred, which says this route
 // broke: the screen deals from the device on the first and raises the second.
 const UNREACHED = 503
@@ -29,17 +27,9 @@ export async function GET(request: Request): Promise<Response> {
     return null
   })
 
-  if (sitting === null) return new Response(null, { status: UNREACHED })
+  const headers = { 'cache-control': 'no-store' }
 
-  const held = secretCookie()
-
-  // Set here because a screen asks for its sitting before it can answer anything, so the cookie is
-  // in place before the first row reaches the queue. A server component cannot set one, and this is
-  // the only call every session makes.
-  return Response.json(sitting, {
-    headers: {
-      'cache-control': 'no-store',
-      ...(held === null ? {} : { 'set-cookie': held }),
-    },
-  })
+  return sitting === null
+    ? new Response(null, { status: UNREACHED, headers })
+    : Response.json(sitting, { headers })
 }

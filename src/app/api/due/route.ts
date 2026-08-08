@@ -15,7 +15,9 @@ export async function GET(): Promise<Response> {
     return null
   })
 
+  const headers = { 'cache-control': 'no-store' }
+
   return counted === null
-    ? new Response(null, { status: UNREACHED })
-    : Response.json(counted, { headers: { 'cache-control': 'no-store' } })
+    ? new Response(null, { status: UNREACHED, headers })
+    : Response.json(counted, { headers })
 }

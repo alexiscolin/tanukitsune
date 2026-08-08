@@ -12,7 +12,15 @@ import { heldDeck } from '@/data/local/deck-cache'
 //
 // Offline the count is what the device holds, which is a different number and a truer one: what is
 // waiting upstream cannot be known with no network, and what can be dealt here can.
-export type Counts = { readonly ready: boolean; readonly lessons: number; readonly reviews: number }
+// `counted` is not `ready`. Nothing answered and nothing held is a settled state, and the number it
+// would show is zero, which reads as a queue the reader has finished rather than as one nobody
+// looked at. The screen shows a dash for it and offers no way in, which is what is true.
+export type Counts = {
+  readonly counted: boolean
+  readonly lessons: number
+  readonly reviews: number
+  readonly broke?: Error
+}
 
 const ASK_TIMEOUT = 10_000
 const UNREACHED = 503
@@ -27,7 +35,7 @@ async function fromAccount(): Promise<Counts | null> {
 
   const counted = (await answered.json()) as { lessons: number; reviews: number }
 
-  return { ready: true, lessons: counted.lessons, reviews: counted.reviews }
+  return { counted: true, lessons: counted.lessons, reviews: counted.reviews }
 }
 
 async function fromDevice(): Promise<Counts> {
@@ -35,12 +43,13 @@ async function fromDevice(): Promise<Counts> {
   const counted = Object.fromEntries(
     FLOWS.map((flow, at) => [flow, held[at]?.subjects.length ?? 0]),
   ) as Record<(typeof FLOWS)[number], number>
+  const anything = counted.lesson + counted.review > 0
 
-  return { ready: true, lessons: counted.lesson, reviews: counted.review }
+  return { counted: anything, lessons: counted.lesson, reviews: counted.review }
 }
 
 export function useWaitingCounts(demo: Counts | null): Counts {
-  const [counts, setCounts] = useState<Counts>(demo ?? { ready: false, lessons: 0, reviews: 0 })
+  const [counts, setCounts] = useState<Counts>(demo ?? { counted: false, lessons: 0, reviews: 0 })
 
   useEffect(() => {
     if (demo !== null) return
@@ -52,7 +61,14 @@ export function useWaitingCounts(demo: Counts | null): Counts {
     }
 
     void (async () => {
-      settle((await fromAccount()) ?? (await fromDevice()))
+      const counted = await fromAccount().catch((broke: unknown) => ({
+        counted: false,
+        lessons: 0,
+        reviews: 0,
+        broke: broke instanceof Error ? broke : new Error(String(broke)),
+      }))
+
+      settle(counted ?? (await fromDevice()))
     })()
 
     return () => {

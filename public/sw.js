@@ -13,6 +13,10 @@ const ASSETS = 'tanukitsune-assets-1'
 // immutable resource cannot be stale, at any layer.
 const IMMUTABLE = '/_next/static/'
 
+// Where the redirect from the bare origin leads. Spelled here rather than imported, a worker being
+// served as written and reaching no module of ours.
+const STARTS_AT = '/fr'
+
 // A build that no longer exists answers this for an asset it once served. An offline-first client is
 // a long-lived one, so it will ask for one, and treating it as a signal rather than as a failure is
 // the only thing between a stale client and a blank screen.
@@ -67,6 +71,14 @@ async function shell(request) {
     const held = await cached(request, SHELL)
 
     if (held !== null) return held
+
+    // The bare origin redirects to a locale, and a navigation carries redirect mode manual, so that
+    // response is opaque and never held. Offline it is the address a bookmark or a home screen
+    // shortcut made before the install still points at, so it is answered with the document the
+    // redirect leads to rather than with the browser's own failure page.
+    const start = await cached(new Request(new URL(STARTS_AT, request.url)), SHELL)
+
+    if (start !== null) return start
 
     throw unreachable
   }

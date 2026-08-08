@@ -37,7 +37,7 @@ export function ReviewFlow({
   // of it, and a demo that had to ask would be the one deployment that cannot open offline.
   demo: boolean
 }) {
-  const sitting = useSitting('review')
+  const sitting = useSitting('review', !demo)
   const emptied = useRef<Promise<void> | null>(null)
 
   // The deck restarting is what empties the demo's queue, whatever the drain has or has not taken
@@ -65,6 +65,9 @@ export function ReviewFlow({
   // Nothing at all until the device has answered, so the offline line never shows for the frame
   // before the cards it holds arrive.
   if (!sitting.ready) return null
+  // Thrown while rendering, which is the only place an error boundary can see it. An effect that
+  // rejected leaves a screen that never settles, and a reader meets a blank tab with no way back.
+  if ('broke' in sitting) throw sitting.broke
 
   // Nothing was reached and the device holds nothing, which is the one state that is not a session.
   // An account that answered with an empty queue is a session the reader has finished, and that
