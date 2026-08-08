@@ -16,8 +16,9 @@ probe_prefix=__boundary-probe-
 server_only=src/ui/${probe_prefix}server-only.ts
 reaches_data=src/ui/${probe_prefix}reaches-data.ts
 data_hop=src/app/${probe_prefix}data-hop.ts
+reaches_corpus=src/app/${probe_prefix}reaches-corpus.ts
 
-cleanup() { rm -f "$server_only" "$reaches_data" "$data_hop"; }
+cleanup() { rm -f "$server_only" "$reaches_data" "$data_hop" "$reaches_corpus"; }
 trap cleanup EXIT
 
 mkdir -p src/ui src/app
@@ -79,6 +80,12 @@ printf "import 'server-only'\nimport { env } from '@/data/env'\n\nexport const H
 printf "import { HOP } from '@/app/${probe_prefix}data-hop'\n\nexport const PROBE = HOP\n" > "$reaches_data"
 expect_rules 'A ui/ module reaching data/ through app/' ui-imports-no-io ui-imports-nothing-server-only
 rm -f "$reaches_data" "$data_hop"
+
+# The pipeline shares the toolchain with the product and nothing else, so the rule that
+# keeps them apart is proven like the others rather than trusted.
+printf "import { moraeOf } from '@/core/corpus/phonetics'\n\nexport const PROBE = moraeOf('か')\n" > "$reaches_corpus"
+expect_rules 'An app/ module reaching the corpus pipeline' product-imports-no-corpus
+rm -f "$reaches_corpus"
 
 [ "$fail" -eq 0 ] && echo "boundaries: proven"
 exit "$fail"

@@ -26,6 +26,11 @@ export type InventorySubject = {
   readonly characters: string | null
   readonly meanings: readonly string[]
   readonly readings: readonly InventoryReading[]
+  // Which subjects this one is built from, as the curriculum itself states it. It decides what a
+  // mnemonic may name, so that a story rests on parts the reader has been dealt a card for rather
+  // than on parts a decomposition happens to see. It is theirs, so it stays here and never reaches
+  // anything published: see docs/decisions/0013-the-curriculum-decides-the-parts.md.
+  readonly componentIds: readonly number[]
 }
 
 export type Client = { readonly token: string; readonly api: string }
@@ -70,5 +75,6 @@ function taken(entry: SubjectEntry): InventorySubject {
     readings: (entry.data.readings ?? [])
       .filter((one) => one.accepted_answer)
       .map((one) => ({ value: one.reading, type: one.type ?? null, primary: one.primary })),
+    componentIds: entry.data.component_subject_ids ?? [],
   }
 }

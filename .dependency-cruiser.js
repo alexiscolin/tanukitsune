@@ -26,6 +26,15 @@ export default {
       to: { path: 'node_modules/server-only/', reachable: true },
     },
     {
+      name: 'product-imports-no-corpus',
+      comment:
+        'The corpus pipeline is a build-time tool that shares the toolchain and nothing else. Nothing the product renders may reach it, so its code never ships and its rules never quietly become app behaviour.',
+      severity: 'error',
+      from: { path: '^src/(app|ui)/' },
+      // Reachable, not adjacent: app -> data -> corpus is the same leak one hop further out.
+      to: { path: '^src/(core|data)/corpus/', reachable: true },
+    },
+    {
       name: 'no-cycles',
       severity: 'error',
       from: {},

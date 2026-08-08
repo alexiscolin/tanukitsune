@@ -16,6 +16,7 @@ function subject(id: number, object: string, characters: string, meaning: string
       characters,
       meanings: [{ meaning, primary: true, accepted_answer: true }],
       readings: [{ reading: 'ご', primary: true, accepted_answer: true, type: 'onyomi' }],
+      component_subject_ids: [11, 12],
     },
   }
 }
@@ -48,6 +49,7 @@ describe('readInventory', () => {
         characters: '語',
         meanings: ['language'],
         readings: [{ value: 'ご', type: 'onyomi', primary: true }],
+        componentIds: [11, 12],
       },
     ])
   })
