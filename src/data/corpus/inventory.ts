@@ -1,5 +1,10 @@
-import { subjectCollection } from '../wanikani/payload'
-import type { SubjectEntry } from '../wanikani/payload'
+import { z } from 'zod'
+
+// The extension is written here and nowhere else in src/, because the corpus commands run this file
+// through Node directly rather than through a bundler, and an extensionless specifier resolves to
+// nothing there. One parser for their payload is worth one unusual import.
+import { subjectCollection } from '../wanikani/payload.ts'
+import type { SubjectEntry } from '../wanikani/payload.ts'
 
 // Every subject the curriculum deals, level by level, so the corpus covers what a session can show
 // rather than what a decomposition happens to contain. Without it a card can be missing and nothing
@@ -77,4 +82,28 @@ function taken(entry: SubjectEntry): InventorySubject {
       .map((one) => ({ value: one.reading, type: one.type ?? null, primary: one.primary })),
     componentIds: entry.data.component_subject_ids ?? [],
   }
+}
+
+// Read back from the file the inventory command wrote, so a report and a generation both work from
+// one fetch rather than asking the account again for something that did not change.
+const file = z.object({
+  upTo: z.number(),
+  subjects: z.array(
+    z.object({
+      id: z.number(),
+      type: z.string(),
+      level: z.number(),
+      characters: z.string().nullable(),
+      meanings: z.array(z.string()),
+      readings: z.array(z.object({ value: z.string(), type: z.string().nullable(), primary: z.boolean() })),
+      componentIds: z.array(z.number()),
+    }),
+  ),
+})
+
+export function readInventoryFile(json: string): {
+  readonly upTo: number
+  readonly subjects: readonly InventorySubject[]
+} {
+  return file.parse(JSON.parse(json))
 }

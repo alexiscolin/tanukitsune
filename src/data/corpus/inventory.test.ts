@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { readInventory } from './inventory'
+import { readInventory, readInventoryFile } from './inventory'
 
 function page(next: string | null, ...data: readonly unknown[]) {
   return { pages: { next_url: next }, data }
@@ -78,5 +78,30 @@ describe('readInventory', () => {
     await readInventory({ token: 't', api: 'https://fake' }, 3)
 
     expect(String(fetching.mock.calls[0]?.[0])).toContain('levels=1,2,3')
+  })
+})
+
+describe('readInventoryFile', () => {
+  const written = JSON.stringify({
+    upTo: 3,
+    subjects: [
+      {
+        id: 1,
+        type: 'kanji',
+        level: 1,
+        characters: '語',
+        meanings: ['language'],
+        readings: [{ value: 'ご', type: 'onyomi', primary: true }],
+        componentIds: [11],
+      },
+    ],
+  })
+
+  it('reads back what the command wrote, so one fetch serves every step', () => {
+    expect(readInventoryFile(written).subjects[0]?.componentIds).toEqual([11])
+  })
+
+  it('refuses a file that is not an inventory', () => {
+    expect(() => readInventoryFile('{"subjects":[]}')).toThrow()
   })
 })
