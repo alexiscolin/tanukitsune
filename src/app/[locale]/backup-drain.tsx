@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 
 import { drain } from '@/core/review/drain'
+import { SYNC_PATH } from '@/core/routes'
 import { backupTo } from '@/data/local/backup'
 import { flushTo } from '@/data/local/flush'
 import { localOutbox } from '@/data/local/outbox'
@@ -23,13 +24,17 @@ const LEADER = 'tanukitsune-backup-drain'
 // because the two are one sequence and a second tab holding either would run half of it. What it
 // sends is worked out on the server, so the trigger is the whole of what lives here.
 //
-// The secret arrives as a prop because only the server can read it. Rendering this component at all
-// is what says a backup is configured, so there is one branch and it is at the wiring, on a route
-// rendered per request for the reasons given there.
-export function BackupDrain({ secret }: { secret: string }) {
+// Rendering this component at all is what says a backup is configured, so there is one branch and it
+// is at the wiring. It carries no secret: the browser holds one the page cannot read, set by the
+// route the screen asks its sitting from.
+export function BackupDrain() {
   useEffect(() => {
-    const backup = backupTo(secret)
-    const flush = flushTo(secret)
+    const backup = backupTo()
+    const flush = flushTo()
+    // The right to post, asked for once and kept by the browser. Awaited before the first send
+    // rather than raced with it: a queue carried over from a previous visit is drained the moment
+    // this mounts, and a send that outran the cookie is one refusal the reader pays for.
+    const allowed = fetch(SYNC_PATH).catch(() => undefined)
 
     // A tab that cannot take the lock gives up rather than queueing behind the leader. Waiting
     // would be harmless once, but every reconnection and every return to the tab asks again, so a
@@ -46,6 +51,7 @@ export function BackupDrain({ secret }: { secret: string }) {
         .request(LEADER, { ifAvailable: true }, async (lock) => {
           if (lock === null) return
 
+          await allowed
           await drain(localOutbox, backup)
           await flush()
         })
@@ -66,7 +72,7 @@ export function BackupDrain({ secret }: { secret: string }) {
       window.removeEventListener('online', run)
       document.removeEventListener('visibilitychange', run)
     }
-  }, [secret])
+  }, [])
 
   return null
 }

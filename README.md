@@ -11,9 +11,9 @@ memory instead of a fixed timetable.
 
 > **Where it is today.** The review loop works on a real WaniKani account. With no token it serves a
 > small built-in deck instead. An answer is graded by exact match, saved on your device, backed up to
-> a server, and then sent on to WaniKani if the deployment turns that on. Two things are not there
-> yet: the French layer, so cards still show WaniKani's English, and offline start, so you still need
-> a network to open a session.
+> a server, and then sent on to WaniKani if the deployment turns that on. The app installs to a home
+> screen and opens with no network, dealing a session it has held from a previous visit. What is not
+> there yet is the French layer, so cards still show WaniKani's English.
 
 ## What you get
 

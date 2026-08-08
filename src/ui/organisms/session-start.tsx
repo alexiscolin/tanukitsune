@@ -18,6 +18,7 @@ export function SessionStart({
   copy,
   queues,
   demo,
+  pending,
 }: {
   title: string
   tagline: string
@@ -28,6 +29,10 @@ export function SessionStart({
   // Whether this is the seeded deck. The promise that nothing leaves the device is only true
   // of that one, and a screen dealing a real account must not make it.
   demo: boolean
+  // Whether the counts are still being asked for. A row shows a dash rather than a zero until they
+  // arrive: zero is a queue the reader has finished, and showing it before anything was counted
+  // tells them they are done when nobody has looked.
+  pending: boolean
 }) {
   return (
     <ScreenShell>
@@ -40,7 +45,7 @@ export function SessionStart({
         <ul>
           {FLOWS.map((flow) => (
             <li key={flow} className="border-t border-[var(--color-hairline)]">
-              <Queue label={copy.flow[flow]} queue={queues[flow]} />
+              <Queue label={copy.flow[flow]} queue={queues[flow]} pending={pending} />
             </li>
           ))}
         </ul>
@@ -56,10 +61,22 @@ export function SessionStart({
 // A flow with nothing waiting is a row and not a control: the way in would land on an end the
 // reader never reached. The row stays either way, because a flow that is empty today is the
 // same flow tomorrow and a missing row reads as a feature that is gone.
-function Queue({ label, queue }: { label: string; queue: { count: number; href: string } }) {
-  const value = <span className="nums text-2xl tracking-tight">{queue.count}</span>
+function Queue({
+  label,
+  queue,
+  pending,
+}: {
+  label: string
+  queue: { count: number; href: string }
+  pending: boolean
+}) {
+  // An em dash is two characters this project bans in its own prose; the figure dash is the one a
+  // number column is written with, and it is what a count nobody has yet reads as.
+  const value = (
+    <span className="nums text-2xl tracking-tight">{pending ? '\u2012' : queue.count}</span>
+  )
 
-  if (queue.count === 0) {
+  if (pending || queue.count === 0) {
     return (
       <p className="flex items-center justify-between py-6 text-[var(--color-ink-muted)]">
         <span className="text-2xl tracking-tight">{label}</span>

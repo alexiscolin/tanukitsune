@@ -6,6 +6,6 @@ import { postTo } from './posted'
 
 // The browser's other half of the data layer, beside the queue it empties. It carries no
 // `server-only`, for the reason `outbox.ts` gives beside the same shape: this runs on the device.
-export function backupTo(secret: string): Backup {
-  return (batch: readonly AnswerRecord[]) => postTo(BACKUP_PATH, secret, batch)
+export function backupTo(): Backup {
+  return (batch: readonly AnswerRecord[]) => postTo(BACKUP_PATH, batch)
 }

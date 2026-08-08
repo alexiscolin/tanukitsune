@@ -5,11 +5,11 @@ import { startPath } from '@/core/routes'
 import { copyFor } from '@/core/site-copy'
 import { isFlow } from '@/core/subject'
 import { env } from '@/data/env'
-import { LessonSession } from '@/ui/organisms/lesson-session'
+
+import { servesDemo } from '../waiting'
 
 import { BackupDrain } from '../backup-drain'
-import { HoldDeck } from '../hold-deck'
-import { lessonDeck, reviewDeck } from '../waiting'
+import { LessonFlow } from './lesson-flow'
 import { ReviewFlow } from './review-flow'
 
 // The loop, whichever of the two flows is being run. Which one is a state of this route rather
@@ -18,6 +18,10 @@ import { ReviewFlow } from './review-flow'
 //
 // A flow nobody named is not found rather than guessed: a route that picked one would start a
 // session the reader did not ask for, and no step of the loop is reached by navigating.
+//
+// It carries no deck. What this renders is the same document for every reader of a deployment,
+// which is what lets the service worker hold one application shell and serve it with no network;
+// the sitting is asked for by the screen, through /api/deck.
 export default async function SessionPage({
   params,
   searchParams,
@@ -33,50 +37,31 @@ export default async function SessionPage({
   const copy = copyFor(locale)
   const start = startPath(locale)
 
-  // Both screens carry their own shell, because they are full bleed and own their gutters. Each
-  // asks for its own deck, so the other queue's subjects are never read to build cards nobody
-  // opens.
-  if (flow === 'lesson') {
-    const lesson = await lessonDeck()
-
+  // Both screens carry their own shell, because they are full bleed and own their gutters.
+  if (flow === 'lesson')
     return (
-      <>
-        {lesson.held !== null && (
-          <HoldDeck flow="lesson" subjects={lesson.held.subjects} waiting={lesson.held.waiting} />
-        )}
-        <LessonSession
-          deck={lesson.cards}
-          copy={copy.review}
-          subjectCopy={copy.subject}
-          exitTo={start}
-        />
-      </>
+      <LessonFlow
+        copy={copy.review}
+        subjectCopy={copy.subject}
+        exitTo={start}
+        demo={servesDemo()}
+      />
     )
-  }
 
-  const review = await reviewDeck()
-  // Read here because only the server can, and served to the page that sends it. Absent means no
-  // backup is configured and no drain starts at all, which is the one branch there is.
-  //
-  // It rides this route rather than the layout because this one is rendered per request, the flow
-  // arriving in the query. A layout carrying the secret would be prerendered with whatever the
-  // build held, which puts a secret in a document a shared cache may keep and leaves a deployment
-  // that set the variable afterwards with a drain that never starts.
+  // Read to decide whether a drain starts at all, and for nothing else: absent means no backup is
+  // configured, which is the one branch there is. The value never leaves the server now, so the
+  // document this renders carries nothing a cache must not keep.
   const secret = env.TANUKITSUNE_SYNC_SECRET
 
   return (
     <>
-      {secret !== undefined && <BackupDrain secret={secret} />}
-      {review.held !== null && (
-        <HoldDeck flow="review" subjects={review.held.subjects} waiting={review.held.waiting} />
-      )}
+      {secret !== undefined && <BackupDrain />}
       <ReviewFlow
         locale={locale}
-        questions={review.cards}
         copy={copy.review}
         subjectCopy={copy.subject}
         exitTo={start}
-        demo={review.demo}
+        demo={servesDemo()}
       />
     </>
   )

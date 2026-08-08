@@ -9,8 +9,8 @@ import { postTo } from './posted'
 //
 // One call a sitting rather than one a submission: the reads that say what is owed cost the source
 // six requests, and the whole point of paying them on the server is paying them once.
-export function flushTo(secret: string): () => Promise<void> {
+export function flushTo(): () => Promise<void> {
   return async () => {
-    await postTo(FLUSH_PATH, secret, null)
+    await postTo(FLUSH_PATH, null)
   }
 }

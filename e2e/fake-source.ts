@@ -66,6 +66,12 @@ const ADVANCED_TO = 5
 // assertion against our own tables can make: what must not happen twice is the call leaving here.
 const taken: unknown[] = []
 
+// Whether this source is reachable. Set by the suite so a spec can drive the case the cache exists
+// for: the reader has a session and the account cannot be reached. It answers by destroying the
+// connection rather than by a status, because a status is an answer and what is being simulated is
+// no answer at all.
+let unreachable = false
+
 const port = Number(process.argv[2])
 
 createServer((request, response) => {
@@ -79,6 +85,14 @@ createServer((request, response) => {
   // up, which is what the runner waits on before starting the server that reads it.
   if (url.pathname === '/') return answer(200, { listening: true })
   if (url.pathname === '/taken') return answer(200, { taken })
+
+  if (url.pathname === '/unreachable') {
+    unreachable = url.searchParams.get('is') === 'true'
+
+    return answer(200, { unreachable })
+  }
+
+  if (unreachable) return request.destroy()
 
   // The token is never checked for what it says, only that it was sent: this account belongs to
   // nobody, and what the suite is covering is that the source authenticates at all.
