@@ -23,7 +23,11 @@ function subject(id: number, object: string, characters: string, meaning: string
 function answering(...pages: readonly unknown[]) {
   const responses = [...pages]
 
-  return vi.fn(async () => ({ ok: true, json: async () => responses.shift() }) as unknown as Response)
+  return vi.fn((url: string): Promise<Response> => {
+    const body = responses.shift()
+
+    return Promise.resolve({ ok: true, url, json: () => Promise.resolve(body) } as unknown as Response)
+  })
 }
 
 afterEach(() => {

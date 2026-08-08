@@ -167,6 +167,14 @@ is not regenerated, and the failed set goes into the next batch, which is the sa
 Batch submission is asynchronous, so one command does not mean one minute. The first run on a new
 language builds that language's world, stops, and waits for it to be reviewed and committed.
 
+**Coverage is proven against the curriculum rather than against the decomposition.**
+`pnpm corpus:inventory` writes down every subject the account deals up to a level, read with the
+reader's own token. That file is never committed: it carries their meanings and their identifiers,
+which stay on the machine that generated. It answers two questions nothing else can. Whether every
+subject a session can show has a card, which is what a gap in coverage looks like from the reader's
+side. And whether our key means what the account accepts for that subject, since the upstream grading
+is in English and a French key that stands for something else would teach a character twice.
+
 ## What the reader still does
 
 The acceptance sample, which [`specs/v0.1.md`](specs/v0.1.md) fixes at 150 items with one defect
