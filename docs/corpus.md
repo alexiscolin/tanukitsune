@@ -61,11 +61,18 @@ are selected from an existing gloss and then made unique rather than invented fr
 per subject, one subject per key, and the English key recorded beside it: the upstream account grades
 in English, and the day English is served it must teach the same key for the same character.
 
-**Component names.** Written here. Kanji Alive's table gives 209 of the 855 components the jouyou
-decompositions use, so the other 646 are ours, seeded by the traditional name wherever one exists so a
-learner meets the real 部首 name where there is one. The counts and their measurement are in
-[ADR 0012](decisions/0012-kanjivg-for-the-decomposition.md). One name per component and one component
-per name, corpus-wide, which is the single most valuable consistency rule at scale.
+**Component names.** Written here, one name per component and one component per name across the whole
+corpus, which is the single most valuable consistency rule at scale. Kanji Alive's table gives 209 of
+the 855 components the jouyou decompositions use, so the rest are ours, seeded by the traditional name
+wherever one exists so a learner meets the real 部首 name where there is one. The counts and their
+measurement are in [ADR 0012](decisions/0012-kanjivg-for-the-decomposition.md).
+
+**Which parts get named at all comes from the curriculum**, per
+[ADR 0013](decisions/0013-the-curriculum-decides-the-parts.md): a story names the components the reader
+has been dealt a card for, so nothing in it is a shape nobody has met. The drawing is asked where each
+part sits, since the curriculum does not say and a part placed in the wrong half of a character
+describes a different character. Where the curriculum decomposes nothing, the depth rule below takes
+over: it keeps a part the locale can name and opens one it cannot, down to what the reader can picture.
 
 **Anchors.** Each reading is bound to one French sound anchor, and every mnemonic teaching that
 reading uses it. WaniKani holds the same policy and rewrites the whole affected set when an anchor
@@ -96,12 +103,11 @@ meaning from the meanings of its kanji and earns a reading mnemonic only where i
 one its kanji already taught, and a kana-only word runs from the sound to the meaning instead, having
 no kanji to rest on.
 
-**Our components are not the source's radicals.** The subjects a session deals come from WaniKani,
-their radicals included, while the parts our meaning mnemonics name come from KanjiVG, so the two sets
-do not coincide and a component can carry a name of ours without ever being a card the learner is
-dealt. A mnemonic therefore names a component already met, or introduces it in the same sentence, one
-clause saying what it is before using it. The cards the account does deal teach our names rather than
-the source's, which we may not use in any case.
+**Our components are the curriculum's, under our own names.** The parts a story names are the
+components the curriculum teaches, so every one of them is a card the reader has been dealt, and those
+cards teach our French names rather than the source's, which are theirs and may not be used. Where the
+curriculum decomposes nothing, a story may still reach a part no card teaches: it introduces it in the
+same sentence that uses it, one clause saying what it is before it is put to work.
 
 **Few examples and positive instruction**, per [`ai-engineering.md`](ai-engineering.md): more than two
 examples and every mnemonic starts to sound like the examples, and a long list of prohibitions dilutes
