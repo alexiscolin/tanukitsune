@@ -10,6 +10,7 @@ Map of the documentation, how to read it before writing code, and how to operate
 | [`framing.md`](framing.md) | What we build and why, the principles, the architecture, the obligations | both |
 | [`stack.md`](stack.md) | The stack, every contested tooling choice, and the argument that settled it | both |
 | [`ai-engineering.md`](ai-engineering.md) | Models, prompts, structured output, evals, caching, observability, error analysis | both |
+| [`corpus.md`](corpus.md) | How the French layer is built, what is checked before anyone reads it, and what the method does not claim | both |
 | [`workflow.md`](workflow.md) | The process every change goes through, and why `.claude/` is configured as it is | both |
 | [`design-direction.md`](design-direction.md) | What the interface is written toward, and what a screen may spend | both |
 | [`verification.md`](verification.md) | The inventory of every check: what runs, when, what it catches, what it costs | both |

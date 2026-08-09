@@ -40,7 +40,7 @@ jq -e '.permissions.deny | any(. == "WebFetch(domain:api.wanikani.com)")' "$sett
 # holds a deployment on the real host is that naming nothing reaches it, and that nothing committed
 # names anything else: a default quietly moved, or a value in the file bootstrap copies, would point
 # a machine holding a real token at whoever answered.
-grep -qF "const API = 'https://api.wanikani.com/v2'" src/data/wanikani/source.ts || {
+grep -qF "export const API = 'https://api.wanikani.com/v2'" src/data/wanikani/paging.ts || {
   printf 'probe "default": the source no longer falls back to the real API\n' >&2
   fail=1
 }

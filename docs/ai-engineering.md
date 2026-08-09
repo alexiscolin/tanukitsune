@@ -151,7 +151,9 @@ changes. Until that threshold is reached the set does not exist and the CI gate 
 not enabled. Saying so is more useful than describing a gate that silently guards nothing, and it is
 another reason the answer and verdict columns ship in v0.1.
 
-**The corpus is acceptance sampling, not regression**, and the sample size, the defect classes and the
+**The corpus is acceptance sampling, not regression**, and what the sampling reads has already passed
+the deterministic checks and the expert reading in [`corpus.md`](corpus.md), which is also where the
+construction rules live. The sample size, the defect classes and the
 accept number are written in [`specs/v0.1.md`](specs/v0.1.md) before the first run, because "ship or
 regenerate" is not a decision anyone can take without them. Across the budgeted runs a frozen subset is
 diffed between runs, which is what catches a prompt revision that fixes the sampled tail and breaks

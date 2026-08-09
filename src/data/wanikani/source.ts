@@ -3,6 +3,9 @@ import type { z } from 'zod'
 import type { Advanced, KnowledgeSource, Waiting } from '@/core/knowledge-source'
 import type { Component, Subject } from '@/core/subject'
 
+import { API, collect, headersFor, read } from './paging'
+import type { Client } from './paging'
+
 import {
   assignmentCollection,
   mentionedIn,
@@ -27,46 +30,14 @@ import type { StudyMaterial, SubjectEntry } from './payload'
 // holds, and no long lived object keeps a scope alive around it. The route reads the environment
 // and calls this.
 
-// Where the source answers, which is theirs unless a caller names another. Absent is what a
-// deployment gets, so nothing has to be set for the real API to be the one reached; the
-// end-to-end suite names its own, so a session can be driven against an account nobody owns.
-const API = 'https://api.wanikani.com/v2'
-
-// The two a request needs, carried together because every function here takes both and neither
-// is any use without the other.
-type Client = { readonly token: string; readonly api: string }
-
 // What a caller hands in, which is the shape `KnowledgeSource` declares rather than a second one.
 type Submitted = Parameters<KnowledgeSource['submitReview']>[0]
-
-// Their shape is versioned by date and the header is not optional: without it the response is
-// whatever revision they consider current, which is a payload nobody wrote a parser for.
-const REVISION = '20170710'
 
 // What a URL can hold, and what their identifier filter is worth asking for at once. A real
 // account waits on more than a thousand subjects across its two queues, so an unchunked list of
 // identifiers is a request that fails on its length rather than on its content.
 const IDS_PER_REQUEST = 500
 
-// Both halves send the same two, so they are built once: a submission that reached them without
-// the revision is an item advanced on a shape nobody parsed.
-function headersFor(client: Client): Record<string, string> {
-  return { Authorization: `Bearer ${client.token}`, 'Wanikani-Revision': REVISION }
-}
-
-async function read(client: Client, path: string): Promise<unknown> {
-  const response = await fetch(path.startsWith(client.api) ? path : `${client.api}${path}`, {
-    headers: headersFor(client),
-  })
-
-  // Loudly, and naming the status: a read that fails silently returns an empty queue, which is
-  // indistinguishable from a session with nothing left in it. 429 is the one the reader will
-  // meet, sixty requests a minute being shared between what we read and what we send.
-  if (!response.ok)
-    throw new Error(`WaniKani answered ${response.status} for ${path.replace(client.api, '')}.`)
-
-  return response.json()
-}
 
 // The one thing this client writes. Their created review carries an identifier that is always
 // zero, so nothing distinguishes one submission's answer from another's and a failure nobody can
@@ -91,41 +62,6 @@ async function submitReview(client: Client, submission: Submitted): Promise<Adva
   return toAdvanced(reviewPayload.parse(await response.json()))
 }
 
-// Their cursor is a URL rather than a page number, so following it is the whole of paging. It
-// comes out of a response body and is carried with the reader's token on it, so it is followed
-// only where it stays inside the source: a cursor naming another host is that token handed to
-// whoever answered, and one naming its own page is a walk with no end.
-async function collect<Entry>(
-  client: Client,
-  collection: z.ZodType<{ pages: { next_url: string | null }; data: Entry[] }>,
-  first: string,
-): Promise<Entry[]> {
-  const entries: Entry[] = []
-  const walked = new Set<string>()
-  let next: string | null = first
-
-  while (next !== null) {
-    // Resolved before it is remembered, since the first path is relative and every cursor after
-    // it is absolute, and two spellings of one page would walk it twice before closing the loop.
-    const walkedTo = next.startsWith(client.api) ? next : `${client.api}${next}`
-    if (walked.has(walkedTo))
-      throw new Error(`WaniKani handed back a cursor it had already: ${walkedTo}.`)
-    walked.add(walkedTo)
-
-    const page = collection.parse(await read(client, walkedTo))
-    entries.push(...page.data)
-    next = page.pages.next_url
-
-    if (next !== null && !next.startsWith(`${client.api}/`))
-      throw new Error(`WaniKani handed back a cursor leaving the source: ${next}.`)
-  }
-
-  return entries
-}
-
-// Every filter by identifier is chunked the same way, and the batches are asked together: only
-// the walk inside one collection is sequential, since the next URL comes out of the page before
-// it. The request count is the same either way, which is what the sixty a minute are counted in.
 async function batched<Entry>(
   client: Client,
   collection: z.ZodType<{ pages: { next_url: string | null }; data: Entry[] }>,

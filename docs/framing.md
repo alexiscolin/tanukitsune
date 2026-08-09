@@ -152,7 +152,7 @@ app/        Next routes, thin shells
 ui/         components
 ```
 
-Five rules, all enforced by `pnpm arch`, two of them proven to fire rather than assumed:
+Six rules, all enforced by `pnpm arch`, three of them proven to fire rather than assumed:
 
 - `core/` imports nothing from the other layers, and may declare ports but never import an
   implementation
@@ -161,6 +161,8 @@ Five rules, all enforced by `pnpm arch`, two of them proven to fire rather than 
   of the client and is stated again with the server boundary below
 - no cycles
 - no orphans: a module with no dependents and no dependencies was committed too early
+- the product does not reach the corpus pipeline, by any number of hops, which is what keeps a
+  build-time tool sharing the toolchain from sharing the application
 
 The reachability matters more than it reads. An adjacency-only rule lets `ui/` reach `data/` through
 `app/` in one extra hop, and a rule written against a bare package name matches nothing at all once
@@ -292,6 +294,10 @@ What a token fetches is a copy held for the account that already has it, on its 
 local cache is a working copy rather than a publication. The rule is what keeps the two apart without
 deciding each case again: our generated layer is publishable in any language because it is ours, and a
 mnemonic written by the upstream source is not, in any language, whether it is copied or rewritten from.
+The decomposition travelling in those chunks is KanjiVG's rather than ours, under a share-alike licence
+that reaches the decomposition and not the text generated from it, with the attribution it obliges and
+the separation that keeps the two apart in
+[`decisions/0012-kanjivg-for-the-decomposition.md`](decisions/0012-kanjivg-for-the-decomposition.md).
 Whether the subject list itself may travel in a public chunk is the one question the rule does not
 answer, and it is an open decision in [`decisions/`](decisions/) rather than a reading to make here.
 
@@ -330,7 +336,7 @@ the device is unreachable from a server, and what it sends carries the secret it
 than one it read, nothing there being able to reach the environment. Only the server half reads the environment inside the running
 application. The migration configuration and the end-to-end expectation read outside it,
 through the rule `data/` owns, because a tool that decides which database to open cannot ask the
-application which one it opened. The third of the five rules
+application which one it opened. The third of the six rules
 above follows from this: **`ui/` may not import a module that imports `server-only`**, which the
 dependency graph can check because type-only imports are already visible to it.
 

@@ -28,3 +28,6 @@ playwright-report/
 
 # Storybook build output.
 storybook-static/
+
+# Their meanings and their identifiers, fetched to prove coverage and kept off every published surface.
+corpus/.inventory.json
