@@ -97,7 +97,8 @@ function againstCurriculum() {
 
       // A character that is its own only part is placed by being itself, and the drawing carries no
       // group for it. Counting that as unplaced would report every single-part character as a fault.
-      const itself = part.component === subject.characters
+      // A character standing beside other parts is placed among them, so it is counted like any other.
+      const itself = decomposition.parts.length === 1 && part.component === subject.characters
       if (!itself && part.position === null) unplaced.push(`${subject.characters}:${part.component}`)
     }
   }
