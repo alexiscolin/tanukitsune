@@ -246,11 +246,10 @@ warms.
 
 Emit OpenTelemetry spans from the SDK, into a self-hostable collector.
 
-**The span is emitted from the first model call; the collector arrives with the first interactive
-surface.** The only model code in v0.1 is the corpus batch job, run three times with somebody
-watching it, and a collector raising the alerts below on a run nobody needs told about is a machine
-watching nobody. Instrumenting from the first call costs a field per call, and it is what makes the
-collector a configuration later rather than a retrofit.
+**The span is emitted from the first model call; the collector arrives with the interactive path.**
+Until it does, the batch job is watched by the reader running it, and the alerts in this section
+report on surfaces that arrive with the judge. Emitting from the start is what makes the collector a
+configuration later rather than a retrofit.
 
 **Do not build dashboards or alerts on the generative-AI attribute names.** That convention set is not
 stable, has no pinnable release, and has already renamed several attributes across versions. Normalise
