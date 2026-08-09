@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { allocate } from './choose'
 import type { Candidate, Wanted } from './choose'
 
-const LIMITS = { nearest: 0.45, apart: 0.3, cannotStart: ['h'] }
+const LIMITS = { nearest: 0.45, apart: 0.3, cannotStart: ['h'], unrated: 4 }
 
 function word(text: string, ...phonemes: readonly string[]): Candidate {
   return { text, phonemes, frequency: 50 }
@@ -57,7 +57,7 @@ describe('allocate', () => {
     const { allocated, unserved } = allocate([reading('は', 'h', 'a')], () => [word('hôtel', 'o', 't', 'ɛ', 'l')], LIMITS)
 
     expect(allocated).toEqual([])
-    expect(unserved).toEqual(['は'])
+    expect(unserved).toEqual([{ reading: 'は', reason: 'none acceptable' }])
   })
 
   it('refuses a word too far from the reading to be heard in it', () => {
@@ -66,7 +66,15 @@ describe('allocate', () => {
       nearest: 0.1,
     })
 
-    expect(unserved).toEqual(['か'])
+    expect(unserved).toEqual([{ reading: 'か', reason: 'none acceptable' }])
+  })
+
+  // The two reasons ask the reader for different things: a lexicon too narrow for this reading, or a
+  // curriculum wanting more words than the reading has. Naming the reading alone tells them neither.
+  it('separates a reading no word fits from one whose words were spent elsewhere', () => {
+    const { unserved } = allocate([reading('か', 'k', 'a'), reading('かん', 'k', 'a', 'n')], () => [CAR], LIMITS)
+
+    expect(unserved).toEqual([{ reading: 'かん', reason: 'all spent' }])
   })
 })
 
