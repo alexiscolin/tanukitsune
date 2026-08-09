@@ -77,8 +77,7 @@ Fifteen of their 504 components carry no character, so nothing here can name the
 artwork is theirs and their terms forbid reproducing it, so it is not fetched, not stored and not read:
 the shape is taken from the characters that contain the component, and the name is written here. Where
 their own name is the obvious description of a shape, coinciding with it is a fact and costs nothing;
-where it is an invention, ours is something else, and the check that holds the difference reads their
-meaning from the inventory, which never leaves the machine that generated.
+where it is an invention, ours is something else.
 
 **Which parts get named at all comes from the curriculum**, per
 [ADR 0013](decisions/0013-the-curriculum-decides-the-parts.md): a story names the components the reader
@@ -96,8 +95,10 @@ On'yomi are short and massively homophonous, so a reading like こう is shared 
 and an anchor spent at level 3 is an anchor missing at level 40. Allocation is a calculation over
 data, so it costs no model call and it is done once for all sixty levels; only the levels being
 shipped are written. Candidates come from Lexique, which carries phonemic transcription and frequency
-for French, and are scored on phonetic distance to the reading, imageability, frequency and
-phonological neighbourhood density.
+for French. Among the words the rules accept for a reading, the nearest in sound takes it; where two
+sit equally near, the word the reader can picture takes it; where nothing separates them there either,
+the more ordinary word does. A reading left without leaves the run with the reason, either that no
+word the rules accept exists for it or that every one of them was spent on another reading.
 
 ## How one item is made
 
