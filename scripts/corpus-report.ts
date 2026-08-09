@@ -55,7 +55,8 @@ function againstCurriculum() {
   const unplaced: string[] = []
   const drawn = new Set<string>()
   // A part that is itself a subject with a key of its own needs no component name: a word made of
-  // kanji names them by what they mean. Only the components that are nothing else owe a name.
+  // kanji names them by what they mean. A radical owes one even where a kanji of the same shape has a
+  // key, since a story names the part it draws rather than the character that shares its outline.
   const radicals = new Set(
     subjects.filter((one) => one.type === 'radical' && one.characters !== null).map((one) => one.characters),
   )

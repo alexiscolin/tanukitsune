@@ -73,7 +73,8 @@ wherever one exists so a learner meets the real 部首 name where there is one. 
 measurement are in [ADR 0012](decisions/0012-kanjivg-for-the-decomposition.md).
 
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
-Fifteen of their 504 components carry no character, so nothing here can name them by form alone. Their
+Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing
+here can name them by form alone. Their
 artwork is theirs and their terms forbid reproducing it, so it is not fetched, not stored and not read:
 the shape is taken from the characters that contain the component, and the name is written here. Where
 their own name is the obvious description of a shape, coinciding with it is a fact and costs nothing;
@@ -95,7 +96,10 @@ On'yomi are short and massively homophonous, so a reading like こう is shared 
 and an anchor spent at level 3 is an anchor missing at level 40. Allocation is a calculation over
 data, so it costs no model call and it is done once for all sixty levels; only the levels being
 shipped are written. Candidates come from Lexique, which carries phonemic transcription and frequency
-for French. Among the words the rules accept for a reading, the nearest in sound takes it; where two
+for French. Readings are served scarcest first, the one with two acceptable words before the one with
+ten, since a common word spent on an easy reading leaves the scarce one with nothing and a reading with
+no anchor is a card that cannot be written. Among the words the rules accept for a reading, the nearest
+in sound takes it; where two
 sit equally near, the word the reader can picture takes it; where nothing separates them there either,
 the more ordinary word does. A reading left without leaves the run with the reason, either that no
 word the rules accept exists for it, or that every one that does is already an anchor elsewhere or
