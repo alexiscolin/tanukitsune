@@ -72,6 +72,14 @@ the 855 components the jouyou decompositions use, so the rest are ours, seeded b
 wherever one exists so a learner meets the real 部首 name where there is one. The counts and their
 measurement are in [ADR 0012](decisions/0012-kanjivg-for-the-decomposition.md).
 
+**A component the curriculum draws rather than writes is named from its shape, never from theirs.**
+Fifteen of their 504 components carry no character, so nothing here can name them by form alone. Their
+artwork is theirs and their terms forbid reproducing it, so it is not fetched, not stored and not read:
+the shape is taken from the characters that contain the component, and the name is written here. Where
+their own name is the obvious description of a shape, coinciding with it is a fact and costs nothing;
+where it is an invention, ours is something else, and the check that holds the difference reads their
+meaning from the inventory, which never leaves the machine that generated.
+
 **Which parts get named at all comes from the curriculum**, per
 [ADR 0013](decisions/0013-the-curriculum-decides-the-parts.md): a story names the components the reader
 has been dealt a card for, so nothing in it is a shape nobody has met. The drawing is asked where each
