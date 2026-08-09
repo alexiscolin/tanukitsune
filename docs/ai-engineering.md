@@ -244,14 +244,18 @@ warms.
 
 ## Observability
 
-Emit OpenTelemetry spans from the SDK, into a self-hostable collector.
+Emit OpenTelemetry spans from the SDK, from the first model call, into a self-hostable collector that
+arrives with the interactive path. Until it does, the batch job is watched by the reader running it,
+and emitting into nothing is what makes the collector a configuration later rather than a retrofit.
 
 **Do not build dashboards or alerts on the generative-AI attribute names.** That convention set is not
 stable, has no pinnable release, and has already renamed several attributes across versions. Normalise
 into an internal schema at ingest; the mapping layer is small and saves a migration.
 
 Every span carries the user or a hashed pseudonym, the feature, the prompt version, the model
-identifier, and the full token usage including both cache fields.
+identifier, and the full token usage including both cache fields. The corpus job is generated once for
+everybody rather than for a learner, so its spans name the run in that first field and its cost stays
+out of the per-learner number above.
 
 Alert on: escalation rate to the model tier, parse-failure rate, refusal rate, retry-count
 distribution on constrained generation, p95 latency on the judge, cache hit rate, and **override rate
