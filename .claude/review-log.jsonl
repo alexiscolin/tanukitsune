@@ -790,3 +790,12 @@
 {"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","kind":"pass","base":"2afc744","head":"73c1eb3f8c41585fcda4b9a63548f5b66903de06"}
 {"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","kind":"pass","base":"d80876c1d461f5399adee83fc37c0039aa2add7c","head":"cb4cc2a63f0f51f63e2563c70e787b8e1916a7cd"}
 {"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","kind":"pass","base":"d88cc227f3f2f2c871127178c0b8fd0f01c931a5","head":"f87fdfa47050a8fc6f462820b5b6797e52827a13"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","reviewer":"code-review","file":"src/core/corpus/choose.test.ts","line":37,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","reviewer":"code-review","file":"src/core/corpus/choose.test.ts","line":45,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","reviewer":"code-review","file":"src/core/corpus/choose.test.ts","line":71,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","reviewer":"code-review","file":"src/core/corpus/choose.test.ts","line":29,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","reviewer":"code-review","file":"scripts/corpus-report.ts","line":57,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","reviewer":"code-review","file":"docs/corpus.md","line":76,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","reviewer":"code-review","file":"docs/corpus.md","line":98,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","reviewer":"code-review","file":"scripts/corpus-inventory.ts","line":15,"outcome":"dismissed","reason":"drizzle.config.ts holds the same bare catch with the same reason, and the path is cwd-relative there too. Narrowing it here would make the repository answer one question two ways, which is what the branch just finished undoing."}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","kind":"pass","base":"7b7d26ccf5c11d3c5c6436796974acafb42cf1c6","head":"76ac4fcae96912c4bb00176ddd8acba7e7d41fa4"}
