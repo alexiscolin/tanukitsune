@@ -69,3 +69,24 @@ describe('allocate', () => {
     expect(unserved).toEqual(['か'])
   })
 })
+
+describe('allocate, on how well a word can be pictured', () => {
+  // Imageability is the best-evidenced property of a keyword: the method works for words a reader can
+  // see and does nothing for words they cannot. It outranks how ordinary a word is, and both are
+  // read only among the words already close enough to be heard in the reading.
+  it('prefers the word that can be pictured over the one that cannot', () => {
+    const seen = { text: 'le sabre', phonemes: ['s', 'a', 'b'], frequency: 10, imageability: 6.5 }
+    const vague = { text: 'le savoir', phonemes: ['s', 'a', 'v'], frequency: 90, imageability: 2.1 }
+    const { allocated } = allocate([reading('さ', 's', 'a')], () => [vague, seen], LIMITS)
+
+    expect(allocated[0]?.anchor).toBe('le sabre')
+  })
+
+  // A word nobody rated is not a word nobody can picture, so it is ranked on what is known about it
+  // rather than dropped.
+  it('keeps a word no rating covers', () => {
+    const { allocated } = allocate([reading('さ', 's', 'a')], () => [word('le sac', 's', 'a', 'k')], LIMITS)
+
+    expect(allocated[0]?.anchor).toBe('le sac')
+  })
+})
