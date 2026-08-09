@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { allocate } from './choose'
 import type { Candidate, Wanted } from './choose'
 
-const LIMITS = { nearest: 0.45, apart: 0.3, cannotStart: ['h'], unrated: 4 }
+const LIMITS = { nearest: 0.45, apart: 0.3, unrated: 4 }
 
 function word(text: string, ...phonemes: readonly string[]): Candidate {
   return { text, phonemes, frequency: 50 }

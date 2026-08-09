@@ -1,4 +1,4 @@
-import { agreesAtTheStart, distanceBetween, impossibleOnset } from './anchor'
+import { agreesAtTheStart, distanceBetween } from './anchor'
 import type { Allocated } from './allocation'
 
 // Which word stands for which reading, decided over the whole curriculum before a word of prose
@@ -26,8 +26,6 @@ export type Limits = {
   readonly nearest: number
   // How far two anchors must sit from each other, which is what stops one cue answering twice.
   readonly apart: number
-  // What the language cannot begin a word with, from that locale's own material.
-  readonly cannotStart: readonly string[]
   // What an unrated word is worth against a rated one, on the scale this locale's ratings use. The
   // middle of that scale, because nothing rated the word and that is not evidence either way, and it
   // is material rather than engine: a locale rating from 0 to 100 sets a different number here.
@@ -81,12 +79,11 @@ export function allocate(
 // before it can help. Nothing in that order depends on what other readings take, so it is settled
 // once per reading and the loop takes the first word still free.
 function ranked(reading: Wanted, candidates: readonly Candidate[], limits: Limits): readonly Candidate[] {
+  // Agreeing at the start is exact on the consonant, so a word claiming a sound the language does not
+  // make cannot reach here: it would have to begin on the reading's own first sound. That rule judges
+  // an anchor written rather than chosen, and it belongs to the per-item checks.
   return candidates
-    .filter(
-      (candidate) =>
-        agreesAtTheStart(reading.phonemes, candidate.phonemes) &&
-        impossibleOnset(reading.phonemes, candidate.phonemes, limits.cannotStart) === null,
-    )
+    .filter((candidate) => agreesAtTheStart(reading.phonemes, candidate.phonemes))
     .map((candidate) => ({ candidate, heard: distanceBetween(reading.phonemes, candidate.phonemes) }))
     .filter((one) => one.heard <= limits.nearest)
     .sort(
