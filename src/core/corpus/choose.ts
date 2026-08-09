@@ -29,17 +29,25 @@ export type Limits = {
   readonly apart: number
   // What the language cannot begin a word with, from that locale's own material.
   readonly cannotStart: readonly string[]
+  // What an unrated word is worth against a rated one, on the scale this locale's ratings use. The
+  // middle of that scale, because nothing rated the word and that is not evidence either way, and it
+  // is material rather than engine: a locale rating from 0 to 100 sets a different number here.
+  readonly unrated: number
 }
 
-// What an unrated word is worth against a rated one. The middle of the scale, because nothing rated
-// it and that is not evidence either way.
-const UNRATED = 4
+// Why a reading went without, since a reading named alone leaves the reader nothing to rule on. No
+// word the rules accept means the lexicon is too narrow for this reading; every acceptable word
+// already spent means the curriculum wants more words than the reading has.
+export type Unserved = {
+  readonly reading: string
+  readonly reason: 'none acceptable' | 'all spent'
+}
 
 export function allocate(
   readings: readonly Wanted[],
   candidatesFor: (reading: Wanted) => readonly Candidate[],
   limits: Limits,
-): { readonly allocated: readonly Allocated[]; readonly unserved: readonly string[] } {
+): { readonly allocated: readonly Allocated[]; readonly unserved: readonly Unserved[] } {
   const acceptable = new Map(readings.map((reading) => [reading.value, usable(reading, candidatesFor, limits)]))
 
   // The scarcest reading first. Serving them in the order they arrive spends a common word on a
@@ -50,11 +58,12 @@ export function allocate(
   )
 
   const allocated: Allocated[] = []
-  const unserved: string[] = []
+  const unserved: Unserved[] = []
   const taken = new Set<string>()
 
   for (const reading of order) {
-    const free = (acceptable.get(reading.value) ?? []).filter(
+    const accepted = acceptable.get(reading.value) ?? []
+    const free = accepted.filter(
       (candidate) => !taken.has(candidate.text) && farEnough(candidate, allocated, limits.apart),
     )
 
@@ -64,12 +73,12 @@ export function allocate(
     const best = [...free].sort(
       (one, other) =>
         distanceBetween(reading.phonemes, one.phonemes) - distanceBetween(reading.phonemes, other.phonemes) ||
-        (other.imageability ?? UNRATED) - (one.imageability ?? UNRATED) ||
+        (other.imageability ?? limits.unrated) - (one.imageability ?? limits.unrated) ||
         other.frequency - one.frequency,
     )[0]
 
     if (best === undefined) {
-      unserved.push(reading.value)
+      unserved.push({ reading: reading.value, reason: accepted.length === 0 ? 'none acceptable' : 'all spent' })
       continue
     }
 
