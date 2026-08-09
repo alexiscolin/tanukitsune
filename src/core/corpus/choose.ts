@@ -70,12 +70,14 @@ export function allocate(
     // Heard first, seen second, ordinary third. Distance decides whether the word reaches the reading
     // at all; among the ones that do, a word the reader can picture beats a word they merely know,
     // and a word nobody knows is a cue to be learned before it can help.
-    const best = [...free].sort(
-      (one, other) =>
-        distanceBetween(reading.phonemes, one.phonemes) - distanceBetween(reading.phonemes, other.phonemes) ||
-        (other.imageability ?? limits.unrated) - (one.imageability ?? limits.unrated) ||
-        other.frequency - one.frequency,
-    )[0]
+    const best = free
+      .map((candidate) => ({ candidate, heard: distanceBetween(reading.phonemes, candidate.phonemes) }))
+      .sort(
+        (one, other) =>
+          one.heard - other.heard ||
+          (other.candidate.imageability ?? limits.unrated) - (one.candidate.imageability ?? limits.unrated) ||
+          other.candidate.frequency - one.candidate.frequency,
+      )[0]?.candidate
 
     if (best === undefined) {
       unserved.push({ reading: reading.value, reason: accepted.length === 0 ? 'none acceptable' : 'all spent' })
