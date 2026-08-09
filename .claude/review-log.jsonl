@@ -759,3 +759,11 @@
 {"date":"2026-08-08","branch":"docs/decide-the-corpus-method","reviewer":"regression-check","file":"src/data/corpus/inventory.ts","line":27,"outcome":"dismissed","reason":"knip is clean on the branch: the two types are read by the exported signatures of the module that declares them."}
 {"date":"2026-08-08","branch":"docs/decide-the-corpus-method","kind":"pass","base":"a0946feacf58a79a68e4041502a781b8a3edec05","head":"5737f641034f496e92ba262f17e6534b3a2018fa"}
 {"date":"2026-08-08","branch":"docs/decide-the-corpus-method","kind":"pass","base":"5737f641034f496e92ba262f17e6534b3a2018fa","head":"574161b3aea18505d24d61cfce4021e12f813bcd"}
+{"date":"2026-08-09","branch":"docs/decide-the-corpus-method","reviewer":"code-review","file":"src/core/corpus/phonetics.ts","line":58,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"docs/decide-the-corpus-method","reviewer":"code-review","file":"src/core/corpus/phonetics.ts","line":59,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"docs/decide-the-corpus-method","reviewer":"code-review","file":"src/data/corpus/inventory.ts","line":55,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"docs/decide-the-corpus-method","reviewer":"code-review","file":"scripts/corpus-report.ts","line":66,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"docs/decide-the-corpus-method","reviewer":"code-review","file":"src/core/corpus/decomposition.ts","line":100,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"docs/decide-the-corpus-method","reviewer":"code-review","file":"docs/verification.md","line":275,"outcome":"fixed"}
+{"date":"2026-08-09","branch":"docs/decide-the-corpus-method","reviewer":"code-review","file":"src/core/corpus/anchor.ts","line":103,"outcome":"dismissed","reason":"The escape exists so a lexicon that genuinely transcribes the sound outranks a hand-kept list. A disagreement between the two is real data, and the place to name it is the allocation step that holds both, not a check that sees one anchor at a time."}
+{"date":"2026-08-09","branch":"docs/decide-the-corpus-method","kind":"pass","base":"574161b","head":"31345774f56f9bc1992149d6973687fab4cb38a7"}
