@@ -1,7 +1,8 @@
 // Writes down every subject the curriculum deals up to a level, so coverage can be proven against
 // what a session shows rather than against what a decomposition happens to contain.
 //
-// Run with `pnpm corpus:inventory [levels]`, with WANIKANI_TOKEN in the environment. The file it
+// Run with `pnpm corpus:inventory [levels]`. The token comes from `.env.local`, which the command
+// loads itself: the application is handed it by the framework, and a plain Node run is not. The file it
 // writes is not committed: it carries their meanings and their identifiers, which stay on the machine
 // that generated and never travel into anything published.
 
@@ -10,6 +11,12 @@ import { writeFileSync } from 'node:fs'
 import { INVENTORY_FILE, readInventory } from '../src/data/corpus/inventory.ts'
 import { asOptional } from '../src/data/optional-text.ts'
 import { API } from '../src/data/wanikani/paging.ts'
+
+try {
+  process.loadEnvFile('.env.local')
+} catch {
+  // Absent before the first bootstrap, which is not an error.
+}
 
 const token = asOptional(process.env['WANIKANI_TOKEN'])
 if (token === undefined) throw new Error('WANIKANI_TOKEN is not set')

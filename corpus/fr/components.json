@@ -2,7 +2,8 @@
   "header": {
     "what": "What French calls each component of a character. One name per component, one component per name, and a name concrete enough to picture.",
     "seeded": "Where a traditional radical name exists it is taken from Kanji Alive (https://kanjialive.com/), CC BY 4.0, Harumi Hibino Lory and Arno Bosse, and written in French. Every other name is written for this corpus, no set of names for the rest existing under a licence that permits redistribution.",
-    "owed": "Run pnpm corpus:report to see what is still unnamed."
+    "owed": "Run pnpm corpus:report to see what is still unnamed.",
+    "drawn": "A component the curriculum draws rather than writes carries no character. How it is named is in docs/corpus.md, under the components."
   },
   "names": {
     "口": "la bouche",
