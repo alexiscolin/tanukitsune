@@ -15,8 +15,13 @@ function reading(value: string, ...phonemes: readonly string[]): Wanted {
 
 const COU = word('le cou', 'k', 'u')
 const COUP = word('le coup', 'k', 'u')
-const CAR = word('le car', 'k', 'a', 'ʁ')
 const SEL = word('le sel', 's', 'ɛ', 'l')
+// Agrees with か at the start and still sits 0.6 away, where the ceiling is 0.45.
+const CAMION = word('le camion', 'k', 'a', 'm', 'j', 'ɔ̃')
+
+// Two readings near enough that the same words serve both, which is what makes them compete.
+const KO = reading('こ', 'k', 'o')
+const KU = reading('く', 'k', 'u')
 
 describe('allocate', () => {
   it('gives a reading a word that starts on the same sound and stays close', () => {
@@ -25,30 +30,35 @@ describe('allocate', () => {
     expect(allocated).toEqual([{ reading: 'こう', anchor: 'le corps', phonemes: ['k', 'ɔ', 'ʁ'] }])
   })
 
-  // One word for one reading, or the reader meets one cue standing for two answers.
+  // One word for one reading, or the reader meets one cue standing for two answers. Nothing here may
+  // keep the second reading off the word except the word being taken, so the separation is opened.
   it('never gives one word to two readings', () => {
-    const { allocated } = allocate([reading('か', 'k', 'a'), reading('かん', 'k', 'a', 'n')], () => [CAR], LIMITS)
+    const { allocated } = allocate([KO, KU], () => [COU], { ...LIMITS, apart: 0 })
 
-    expect(allocated).toHaveLength(1)
+    expect(allocated).toEqual([{ reading: 'こ', anchor: 'le cou', phonemes: ['k', 'u'] }])
   })
 
   // Two anchors that sound alike are one cue pointing at both, which is the failure that only shows
-  // at scale. The second reading takes something else or takes nothing.
+  // at scale. Both words are free here and the second reading still takes nothing, because the only
+  // one left sounds like the anchor already placed.
   it('keeps the anchors of two readings apart', () => {
-    const { allocated } = allocate([reading('こう', 'k', 'o', 'o'), reading('ごう', 'g', 'o', 'o')], () => [COU, COUP], LIMITS)
+    const { allocated, unserved } = allocate([KO, KU], () => [COU, COUP], LIMITS)
 
-    expect(allocated).toHaveLength(1)
+    expect(allocated).toEqual([{ reading: 'こ', anchor: 'le cou', phonemes: ['k', 'u'] }])
+    expect(unserved).toEqual([{ reading: 'く', reason: 'none free' }])
   })
 
   // The reading with the fewest candidates is served first, or a common word is spent on a reading
-  // that had ten others and the scarce one is left with nothing.
+  // that had ten others and the scarce one is left with nothing. Served in the order they arrive,
+  // こ takes the one word く could have had and く goes without.
   it('serves the most constrained reading first', () => {
-    const scarce = reading('せ', 's', 'e')
-    const easy = reading('か', 'k', 'a')
-    const { allocated } = allocate([easy, scarce], (one) => (one.value === 'せ' ? [SEL] : [CAR, SEL]), LIMITS)
+    const { allocated } = allocate([KO, KU], (one) => (one.value === 'く' ? [COU] : [COU, COUP]), {
+      ...LIMITS,
+      apart: 0,
+    })
 
-    expect(allocated.find((one) => one.reading === 'せ')?.anchor).toBe('le sel')
-    expect(allocated.find((one) => one.reading === 'か')?.anchor).toBe('le car')
+    expect(allocated.find((one) => one.reading === 'く')?.anchor).toBe('le cou')
+    expect(allocated.find((one) => one.reading === 'こ')?.anchor).toBe('le coup')
   })
 
   // Nothing is settled in silence: a reading left with no acceptable word is named, not handed the
@@ -68,11 +78,9 @@ describe('allocate', () => {
     expect(unserved).toEqual([{ reading: 'せん', reason: 'none free' }])
   })
 
+  // The word begins on the reading's own sound, so nothing but the distance keeps it out.
   it('refuses a word too far from the reading to be heard in it', () => {
-    const { unserved } = allocate([reading('か', 'k', 'a')], () => [word('le kiwi', 'k', 'i', 'w', 'i')], {
-      ...LIMITS,
-      nearest: 0.1,
-    })
+    const { unserved } = allocate([reading('か', 'k', 'a')], () => [CAMION], LIMITS)
 
     expect(unserved).toEqual([{ reading: 'か', reason: 'none acceptable' }])
   })
