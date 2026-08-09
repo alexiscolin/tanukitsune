@@ -253,7 +253,9 @@ stable, has no pinnable release, and has already renamed several attributes acro
 into an internal schema at ingest; the mapping layer is small and saves a migration.
 
 Every span carries the user or a hashed pseudonym, the feature, the prompt version, the model
-identifier, and the full token usage including both cache fields.
+identifier, and the full token usage including both cache fields. The corpus job is generated once for
+everybody rather than for a learner, so its spans name the run in that first field and its cost stays
+out of the per-learner number above.
 
 Alert on: escalation rate to the model tier, parse-failure rate, refusal rate, retry-count
 distribution on constrained generation, p95 latency on the judge, cache hit rate, and **override rate
