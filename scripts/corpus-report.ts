@@ -32,6 +32,7 @@ const isNameable = (component: string) => names[component] !== undefined
 const { read, unplaced, unnamedByShape } = existsSync(INVENTORY_FILE) ? againstCurriculum() : againstShape()
 
 report('characters read', String(read.length))
+report('characters the drawing does not decompose', list(read.filter((one) => one.parts.length === 0).map(named)))
 report('characters the source does not fully state', list(read.filter((one) => !isFullyStated(one)).map(named)))
 report(`characters opened past ${MOST_PARTS} parts`, list(read.filter(holdsTooManyParts).map(named)))
 report(`parts ${locale} has not named`, list(unnamedComponents(read, names)))
@@ -55,6 +56,10 @@ function againstCurriculum() {
   const drawn = new Set<string>()
 
   for (const subject of subjects) {
+    // Content the source has withdrawn is dealt by no session, so counting it would demand names and
+    // stories for cards nobody can be shown.
+    if (subject.hidden) continue
+
     if (subject.characters === null) {
       // A component the curriculum draws instead of writing cannot be named by its character, so it
       // is reported rather than silently missing from every story that would have used it.
@@ -66,7 +71,15 @@ function againstCurriculum() {
     const components = subject.componentIds.flatMap((id) => {
       const component = byId.get(id)
 
-      return component?.characters === undefined || component.characters === null ? [] : [component.characters]
+      if (component === undefined) return []
+      if (component.characters !== null) return [component.characters]
+
+      // A part the curriculum draws rather than writes cannot be named by its character. Dropping it
+      // in silence would leave the character looking complete with one part missing, so the character
+      // is named here as well as the part.
+      unplaced.push(`${subject.characters ?? '?'}:drawn#${component.id}`)
+
+      return []
     })
 
     const decomposition = partsTaught(subject.characters, components, shapeOf(subject.characters))

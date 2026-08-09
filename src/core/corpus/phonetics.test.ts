@@ -58,3 +58,22 @@ describe('phonemesOf', () => {
     expect(phonemesOf('こう')).toEqual(['k', 'o', 'o'])
   })
 })
+
+describe('phonemesOf, where う is a vowel of its own', () => {
+  // 買う is ka-u, two vowels rather than one held. Reading it as a long a scores every anchor
+  // against a word nobody says, and every check downstream runs on this output.
+  it('keeps う as its own vowel after a, i and e', () => {
+    expect(phonemesOf('かう')).toEqual(['k', 'a', 'u'])
+    expect(phonemesOf('あう')).toEqual(['a', 'u'])
+  })
+
+  it('still holds the vowel after o and u', () => {
+    expect(phonemesOf('こう')).toEqual(['k', 'o', 'o'])
+    expect(phonemesOf('くう')).toEqual(['k', 'u', 'u'])
+  })
+
+  // The mark lengthens a vowel and there is none, so it is carried rather than invented into one.
+  it('carries a length mark with no vowel before it', () => {
+    expect(phonemesOf('んー')).toEqual(['n', 'ー'])
+  })
+})

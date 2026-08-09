@@ -31,6 +31,9 @@ export type InventorySubject = {
   readonly type: string
   readonly level: number
   readonly characters: string | null
+  // Content the source has withdrawn, which no session deals and no card shows. Carried rather than
+  // dropped so the file says what the account holds, and skipped where coverage is counted.
+  readonly hidden: boolean
   readonly meanings: readonly string[]
   readonly readings: readonly InventoryReading[]
   // Which subjects this one is built from, as the curriculum itself states it. It decides what a
@@ -58,6 +61,7 @@ function taken(entry: SubjectEntry): InventorySubject {
     type: entry.object,
     level: entry.data.level,
     characters: entry.data.characters,
+    hidden: entry.data.hidden_at !== null,
     meanings: entry.data.meanings.filter((one) => one.accepted_answer).map((one) => one.meaning),
     readings: (entry.data.readings ?? [])
       .filter((one) => one.accepted_answer)
@@ -80,6 +84,7 @@ const file = z.object({
       type: z.string(),
       level: z.number(),
       characters: z.string().nullable(),
+      hidden: z.boolean(),
       meanings: z.array(z.string()),
       readings: z.array(z.object({ value: z.string(), type: z.string().nullable(), primary: z.boolean() })),
       componentIds: z.array(z.number()),

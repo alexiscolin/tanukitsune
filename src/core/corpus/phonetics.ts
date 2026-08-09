@@ -17,6 +17,8 @@ const PAUSE = 'っッ'
 const NASAL = 'んン'
 const LENGTH = 'ー'
 const VOWELS = 'aiueo'
+// The two う can hold. After a, i or e it is a vowel of its own.
+const LENGTHENED = 'ou'
 
 export function moraeOf(kana: string): readonly string[] {
   const morae: string[] = []
@@ -51,12 +53,22 @@ export function phonemesOf(kana: string): readonly string[] {
       return
     }
 
-    const lastVowel = phonemes.at(-1)
+    const last = phonemes.at(-1)
+    const lengthens = last !== undefined && VOWELS.includes(last)
 
     // Length is contrastive, so it is written as the vowel twice rather than as a mark: こう is not
-    // こ, and an anchor that matches one does not match the other.
-    if (mora === LENGTH || (isLengthening(mora) && lastVowel !== undefined && VOWELS.includes(lastVowel))) {
-      phonemes.push(lastVowel ?? 'u')
+    // こ, and an anchor that matches one does not match the other. Only after o and u, because あう
+    // and かう are two vowels rather than one held: 買う is ka-u, and reading it as a long a scores
+    // every anchor against a word nobody says.
+    if (lengthens && (mora === LENGTH || (isLengthening(mora) && LENGTHENED.includes(last)))) {
+      phonemes.push(last)
+      return
+    }
+
+    // A mark with no vowel before it lengthens nothing. Carried as it is rather than invented into a
+    // sound, so it reaches a check that can name it.
+    if (mora === LENGTH) {
+      phonemes.push(mora)
       return
     }
 

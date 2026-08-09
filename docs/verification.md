@@ -272,9 +272,10 @@ document reproducing them is a document the script then refuses.
 `scripts/check-boundaries.sh` writes four modules, three of them violating a rule, requires the named
 rule to refuse each, and removes them. Three of the six rules in `.dependency-cruiser.js` are covered:
 the reachability rule, the `server-only` rule, and the one holding the product out of the corpus
-pipeline. Those two are covered because a rule written against
+pipeline. The first two are covered because a rule written against
 a bare package name matches nothing once the package resolves inside `node_modules`, and an
-adjacency-only rule misses `ui` reaching `data` through `app`. The other three are asserted rather than
+adjacency-only rule misses `ui` reaching `data` through `app`; the third because a build-time tool
+sharing the toolchain is one import away from sharing the application. The other three are asserted rather than
 proven, which is the state the first two were in.
 
 The rule name is read rather than the exit code. A probe trips more than one rule, so a gate reading
@@ -402,7 +403,7 @@ without any of them running unprompted.
   a hook exists to prevent in the first place.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the
   documents were read against each other depends on `docs-conformity` having been asked for.
-- Three of the six boundary rules have no probe, and one of the two covered is covered halfway: the
+- Three of the six boundary rules have no probe, and one of the three covered is covered halfway: the
   probe reaches `data/`, so narrowing the rule's target from `src/(data|ai)/` to `src/data/` would
   still pass. Closing it needs a probe under `src/ai/`, which lands with the first `ai/` module.
 - Commits made directly on `main` are reviewed by nothing: the gate computes its range from the merge
