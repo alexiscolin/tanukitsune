@@ -18,7 +18,7 @@
     "knip": "knip",
     "dupes": "jscpd src",
     "corpus:decomposition": "node --experimental-strip-types scripts/import-decomposition.ts",
-    "corpus:inventory": "node --experimental-strip-types scripts/corpus-inventory.ts",
+    "corpus:inventory": "node --experimental-strip-types --env-file-if-exists=.env.local scripts/corpus-inventory.ts",
     "corpus:report": "node --experimental-strip-types scripts/corpus-report.ts",
     "check:account": "bash scripts/check-account-reach.sh",
     "check:contrast": "node scripts/check-contrast.mjs",
