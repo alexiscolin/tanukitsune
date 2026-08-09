@@ -11,6 +11,10 @@ export type Candidate = {
   // Derived from the language's own lexicon, never from what a model said the word sounds like.
   readonly phonemes: readonly string[]
   readonly frequency: number
+  // How well the word can be seen, on the scale the locale's ratings use. The best-evidenced property
+  // of a keyword: the method works for words a reader can picture and does nothing for the others.
+  // Absent where nothing rated it, which is not the same as rated low.
+  readonly imageability?: number
 }
 
 export type Wanted = {
@@ -26,6 +30,10 @@ export type Limits = {
   // What the language cannot begin a word with, from that locale's own material.
   readonly cannotStart: readonly string[]
 }
+
+// What an unrated word is worth against a rated one. The middle of the scale, because nothing rated
+// it and that is not evidence either way.
+const UNRATED = 4
 
 export function allocate(
   readings: readonly Wanted[],
@@ -50,11 +58,13 @@ export function allocate(
       (candidate) => !taken.has(candidate.text) && farEnough(candidate, allocated, limits.apart),
     )
 
-    // Ranked by how well the word is heard in the reading first, and by how ordinary it is second: a
-    // word nobody knows is a cue that has to be learned before it can help.
+    // Heard first, seen second, ordinary third. Distance decides whether the word reaches the reading
+    // at all; among the ones that do, a word the reader can picture beats a word they merely know,
+    // and a word nobody knows is a cue to be learned before it can help.
     const best = [...free].sort(
       (one, other) =>
         distanceBetween(reading.phonemes, one.phonemes) - distanceBetween(reading.phonemes, other.phonemes) ||
+        (other.imageability ?? UNRATED) - (one.imageability ?? UNRATED) ||
         other.frequency - one.frequency,
     )[0]
 
