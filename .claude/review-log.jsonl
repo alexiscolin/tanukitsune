@@ -788,3 +788,5 @@
 {"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","reviewer":"docs-conformity","file":"docs/corpus.md","line":209,"outcome":"dismissed","reason":"The paragraph describes what the inventory answers for the generation step, which is named as the next thing built. It predates this branch and this branch does not touch it."}
 {"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","kind":"pass","base":"d80876c1d461f5399adee83fc37c0039aa2add7c","head":"c1af567fbba2c8cabfbc89a98c39bbd55fc3ec10"}
 {"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","kind":"pass","base":"2afc744","head":"73c1eb3f8c41585fcda4b9a63548f5b66903de06"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","kind":"pass","base":"d80876c1d461f5399adee83fc37c0039aa2add7c","head":"cb4cc2a63f0f51f63e2563c70e787b8e1916a7cd"}
+{"date":"2026-08-09","branch":"feat/allocate-the-sound-anchors","kind":"pass","base":"d88cc227f3f2f2c871127178c0b8fd0f01c931a5","head":"f87fdfa47050a8fc6f462820b5b6797e52827a13"}
