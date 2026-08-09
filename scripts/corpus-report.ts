@@ -56,10 +56,9 @@ function againstCurriculum() {
   const drawn = new Set<string>()
   // A part that is itself a subject with a key of its own needs no component name: a word made of
   // kanji names them by what they mean. Only the components that are nothing else owe a name.
-  const named = new Set(
+  const radicals = new Set(
     subjects.filter((one) => one.type === 'radical' && one.characters !== null).map((one) => one.characters),
   )
-  const owed = new Set<string>()
 
   for (const subject of subjects) {
     // Content the source has withdrawn is dealt by no session, so counting it would demand names and
@@ -93,7 +92,6 @@ function againstCurriculum() {
 
     for (const part of decomposition.parts) {
       if (part.component === null) continue
-      if (named.has(part.component) && names[part.component] === undefined) owed.add(part.component)
 
       // A character that is its own only part is placed by being itself, and the drawing carries no
       // group for it. Counting that as unplaced would report every single-part character as a fault.
@@ -103,7 +101,9 @@ function againstCurriculum() {
     }
   }
 
-  return { read, unplaced, unnamedByShape: [...drawn], owed: [...owed] }
+  const owed = unnamedComponents(read, names).filter((one) => radicals.has(one))
+
+  return { read, unplaced, unnamedByShape: [...drawn], owed }
 }
 
 // Against the whole decomposition, which is every character the drawing carries rather than the ones

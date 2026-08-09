@@ -98,7 +98,8 @@ shipped are written. Candidates come from Lexique, which carries phonemic transc
 for French. Among the words the rules accept for a reading, the nearest in sound takes it; where two
 sit equally near, the word the reader can picture takes it; where nothing separates them there either,
 the more ordinary word does. A reading left without leaves the run with the reason, either that no
-word the rules accept exists for it or that every one of them was spent on another reading.
+word the rules accept exists for it, or that every one that does is already an anchor elsewhere or
+sits too near one.
 
 ## How one item is made
 

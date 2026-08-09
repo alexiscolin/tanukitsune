@@ -60,6 +60,14 @@ describe('allocate', () => {
     expect(unserved).toEqual([{ reading: 'は', reason: 'none acceptable' }])
   })
 
+  // The two reasons ask the reader for different things: a lexicon too narrow for this reading, or a
+  // curriculum wanting more words than the reading has. Naming the reading alone tells them neither.
+  it('separates a reading no word fits from one whose words were spent elsewhere', () => {
+    const { unserved } = allocate([reading('せ', 's', 'e'), reading('せん', 's', 'e', 'n')], () => [SEL], LIMITS)
+
+    expect(unserved).toEqual([{ reading: 'せん', reason: 'none free' }])
+  })
+
   it('refuses a word too far from the reading to be heard in it', () => {
     const { unserved } = allocate([reading('か', 'k', 'a')], () => [word('le kiwi', 'k', 'i', 'w', 'i')], {
       ...LIMITS,
@@ -68,20 +76,11 @@ describe('allocate', () => {
 
     expect(unserved).toEqual([{ reading: 'か', reason: 'none acceptable' }])
   })
-
-  // The two reasons ask the reader for different things: a lexicon too narrow for this reading, or a
-  // curriculum wanting more words than the reading has. Naming the reading alone tells them neither.
-  it('separates a reading no word fits from one whose words were spent elsewhere', () => {
-    const { unserved } = allocate([reading('か', 'k', 'a'), reading('かん', 'k', 'a', 'n')], () => [CAR], LIMITS)
-
-    expect(unserved).toEqual([{ reading: 'かん', reason: 'all spent' }])
-  })
 })
 
 describe('allocate, on how well a word can be pictured', () => {
-  // Imageability is the best-evidenced property of a keyword: the method works for words a reader can
-  // see and does nothing for words they cannot. It outranks how ordinary a word is, and both are
-  // read only among the words already close enough to be heard in the reading.
+  // Read only among the words already close enough to be heard in the reading, and above how ordinary
+  // the word is.
   it('prefers the word that can be pictured over the one that cannot', () => {
     const seen = { text: 'le sabre', phonemes: ['s', 'a', 'b'], frequency: 10, imageability: 6.5 }
     const vague = { text: 'le savoir', phonemes: ['s', 'a', 'v'], frequency: 90, imageability: 2.1 }
