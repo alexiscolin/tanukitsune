@@ -1,3 +1,4 @@
+import { agreesAtTheStart, distanceBetween, impossibleOnset } from './anchor'
 import type { Allocated } from './allocation'
 
 // Which word stands for which reading, decided over the whole curriculum before a word of prose
@@ -27,9 +28,63 @@ export type Limits = {
 }
 
 export function allocate(
-  _readings: readonly Wanted[],
-  _candidatesFor: (reading: Wanted) => readonly Candidate[],
-  _limits: Limits,
+  readings: readonly Wanted[],
+  candidatesFor: (reading: Wanted) => readonly Candidate[],
+  limits: Limits,
 ): { readonly allocated: readonly Allocated[]; readonly unserved: readonly string[] } {
-  return { allocated: [], unserved: [] }
+  const acceptable = new Map(readings.map((reading) => [reading.value, usable(reading, candidatesFor, limits)]))
+
+  // The scarcest reading first. Serving them in the order they arrive spends a common word on a
+  // reading that had ten others and leaves the one that had two with nothing, and a reading with no
+  // anchor is a card that cannot be written at all.
+  const order = [...readings].sort(
+    (one, other) => (acceptable.get(one.value)?.length ?? 0) - (acceptable.get(other.value)?.length ?? 0),
+  )
+
+  const allocated: Allocated[] = []
+  const unserved: string[] = []
+  const taken = new Set<string>()
+
+  for (const reading of order) {
+    const free = (acceptable.get(reading.value) ?? []).filter(
+      (candidate) => !taken.has(candidate.text) && farEnough(candidate, allocated, limits.apart),
+    )
+
+    // Ranked by how well the word is heard in the reading first, and by how ordinary it is second: a
+    // word nobody knows is a cue that has to be learned before it can help.
+    const best = [...free].sort(
+      (one, other) =>
+        distanceBetween(reading.phonemes, one.phonemes) - distanceBetween(reading.phonemes, other.phonemes) ||
+        other.frequency - one.frequency,
+    )[0]
+
+    if (best === undefined) {
+      unserved.push(reading.value)
+      continue
+    }
+
+    taken.add(best.text)
+    allocated.push({ reading: reading.value, anchor: best.text, phonemes: best.phonemes })
+  }
+
+  return { allocated, unserved }
+}
+
+// Everything the rules accept for one reading, before anything is taken. Computed once per reading
+// rather than per attempt, since it decides the order and the order decides the outcome.
+function usable(
+  reading: Wanted,
+  candidatesFor: (reading: Wanted) => readonly Candidate[],
+  limits: Limits,
+): readonly Candidate[] {
+  return candidatesFor(reading).filter(
+    (candidate) =>
+      agreesAtTheStart(reading.phonemes, candidate.phonemes) &&
+      impossibleOnset(reading.phonemes, candidate.phonemes, limits.cannotStart) === null &&
+      distanceBetween(reading.phonemes, candidate.phonemes) <= limits.nearest,
+  )
+}
+
+function farEnough(candidate: Candidate, allocated: readonly Allocated[], apart: number): boolean {
+  return allocated.every((one) => distanceBetween(one.phonemes, candidate.phonemes) >= apart)
 }
