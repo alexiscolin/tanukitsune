@@ -244,12 +244,9 @@ warms.
 
 ## Observability
 
-Emit OpenTelemetry spans from the SDK, into a self-hostable collector.
-
-**The span is emitted from the first model call; the collector arrives with the interactive path.**
-Until it does, the batch job is watched by the reader running it, and the alerts in this section
-report on surfaces that arrive with the judge. Emitting from the start is what makes the collector a
-configuration later rather than a retrofit.
+Emit OpenTelemetry spans from the SDK, from the first model call, into a self-hostable collector that
+arrives with the interactive path. Until it does, the batch job is watched by the reader running it,
+and emitting into nothing is what makes the collector a configuration later rather than a retrofit.
 
 **Do not build dashboards or alerts on the generative-AI attribute names.** That convention set is not
 stable, has no pinnable release, and has already renamed several attributes across versions. Normalise
