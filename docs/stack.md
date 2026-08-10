@@ -10,7 +10,7 @@ the arguments do not get re-litigated.
 | Layer | Choice |
 |---|---|
 | Package manager | pnpm |
-| Runtime | Node 22, which is the AI SDK v7 floor |
+| Runtime | Node 22, which is what the corpus commands need to run TypeScript without a build |
 | Language | TypeScript 6, installed under its own package name |
 | Framework | Next 16, App Router, React Compiler on, Cache Components off |
 | Styling | Tailwind 4, native elements and Base UI for behaviour, design tokens in one file |
@@ -18,7 +18,7 @@ the arguments do not get re-litigated.
 | Local store | IndexedDB through `idb`, append-only outbox |
 | Server store | Postgres through Drizzle, migrations by drizzle-kit |
 | Local database | PGlite, a file-backed Postgres opened in process, nothing to install or start |
-| Models | Pinned dated snapshots, batch API for the corpus, cached cascade for grading |
+| Models | `@anthropic-ai/sdk`, one and not two, pinned models, batch API for the corpus, cached cascade for grading |
 | Tests | Vitest in two projects, `core/` in Node with no DOM and components in jsdom through Testing Library, Playwright with axe, real Postgres, MSW for third-party HTTP only |
 | Gates | ESLint 10, dependency-cruiser, knip, jscpd, `check:docs`, all in `pnpm verify` and in CI |
 | Hosting | Not decided |
@@ -199,11 +199,10 @@ change. What gets traced, evaluated and alerted on is in [`ai-engineering.md`](a
 
 ## The Node floor
 
-**Node and the AI SDK disagree, and the higher floor wins.** The AI SDK is at v7, ESM-only, requiring
-Node 22, while Next's own floor is Node 20.9. `engines` and `.nvmrc` both say 22.12.0, because the
-corpus generator breaks below it and a floor that only one of the two files carries is a floor that
-holds on one machine. The v7 migration also renamed `system` to `instructions` and moved telemetry to
-a separate package.
+**Node and Next disagree, and the higher floor wins.** Next's own floor is Node 20.9, while the corpus
+commands run their TypeScript through Node's own type stripping, which arrives in 22. `engines` and
+`.nvmrc` both say 22.12.0, because a floor that only one of the two files carries is a floor that holds
+on one machine.
 
 ## Unverified
 

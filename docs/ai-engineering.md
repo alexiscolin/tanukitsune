@@ -72,8 +72,8 @@ instruction that matters, and current models follow positive instruction better 
 
 ## Structured output
 
-`generateObject` with a Zod schema, using the provider's native structured-output path, with retries
-configured explicitly rather than left at the default.
+`messages.parse` with a Zod schema, which is the SDK's own structured-output path rather than a parser
+of ours, with retries configured explicitly rather than left at the default.
 
 **Schemas stay flat and shallow.** Deep nesting is the most common cause of structured-output failure
 across providers, and recursive schemas are unsupported by some. Numeric and string constraints such
