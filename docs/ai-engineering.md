@@ -35,8 +35,9 @@ number anywhere, because the output shape deliberately carries none. When the st
 weaker model means more retries, not worse output. Measure the retry rate against model cost and pick
 the actual minimum.
 
-Every model is pinned to a dated snapshot, never a floating alias, and the identifier is stored on
-every row it produced.
+Every model is named by the exact identifier the provider publishes, and by its dated snapshot wherever
+one is published, never by a moving name like the newest or the best. The identifier is stored on every
+row it produced.
 
 **Escalation rate is a live cost variable, not a constant.** Alert on it. A prompt change that moves
 escalation from one in ten to four in ten quietly quadruples the bill.
@@ -72,8 +73,11 @@ instruction that matters, and current models follow positive instruction better 
 
 ## Structured output
 
-`generateObject` with a Zod schema, using the provider's native structured-output path, with retries
-configured explicitly rather than left at the default.
+A Zod schema, given to the request as the output format the SDK builds from it rather than to a parser
+of ours. On the interactive path `messages.parse` validates the answer against it on the way back; the
+batch path carries the same schema and validates when results are collected, which is the next
+paragraph but one. Retries are configured rather than left at the default, and the submission that
+spends money is configured to none.
 
 **Schemas stay flat and shallow.** Deep nesting is the most common cause of structured-output failure
 across providers, and recursive schemas are unsupported by some. Numeric and string constraints such

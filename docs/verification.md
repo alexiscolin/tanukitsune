@@ -269,7 +269,7 @@ document reproducing them is a document the script then refuses.
 
 ## The boundary probes
 
-`scripts/check-boundaries.sh` writes four modules, three of them violating a rule, requires the named
+`scripts/check-boundaries.sh` writes seven modules, six of them violating a rule, requires the named
 rule to refuse each, and removes them. Three of the six rules in `.dependency-cruiser.js` are covered:
 the reachability rule, the `server-only` rule, and the one holding the product out of the corpus
 pipeline. The first two are covered because a rule written against
@@ -403,9 +403,9 @@ without any of them running unprompted.
   a hook exists to prevent in the first place.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the
   documents were read against each other depends on `docs-conformity` having been asked for.
-- Three of the six boundary rules have no probe, and one of the three covered is covered halfway: the
-  probe reaches `data/`, so narrowing the rule's target from `src/(data|ai)/` to `src/data/` would
-  still pass. Closing it needs a probe under `src/ai/`, which lands with the first `ai/` module.
+- Three of the six boundary rules have no probe: what a rule refuses is proven for the three that
+  keep the product away from the server, the corpus pipeline and its model client, and asserted for
+  the rest.
 - Commits made directly on `main` are reviewed by nothing: the gate computes its range from the merge
   base, which on `main` collapses to `HEAD`.
 - No dependency advisory check runs anywhere, although `security-check` delegates advisories to one.

@@ -36,6 +36,7 @@
     "test:e2e": "WANIKANI_TOKEN= pnpm build && TANUKITSUNE_LOCAL_DATABASE=.postgres-account pnpm db:migrate && playwright test"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.116.0",
     "drizzle-orm": "0.45.2",
     "idb": "8.0.3",
     "next": "16.2.12",

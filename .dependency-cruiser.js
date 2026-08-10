@@ -32,7 +32,9 @@ export default {
       severity: 'error',
       from: { path: '^src/(app|ui)/' },
       // Reachable, not adjacent: app -> data -> corpus is the same leak one hop further out.
-      to: { path: '^src/(core|data)/corpus/', reachable: true },
+      // All three homes of the pipeline, since the one that calls a model is the one whose leak
+      // would ship a key and an SDK to a browser.
+      to: { path: '^src/(core|data|ai)/corpus/', reachable: true },
     },
     {
       name: 'no-cycles',

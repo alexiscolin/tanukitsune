@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { readComponentNames, readDecompositions, readPhonology } from './artifact'
+import { readComponentNames, readDecompositions, readNaming, readPhonology } from './artifact'
 
 const FILE = `{
 "header":{"source":"KanjiVG","licence":"CC BY-SA 4.0"},
@@ -48,6 +48,32 @@ describe('readComponentNames', () => {
 
   it('refuses a file that is not a name list', () => {
     expect(() => readComponentNames('{"names":{"亻":3}}')).toThrow()
+  })
+})
+
+describe('readNaming', () => {
+  const written =
+    '{"language":"French","opensWith":["le "],"letters":"abc","joiners":"-","mostWords":3,"examples":[{"character":"口","name":"la bouche"}]}'
+
+  // The shape is the locale's and the rule reading it is the engine's, the same split as the list
+  // above: a second language brings different answers and no code.
+  it('reads the shape a name takes in that language', () => {
+    expect(readNaming(written).opensWith).toEqual(['le '])
+    expect(readNaming(written).examples).toEqual([{ character: '口', name: 'la bouche' }])
+  })
+
+  it('refuses a file missing any of them rather than judging names by half a shape', () => {
+    expect(() => readNaming('{"language":"French","opensWith":["le "],"letters":"abc","joiners":"-"}')).toThrow()
+    expect(() => readNaming('{}')).toThrow()
+  })
+
+  // A shape that parses while being unusable refuses every name there is, and nothing would point at
+  // the file it came from.
+  it('refuses a shape no name could satisfy', () => {
+    const with_ = (part: string) => `{"language":"French","letters":"abc","joiners":"-",${part}}`
+
+    expect(() => readNaming(with_('"opensWith":[],"mostWords":2'))).toThrow()
+    expect(() => readNaming(with_('"opensWith":["le "],"mostWords":0'))).toThrow()
   })
 })
 
