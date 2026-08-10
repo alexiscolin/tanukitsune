@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import type { ComponentNames, Glyph } from '@/core/corpus/decomposition'
-import type { Shape } from '@/core/corpus/name'
+import type { Naming } from '@/core/corpus/name'
 
 // Reads back what `scripts/import-decomposition.ts` wrote. The artifact is committed, so this is the
 // only door between the corpus and a file nobody edits by hand.
@@ -43,12 +43,14 @@ export function readPhonology(json: string): { readonly cannotStart: readonly st
 // The shape a name takes in that language, which is the other half of the same idea: the rule judging
 // a name knows how to read a shape and nothing about which one.
 const naming = z.object({
+  language: z.string(),
   opensWith: z.array(z.string()),
   letters: z.string(),
   joiners: z.string(),
   mostWords: z.number(),
+  examples: z.array(z.object({ character: z.string(), name: z.string() })),
 })
 
-export function readNaming(json: string): Shape {
+export function readNaming(json: string): Naming {
   return naming.parse(JSON.parse(json))
 }

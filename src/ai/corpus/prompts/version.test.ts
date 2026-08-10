@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 
 import { describe, expect, it } from 'vitest'
 
-import { COMPONENT_NAME_VERSION, componentNameRequest } from './component-name'
+import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } from './component-name'
 
 // A version constant nobody bumps is worse than no version constant. `prompt_version` is a column on
 // every corpus row and the prompt is expected to change between the budgeted runs, so two runs sharing
@@ -15,7 +15,7 @@ import { COMPONENT_NAME_VERSION, componentNameRequest } from './component-name'
 // to say what they did.
 
 const RECORDED: Record<number, string> = {
-  1: '2d6b12576fe091d5abb47157a05dd290578cbba010eba875ad8ab305d12f6ccf',
+  1: '6b34ea20a3907c64782081765f71b15ea46fe503deb7ff68ea1443ee5e39e6cd',
 }
 
 describe('the component name prompt', () => {
@@ -32,13 +32,22 @@ describe('the component name prompt', () => {
 
 // Fixed inputs, so what moves is the wording and never the component that happened to be asked about.
 function rendered(): string {
-  const asked = componentNameRequest(['la bouche', "l'arbre"], {
+  const naming = {
+    language: 'French',
+    opensWith: ['le ', 'la '],
+    letters: 'abcdefghijklmnopqrstuvwxyz',
+    joiners: "' -",
+    mostWords: 3,
+    examples: [{ character: '口', name: 'la bouche' }],
+  }
+  const asked = componentNameRequest(componentNamePrefix(naming, ['la bouche']), {
     character: '口',
     composes: ['右', '名'],
     traditional: 'mouth',
   })
-
+  // The model is left out: it is recorded per row as `generated_by`, so it is the one field that is
+  // not part of what was asked. Everything else is, the schema and the ceiling included.
   return createHash('sha256')
-    .update(JSON.stringify({ system: asked.system, messages: asked.messages }))
+    .update(JSON.stringify({ ...asked, model: undefined }))
     .digest('hex')
 }

@@ -52,16 +52,18 @@ describe('readComponentNames', () => {
 })
 
 describe('readNaming', () => {
-  const written = '{"opensWith":["le "],"letters":"abc","joiners":"-","mostWords":3}'
+  const written =
+    '{"language":"French","opensWith":["le "],"letters":"abc","joiners":"-","mostWords":3,"examples":[{"character":"口","name":"la bouche"}]}'
 
   // The shape is the locale's and the rule reading it is the engine's, the same split as the list
   // above: a second language brings different answers and no code.
   it('reads the shape a name takes in that language', () => {
-    expect(readNaming(written)).toEqual({ opensWith: ['le '], letters: 'abc', joiners: '-', mostWords: 3 })
+    expect(readNaming(written).opensWith).toEqual(['le '])
+    expect(readNaming(written).examples).toEqual([{ character: '口', name: 'la bouche' }])
   })
 
-  it('refuses a file missing any of the four rather than judging names by half a shape', () => {
-    expect(() => readNaming('{"opensWith":["le "],"letters":"abc","joiners":"-"}')).toThrow()
+  it('refuses a file missing any of them rather than judging names by half a shape', () => {
+    expect(() => readNaming('{"language":"French","opensWith":["le "],"letters":"abc","joiners":"-"}')).toThrow()
     expect(() => readNaming('{}')).toThrow()
   })
 })
