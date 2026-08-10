@@ -856,3 +856,11 @@
 {"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"security-check","file":"src/ai/corpus/batch.ts","line":89,"outcome":"dismissed","reason":"Parsing the answer against the schema belongs to the caller that knows which prompt was asked, since the transport carries requests for any of them. The failed set already keys by subject and takes a reason, so a schema failure joins it there without this signature moving."}
 {"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"db94552b99c549ad1d4409c271d56ac343d1a869","head":"730747897eb20061164df9f705837fc159a1082e"}
 {"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"b0bdfc5bd7ac0fa84a0f485faaf1bddc12664377","head":"845cbfcf2413e9189cdf7f7287892547a7a8b368"}
+{"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","reviewer":"code-review","file":"src/ai/corpus/batch.ts","line":49,"outcome":"fixed"}
+{"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","reviewer":"code-review","file":"src/ai/corpus/prompts/component-name.ts","line":56,"outcome":"fixed"}
+{"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","reviewer":"code-review","file":"src/ai/corpus/batch.ts","line":87,"outcome":"fixed"}
+{"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","reviewer":"code-review","file":"src/ai/corpus/prompts/component-name.ts","line":43,"outcome":"fixed"}
+{"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","reviewer":"code-review","file":"src/core/corpus/name.ts","line":45,"outcome":"fixed"}
+{"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","reviewer":"code-review","file":"src/data/corpus/artifact.ts","line":50,"outcome":"fixed"}
+{"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","reviewer":"code-review","file":"docs/ai-engineering.md","line":76,"outcome":"fixed"}
+{"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"7210e2c9e3ebfe21d0249c5c892c05368fa079e2","head":"3d0b29a6b939e9259fe3f6f6bdcfa7679ea96ee9"}
