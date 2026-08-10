@@ -2,7 +2,7 @@
   "header": {
     "what": "What French calls a part of a character, and the shape such a name takes. The rule judging a name lives in the engine; this file is what makes it French, and it is also what the model is asked in.",
     "opensWith": "Every one of the names already written opens on a definite article, which is what makes a name a thing rather than a description: bouche is a body part, la bouche is the one in the story.",
-    "mostWords": "A story names the part inside a clause, so nothing here runs past three words. The ten that reach three are the hands and the strokes.",
+    "mostWords": "Counted after the article, because le and l' are the same article and only one brings a space. No name already written runs past two, and the ten that reach two are the hands and the strokes.",
     "joiners": "Twenty-five names carry an apostrophe and every one is the straight one, so the file stays one file.",
     "examples": "Two rather than five: more and every name starts to sound like the examples."
   },
@@ -10,7 +10,7 @@
   "opensWith": ["le ", "la ", "les ", "l'"],
   "letters": "abcdefghijklmnopqrstuvwxyzàâäçéèêëîïòôöùûüÿœæ",
   "joiners": "' -",
-  "mostWords": 3,
+  "mostWords": 2,
   "examples": [
     { "character": "口", "name": "la bouche" },
     { "character": "木", "name": "l'arbre" }

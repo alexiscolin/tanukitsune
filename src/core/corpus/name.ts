@@ -42,7 +42,9 @@ export function faultInName(name: string, shape: Shape): Fault | null {
     return 'nothing after the article'
   }
 
-  if (written.split(' ').length > shape.mostWords) return 'too long'
+  // Counted after the article, because le and l' are the same article and only one of them brings a
+  // space, so counting the whole name makes the bound mean two different things.
+  if (written.slice(opener.length).split(' ').length > shape.mostWords) return 'too long'
 
   return null
 }

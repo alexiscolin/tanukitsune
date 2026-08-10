@@ -32,10 +32,11 @@ describe('componentNamePrefix', () => {
 
     expect(text).toContain('Latin')
     expect(text).toContain('ille ')
-    expect(text).toContain('2 words at most')
+    expect(text).toContain('2 words at most after that')
     expect(text).toContain('illa bucca')
     expect(text).not.toContain('French')
     expect(text).not.toContain('three words')
+    expect(text).not.toContain(' or   or ')
   })
 
   // A byte moving in the prefix invalidates the cache for every request behind it, so the taken names
@@ -51,7 +52,9 @@ describe('componentNameRequest', () => {
   it('puts what every request shares in the cached prefix and the component after it', () => {
     const asked = componentNameRequest(prefix(), { character: '九', composes: ['丸', '究'] })
 
-    expect(textOf(asked).cache_control).toEqual({ type: 'ephemeral' })
+    // An hour rather than the default five minutes: a batch routinely runs longer than that, and a
+    // prefix expiring mid-run is written again and read by nothing.
+    expect(textOf(asked).cache_control).toEqual({ type: 'ephemeral', ttl: '1h' })
     expect(textOf(asked).text).toContain('illa bucca')
     expect(textOf(asked).text).not.toContain('九')
     expect(JSON.stringify(asked.messages)).toContain('九')

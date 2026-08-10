@@ -8,7 +8,7 @@ const FRENCH = {
   opensWith: ['le ', 'la ', 'les ', "l'"],
   letters: 'abcdefghijklmnopqrstuvwxyzàâäçéèêëîïòôöùûüÿœæ',
   joiners: "' -",
-  mostWords: 3,
+  mostWords: 2,
 }
 
 const fault = (name: string) => faultInName(name, FRENCH)
@@ -41,8 +41,12 @@ describe('faultInName', () => {
 
   // A story names the part in a clause, so a name past three words is a description, and the reader
   // holding a list is the failure the whole method is built to avoid.
-  it('refuses a name too long to sit inside a sentence', () => {
-    expect(fault('le bec du petit canard')).toBe('too long')
+  // Counted after the article, so le and l' bound the same number of words rather than one apiece.
+  it('refuses a name too long to sit inside a sentence, whichever article opens it', () => {
+    expect(fault('le bec du canard')).toBe('too long')
+    expect(fault("l'os du poignet")).toBe('too long')
+    expect(fault('la main droite')).toBeNull()
+    expect(fault("l'arbre mort")).toBeNull()
   })
 
   it('refuses a name carrying what the locale does not write', () => {

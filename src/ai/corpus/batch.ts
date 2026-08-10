@@ -44,9 +44,23 @@ export type Reach = {
   readonly api?: string
 }
 
+// A request is identified by something matching ^[a-zA-Z0-9_-]{1,64}$, which a character is not, so a
+// subject travels as its code points and comes back the same way. Reversible, so the collection needs
+// no table beside the batch and the job stays keyed by subject from end to end.
+function idFor(subject: string): string {
+  return [...subject].map((one) => (one.codePointAt(0) ?? 0).toString(16)).join('-')
+}
+
+function subjectFor(id: string): string {
+  return id
+    .split('-')
+    .map((one) => String.fromCodePoint(Number.parseInt(one, 16)))
+    .join('')
+}
+
 export async function submitBatch(asked: readonly Asked[], reach: Reach): Promise<string> {
   const batch = await clientFor(reach).messages.batches.create(
-    { requests: asked.map((one) => ({ custom_id: one.subject, params: one.params })) },
+    { requests: asked.map((one) => ({ custom_id: idFor(one.subject), params: one.params })) },
     // A batch the server accepted and then lost on the wire would be submitted twice, and the first
     // one runs and bills with nobody holding its identifier. Sending once and failing is cheaper.
     { maxRetries: 0 },
@@ -65,14 +79,16 @@ export async function collectBatch(id: string, reach: Reach): Promise<Collected>
   const failed = new Map<string, string>()
 
   for await (const one of await client.messages.batches.results(id)) {
+    const subject = subjectFor(one.custom_id)
+
     if (one.result.type !== 'succeeded') {
-      failed.set(one.custom_id, one.result.type)
+      failed.set(subject, one.result.type)
       continue
     }
 
     const read = readMessage(one.result.message)
-    if (typeof read === 'string') failed.set(one.custom_id, read)
-    else answered.set(one.custom_id, read)
+    if (typeof read === 'string') failed.set(subject, read)
+    else answered.set(subject, read)
   }
 
   return { answered, failed }
@@ -84,7 +100,9 @@ export async function collectBatch(id: string, reach: Reach): Promise<Collected>
 // reason it would be refused later: half a mnemonic teaches half a thing.
 function readMessage(message: Anthropic.Message): Answered | string {
   if (message.stop_reason === 'refusal') return 'refusal'
-  if (message.stop_reason === 'max_tokens') return 'truncated'
+  if (message.stop_reason === 'max_tokens' || message.stop_reason === 'model_context_window_exceeded') {
+    return 'truncated'
+  }
 
   const text = message.content.find((block) => block.type === 'text')?.text
   if (text === undefined) return 'no text'

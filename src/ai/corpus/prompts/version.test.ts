@@ -15,7 +15,7 @@ import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } fro
 // to say what they did.
 
 const RECORDED: Record<number, string> = {
-  1: '6b34ea20a3907c64782081765f71b15ea46fe503deb7ff68ea1443ee5e39e6cd',
+  2: '62e15f5c4f64e5707fb1ec92477408d74dac4ce3cd81d065f2d0fa66bd195b9c',
 }
 
 describe('the component name prompt', () => {

@@ -11,7 +11,7 @@ import type { Naming } from '@/core/corpus/name'
 // Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
 // row and two runs sharing a version make the provenance false while looking satisfied. The material
 // counts as the wording, since changing it changes what was asked.
-export const COMPONENT_NAME_VERSION = 1
+export const COMPONENT_NAME_VERSION = 2
 
 // Flat and shallow, and strict so an unexpected key fails rather than passes.
 export const componentName = z.strictObject({ name: z.string() })
@@ -40,7 +40,7 @@ export function componentNamePrefix(naming: Naming, taken: readonly string[]): s
     'has to be a thing that can be seen and drawn.',
     '',
     `Give a ${naming.language} noun phrase that opens on one of ${naming.opensWith.join(', ')}, runs to`,
-    `${words} words at most, and joins its words with ${naming.joiners.split('').join(' or ')} only.`,
+    `${words} words at most after that, and joins its words with ${joiners(naming.joiners)} or a space.`,
     `Pick what the shape looks like, and prefer a word that suits the characters the part builds.`,
     `Examples: ${shown}.`,
     '',
@@ -53,10 +53,21 @@ export function componentNameRequest(prefix: string, part: Part): MessageCreateP
   return {
     model: 'claude-opus-5',
     max_tokens: 256,
-    system: [{ type: 'text', text: prefix, cache_control: { type: 'ephemeral' } }],
+    // An hour rather than the default five minutes, because a batch routinely runs longer than that
+    // and a prefix that expires mid-run is written again and read by nothing.
+    system: [{ type: 'text', text: prefix, cache_control: { type: 'ephemeral', ttl: '1h' } }],
     output_config: { format: FORMAT },
     messages: [{ role: 'user', content: asks(part) }],
   }
+}
+
+// A space is a joiner and it has no shape on a page, so it is named rather than shown in a list where
+// it would read as an empty item.
+function joiners(all: string): string {
+  return [...all]
+    .filter((one) => one !== ' ')
+    .map((one) => `"${one}"`)
+    .join(' or ')
 }
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to

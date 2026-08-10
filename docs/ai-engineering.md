@@ -73,8 +73,11 @@ instruction that matters, and current models follow positive instruction better 
 
 ## Structured output
 
-`messages.parse` with a Zod schema, which is the SDK's own structured-output path rather than a parser
-of ours, with retries configured explicitly rather than left at the default.
+A Zod schema, given to the request as the output format the SDK builds from it rather than to a parser
+of ours. On the interactive path `messages.parse` validates the answer against it on the way back; the
+batch path carries the same schema and validates when results are collected, which is the next
+paragraph but one. Retries are configured rather than left at the default, and the submission that
+spends money is configured to none.
 
 **Schemas stay flat and shallow.** Deep nesting is the most common cause of structured-output failure
 across providers, and recursive schemas are unsupported by some. Numeric and string constraints such

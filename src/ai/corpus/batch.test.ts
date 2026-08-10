@@ -49,7 +49,28 @@ describe('submitBatch', () => {
     )
 
     expect(id).toBe('batch_1')
-    expect(sent.map((one) => one.custom_id)).toEqual(['九', 'ハ'])
+    expect(sent.map((one) => one.custom_id)).toEqual(['4e5d', '30cf'])
+  })
+
+  // The API accepts an identifier matching this and nothing else, so a subject travels as its code
+  // points. A mocked server takes any string, which is why the shape is asserted here rather than
+  // discovered on the first real submission.
+  it('identifies a request by something the API will accept', async () => {
+    let sent: { custom_id: string }[] = []
+    server.use(
+      http.post(`${API}/v1/messages/batches`, async ({ request }) => {
+        const body = (await request.json()) as { requests: { custom_id: string }[] }
+        sent = body.requests
+        return HttpResponse.json({ id: 'batch_1', processing_status: 'in_progress' })
+      }),
+    )
+
+    await submitBatch(
+      ['九', 'ハ', '留守番電話', '\u4e00'].map((subject) => ({ subject, params: asked('name it') })),
+      { key: KEY, api: API },
+    )
+
+    for (const one of sent) expect(one.custom_id).toMatch(/^[a-zA-Z0-9_-]{1,64}$/)
   })
 
   it('refuses to run without a key rather than sending an unauthenticated request', async () => {
@@ -95,8 +116,8 @@ describe('collectBatch', () => {
     server.use(
       ended(),
       results([
-        JSON.stringify({ custom_id: '殺', result: { type: 'errored', error: { type: 'invalid_request' } } }),
-        JSON.stringify({ custom_id: '匕', result: { type: 'expired' } }),
+        JSON.stringify({ custom_id: idFor('殺'), result: { type: 'errored', error: { type: 'invalid_request' } } }),
+        JSON.stringify({ custom_id: idFor('匕'), result: { type: 'expired' } }),
       ]),
     )
 
@@ -126,7 +147,7 @@ describe('collectBatch', () => {
       ended(),
       results([
         JSON.stringify({
-          custom_id: '殺',
+          custom_id: idFor('殺'),
           result: {
             type: 'succeeded',
             message: { content: [], stop_reason: 'refusal', model: 'claude-opus-5' },
@@ -156,9 +177,14 @@ function results(lines: readonly string[]) {
   return http.get(`${API}/v1/messages/batches/batch_1/results`, () => HttpResponse.text(lines.join('\n')))
 }
 
+// The identifier the API accepts, which is what the transport sends and reads back.
+function idFor(subject: string): string {
+  return [...subject].map((one) => (one.codePointAt(0) ?? 0).toString(16)).join('-')
+}
+
 function resultLine(subject: string, text: string, stop = 'end_turn'): string {
   return JSON.stringify({
-    custom_id: subject,
+    custom_id: idFor(subject),
     result: {
       type: 'succeeded',
       message: {
