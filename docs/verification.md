@@ -403,9 +403,9 @@ without any of them running unprompted.
   a hook exists to prevent in the first place.
 - No model runs at merge. `check:docs` still gates it, so the mechanical rules hold, but whether the
   documents were read against each other depends on `docs-conformity` having been asked for.
-- Three of the six boundary rules have no probe, and one of the three covered is covered halfway: the
-  probe reaches `data/`, so narrowing the rule's target from `src/(data|ai)/` to `src/data/` would
-  still pass. Closing it needs a probe under `src/ai/`, which lands with the first `ai/` module.
+- Three of the six boundary rules have no probe: what a rule refuses is proven for the three that
+  keep the product away from the server, the corpus pipeline and its model client, and asserted for
+  the rest.
 - Commits made directly on `main` are reviewed by nothing: the gate computes its range from the merge
   base, which on `main` collapses to `HEAD`.
 - No dependency advisory check runs anywhere, although `security-check` delegates advisories to one.
