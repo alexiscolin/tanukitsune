@@ -46,9 +46,14 @@ export function componentNameRequest(taken: readonly string[], one: Naming): Mes
   }
 }
 
+// Every value that is not ours is delimited and labelled as something to read rather than something to
+// do. The traditional name is the one that carries prose, and it comes from somebody else's file.
 function asks(one: Naming): string {
   const composes = one.composes.length === 0 ? 'nothing on its own' : one.composes.join(' ')
-  const traditional = one.traditional === undefined ? '' : `\nIt is traditionally called: ${one.traditional}`
+  const traditional =
+    one.traditional === undefined
+      ? ''
+      : `\n<traditional_name>${one.traditional}</traditional_name>\nUse it where it already names the shape.`
 
-  return `Name this part: ${one.character}\nIt builds: ${composes}${traditional}`
+  return `<part>${one.character}</part>\n<builds>${composes}</builds>${traditional}\n\nName the part.`
 }

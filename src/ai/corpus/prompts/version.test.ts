@@ -1,38 +1,44 @@
 import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
 
 import { describe, expect, it } from 'vitest'
 
-import { COMPONENT_NAME_VERSION } from './component-name'
+import { COMPONENT_NAME_VERSION, componentNameRequest } from './component-name'
 
 // A version constant nobody bumps is worse than no version constant. `prompt_version` is a column on
 // every corpus row and the prompt is expected to change between the budgeted runs, so two runs sharing
 // a version make the provenance false while looking satisfied.
 //
-// Each module's text is hashed and the hash is recorded against its version. Editing the text without
-// bumping the version breaks the recorded hash; bumping it leaves the new version with nothing
-// recorded. Either way somebody has to say what they did.
+// What is hashed is the text the model is sent, rendered with fixed inputs, and not the file it was
+// built in: renaming a local or fixing a comment costs nothing, and changing a word costs a version.
+// The hash is recorded against that version, so editing the text without bumping it breaks the
+// recorded hash and bumping it leaves the new version with nothing recorded. Either way somebody has
+// to say what they did.
 
-const RECORDED: Record<string, Record<number, string>> = {
-  'component-name.ts': { 1: 'efb45d4dc7e59fce4232088e64208ec8ed684235c3dfba284012f58dc03458aa' },
+const RECORDED: Record<number, string> = {
+  1: '2d6b12576fe091d5abb47157a05dd290578cbba010eba875ad8ab305d12f6ccf',
 }
 
-const VERSIONS: Record<string, number> = {
-  'component-name.ts': COMPONENT_NAME_VERSION,
-}
-
-describe.each(Object.entries(VERSIONS))('%s', (file, version) => {
+describe('the component name prompt', () => {
   it('has not changed without its version changing', () => {
-    const recorded = RECORDED[file]?.[version]
+    const recorded = RECORDED[COMPONENT_NAME_VERSION]
 
     expect(
       recorded,
-      `version ${version} of ${file} has no recorded hash. Record ${hashOf(file)} against it.`,
+      `version ${COMPONENT_NAME_VERSION} has no recorded hash. Record ${rendered()} against it.`,
     ).toBeDefined()
-    expect(hashOf(file), `${file} changed. Bump its version and record the new hash.`).toBe(recorded)
+    expect(rendered(), 'the prompt changed. Bump its version and record the new hash.').toBe(recorded)
   })
 })
 
-function hashOf(file: string): string {
-  return createHash('sha256').update(readFileSync(`src/ai/corpus/prompts/${file}`)).digest('hex')
+// Fixed inputs, so what moves is the wording and never the component that happened to be asked about.
+function rendered(): string {
+  const asked = componentNameRequest(['la bouche', "l'arbre"], {
+    character: '口',
+    composes: ['右', '名'],
+    traditional: 'mouth',
+  })
+
+  return createHash('sha256')
+    .update(JSON.stringify({ system: asked.system, messages: asked.messages }))
+    .digest('hex')
 }
