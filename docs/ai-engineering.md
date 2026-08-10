@@ -237,11 +237,11 @@ identifier rather than by position because they arrive out of order.
 remainder. Total prompt size is that plus cache creation plus cache read, and a dashboard reading the
 first alone under-reports badly once caching is on.
 
-From the version that grades with a model, cost is computed server-side from a versioned price table in
-code, never read from a vendor dashboard, and two numbers are tracked: cost per active learner per day,
+Cost is computed server-side from a versioned price table in code, never read from a vendor dashboard.
+From the version that adds the model tier, two numbers are tracked: cost per active learner per day,
 and marginal cost per graded answer. The second determines whether the product is viable, and it should
-trend toward zero as the shared cache warms. Before it, the only spend is the budgeted corpus runs,
-whose usage comes back in the batch response.
+trend toward zero as the shared cache warms. Before it, the only spend is the budgeted corpus runs, and
+the same table prices them from the usage the batch response returns.
 
 ## Observability
 
@@ -255,7 +255,9 @@ stable, has no pinnable release, and has already renamed several attributes acro
 into an internal schema at ingest; the mapping layer is small and saves a migration.
 
 Every span carries the user or a hashed pseudonym, the feature, the prompt version, the model
-identifier, and the full token usage including both cache fields.
+identifier, and the full token usage including both cache fields. The corpus job is generated once for
+everybody rather than for a learner, so its spans name the run in that first field and its cost stays
+out of the per-learner number above.
 
 From that same version, alert on: escalation rate to the model tier, parse-failure rate, refusal
 rate, retry-count distribution on constrained generation, p95 latency on the judge, cache hit rate,
@@ -284,5 +286,5 @@ failure that is neither is a failure that will recur.
 Guardrails are structural rather than declarative. Prompt injection is not a solved problem, and the
 defensible posture is a constrained output space, no tools where untrusted text flows, and
 deterministic validation of anything a model produces. Model output is never rendered as markup. Where
-a user answer reaches a prompt, it is length-capped, rate-limited, and passed inside explicit
-delimiters as data to evaluate rather than as instruction.
+a user answer reaches a prompt, it is length-capped and rate-limited before it does, and passed inside
+explicit delimiters as data to evaluate rather than as instruction.

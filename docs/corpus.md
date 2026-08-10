@@ -192,8 +192,8 @@ unarguable. Three samples and a majority with the options shuffled, because poin
 carries position bias, which [`sources.md`](sources.md) records. A different model family from the
 generator, since a model rates its own family's output higher. And no gate until its verdicts have
 been compared to the reader's own labels, so the reading arrives with the labelling that makes that
-comparison possible. Until then the budgeted runs carry what it would have caught, a mediocre first
-sample being what they are budgeted for.
+comparison possible. Until then nothing reads for those lenses, and what absorbs a mediocre first
+run is the budget of three, which is a coarser instrument over a sample rather than the same one.
 
 ## The command
 
@@ -223,7 +223,7 @@ The acceptance sample, which [`specs/v0.1.md`](specs/v0.1.md) fixes at 150 items
 accepted, read by hand. The checks above do not replace that reading; they make sure what reaches it
 is not a first draft.
 
-And, from the version that adds a judge, the labelling that calibrates it. The protocol is the
+And, from the version that adds the model tier, the labelling that calibrates it. The protocol is the
 single-labeller one in [`ai-engineering.md`](ai-engineering.md): label first, with the exact rubric
 text the judge will see, then re-label fifty cases blind at least a week later. That self-agreement is
 the ceiling, and no judge score above it means anything.

@@ -610,6 +610,6 @@ continuously.
 So v0.1 stores it: input, verdict, judge version, override. Feeding it back into the eval set comes
 later and needs consent. Capturing it does not, and it cannot be recovered retroactively.
 
-Same reasoning for the corpus: acceptance sampling ships a known bad tail by design, so a report path
-on every generated item arrives with the first reader who is not the author. Otherwise a wrong
-mnemonic reaches every user and nothing ever finds it.
+Same reasoning for the corpus: acceptance sampling ships a known bad tail by design, so there is a
+report path on every generated item from day one. Otherwise a wrong mnemonic reaches every user and
+nothing ever finds it.
