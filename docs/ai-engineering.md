@@ -238,17 +238,16 @@ remainder. Total prompt size is that plus cache creation plus cache read, and a 
 first alone under-reports badly once caching is on.
 
 Cost is computed server-side from a versioned price table in code, never read from a vendor dashboard.
-From the version that adds the model tier, two numbers are tracked: cost per active learner per day,
-and marginal cost per graded answer. The second determines whether the product is viable, and it should
-trend toward zero as the shared cache warms. Before it, the only spend is the budgeted corpus runs, and
-the same table prices them from the usage the batch response returns.
+Once a model grades answers, two numbers are tracked: cost per active learner per day, and marginal
+cost per graded answer. The second determines whether the product is viable, and it should trend
+toward zero as the shared cache warms. Before that, the only spend is the budgeted corpus runs, and
+the same table prices them.
 
 ## Observability
 
-Emit OpenTelemetry spans from the SDK, into a self-hostable collector, from the version that adds the
-model tier. Until then the only model code is the batch job, watched by the reader running it, and
-everything a span would carry comes back in the batch response and in the failed set the job already
-writes: the four token counts, the refusals, and the entries no schema accepted.
+Emit OpenTelemetry spans from the SDK, into a self-hostable collector, once a model grades answers.
+Until then the reader watches the batch job as it runs, and its response and its failed set already
+carry what a span would: the four token counts, the refusals, and the entries no schema accepted.
 
 **Do not build dashboards or alerts on the generative-AI attribute names.** That convention set is not
 stable, has no pinnable release, and has already renamed several attributes across versions. Normalise
@@ -259,7 +258,7 @@ identifier, and the full token usage including both cache fields. The corpus job
 everybody rather than for a learner, so its spans name the run in that first field and its cost stays
 out of the per-learner number above.
 
-From that same version, alert on: escalation rate to the model tier, parse-failure rate, refusal
+From that same point, alert on: escalation rate to the model tier, parse-failure rate, refusal
 rate, retry-count distribution on constrained generation, p95 latency on the judge, cache hit rate,
 and **override rate per hundred verdicts, broken down by the tier that decided**.
 
@@ -286,5 +285,5 @@ failure that is neither is a failure that will recur.
 Guardrails are structural rather than declarative. Prompt injection is not a solved problem, and the
 defensible posture is a constrained output space, no tools where untrusted text flows, and
 deterministic validation of anything a model produces. Model output is never rendered as markup. Where
-a user answer reaches a prompt, it is length-capped and rate-limited before it does, and passed inside
-explicit delimiters as data to evaluate rather than as instruction.
+a user answer reaches a prompt, it is length-capped and rate-limited first, and passed inside explicit
+delimiters as data to evaluate rather than as instruction.
