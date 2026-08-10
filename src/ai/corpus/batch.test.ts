@@ -64,27 +64,58 @@ describe('collectBatch', () => {
   // position. Reading them by position is the bug this test exists to make impossible.
   it('keys every result by its subject rather than by the order it arrives in', async () => {
     server.use(
-      http.get(`${API}/v1/messages/batches/batch_1`, () =>
-        HttpResponse.json({
-          id: 'batch_1',
-          processing_status: 'ended',
-          results_url: `${API}/v1/messages/batches/batch_1/results`,
-        }),
-      ),
-      http.get(`${API}/v1/messages/batches/batch_1/results`, () =>
-        HttpResponse.text(
-          [
-            resultLine('ハ', 'la fourche'),
-            resultLine('九', 'le neuf'),
-          ].join('\n'),
-        ),
-      ),
+      ended(),
+      results([resultLine('ハ', 'la fourche'), resultLine('九', 'le neuf')]),
     )
 
     const collected = await collectBatch('batch_1', { key: KEY, api: API })
 
-    expect(collected.get('九')?.text).toBe('le neuf')
-    expect(collected.get('ハ')?.text).toBe('la fourche')
+    expect(collected.answered.get('九')?.text).toBe('le neuf')
+    expect(collected.answered.get('ハ')?.text).toBe('la fourche')
+  })
+
+  // The input count reports only the uncached remainder, so a run reading it alone cannot tell a warm
+  // shared prefix from a cold one, which is the number the whole batch's cost turns on.
+  it('carries the four token counts rather than the one that under-reports', async () => {
+    server.use(ended(), results([resultLine('九', 'le neuf')]))
+
+    const collected = await collectBatch('batch_1', { key: KEY, api: API })
+
+    expect(collected.answered.get('九')?.spent).toEqual({
+      input: 12,
+      output: 34,
+      cacheCreation: 56,
+      cacheRead: 78,
+    })
+  })
+
+  // A result that never produced prose is what the next batch re-submits. Dropping it leaves a corpus
+  // with holes that reads as complete, which is the failure nobody notices until a card is missing.
+  it('keeps what came back without prose in a failed set rather than dropping it', async () => {
+    server.use(
+      ended(),
+      results([
+        JSON.stringify({ custom_id: '殺', result: { type: 'errored', error: { type: 'invalid_request' } } }),
+        JSON.stringify({ custom_id: '匕', result: { type: 'expired' } }),
+      ]),
+    )
+
+    const collected = await collectBatch('batch_1', { key: KEY, api: API })
+
+    expect(collected.answered.size).toBe(0)
+    expect(collected.failed.get('殺')).toBe('errored')
+    expect(collected.failed.get('匕')).toBe('expired')
+  })
+
+  // Half a mnemonic teaches half a thing, so a truncated answer is refused where it is read rather
+  // than written and found later.
+  it('refuses a truncated answer instead of storing half of one', async () => {
+    server.use(ended(), results([resultLine('九', 'le ne', 'max_tokens')]))
+
+    const collected = await collectBatch('batch_1', { key: KEY, api: API })
+
+    expect(collected.answered.size).toBe(0)
+    expect(collected.failed.get('九')).toBe('truncated')
   })
 
   // A refusal is not an exception: it comes back as a successful response with its own stop reason,
@@ -92,39 +123,55 @@ describe('collectBatch', () => {
   // trips a classifier.
   it('names a refusal instead of reading a content block that is not there', async () => {
     server.use(
-      http.get(`${API}/v1/messages/batches/batch_1`, () =>
-        HttpResponse.json({
-          id: 'batch_1',
-          processing_status: 'ended',
-          results_url: `${API}/v1/messages/batches/batch_1/results`,
+      ended(),
+      results([
+        JSON.stringify({
+          custom_id: '殺',
+          result: {
+            type: 'succeeded',
+            message: { content: [], stop_reason: 'refusal', model: 'claude-opus-5' },
+          },
         }),
-      ),
-      http.get(`${API}/v1/messages/batches/batch_1/results`, () =>
-        HttpResponse.text(
-          JSON.stringify({
-            custom_id: '殺',
-            result: {
-              type: 'succeeded',
-              message: { content: [], stop_reason: 'refusal', model: 'claude-opus-5' },
-            },
-          }),
-        ),
-      ),
+      ]),
     )
 
     const collected = await collectBatch('batch_1', { key: KEY, api: API })
 
-    expect(collected.get('殺')?.refused).toBe(true)
-    expect(collected.get('殺')?.text).toBeUndefined()
+    expect(collected.answered.size).toBe(0)
+    expect(collected.failed.get('殺')).toBe('refusal')
   })
 })
 
-function resultLine(subject: string, text: string): string {
+function ended() {
+  return http.get(`${API}/v1/messages/batches/batch_1`, () =>
+    HttpResponse.json({
+      id: 'batch_1',
+      processing_status: 'ended',
+      results_url: `${API}/v1/messages/batches/batch_1/results`,
+    }),
+  )
+}
+
+function results(lines: readonly string[]) {
+  return http.get(`${API}/v1/messages/batches/batch_1/results`, () => HttpResponse.text(lines.join('\n')))
+}
+
+function resultLine(subject: string, text: string, stop = 'end_turn'): string {
   return JSON.stringify({
     custom_id: subject,
     result: {
       type: 'succeeded',
-      message: { content: [{ type: 'text', text }], stop_reason: 'end_turn', model: 'claude-opus-5' },
+      message: {
+        content: [{ type: 'text', text }],
+        stop_reason: stop,
+        model: 'claude-opus-5',
+        usage: {
+          input_tokens: 12,
+          output_tokens: 34,
+          cache_creation_input_tokens: 56,
+          cache_read_input_tokens: 78,
+        },
+      },
     },
   })
 }
