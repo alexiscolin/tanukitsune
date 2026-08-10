@@ -828,3 +828,15 @@
 {"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","kind":"pass","base":"a00aed4e4ea1785df62f074289639c00e391eb4b","head":"6995530abd5d78e2f7bdae1346bcc3a7f62e076a"}
 {"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"security-check","file":"docs/corpus.md","line":193,"outcome":"fixed"}
 {"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","kind":"pass","base":"873bd85ed4d920d60d47ada8e75fa554204e3fb0","head":"c09144b239bac269be6a5ba2dd1f6ac1c1ddda6e"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"security-check","file":".dependency-cruiser.js","line":35,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"regression-check","file":"docs/verification.md","line":406,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"performance-check","file":"src/ai/corpus/batch.ts","line":240,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"requirement-check","file":"src/ai/corpus/batch.ts","line":271,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"security-check","file":"src/ai/corpus/batch.ts","line":33,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"security-check","file":"src/ai/corpus/batch.ts","line":56,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"requirement-check","file":"src/ai/corpus/batch.ts","line":252,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"docs-conformity","file":".env.example","line":14,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"security-check","file":"package.json","line":39,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"requirement-check","file":"docs/stack.md","line":202,"outcome":"dismissed","reason":"Deleting the old justification for the Node floor was forced by the ruling, so a replacement had to be written in the same change rather than leaving the floor unexplained. The number does not move and the new reason predates the branch, which is what makes it a statement of what was already true rather than a decision taken here."}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","reviewer":"architecture-check","file":"src/ai/corpus/batch.ts","line":47,"outcome":"dismissed","reason":"One caller and it is a test, which the stop list names. The seam is the transport and its callers are the prompt module and the command above it, both of which attach without changing these signatures. Splitting it smaller would mean a single call the fourth slice deletes."}
+{"date":"2026-08-10","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"db94552b99c549ad1d4409c271d56ac343d1a869","head":"9f7b0788b847cc2d13484157e2b46ed1aafcbb44"}
