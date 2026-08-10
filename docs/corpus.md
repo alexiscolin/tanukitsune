@@ -72,6 +72,11 @@ the 855 components the jouyou decompositions use, so the rest are ours, seeded b
 wherever one exists so a learner meets the real 部首 name where there is one. The counts and their
 measurement are in [ADR 0012](decisions/0012-kanjivg-for-the-decomposition.md).
 
+A name opens on a definite article, because that is what makes it a thing rather than a description,
+and it runs no further than a clause can carry. What opens one, what letters it may hold and how far
+it may run are the language's own material, in `corpus/fr/naming.json`, since a second language brings
+different answers and no code.
+
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
 Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing
 here can name them by form alone. Their

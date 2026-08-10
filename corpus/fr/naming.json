@@ -1,0 +1,7 @@
+{
+  "what": "The shape a component name takes in French, read off the names already written rather than decided: every one of them opens on a definite article, none runs past three words, and the twenty-five carrying an apostrophe carry the straight one.",
+  "opensWith": ["le ", "la ", "les ", "l'"],
+  "letters": "abcdefghijklmnopqrstuvwxyzàâäçéèêëîïòôöùûüÿœæ",
+  "joiners": "' -",
+  "mostWords": 3
+}
