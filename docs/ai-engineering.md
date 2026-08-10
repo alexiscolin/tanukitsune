@@ -35,8 +35,9 @@ number anywhere, because the output shape deliberately carries none. When the st
 weaker model means more retries, not worse output. Measure the retry rate against model cost and pick
 the actual minimum.
 
-Every model is pinned to a dated snapshot, never a floating alias, and the identifier is stored on
-every row it produced.
+Every model is named by the exact identifier the provider publishes, and by its dated snapshot wherever
+one is published, never by a moving name like the newest or the best. The identifier is stored on every
+row it produced.
 
 **Escalation rate is a live cost variable, not a constant.** Alert on it. A prompt change that moves
 escalation from one in ten to four in ten quietly quadruples the bill.

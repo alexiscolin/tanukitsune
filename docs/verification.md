@@ -269,7 +269,7 @@ document reproducing them is a document the script then refuses.
 
 ## The boundary probes
 
-`scripts/check-boundaries.sh` writes four modules, three of them violating a rule, requires the named
+`scripts/check-boundaries.sh` writes seven modules, six of them violating a rule, requires the named
 rule to refuse each, and removes them. Three of the six rules in `.dependency-cruiser.js` are covered:
 the reachability rule, the `server-only` rule, and the one holding the product out of the corpus
 pipeline. The first two are covered because a rule written against

@@ -18,9 +18,12 @@ reaches_data=src/ui/${probe_prefix}reaches-data.ts
 data_hop=src/app/${probe_prefix}data-hop.ts
 reaches_corpus=src/app/${probe_prefix}reaches-corpus.ts
 reaches_ai=src/app/${probe_prefix}reaches-ai.ts
+reaches_data_corpus=src/app/${probe_prefix}reaches-data-corpus.ts
 ui_reaches_ai=src/ui/${probe_prefix}ui-reaches-ai.ts
 
-cleanup() { rm -f "$server_only" "$reaches_data" "$data_hop" "$reaches_corpus" "$reaches_ai" "$ui_reaches_ai"; }
+cleanup() {
+  rm -f "$server_only" "$reaches_data" "$data_hop" "$reaches_corpus" "$reaches_ai" "$reaches_data_corpus" "$ui_reaches_ai"
+}
 trap cleanup EXIT
 
 mkdir -p src/ui src/app
@@ -89,8 +92,14 @@ printf "import { moraeOf } from '@/core/corpus/phonetics'\n\nexport const PROBE 
 expect_rules 'An app/ module reaching the corpus pipeline' product-imports-no-corpus
 rm -f "$reaches_corpus"
 
-# The same rule against the pipeline's third home, which is the one holding a key and an SDK, so a
-# target naming only core/ and data/ would pass this file while shipping both to a browser.
+# The rule names three homes and a probe reaching one of them proves one of them, so each is reached
+# in turn. Without the second, narrowing the target back to core/ and ai/ would pass this file.
+printf "import { readComponentNames } from '@/data/corpus/artifact'\n\nexport const PROBE = readComponentNames\n" > "$reaches_data_corpus"
+expect_rules 'An app/ module reaching the corpus readers' product-imports-no-corpus
+rm -f "$reaches_data_corpus"
+
+# The third home is the one holding a key and an SDK, so a target missing it would pass this file
+# while shipping both to a browser.
 printf "import { submitBatch } from '@/ai/corpus/batch'\n\nexport const PROBE = submitBatch\n" > "$reaches_ai"
 expect_rules 'An app/ module reaching the model client' product-imports-no-corpus
 rm -f "$reaches_ai"

@@ -61,10 +61,10 @@ Each has a consequence that gets expensive once code exists.
    published under is settled in [0012](0012-kanjivg-for-the-decomposition.md), and what it leaves
    open is narrower: the chunks are public and carry the identifiers and characters a session is dealt
    from. It blocks publication rather than generation.
-2. **Model selection per surface.** Nothing anywhere names a model, while `generated_by` must carry a
-   real identifier for the transparency obligation and retirement invalidates both the cache and the
-   calibration. Carries `revisit-when` set to the earliest published retirement date and
-   `revisit-where` set to the provider's deprecation page.
+2. **Model selection per surface.** The corpus surface names one, in its prompt module, and every other
+   surface is open, while `generated_by` must carry a real identifier for the transparency obligation
+   and retirement invalidates both the cache and the calibration. Carries `revisit-when` set to the
+   earliest published retirement date and `revisit-where` set to the provider's deprecation page.
 3. **The host.** Skew protection is a paid feature everywhere and the service worker handles deployment
    skew itself, and the framework's caching is off, so nothing technical separates the candidates any
    more. It is decided on price and on operating comfort.
