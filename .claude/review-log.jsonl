@@ -816,3 +816,15 @@
 {"date":"2026-08-09","branch":"docs/say-when-the-collector-arrives","reviewer":"code-review","file":"docs/ai-engineering.md","line":247,"outcome":"fixed"}
 {"date":"2026-08-09","branch":"docs/say-when-the-collector-arrives","reviewer":"code-review","file":"docs/stack.md","line":205,"outcome":"dismissed","reason":"stack.md owns the package facts and already records that the AI SDK v7 migration moved telemetry to its own package. Saying it again here is the duplication the two passes before this one removed, and the dependency itself is a stop the reader rules on in the slice that writes the first model call, not in a paragraph about when a collector arrives."}
 {"date":"2026-08-09","branch":"docs/say-when-the-collector-arrives","kind":"pass","base":"bb2c154c786122b4bed99b713bdd7cc9298eb148","head":"03d4be91a94d9a7d135fc469e183c316c4e803a0"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"requirement-check","file":"docs/framing.md","line":613,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"docs-conformity","file":"docs/corpus.md","line":226,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"regression-check","file":"docs/ai-engineering.md","line":257,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"performance-check","file":"docs/corpus.md","line":195,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"docs-conformity","file":"docs/ai-engineering.md","line":240,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"security-check","file":"docs/ai-engineering.md","line":286,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"security-check","file":"docs/ai-engineering.md","line":243,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"requirement-check","file":"docs/ai-engineering.md","line":248,"outcome":"dismissed","reason":"Deferring the emission and not only the collector is what the reader ruled after asking what telemetry buys here: the batch job's token counts, refusals and schema failures all come back in the response and in the failed set it already writes, so a span answers no question the file does not. The lens could not see that exchange."}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","kind":"pass","base":"dd7579ca87fe74c2789cec70954878d491756b1f","head":"544517fdd070eaf77f381a672308ab1ed811fcad"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","kind":"pass","base":"a00aed4e4ea1785df62f074289639c00e391eb4b","head":"6995530abd5d78e2f7bdae1346bcc3a7f62e076a"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","reviewer":"security-check","file":"docs/corpus.md","line":193,"outcome":"fixed"}
+{"date":"2026-08-10","branch":"docs/build-only-what-v01-consumes","kind":"pass","base":"873bd85ed4d920d60d47ada8e75fa554204e3fb0","head":"c09144b239bac269be6a5ba2dd1f6ac1c1ddda6e"}

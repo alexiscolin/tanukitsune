@@ -152,7 +152,7 @@ not enabled. Saying so is more useful than describing a gate that silently guard
 another reason the answer and verdict columns ship in v0.1.
 
 **The corpus is acceptance sampling, not regression**, and what the sampling reads has already passed
-the deterministic checks and the expert reading in [`corpus.md`](corpus.md), which is also where the
+the deterministic checks in [`corpus.md`](corpus.md), which is also where the
 construction rules live. The sample size, the defect classes and the
 accept number are written in [`specs/v0.1.md`](specs/v0.1.md) before the first run, because "ship or
 regenerate" is not a decision anyone can take without them. Across the budgeted runs a frozen subset is
@@ -238,15 +238,16 @@ remainder. Total prompt size is that plus cache creation plus cache read, and a 
 first alone under-reports badly once caching is on.
 
 Cost is computed server-side from a versioned price table in code, never read from a vendor dashboard.
-Two numbers are tracked: cost per active learner per day, and marginal cost per graded answer. The
-second determines whether the product is viable, and it should trend toward zero as the shared cache
-warms.
+Once a model grades answers, two numbers are tracked: cost per active learner per day, and marginal
+cost per graded answer. The second determines whether the product is viable, and it should trend
+toward zero as the shared cache warms. Before that, the only spend is the budgeted corpus runs, and
+the same table prices them.
 
 ## Observability
 
-Emit OpenTelemetry spans from the SDK, from the first model call, into a self-hostable collector that
-arrives with the interactive path. Until it does, the batch job is watched by the reader running it,
-and emitting into nothing is what makes the collector a configuration later rather than a retrofit.
+Emit OpenTelemetry spans from the SDK, into a self-hostable collector, once a model grades answers.
+Until then the reader watches the batch job as it runs, and its response and its failed set already
+carry what a span would: the four token counts, the refusals, and the entries no schema accepted.
 
 **Do not build dashboards or alerts on the generative-AI attribute names.** That convention set is not
 stable, has no pinnable release, and has already renamed several attributes across versions. Normalise
@@ -257,9 +258,9 @@ identifier, and the full token usage including both cache fields. The corpus job
 everybody rather than for a learner, so its spans name the run in that first field and its cost stays
 out of the per-learner number above.
 
-Alert on: escalation rate to the model tier, parse-failure rate, refusal rate, retry-count
-distribution on constrained generation, p95 latency on the judge, cache hit rate, and **override rate
-per hundred verdicts, broken down by the tier that decided**.
+From that same point, alert on: escalation rate to the model tier, parse-failure rate, refusal
+rate, retry-count distribution on constrained generation, p95 latency on the judge, cache hit rate,
+and **override rate per hundred verdicts, broken down by the tier that decided**.
 
 Those first six are cost and health signals, not a drift monitor. Every one of them can hold perfectly
 steady while the judge grades worse, because none of them observes whether a verdict was right. The
@@ -283,6 +284,6 @@ failure that is neither is a failure that will recur.
 
 Guardrails are structural rather than declarative. Prompt injection is not a solved problem, and the
 defensible posture is a constrained output space, no tools where untrusted text flows, and
-deterministic validation of anything a model produces. Model output is never rendered as markup. User
-answers are length-capped and rate-limited before they reach a prompt, and are passed inside explicit
+deterministic validation of anything a model produces. Model output is never rendered as markup. Where
+a user answer reaches a prompt, it is length-capped and rate-limited first, and passed inside explicit
 delimiters as data to evaluate rather than as instruction.
