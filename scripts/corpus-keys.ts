@@ -4,8 +4,10 @@
 // import-decomposition.ts states. It takes the release path as an argument, or fetches the pinned one.
 //
 // A key is selected from a gloss the source already states and then made unique, per docs/corpus.md.
-// The English key is written beside it so that the day English is served it teaches the same character
-// the same word. What no gloss can settle is reported rather than invented.
+// What no gloss can settle is reported rather than invented.
+//
+// The English the account grades on is not written here. It is the account's, so it stays in the
+// uncommitted inventory that already carries it and never reaches a file that travels.
 
 import { gunzipSync } from 'node:zlib'
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -22,7 +24,7 @@ const HEADER = {
   licence: 'CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)',
   release: RELEASE,
   modified: 'One gloss selected per character and made unique. The readings, grades and stroke counts are not carried.',
-  shape: 'character to its key in this locale and its English key',
+  shape: 'character to the key this locale teaches it under',
 }
 
 const locale = process.argv[2] ?? 'fr'
@@ -31,7 +33,6 @@ const output = `corpus/${locale}/keys.json`
 
 const xml = given === undefined ? await fetched() : readFileSync(given, 'utf8')
 const spoken = parseGlosses(xml, locale)
-const english = parseGlosses(xml, 'en')
 
 // The order the reader meets them in, so the plainest word goes to the character taught first and a
 // later one takes the next gloss it has. Sorted here rather than trusted from the file, since the
@@ -43,26 +44,16 @@ const characters = subjects
   .map((one) => one.characters as string)
 
 const keyed = chooseKeys(characters, (character) => spoken.get(character) ?? [])
-const keyedEnglish = chooseKeys(characters, (character) => english.get(character) ?? [])
-
 const written = characters.filter((character) => keyed.keys[character] !== undefined)
-const missingEnglish = written.filter((character) => keyedEnglish.keys[character] === undefined)
 
 const lines = written
-  .map((character) =>
-    [
-      JSON.stringify(character),
-      ':',
-      JSON.stringify({ key: keyed.keys[character], english: keyedEnglish.keys[character] ?? null }),
-    ].join(''),
-  )
+  .map((character) => `${JSON.stringify(character)}:${JSON.stringify(keyed.keys[character])}`)
   .join(',\n')
 
 writeFileSync(output, `{\n"header":${JSON.stringify(HEADER)},\n"keys":{\n${lines}\n}\n}\n`)
 
 process.stdout.write(`keys: ${written.length} of ${characters.length} written to ${output}\n`)
 process.stdout.write(`no gloss the source states is free: ${list(keyed.unsettled)}\n`)
-process.stdout.write(`written without an English key: ${list(missingEnglish)}\n`)
 
 function list(entries: readonly string[]): string {
   if (entries.length === 0) return '0'

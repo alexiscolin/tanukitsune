@@ -63,8 +63,9 @@ repository. Everything else under `corpus/` belongs to a locale.
 **Keys.** KANJIDIC2 carries French glosses under a redistributable licence for the jouyou set, the
 2136 characters taught in Japanese schools, so keys
 are selected from an existing gloss and then made unique rather than invented from nothing. One key
-per subject, one subject per key, and the English key recorded beside it: the upstream account grades
-in English, and the day English is served it must teach the same key for the same character.
+per subject, one subject per key. The English the account grades on is not written beside it: it is
+theirs, so it stays in the uncommitted inventory that already carries it, read at generation time like
+the decomposition and never written into a file that travels.
 
 `corpus:keys` writes them, in the order the reader meets the characters, so the plainest word goes to
 the one taught first and a later character takes the next gloss it has. A character whose every gloss
