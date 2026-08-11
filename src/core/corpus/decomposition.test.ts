@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { ComponentNames, Decomposition, Glyph } from './decomposition'
 import {
   collidingNames,
+  composedBy,
   flatten,
   holdsTooManyParts,
   isFullyStated,
@@ -129,5 +130,27 @@ describe('isFullyStated', () => {
   // those would invent the missing part, which is the failure the report exists to prevent.
   it('fails for a character carrying a part with no component', () => {
     expect(isFullyStated(character('鳥', null, '灬'))).toBe(false)
+  })
+})
+
+describe('composedBy', () => {
+  // The kanji a component builds are the evidence its name is judged on: a name picturing nothing
+  // those characters contain is a name for a different shape.
+  it('gives each component the characters it builds', () => {
+    const built = composedBy([character('語', '言', '五', '口'), character('話', '言', '舌')])
+
+    expect(built.get('言')).toEqual(['語', '話'])
+    expect(built.get('舌')).toEqual(['話'])
+  })
+
+  // A character standing as its own only part builds nothing, and saying that 木 builds 木 tells a
+  // model nothing it can picture.
+  it('does not have a character build itself', () => {
+    expect(composedBy([character('木', '木')]).has('木')).toBe(false)
+  })
+
+  it('says nothing about a part the source does not name', () => {
+    expect(composedBy([character('鳥', null, '灬')]).has('灬')).toBe(true)
+    expect(composedBy([character('鳥', null, '灬')]).size).toBe(1)
   })
 })
