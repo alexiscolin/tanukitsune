@@ -31,6 +31,24 @@ export function readComponentNames(json: string): ComponentNames {
   return nameList.parse(JSON.parse(json)).names
 }
 
+// The names a run settled, written back into the file they were judged against. It takes the file
+// rather than the names alone because the header carries the Kanji Alive attribution, and the licence
+// obligation follows the file rather than the repository.
+//
+// Read as a bare record and validated separately rather than through one schema carrying both: a
+// schema that declares a key hands it back first whatever order the file had, which lifts `names`
+// above the header and rewrites a file that gained one line. Names are appended in the order the run
+// settled them and never sorted, since sorting now would put every line already written into that
+// same diff.
+const anyFile = z.record(z.string(), z.unknown())
+
+export function componentNamesFile(current: string, added: ReadonlyMap<string, string>): string {
+  const file = anyFile.parse(JSON.parse(current))
+  const names = { ...nameList.parse(file).names, ...Object.fromEntries(added) }
+
+  return `${JSON.stringify({ ...file, names }, null, 2)}\n`
+}
+
 // What a language cannot do with sounds. The checks that judge an anchor are the engine's and know
 // nothing about French; this is what makes them French, and what a second language replaces without
 // a line of code changing.
