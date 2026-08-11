@@ -33,7 +33,11 @@ export function walkCurriculum(
   // kanji names them by what they mean. A radical sharing its shape with a kanji is that same case,
   // the key naming both cards, so naming it separately would teach one shape two French words. Only a
   // radical no kanji writes owes a name of its own.
-  const written = new Set(subjects.filter((one) => one.type === 'kanji').map((one) => one.characters))
+  // Withdrawn on the same grounds as the loop below: a kanji nobody can be shown teaches no key, so it
+  // names nothing.
+  const written = new Set(
+    subjects.filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden).map((one) => one.characters),
+  )
   const radicals = new Set(
     subjects
       .filter((one) => one.type === 'radical' && one.characters !== null && !written.has(one.characters))

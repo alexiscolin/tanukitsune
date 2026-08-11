@@ -71,7 +71,7 @@ const step = nextStep(saved, owed.slice(0, most), COMPONENT_NAME_VERSION)
 
 if (step.do === 'submit') await submit(step.parts)
 else if (step.do === 'collect') await collect(step.id)
-else process.stdout.write(`${locale}: every component the curriculum deals has a name\n`)
+else process.stdout.write(`${locale}: every component owed a name of its own has one\n`)
 
 async function submit(parts: readonly string[]): Promise<void> {
   const builds = composedBy(read)
