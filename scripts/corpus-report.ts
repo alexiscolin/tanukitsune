@@ -18,8 +18,8 @@ import {
   unnamedComponents,
 } from '../src/core/corpus/decomposition.ts'
 import type { Decomposition } from '../src/core/corpus/decomposition.ts'
-import { partsTaught } from '../src/core/corpus/taught.ts'
 import { readComponentNames, readDecompositions } from '../src/data/corpus/artifact.ts'
+import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
 const locale = process.argv[2] ?? 'fr'
@@ -29,7 +29,7 @@ const names = readComponentNames(readFileSync(`corpus/${locale}/components.json`
 const shapeOf = (character: string) => decompositions.get(character) ?? []
 const isNameable = (component: string) => names[component] !== undefined
 
-const { read, unplaced, unnamedByShape, owed } = existsSync(INVENTORY_FILE) ? againstCurriculum() : againstShape()
+const { read, unplaced, drawn, owed } = existsSync(INVENTORY_FILE) ? againstCurriculum() : againstShape()
 
 report('characters read', String(read.length))
 report('characters the drawing does not decompose', list(read.filter((one) => one.parts.length === 0).map(named)))
@@ -39,72 +39,16 @@ report(`components ${locale} has not named`, list(owed))
 report('parts the drawing does not place', list(unplaced))
 report('names serving more than one component', list(collidingNames(names)))
 
-if (unnamedByShape.length > 0) {
-  report('components the curriculum draws rather than writes', list(unnamedByShape))
+if (drawn.length > 0) {
+  report('components the curriculum draws rather than writes', list(drawn))
 }
 
-// Against the curriculum: the parts of a story are the components the reader has been dealt a card
-// for, per docs/decisions/0013-the-curriculum-decides-the-parts.md.
 function againstCurriculum() {
   const { upTo, subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
-  const byId = new Map(subjects.map((subject) => [subject.id, subject]))
 
   process.stdout.write(`inventory: ${subjects.length} subjects to level ${upTo}\n`)
 
-  const read: Decomposition[] = []
-  const unplaced: string[] = []
-  const drawn = new Set<string>()
-  // A part that is itself a subject with a key of its own needs no component name: a word made of
-  // kanji names them by what they mean. A radical owes one even where a kanji of the same shape has a
-  // key, since a story names the part it draws rather than the character that shares its outline.
-  const radicals = new Set(
-    subjects.filter((one) => one.type === 'radical' && one.characters !== null).map((one) => one.characters),
-  )
-
-  for (const subject of subjects) {
-    // Content the source has withdrawn is dealt by no session, so counting it would demand names and
-    // stories for cards nobody can be shown.
-    if (subject.hidden) continue
-
-    if (subject.characters === null) {
-      // A component the curriculum draws instead of writing cannot be named by its character, so it
-      // is reported rather than silently missing from every story that would have used it.
-      drawn.add(`${subject.type}#${subject.id}`)
-      continue
-    }
-    if (subject.componentIds.length === 0) continue
-
-    const components = subject.componentIds.flatMap((id) => {
-      const component = byId.get(id)
-
-      if (component === undefined) return []
-      if (component.characters !== null) return [component.characters]
-
-      // A part the curriculum draws rather than writes cannot be named by its character. Dropping it
-      // in silence would leave the character looking complete with one part missing, so the character
-      // is named here as well as the part.
-      unplaced.push(`${subject.characters ?? '?'}:drawn#${component.id}`)
-
-      return []
-    })
-
-    const decomposition = partsTaught(subject.characters, components, shapeOf(subject.characters))
-    read.push(decomposition)
-
-    for (const part of decomposition.parts) {
-      if (part.component === null) continue
-
-      // A character that is its own only part is placed by being itself, and the drawing carries no
-      // group for it. Counting that as unplaced would report every single-part character as a fault.
-      // A character standing beside other parts is placed among them, so it is counted like any other.
-      const itself = decomposition.parts.length === 1 && part.component === subject.characters
-      if (!itself && part.position === null) unplaced.push(`${subject.characters}:${part.component}`)
-    }
-  }
-
-  const owed = unnamedComponents(read, names).filter((one) => radicals.has(one))
-
-  return { read, unplaced, unnamedByShape: [...drawn], owed }
+  return walkCurriculum(subjects, names, shapeOf)
 }
 
 // Against the whole decomposition, which is every character the drawing carries rather than the ones
@@ -112,7 +56,7 @@ function againstCurriculum() {
 function againstShape() {
   const read = [...decompositions].map(([character, parts]) => flatten(character, parts, isNameable))
 
-  return { read, unplaced: [], unnamedByShape: [], owed: unnamedComponents(read, names) }
+  return { read, unplaced: [], drawn: [], owed: unnamedComponents(read, names) }
 }
 
 function named(decomposition: Decomposition): string {
