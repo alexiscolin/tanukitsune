@@ -20,7 +20,10 @@ export function nextStep(saved: Submitted | null, owed: readonly string[], versi
   if (saved === null) return owed.length === 0 ? { do: 'nothing' } : { do: 'submit', parts: owed }
 
   if (saved.version !== version) {
-    throw new Error(`batch ${saved.id} was asked at prompt version ${saved.version}, and this one is ${version}`)
+    throw new Error(
+      `batch ${saved.id} was asked at prompt version ${saved.version}, and this one is ${version}. ` +
+        'Collect it under the version it was asked at, or drop the run file to abandon it.',
+    )
   }
 
   return { do: 'collect', id: saved.id }

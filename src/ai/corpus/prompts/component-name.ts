@@ -11,7 +11,7 @@ import type { Naming } from '@/core/corpus/name'
 // Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
 // row and two runs sharing a version make the provenance false while looking satisfied. The material
 // counts as the wording, since changing it changes what was asked.
-export const COMPONENT_NAME_VERSION = 2
+export const COMPONENT_NAME_VERSION = 3
 
 // Flat and shallow, and strict so an unexpected key fails rather than passes.
 export const componentName = z.strictObject({ name: z.string() })
@@ -63,7 +63,13 @@ export function componentNamePrefix(naming: Naming, taken: readonly string[]): s
 export function componentNameRequest(prefix: string, part: Part): MessageCreateParamsNonStreaming {
   return {
     model: 'claude-opus-5',
-    max_tokens: 256,
+    // The ceiling covers thinking and answer together, and this model thinks unless told not to, so a
+    // ceiling sized for a noun phrase is spent before the phrase is written and every request in the
+    // batch comes back truncated. Room for both, since an unused ceiling costs nothing.
+    max_tokens: 4096,
+    // Stated rather than left to the default, because the default differs between models in this
+    // family and the difference is the truncation above.
+    thinking: { type: 'adaptive' },
     // An hour rather than the default five minutes, because a batch routinely runs longer than that
     // and a prefix that expires mid-run is written again and read by nothing.
     system: [{ type: 'text', text: prefix, cache_control: { type: 'ephemeral', ttl: '1h' } }],

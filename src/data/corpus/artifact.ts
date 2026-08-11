@@ -66,7 +66,9 @@ const naming = z.object({
   language: z.string().min(1),
   opensWith: z.array(z.string()).min(1),
   letters: z.string().min(1),
-  joiners: z.string(),
+  // Bounded like the rest: what holds two letters together also holds an article to its noun, so a
+  // locale that lists none refuses every name it is given, pointing at the answer rather than here.
+  joiners: z.string().min(1),
   mostWords: z.number().int().positive(),
   examples: z.array(z.object({ character: z.string(), name: z.string() })),
 })
