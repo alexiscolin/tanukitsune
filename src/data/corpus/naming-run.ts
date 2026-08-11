@@ -9,7 +9,6 @@ export type Submitted = {
   // The prompt version the batch was asked at, because a prompt that moves while a batch runs makes
   // every answer it holds provenance for a question nobody asked.
   readonly version: number
-  readonly asked: number
 }
 
 export type Step =
@@ -27,11 +26,7 @@ export function nextStep(saved: Submitted | null, owed: readonly string[], versi
   return { do: 'collect', id: saved.id }
 }
 
-const submitted = z.strictObject({
-  id: z.string().min(1),
-  version: z.number().int(),
-  asked: z.number().int().positive(),
-})
+const submitted = z.strictObject({ id: z.string().min(1), version: z.number().int() })
 
 export function readSubmitted(json: string): Submitted {
   return submitted.parse(JSON.parse(json))

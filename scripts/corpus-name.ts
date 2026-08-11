@@ -47,10 +47,7 @@ if (!(most > 0)) throw new Error(`most must be a whole number above zero, got ${
 const key = asOptional(process.env['ANTHROPIC_API_KEY'])
 if (key === undefined) throw new Error('ANTHROPIC_API_KEY is not set')
 
-// The host is a seam rather than a constant, as it is everywhere else that reaches a third party: a
-// command able to reach only the real one cannot be tested. Absent is the real one.
-const api = asOptional(process.env['ANTHROPIC_API'])
-const reach: Reach = { key, ...(api === undefined ? {} : { api }) }
+const reach: Reach = { key }
 
 const namesFile = `corpus/${locale}/components.json`
 // Beside the locale's material rather than in it, and hidden: it belongs to a run rather than to the
@@ -87,7 +84,7 @@ async function submit(parts: readonly string[]): Promise<void> {
   }))
 
   const id = await submitBatch(asked, reach)
-  writeFileSync(runFile, submittedFile({ id, version: COMPONENT_NAME_VERSION, asked: asked.length }))
+  writeFileSync(runFile, submittedFile({ id, version: COMPONENT_NAME_VERSION }))
 
   process.stdout.write(`submitted: ${asked.length} of ${owed.length} components owed, batch ${id}\n`)
   process.stdout.write(`run pnpm corpus:name ${locale} again to collect it\n`)

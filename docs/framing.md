@@ -145,9 +145,10 @@ timed loop.
 ```
 core/       pure, no I/O, fully unit tested
 data/       WaniKani client, corpus, db
-ai/         clients and port implementations, prompts in ai/prompts/ as typed
-            modules with a version constant, eval sets in ai/evals/ beside the
-            prompt they measure
+ai/         clients and port implementations, prompts in ai/corpus/prompts/ as
+            typed modules with a version constant, under the same corpus path
+            the boundary rule names, eval sets in ai/evals/ beside the prompt
+            they measure
 app/        Next routes, thin shells
 ui/         components
 ```

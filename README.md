@@ -104,14 +104,14 @@ There are five layers, and the design is about which one may import which.
 - `core/` holds the rules and **imports nothing**. It declares the interfaces, and code further out
   fills them in. This is what stops a third-party API from becoming part of the rules.
 - `data/` is everything outside: the server's database, and the browser's.
-- `ai/` holds the prompts and the model side of those interfaces. It has no files yet, and the rule
-  that governs it is already switched on.
+- `ai/` holds the prompts and the model side of those interfaces. The corpus pipeline is what lives
+  there today, and the rule that keeps the product out of it is switched on.
 - `ui/` draws, and **reaches nothing**. A component cannot quietly pick up a database.
 - `app/` connects them, because someone has to hand a component the result of a query.
 
 `pnpm arch` checks this, including indirect paths, and a test proves the check really does say no.
 
-One answer travels through the four that have code today and touches each one once. A page hands the
+One answer travels through the four the review loop uses and touches each one once. A page hands the
 session its cards. The input field turns what you typed into kana and decides whether Enter meant an
 answer. The
 grader decides, or says it could not. What you rule is written to your browser's own database before

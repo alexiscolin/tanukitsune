@@ -87,19 +87,21 @@ export function unnamedComponents(
 // A character standing as its own only part builds nothing, since saying that 木 builds 木 gives a
 // model nothing to picture that it was not already handed.
 export function composedBy(decompositions: readonly Decomposition[]): ReadonlyMap<string, readonly string[]> {
-  const built = new Map<string, string[]>()
+  // A set rather than a list scanned before each push: a common radical sits in a thousand characters,
+  // and asking a list of that length whether it already holds one costs the square of the curriculum.
+  const built = new Map<string, Set<string>>()
 
   for (const { character, parts } of decompositions) {
     for (const { component } of parts) {
       if (component === null || component === character) continue
 
-      const carries = built.get(component) ?? []
-      if (!carries.includes(character)) carries.push(character)
+      const carries = built.get(component) ?? new Set<string>()
+      carries.add(character)
       built.set(component, carries)
     }
   }
 
-  return built
+  return new Map([...built].map(([component, carries]) => [component, [...carries]]))
 }
 
 // One name on two components, which costs more than an ugly name: the whole value of naming a part

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { nextStep, readSubmitted, submittedFile } from './naming-run'
 
-const IN_FLIGHT = { id: 'msgbatch_01', version: 2, asked: 30 }
+const IN_FLIGHT = { id: 'msgbatch_01', version: 2 }
 
 describe('nextStep', () => {
   it('submits what is owed when no batch is in flight', () => {
@@ -38,6 +38,7 @@ describe('readSubmitted', () => {
   // cannot be read is a state to fail on rather than to treat as no batch at all.
   it('refuses a file that is not one', () => {
     expect(() => readSubmitted('{"id":"msgbatch_01"}')).toThrow()
+    expect(() => readSubmitted('{"id":"msgbatch_01","version":2,"asked":30}')).toThrow()
     expect(() => readSubmitted('{}')).toThrow()
   })
 })
