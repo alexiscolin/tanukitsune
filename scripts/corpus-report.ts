@@ -19,6 +19,7 @@ import {
   unnamedComponents,
 } from '../src/core/corpus/decomposition.ts'
 import type { Decomposition } from '../src/core/corpus/decomposition.ts'
+import { list } from './corpus-command.ts'
 import { readComponentNames, readDecompositions } from '../src/data/corpus/artifact.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
@@ -75,13 +76,6 @@ function named(decomposition: Decomposition): string {
   return decomposition.character
 }
 
-function list(entries: readonly string[]): string {
-  if (entries.length === 0) return '0'
-
-  const shown = entries.slice(0, 20).join(' ')
-
-  return entries.length > 20 ? `${entries.length}, first 20: ${shown}` : `${entries.length}: ${shown}`
-}
 
 function report(label: string, value: string): void {
   process.stdout.write(`${label}: ${value}\n`)

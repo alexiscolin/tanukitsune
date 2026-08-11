@@ -7,9 +7,9 @@
 // The licence, the attribution it obliges and the separation from the generated text are in
 // docs/decisions/0012-kanjivg-for-the-decomposition.md.
 
-import { gunzipSync } from 'node:zlib'
 import { readFileSync, writeFileSync } from 'node:fs'
 
+import { fetched } from './corpus-command.ts'
 import { parseGlyphs } from '../src/data/corpus/kanjivg.ts'
 
 const RELEASE = 'r20240807'
@@ -27,7 +27,7 @@ const HEADER = {
 }
 
 const given = process.argv[2]
-const xml = given === undefined ? await fetched() : readFileSync(given, 'utf8')
+const xml = given === undefined ? await fetched(SOURCE, `KanjiVG ${RELEASE}`) : readFileSync(given, 'utf8')
 const glyphs = parseGlyphs(xml)
 
 const lines = [...glyphs]
@@ -37,10 +37,3 @@ const lines = [...glyphs]
 writeFileSync(OUTPUT, `{\n"header":${JSON.stringify(HEADER)},\n"characters":{\n${lines}\n}\n}\n`)
 
 process.stdout.write(`decomposition: ${glyphs.size} characters written to ${OUTPUT}\n`)
-
-async function fetched(): Promise<string> {
-  const response = await fetch(SOURCE)
-  if (!response.ok) throw new Error(`KanjiVG ${RELEASE} answered ${response.status}`)
-
-  return gunzipSync(Buffer.from(await response.arrayBuffer())).toString('utf8')
-}

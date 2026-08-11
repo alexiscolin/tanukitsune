@@ -9,9 +9,9 @@
 // The English the account grades on is not written here. It is the account's, so it stays in the
 // uncommitted inventory that already carries it and never reaches a file that travels.
 
-import { gunzipSync } from 'node:zlib'
 import { readFileSync, writeFileSync } from 'node:fs'
 
+import { fetched, list } from './corpus-command.ts'
 import { chooseKeys } from '../src/core/corpus/key.ts'
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -31,7 +31,7 @@ const locale = process.argv[2] ?? 'fr'
 const given = process.argv[3]
 const output = `corpus/${locale}/keys.json`
 
-const xml = given === undefined ? await fetched() : readFileSync(given, 'utf8')
+const xml = given === undefined ? await fetched(SOURCE, 'KANJIDIC2') : readFileSync(given, 'utf8')
 const spoken = parseGlosses(xml, locale)
 
 // The order the reader meets them in, so the plainest word goes to the character taught first and a
@@ -55,17 +55,4 @@ writeFileSync(output, `{\n"header":${JSON.stringify(HEADER)},\n"keys":{\n${lines
 process.stdout.write(`keys: ${written.length} of ${characters.length} written to ${output}\n`)
 process.stdout.write(`no gloss the source states is free: ${list(keyed.unsettled)}\n`)
 
-function list(entries: readonly string[]): string {
-  if (entries.length === 0) return '0'
 
-  const shown = entries.slice(0, 20).join(' ')
-
-  return entries.length > 20 ? `${entries.length}, first 20: ${shown}` : `${entries.length}: ${shown}`
-}
-
-async function fetched(): Promise<string> {
-  const response = await fetch(SOURCE)
-  if (!response.ok) throw new Error(`KANJIDIC2 answered ${response.status}`)
-
-  return gunzipSync(Buffer.from(await response.arrayBuffer())).toString('utf8')
-}
