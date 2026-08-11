@@ -60,8 +60,12 @@ function againstCurriculum(read: { upTo: number; subjects: readonly InventorySub
   return walkCurriculum(read.subjects, names, shapeOf)
 }
 
+// Withdrawn kanji left out on the same terms as the walk, or the two disagree and one report says a
+// shape is owed a name while the next line says a kanji already writes it.
 function written(subjects: readonly InventorySubject[]): ReadonlySet<string> {
-  return new Set(subjects.flatMap((one) => (one.type === 'kanji' && one.characters !== null ? [one.characters] : [])))
+  return new Set(
+    subjects.flatMap((one) => (one.type === 'kanji' && one.characters !== null && !one.hidden ? [one.characters] : [])),
+  )
 }
 
 // Against the whole decomposition, which is every character the drawing carries rather than the ones

@@ -22,11 +22,6 @@ describe('parseGlosses', () => {
     expect(parseGlosses(XML, 'fr').get('犬')).toEqual(['chien', 'canidé'])
   })
 
-  // English is the one language stated by the absence of an attribute rather than by its name.
-  it('reads English from the meanings that carry no language', () => {
-    expect(parseGlosses(XML, 'en').get('犬')).toEqual(['dog'])
-  })
-
   it('reads nothing for a language the release does not carry', () => {
     expect(parseGlosses(XML, 'de').get('犬')).toEqual([])
   })

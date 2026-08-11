@@ -53,6 +53,13 @@ const lines = written
 writeFileSync(output, `{\n"header":${JSON.stringify(HEADER)},\n"keys":{\n${lines}\n}\n}\n`)
 
 process.stdout.write(`keys: ${written.length} of ${characters.length} written to ${output}\n`)
-process.stdout.write(`no gloss the source states is free: ${list(keyed.unsettled)}\n`)
+// The two reasons a character leaves the run without a key, apart, because they are settled by
+// different things: one waits on a gloss to be written, the other on a word to be freed.
+const unglossed = keyed.unsettled.filter((one) => (spoken.get(one) ?? []).length === 0)
+
+process.stdout.write(`the release glosses nothing in ${locale}: ${list(unglossed)}\n`)
+process.stdout.write(
+  `every gloss the release states is already a key: ${list(keyed.unsettled.filter((one) => !unglossed.includes(one)))}\n`,
+)
 
 

@@ -70,7 +70,9 @@ the decomposition and never written into a file that travels.
 `corpus:keys` writes them, in the order the reader meets the characters, so the plainest word goes to
 the one taught first and a later character takes the next gloss it has. A character whose every gloss
 is already spoken for is reported rather than given a word nobody wrote, and so is one the release does
-not gloss at all. French leaves 159 of 2101 unsettled that way, and a language the release does not
+not gloss at all, the two apart because one waits on a gloss and the other on a word to be freed.
+Against the 2101 kanji the curriculum deals rather than the jouyou set the licence covers, French
+leaves 159 unsettled, 153 unglossed and 6 whose every gloss is taken. A language the release does not
 carry leaves all of them, which is the same path rather than a different one.
 
 **Component names.** Written here, one name per component and one component per name across the whole
@@ -89,7 +91,8 @@ kanji writes is named on its own. One shape teaches one French word, so a compon
 the kanji it doubles would put a second word on the same drawing, one on each card, and a story naming
 the part would contradict the card teaching the character. Which components those are is a table
 decision and never a model one: the model is not asked, so no answer of its has to be caught. Of the
-320 French still owed, 231 are named this way and 89 on their own.
+320 components the curriculum deals that no French name covers, 231 are named this way and 89 are owed
+a name of their own, which is the number `corpus:report` and `corpus:name` count.
 
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
 Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing

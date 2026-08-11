@@ -11,10 +11,7 @@ const LITERAL = /<literal>(.*?)<\/literal>/
 
 export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const glossed = new Map<string, readonly string[]>()
-  // English carries no attribute at all, the release implying it by its absence, so it is the one
-  // language that cannot be asked for by name.
-  const spoken =
-    locale === 'en' ? /<meaning>(.*?)<\/meaning>/g : new RegExp(`<meaning m_lang="${locale}">(.*?)</meaning>`, 'g')
+  const spoken = new RegExp(`<meaning m_lang="${locale}">(.*?)</meaning>`, 'g')
 
   for (const [, body = ''] of xml.matchAll(ENTRY)) {
     const character = LITERAL.exec(body)?.[1]
