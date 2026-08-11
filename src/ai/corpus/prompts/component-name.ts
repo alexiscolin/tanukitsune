@@ -19,6 +19,17 @@ export const componentName = z.strictObject({ name: z.string() })
 // Built once rather than per request: the object carries a closure and nothing reads it twice.
 const FORMAT = zodOutputFormat(componentName)
 
+// The answer read back, beside the shape it was asked in so the two cannot drift apart. Nothing
+// rather than a throw: one answer the model shaped wrong is one component left unnamed and asked
+// again by the next run, where a throw would lose a batch that has already been paid for.
+export function readComponentName(text: string): string | null {
+  try {
+    return componentName.parse(JSON.parse(text)).name
+  } catch {
+    return null
+  }
+}
+
 export type Part = {
   readonly character: string
   // The kanji this component builds, which is the evidence a name is judged on: a name that pictures

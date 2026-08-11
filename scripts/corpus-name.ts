@@ -17,9 +17,9 @@ import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
 import type { Reach } from '../src/ai/corpus/batch.ts'
 import {
   COMPONENT_NAME_VERSION,
-  componentName,
   componentNamePrefix,
   componentNameRequest,
+  readComponentName,
 } from '../src/ai/corpus/prompts/component-name.ts'
 import { composedBy } from '../src/core/corpus/decomposition.ts'
 import { acceptNames } from '../src/core/corpus/name.ts'
@@ -41,8 +41,11 @@ try {
 }
 
 const locale = process.argv[2] ?? 'fr'
-const most = process.argv[3] === undefined ? Infinity : Number(process.argv[3])
-if (!(most > 0)) throw new Error(`most must be a whole number above zero, got ${process.argv[3]}`)
+const bound = process.argv[3]
+if (bound !== undefined && (!Number.isInteger(Number(bound)) || Number(bound) < 1)) {
+  throw new Error(`most must be a whole number above zero, got ${bound}`)
+}
+const most = bound === undefined ? Infinity : Number(bound)
 
 const key = asOptional(process.env['ANTHROPIC_API_KEY'])
 if (key === undefined) throw new Error('ANTHROPIC_API_KEY is not set')
@@ -50,8 +53,6 @@ if (key === undefined) throw new Error('ANTHROPIC_API_KEY is not set')
 const reach: Reach = { key }
 
 const namesFile = `corpus/${locale}/components.json`
-// Beside the locale's material rather than in it, and hidden: it belongs to a run rather than to the
-// language, and it names a job on somebody's account, so it is never committed.
 const runFile = `corpus/${locale}/.naming-batch.json`
 
 if (!existsSync(INVENTORY_FILE)) {
@@ -97,11 +98,14 @@ async function collect(id: string): Promise<void> {
   const spent = { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 }
 
   for (const [component, one] of answered) {
-    for (const [what, count] of Object.entries(one.spent)) spent[what as keyof typeof spent] += count
+    spent.input += one.spent.input
+    spent.output += one.spent.output
+    spent.cacheCreation += one.spent.cacheCreation
+    spent.cacheRead += one.spent.cacheRead
 
-    const read = componentName.safeParse(asJson(one.text))
-    if (read.success) proposed.push({ component, name: read.data.name })
-    else unusable.set(component, 'unreadable')
+    const name = readComponentName(one.text)
+    if (name === null) unusable.set(component, 'unreadable')
+    else proposed.push({ component, name })
   }
 
   const { kept, refused } = acceptNames(proposed, names, naming)
@@ -118,16 +122,6 @@ async function collect(id: string): Promise<void> {
   process.stdout.write(
     `spent: ${spent.input} in, ${spent.output} out, ${spent.cacheCreation} written to cache, ${spent.cacheRead} read from it\n`,
   )
-}
-
-// A model that answered with something other than its schema is one entry lost, not a run lost: the
-// component keeps no name and the next run asks for it again.
-function asJson(text: string): unknown {
-  try {
-    return JSON.parse(text)
-  } catch {
-    return null
-  }
 }
 
 function report(label: string, entries: readonly string[]): void {

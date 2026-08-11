@@ -28,7 +28,7 @@ export function walkCurriculum(
   const byId = new Map(subjects.map((subject) => [subject.id, subject]))
   const read: Decomposition[] = []
   const unplaced: string[] = []
-  const drawn = new Set<string>()
+  const drawn: string[] = []
   // A part that is itself a subject with a key of its own needs no component name: a word made of
   // kanji names them by what they mean. A radical owes one even where a kanji of the same shape has a
   // key, since a story names the part it draws rather than the character that shares its outline.
@@ -42,7 +42,7 @@ export function walkCurriculum(
     if (subject.hidden) continue
 
     if (subject.characters === null) {
-      drawn.add(`${subject.type}#${subject.id}`)
+      drawn.push(`${subject.type}#${subject.id}`)
       continue
     }
     if (subject.componentIds.length === 0) continue
@@ -75,5 +75,5 @@ export function walkCurriculum(
     }
   }
 
-  return { read, unplaced, drawn: [...drawn], owed: unnamedComponents(read, names).filter((one) => radicals.has(one)) }
+  return { read, unplaced, drawn, owed: unnamedComponents(read, names).filter((one) => radicals.has(one)) }
 }

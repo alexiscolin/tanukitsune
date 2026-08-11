@@ -27,7 +27,7 @@ export type Naming = Shape & {
 export type Fault = 'no article' | 'nothing after the article' | 'not the locale' | 'too long'
 
 export function faultInName(name: string, shape: Shape): Fault | null {
-  const written = name.trim().toLowerCase()
+  const written = folded(name)
   const opener = shape.opensWith.find((one) => written.startsWith(one))
 
   if (opener === undefined) return 'no article'
