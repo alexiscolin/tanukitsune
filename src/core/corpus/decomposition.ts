@@ -80,6 +80,28 @@ export function unnamedComponents(
   return [...missing]
 }
 
+// Which characters each component builds. It is the evidence a name is judged on, by the model
+// asked for one and by the reader reading it back: a name picturing nothing those characters contain
+// is a name for a different shape.
+//
+// A character standing as its own only part builds nothing, since saying that 木 builds 木 gives a
+// model nothing to picture that it was not already handed.
+export function composedBy(decompositions: readonly Decomposition[]): ReadonlyMap<string, readonly string[]> {
+  const built = new Map<string, string[]>()
+
+  for (const { character, parts } of decompositions) {
+    for (const { component } of parts) {
+      if (component === null || component === character) continue
+
+      const carries = built.get(component) ?? []
+      if (!carries.includes(character)) carries.push(character)
+      built.set(component, carries)
+    }
+  }
+
+  return built
+}
+
 // One name on two components, which costs more than an ugly name: the whole value of naming a part
 // is that the same part is called the same thing everywhere, and its converse is that two parts are
 // never called the same thing.
