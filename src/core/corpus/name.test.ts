@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { faultInName } from './name'
+import { acceptNames, faultInName } from './name'
 
 // The French shape, which is material rather than a rule: another language brings its own file and
 // this engine does not change.
@@ -64,5 +64,98 @@ describe('faultInName', () => {
   // check comparing against an empty string refuses every name there is.
   it('judges a name for a component the curriculum draws rather than writes', () => {
     expect(fault('la péniche')).toBeNull()
+  })
+})
+
+describe('acceptNames', () => {
+  const accept = (proposed: readonly { component: string; name: string }[], taken: Record<string, string> = {}) =>
+    acceptNames(proposed, taken, FRENCH)
+
+  it('keeps a name the shape allows and nothing else holds', () => {
+    const { kept, refused } = accept([{ component: '囗', name: "l'enclos" }])
+
+    expect(kept.get('囗')).toBe("l'enclos")
+    expect(refused.size).toBe(0)
+  })
+
+  it('refuses a name on its shape, and says which fault', () => {
+    const { kept, refused } = accept([
+      { component: '囗', name: 'enclos' },
+      { component: '厶', name: 'le coude du bras droit' },
+    ])
+
+    expect(kept.size).toBe(0)
+    expect(refused.get('囗')).toBe('no article')
+    expect(refused.get('厶')).toBe('too long')
+  })
+
+  // The whole value of naming a part is that the same part is called the same thing everywhere, and
+  // its converse is that two parts are never called the same thing.
+  it('refuses a name one of the components already written holds', () => {
+    const { kept, refused } = accept([{ component: '囗', name: 'la bouche' }], { 口: 'la bouche' })
+
+    expect(kept.size).toBe(0)
+    expect(refused.get('囗')).toBe('name taken')
+  })
+
+  // Every request in a batch leaves with the same list of taken names, so two of them can come back
+  // with the same one and no single request could have known. The lot is where that is caught, and
+  // the order it arrives in is the order that decides, which is why the proposals are a list.
+  it('gives a name proposed twice in one lot to the first component only', () => {
+    const { kept, refused } = accept([
+      { component: '囗', name: "l'enclos" },
+      { component: '⺆', name: "l'enclos" },
+    ])
+
+    expect(kept.get('囗')).toBe("l'enclos")
+    expect(kept.has('⺆')).toBe(false)
+    expect(refused.get('⺆')).toBe('name taken')
+  })
+
+  // A batch outlives the file it was asked against: the reader names a component by hand while it
+  // runs, and the answer arrives for a component that has a name. Renaming it is the one thing a rule
+  // reading "one name per component" cannot do, and the hand-written name is the one worth keeping.
+  it('refuses a name for a component that already has one', () => {
+    const { kept, refused } = accept([{ component: '口', name: "l'ouverture" }], { 口: 'la bouche' })
+
+    expect(kept.size).toBe(0)
+    expect(refused.get('口')).toBe('already named')
+  })
+
+  // Two names are the same name whatever their case, so the comparison folds. What is written back
+  // does not: a locale whose nouns carry a capital says so in its letters, and folding here would be
+  // that locale needing a branch in an engine that promises none.
+  it('compares two names folded and writes back what the locale wrote', () => {
+    const { kept, refused } = accept([
+      { component: '囗', name: '  la bouche ' },
+      { component: '⺆', name: 'La Bouche' },
+    ])
+
+    expect(kept.get('囗')).toBe('la bouche')
+    expect(refused.get('⺆')).toBe('name taken')
+  })
+})
+
+// The engine's claim is that a second language is a folder and no code, and nothing proves it while
+// every case it is run against comes from one folder. The same rule is run against a second shape
+// here. German capitalises its nouns and opens on three articles, both of which are its material.
+describe('acceptNames, under another locale', () => {
+  const GERMAN = {
+    opensWith: ['der ', 'die ', 'das '],
+    letters: 'abcdefghijklmnopqrstuvwxyzäöüßABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ',
+    joiners: '- ',
+    mostWords: 2,
+  }
+
+  it('keeps the capital its nouns carry', () => {
+    const { kept } = acceptNames([{ component: '口', name: 'der Mund' }], {}, GERMAN)
+
+    expect(kept.get('口')).toBe('der Mund')
+  })
+
+  it('refuses what opens on the article of another locale', () => {
+    const { refused } = acceptNames([{ component: '口', name: 'la bouche' }], {}, GERMAN)
+
+    expect(refused.get('口')).toBe('no article')
   })
 })
