@@ -49,6 +49,14 @@ describe('walkCurriculum', () => {
     expect(walkCurriculum([LEFT, RIGHT, alsoKanji, KANJI], { 亻: 'le passant' }, shapeOf).owed).toEqual([])
   })
 
+  // The other half of the same rule: a kanji nobody can be shown teaches no key, so it cannot be what
+  // names the radical either, and the radical is owed a name of its own again.
+  it('owes a name where the kanji of that shape is withdrawn', () => {
+    const withdrawn = subject({ id: 5, type: 'kanji', characters: '木', hidden: true })
+
+    expect(walkCurriculum([LEFT, RIGHT, withdrawn, KANJI], { 亻: 'le passant' }, shapeOf).owed).toEqual(['木'])
+  })
+
   // Content the source has withdrawn is dealt by no session, so demanding a name for it would be
   // demanding one for a card nobody can be shown.
   it('reads nothing from a subject the source has withdrawn', () => {
