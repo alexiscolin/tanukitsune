@@ -8,6 +8,7 @@ import {
   holdsTooManyParts,
   isFullyStated,
   MOST_PARTS,
+  namesKanjiWrites,
   unnamedComponents,
 } from './decomposition'
 
@@ -118,6 +119,18 @@ describe('collidingNames', () => {
 
   it('says nothing when every name belongs to one component', () => {
     expect(collidingNames(NAMES)).toEqual([])
+  })
+})
+
+describe('namesKanjiWrites', () => {
+  // A component a kanji writes is named by that kanji's key, so a name of its own is a second French
+  // word on one shape. Nothing owes these any more, so the report is the only thing left that sees them.
+  it('reports a name written on a component a kanji already writes', () => {
+    expect(namesKanjiWrites({ 木: "l'arbre", 亻: 'le passant' }, new Set(['木']))).toEqual(['木'])
+  })
+
+  it('says nothing when no name sits on a component a kanji writes', () => {
+    expect(namesKanjiWrites({ 亻: 'le passant' }, new Set(['木']))).toEqual([])
   })
 })
 
