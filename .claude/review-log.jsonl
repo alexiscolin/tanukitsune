@@ -878,3 +878,4 @@
 {"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","reviewer":"docs-conformity","file":"info/workflow-explique.md","line":76,"outcome":"dismissed","reason":"Three stale claims in the reader's own notes: the ai layer, the gate step count and the boundary probe counts. AGENTS.md says nothing under info/ is written without being asked, so they are reported to the reader rather than edited."}
 {"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"83ece0f6c4a94ca9a1f5e40dd4c92e1c8de37e5f","head":"f86aeed355d7a69d8a8ba33984a022c42623865f"}
 {"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"83ece0f614bbca2dbb97cc79ab389477de540e6f","head":"f86aeed355d7a69d8a8ba33984a022c42623865f"}
+{"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"f86aeed355d7a69d8a8ba33984a022c42623865f","head":"ff65bce321f94e3325c52a68e6c0b2534efe2389"}
