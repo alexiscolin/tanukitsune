@@ -119,6 +119,13 @@ export function collidingNames(names: ComponentNames): readonly string[] {
   return [...collisions]
 }
 
+// Names written on a component a kanji of the same shape already writes, which the key names on both
+// cards. Nothing owes these a name any more, so the walk no longer counts them and this is what is
+// left to see them: a name that survived the rule is invisible everywhere else.
+export function namesKanjiWrites(names: ComponentNames, written: ReadonlySet<string>): readonly string[] {
+  return Object.keys(names).filter((component) => written.has(component))
+}
+
 // Whether every part of a character carries a component. False is not a defect in the data so much as
 // the edge of what it states, and it decides which characters a model may compose from.
 export function isFullyStated(decomposition: Decomposition): boolean {

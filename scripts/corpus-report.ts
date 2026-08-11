@@ -15,11 +15,13 @@ import {
   holdsTooManyParts,
   isFullyStated,
   MOST_PARTS,
+  namesKanjiWrites,
   unnamedComponents,
 } from '../src/core/corpus/decomposition.ts'
 import type { Decomposition } from '../src/core/corpus/decomposition.ts'
 import { readComponentNames, readDecompositions } from '../src/data/corpus/artifact.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
+import type { InventorySubject } from '../src/data/corpus/inventory.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
 const locale = process.argv[2] ?? 'fr'
@@ -29,7 +31,10 @@ const names = readComponentNames(readFileSync(`corpus/${locale}/components.json`
 const shapeOf = (character: string) => decompositions.get(character) ?? []
 const isNameable = (component: string) => names[component] !== undefined
 
-const { read, unplaced, drawn, owed } = existsSync(INVENTORY_FILE) ? againstCurriculum() : againstShape()
+// Read once rather than inside the walk, because the line reporting names a kanji key already writes
+// needs the same subjects and the file is read from disk.
+const inventory = existsSync(INVENTORY_FILE) ? readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8')) : null
+const { read, unplaced, drawn, owed } = inventory === null ? againstShape() : againstCurriculum(inventory)
 
 report('characters read', String(read.length))
 report('characters the drawing does not decompose', list(read.filter((one) => one.parts.length === 0).map(named)))
@@ -43,12 +48,19 @@ if (drawn.length > 0) {
   report('components the curriculum draws rather than writes', list(drawn))
 }
 
-function againstCurriculum() {
-  const { upTo, subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
+// Only where the curriculum is present, since which shapes a kanji writes is what it says.
+if (inventory !== null) {
+  report(`names ${locale} wrote on a component a kanji writes`, list(namesKanjiWrites(names, written(inventory.subjects))))
+}
 
-  process.stdout.write(`inventory: ${subjects.length} subjects to level ${upTo}\n`)
+function againstCurriculum(read: { upTo: number; subjects: readonly InventorySubject[] }) {
+  process.stdout.write(`inventory: ${read.subjects.length} subjects to level ${read.upTo}\n`)
 
-  return walkCurriculum(subjects, names, shapeOf)
+  return walkCurriculum(read.subjects, names, shapeOf)
+}
+
+function written(subjects: readonly InventorySubject[]): ReadonlySet<string> {
+  return new Set(subjects.flatMap((one) => (one.type === 'kanji' && one.characters !== null ? [one.characters] : [])))
 }
 
 // Against the whole decomposition, which is every character the drawing carries rather than the ones

@@ -77,6 +77,13 @@ and it runs no further than a clause can carry. What opens one, what letters it 
 it may run are the language's own material, in `corpus/fr/naming.json`, since a second language brings
 different answers and no code.
 
+**A component sharing its shape with a kanji is named by that kanji's key**, and only a component no
+kanji writes is named on its own. One shape teaches one French word, so a component named apart from
+the kanji it doubles would put a second word on the same drawing, one on each card, and a story naming
+the part would contradict the card teaching the character. Which components those are is a table
+decision and never a model one: the model is not asked, so no answer of its has to be caught. Of the
+320 French still owed, 231 are named this way and 89 on their own.
+
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
 Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing
 here can name them by form alone. Their
