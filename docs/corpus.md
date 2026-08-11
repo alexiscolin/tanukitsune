@@ -94,6 +94,14 @@ decision and never a model one: the model is not asked, so no answer of its has 
 320 components the curriculum deals that no French name covers, 231 are named this way and 89 are owed
 a name of their own, which is the number `corpus:report` and `corpus:name` count.
 
+**Nine shapes are named apart from their kanji, because that kanji's key cannot be pictured**: 一 le
+sol against the key un, 十 la croix against dix, 又 la main droite against ou encore, 乙 le cygne
+against a key that describes the character rather than translating it, 氏 la bannière against nom de
+famille, 非 les persiennes against the prefix in-, 示 l'offrande against the verb montrer, 各 la halte
+against chacun, and 也 le serpent, whose kanji the release does not gloss in French at all. Those nine
+are the whole of the exception, so the report line counting names written on a shape a kanji writes
+reads nine, and a tenth is a new one to answer for.
+
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
 Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing
 here can name them by form alone. Their
