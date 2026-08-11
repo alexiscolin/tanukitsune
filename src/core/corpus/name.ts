@@ -5,6 +5,8 @@
 // No rule here is about one language. What opens a name, what letters it may carry and how far it may
 // run are that language's own material, arriving the way `cannotStart` arrives in `anchor.ts`.
 
+import type { ComponentNames } from './decomposition'
+
 export type Shape = {
   // What a name may open on, which is what makes it a thing rather than a description.
   readonly opensWith: readonly string[]
@@ -25,7 +27,7 @@ export type Naming = Shape & {
 export type Fault = 'no article' | 'nothing after the article' | 'not the locale' | 'too long'
 
 export function faultInName(name: string, shape: Shape): Fault | null {
-  const written = name.trim().toLowerCase()
+  const written = folded(name)
   const opener = shape.opensWith.find((one) => written.startsWith(one))
 
   if (opener === undefined) return 'no article'
@@ -47,4 +49,46 @@ export function faultInName(name: string, shape: Shape): Fault | null {
   if (written.slice(opener.length).split(' ').length > shape.mostWords) return 'too long'
 
   return null
+}
+
+export type Refusal = Fault | 'name taken' | 'already named'
+
+// What a whole lot of proposals settles, which is more than each of them settles alone: every request
+// in a batch left with the same list of names already written, so two answers can carry the same name
+// and neither request could have known. Earlier in the list wins, which is why they arrive as a list.
+export function acceptNames(
+  proposed: readonly { readonly component: string; readonly name: string }[],
+  taken: ComponentNames,
+  shape: Shape,
+): { readonly kept: ReadonlyMap<string, string>; readonly refused: ReadonlyMap<string, Refusal> } {
+  const kept = new Map<string, string>()
+  const refused = new Map<string, Refusal>()
+  const held = new Set(Object.values(taken).map(folded))
+
+  for (const { component, name } of proposed) {
+    // Before the shape, because a component that has a name is not renamed whatever the proposal
+    // looks like, and naming the smaller fault would hide that.
+    if (taken[component] !== undefined) {
+      refused.set(component, 'already named')
+      continue
+    }
+
+    const written = name.trim()
+    const fault = faultInName(written, shape)
+
+    if (fault !== null) refused.set(component, fault)
+    else if (held.has(folded(written))) refused.set(component, 'name taken')
+    else {
+      held.add(folded(written))
+      kept.set(component, written)
+    }
+  }
+
+  return { kept, refused }
+}
+
+// Two names are the same name whatever their case. What is kept is not folded: a locale whose nouns
+// carry a capital says so in its letters, and folding would be that locale needing a branch here.
+function folded(name: string): string {
+  return name.trim().toLowerCase()
 }

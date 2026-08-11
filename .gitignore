@@ -31,3 +31,7 @@ storybook-static/
 
 # Their meanings and their identifiers, fetched to prove coverage and kept off every published surface.
 corpus/.inventory.json
+
+# The batch a naming run left in flight. It names a job on somebody's account and the next run
+# replaces it, so it belongs to the machine that submitted rather than to the language.
+corpus/*/.naming-batch.json

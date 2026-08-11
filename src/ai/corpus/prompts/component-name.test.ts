@@ -1,7 +1,7 @@
 import type { TextBlockParam } from '@anthropic-ai/sdk/resources/messages'
 import { describe, expect, it } from 'vitest'
 
-import { componentName, componentNamePrefix, componentNameRequest } from './component-name'
+import { componentName, componentNamePrefix, componentNameRequest, readComponentName } from './component-name'
 
 // A locale that is not French, so a rule leaking back into the prompt shows up here rather than in a
 // run six months from now.
@@ -85,5 +85,21 @@ describe('componentNameRequest', () => {
     expect(componentNameRequest(prefix(), { character: '九', composes: ['丸'] }).model).toBe('claude-opus-5')
     expect(componentName.safeParse({ name: 'la bouche', why: 'because' }).success).toBe(false)
     expect(componentName.safeParse({ name: 'la bouche' }).success).toBe(true)
+  })
+})
+
+describe('readComponentName', () => {
+  it('reads the name out of an answer shaped the way it was asked for', () => {
+    expect(readComponentName('{"name":"la bouche"}')).toBe('la bouche')
+  })
+
+  // One entry lost is not a run lost: the component keeps no name and the next run asks again. It has
+  // to be told apart from an answer, though, or a run reports names it never got.
+  it('gives nothing back for an answer it cannot read', () => {
+    expect(readComponentName('la bouche')).toBeNull()
+    expect(readComponentName('{"name":')).toBeNull()
+    expect(readComponentName('{"name":"la bouche","why":"because"}')).toBeNull()
+    expect(readComponentName('{"nom":"la bouche"}')).toBeNull()
+    expect(readComponentName('')).toBeNull()
   })
 })

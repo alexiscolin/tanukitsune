@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { readComponentNames, readDecompositions, readNaming, readPhonology } from './artifact'
+import { componentNamesFile, readComponentNames, readDecompositions, readNaming, readPhonology } from './artifact'
 
 const FILE = `{
 "header":{"source":"KanjiVG","licence":"CC BY-SA 4.0"},
@@ -48,6 +48,29 @@ describe('readComponentNames', () => {
 
   it('refuses a file that is not a name list', () => {
     expect(() => readComponentNames('{"names":{"亻":3}}')).toThrow()
+  })
+})
+
+describe('componentNamesFile', () => {
+  // The header carries the Kanji Alive attribution, and the obligation follows the file rather than
+  // the repository, so a writer that rebuilds the file from the names alone drops a licence notice.
+  const written = '{\n  "header": {\n    "source": "Kanji Alive"\n  },\n  "names": {\n    "口": "la bouche"\n  }\n}\n'
+
+  it('adds a name without touching the header', () => {
+    const after = componentNamesFile(written, new Map([['木', "l'arbre"]]))
+
+    expect(after).toContain('"source": "Kanji Alive"')
+    expect(readComponentNames(after)).toEqual({ 口: 'la bouche', 木: "l'arbre" })
+  })
+
+  // A run that settles nothing still writes, and a file that comes back different after it would put
+  // 186 lines nobody changed into the diff a reader has to read.
+  it('gives the file back unchanged when a run settled nothing', () => {
+    expect(componentNamesFile(written, new Map())).toBe(written)
+  })
+
+  it('refuses a file that is not a name list', () => {
+    expect(() => componentNamesFile('{"names":{"亻":3}}', new Map())).toThrow()
   })
 })
 

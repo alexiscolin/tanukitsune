@@ -202,9 +202,10 @@ instrument over a sample.
 
 ## The command
 
-One command, the locale as a parameter, re-runnable by reflex. Three of its steps exist today,
-`corpus:decomposition`, `corpus:inventory` and `corpus:report`; the generation itself is the shape the
-rest of this section describes and the next thing built, so nothing here is runnable end to end yet.
+One command, the locale as a parameter, re-runnable by reflex. Four of its steps exist today,
+`corpus:decomposition`, `corpus:inventory`, `corpus:report` and `corpus:name`; the prose itself is the
+shape the rest of this section describes and the next thing built, so nothing here is runnable end to
+end yet.
 
 It reads the subject list and takes the item count from it rather than from an estimate, generates
 through the batch API, validates, writes by subject as it goes, publishes the chunks and then the
@@ -213,6 +214,13 @@ is not regenerated, and the failed set goes into the next batch, which is the sa
 
 Batch submission is asynchronous, so one command does not mean one minute. The first run on a new
 language builds that language's world, stops, and waits for it to be reviewed and committed.
+
+`corpus:name` is that first run, and it is the shape the rest of the command takes. It counts what the
+locale owes against the curriculum, asks for one name per component, and is re-run rather than waited
+on: the first invocation submits and writes down the batch, a later one collects it and writes the
+names it judged acceptable. A name refused for its shape or for belonging to another component is not
+written, and the next run asks for it again alongside the requests the batch could not answer at all.
+It takes a bound as a second parameter, so a run can be read by hand before the rest is paid for.
 
 **Coverage is proven against the curriculum rather than against the decomposition.**
 `pnpm corpus:inventory` writes down every subject the account deals up to a level, read with the
