@@ -66,6 +66,12 @@ are selected from an existing gloss and then made unique rather than invented fr
 per subject, one subject per key, and the English key recorded beside it: the upstream account grades
 in English, and the day English is served it must teach the same key for the same character.
 
+`corpus:keys` writes them, in the order the reader meets the characters, so the plainest word goes to
+the one taught first and a later character takes the next gloss it has. A character whose every gloss
+is already spoken for is reported rather than given a word nobody wrote, and so is one the release does
+not gloss at all. French leaves 159 of 2101 unsettled that way, and a language the release does not
+carry leaves all of them, which is the same path rather than a different one.
+
 **Component names.** Written here, one name per component and one component per name across the whole
 corpus, which is the single most valuable consistency rule at scale. Kanji Alive's table gives 209 of
 the 855 components the jouyou decompositions use, so the rest are ours, seeded by the traditional name
@@ -209,8 +215,8 @@ instrument over a sample.
 
 ## The command
 
-One command, the locale as a parameter, re-runnable by reflex. Four of its steps exist today,
-`corpus:decomposition`, `corpus:inventory`, `corpus:report` and `corpus:name`; the prose itself is the
+One command, the locale as a parameter, re-runnable by reflex. Five of its steps exist today,
+`corpus:decomposition`, `corpus:inventory`, `corpus:keys`, `corpus:report` and `corpus:name`; the prose itself is the
 shape the rest of this section describes and the next thing built, so nothing here is runnable end to
 end yet.
 
