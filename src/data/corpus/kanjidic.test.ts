@@ -12,6 +12,10 @@ const XML = `<kanjidic2>
 <meaning m_lang="fr">chien</meaning>
 <meaning m_lang="fr">canidé</meaning>
 </rmgroup></reading_meaning></character>
+<character><literal>乙</literal><reading_meaning><rmgroup>
+<meaning m_lang="fr">radical hameçon (no. 5)</meaning>
+<meaning m_lang="fr">chic</meaning>
+</rmgroup></reading_meaning></character>
 <character><literal>々</literal><reading_meaning><rmgroup>
 <reading r_type="ja_on">ノマ</reading>
 </rmgroup></reading_meaning></character>
@@ -20,6 +24,12 @@ const XML = `<kanjidic2>
 describe('parseGlosses', () => {
   it('reads every gloss the release states in the asked language', () => {
     expect(parseGlosses(XML, 'fr').get('犬')).toEqual(['chien', 'canidé'])
+  })
+
+  // The release states the Kangxi listing as a meaning of its own, which describes the character
+  // rather than saying what it means, so it can never be the word a reader is graded on.
+  it('leaves out the gloss naming the character as a numbered radical', () => {
+    expect(parseGlosses(XML, 'fr').get('乙')).toEqual(['chic'])
   })
 
   it('reads nothing for a language the release does not carry', () => {
