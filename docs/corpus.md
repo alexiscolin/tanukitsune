@@ -11,7 +11,10 @@ and the checks.
 
 **What a table can decide, the table decides, and the model writes only prose.** The key, the
 component names, the reading being taught and the sound anchor are settled before generation and
-handed to the model. It invents the story and nothing else. Everything a model is allowed to choose it
+handed to the model. It invents the story and nothing else. Where settling one is a judgement rather
+than a lookup, as with which of a character's meanings is its central one, a model is asked earlier and
+for an order over what a dictionary already states, never for a word: an answer that is not a
+reordering is refused, so the table still decides. Everything a model is allowed to choose it
 chooses well most of the time, and the exceptions are permanent.
 
 **And nothing is decided in silence.** A character the decomposition data cannot state, a reading left
@@ -67,6 +70,15 @@ per subject, one subject per key. The English the account grades on is not writt
 theirs, so it stays in the uncommitted inventory that already carries it, read at generation time like
 the decomposition and never written into a file that travels.
 
+**Which of a character's glosses is the central one is a judgement, and the only thing a model decides
+about a key.** `corpus:key-choice` asks it to order the glosses, from the sense the character most
+plainly carries to the one it carries least, and writes that order to `corpus/<locale>/key-choice.json`.
+It writes no word: an answer that is not a reordering of the glosses it was given, one inventing,
+dropping or repeating one, is refused and the release's own order stands. Selection and uniqueness stay
+the table's, which is why 1742 of the 2101 are weighed and the other 359 need no model at all. A
+character nobody has weighed keeps the order the release states, so the keys can be written before a
+single request is paid for.
+
 `corpus:keys` writes them, in the order the reader meets the characters, so the plainest word goes to
 the one taught first and a later character takes the next gloss it has. A character whose every gloss
 is already spoken for is reported rather than given a word nobody wrote, and so is one the release does
@@ -96,8 +108,7 @@ a name of their own, which is the number `corpus:report` and `corpus:name` count
 
 **Nine shapes are named apart from their kanji, because that kanji's key cannot be pictured**: 一 le
 sol against the key un, 十 la croix against dix, 又 la main droite against ou encore, 乙 le cygne
-against a key that describes the character rather than translating it, 氏 la bannière against nom de
-famille, 非 les persiennes against the prefix in-, 示 l'offrande against the verb montrer, 各 la halte
+against chic, 氏 la bannière against nom de famille, 非 les persiennes against the prefix in-, 示 l'offrande against the verb montrer, 各 la halte
 against chacun, and 也 le serpent, whose kanji the release does not gloss in French at all. Those nine
 are the whole of the exception, so the report line counting names written on a shape a kanji writes
 reads nine, and a tenth is a new one to answer for.
@@ -227,8 +238,9 @@ instrument over a sample.
 
 ## The command
 
-One command, the locale as a parameter, re-runnable by reflex. Five of its steps exist today,
-`corpus:decomposition`, `corpus:inventory`, `corpus:keys`, `corpus:report` and `corpus:name`; the prose itself is the
+One command, the locale as a parameter, re-runnable by reflex. Six of its steps exist today,
+`corpus:decomposition`, `corpus:inventory`, `corpus:keys`, `corpus:key-choice`, `corpus:report` and
+`corpus:name`; the prose itself is the
 shape the rest of this section describes and the next thing built, so nothing here is runnable end to
 end yet.
 

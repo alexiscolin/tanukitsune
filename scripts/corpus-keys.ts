@@ -9,10 +9,11 @@
 // The English the account grades on is not written here. It is the account's, so it stays in the
 // uncommitted inventory that already carries it and never reaches a file that travels.
 
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 import { fetched, list } from './corpus-command.ts'
 import { chooseKeys } from '../src/core/corpus/key.ts'
+import { readKeyOrder } from '../src/data/corpus/artifact.ts'
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
@@ -43,7 +44,15 @@ const characters = subjects
   .sort((one, other) => one.level - other.level || one.id - other.id)
   .map((one) => one.characters as string)
 
-const keyed = chooseKeys(characters, (character) => spoken.get(character) ?? [])
+// Where a run has weighed a character's glosses, that order is walked instead of the dictionary's.
+// Absent before the first such run and never required: a character nobody weighed keeps the order the
+// release states, so this command answers with or without a model having spoken.
+const orderFile = `corpus/${locale}/key-choice.json`
+const chosen: ReadonlyMap<string, readonly string[]> = existsSync(orderFile)
+  ? readKeyOrder(readFileSync(orderFile, 'utf8'))
+  : new Map()
+
+const keyed = chooseKeys(characters, (character) => chosen.get(character) ?? spoken.get(character) ?? [])
 const written = characters.filter((character) => keyed.keys[character] !== undefined)
 
 const lines = written

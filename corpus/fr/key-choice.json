@@ -1,0 +1,8 @@
+{
+  "header": {
+    "what": "Which of a character's meanings French teaches it under, as an order over the glosses KANJIDIC2 states. The word itself is always one of theirs; only the order is settled here.",
+    "how": "Written by pnpm corpus:key-choice, read by pnpm corpus:keys. A character absent from this file keeps the order the release states.",
+    "source": "The glosses ordered here are KANJIDIC2's, CC BY-SA 4.0, Electronic Dictionary Research and Development Group. See docs/sources.md."
+  },
+  "order": {}
+}
