@@ -8,6 +8,10 @@
 
 const ENTRY = /<character>([\s\S]*?)<\/character>/g
 const LITERAL = /<literal>(.*?)<\/literal>/
+// The release states the Kangxi listing among the meanings, "radical hameçon (no. 5)", which says what
+// the character is in a table rather than what it means. Twenty characters carry one, and it is never
+// a word a reader can be graded on.
+const LISTING = /\(no\.\s*\d+\)/
 
 export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const glossed = new Map<string, readonly string[]>()
@@ -17,7 +21,10 @@ export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, r
     const character = LITERAL.exec(body)?.[1]
     if (character === undefined) continue
 
-    glossed.set(character, [...body.matchAll(spoken)].map(([, gloss = '']) => gloss))
+    glossed.set(
+      character,
+      [...body.matchAll(spoken)].map(([, gloss = '']) => gloss).filter((gloss) => !LISTING.test(gloss)),
+    )
   }
 
   return glossed
