@@ -19,6 +19,8 @@ const XML = `<kanjidic2>
 <character><literal>低</literal><reading_meaning><rmgroup>
 <meaning m_lang="fr">petit (taille)</meaning>
 <meaning m_lang="fr">(sens figuré)</meaning>
+<meaning m_lang="fr">"(x) ans" (âge)</meaning>
+<meaning m_lang="fr">petit (âge)</meaning>
 <meaning m_lang="fr">bas</meaning>
 </rmgroup></reading_meaning></character>
 <character><literal>々</literal><reading_meaning><rmgroup>
@@ -41,7 +43,20 @@ describe('parseGlosses', () => {
   // is the whole of what a learner types. The word it qualifies is kept and the aside is not, and a
   // gloss that is nothing but an aside leaves no word behind.
   it('keeps the word a parenthesis qualifies and drops the aside', () => {
-    expect(parseGlosses(XML, 'fr').get('低')).toEqual(['petit', 'bas'])
+    expect(parseGlosses(XML, 'fr').get('低')).toEqual(['petit', 'ans', 'bas'])
+  })
+
+  // Two glosses telling themselves apart only by their asides are one word once the asides are gone,
+  // and an order over a list holding the same word twice is one no answer can satisfy. The gloss is
+  // kept once, so a character stays answerable.
+  it('keeps a word once where two glosses cleaned down to it', () => {
+    expect(parseGlosses(XML, 'fr').get('低')?.filter((one) => one === 'petit')).toHaveLength(1)
+  })
+
+  // The release quotes a gloss that quotes itself. Stripping the aside out of the middle of it leaves
+  // the quotes around nothing, and a key is a word rather than punctuation.
+  it('leaves no quotation behind when an aside sat inside one', () => {
+    expect(parseGlosses(XML, 'fr').get('低')).not.toContain('" ans"')
   })
 
   it('reads nothing for a language the release does not carry', () => {

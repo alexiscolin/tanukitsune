@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
 
 import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } from './component-name'
+import { KEY_CHOICE_VERSION, keyChoicePrefix, keyChoiceRequest } from './key-choice'
 
 // A version constant nobody bumps is worse than no version constant. `prompt_version` is a column on
 // every corpus row and the prompt is expected to change between the budgeted runs, so two runs sharing
@@ -17,6 +18,31 @@ import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } fro
 const RECORDED: Record<number, string> = {
   2: '62e15f5c4f64e5707fb1ec92477408d74dac4ce3cd81d065f2d0fa66bd195b9c',
   3: '8a4b85efd3327b554b64b4ed1e3cea70cc5e76c1a9e300c1d345655a9a56a1d3',
+}
+
+const RECORDED_CHOICE: Record<number, string> = {
+  1: '75ed2507db9e8e07e5b5cbd620e3964cee7da51a2652cd944837ae5a58c4505a',
+}
+
+describe('the key choice prompt', () => {
+  it('has not changed without its version changing', () => {
+    const recorded = RECORDED_CHOICE[KEY_CHOICE_VERSION]
+
+    expect(
+      recorded,
+      `version ${KEY_CHOICE_VERSION} has no recorded hash. Record ${renderedChoice()} against it.`,
+    ).toBeDefined()
+    expect(renderedChoice(), 'the prompt changed. Bump its version and record the new hash.').toBe(recorded)
+  })
+})
+
+// Fixed inputs, for the same reason: what moves is the wording and never the character asked about.
+function renderedChoice(): string {
+  const asked = keyChoiceRequest(keyChoicePrefix('French'), { character: '乙', glosses: ['chic', 'second'] })
+
+  return createHash('sha256')
+    .update(JSON.stringify({ ...asked, model: undefined }))
+    .digest('hex')
 }
 
 describe('the component name prompt', () => {
