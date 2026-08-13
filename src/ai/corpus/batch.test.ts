@@ -81,6 +81,18 @@ describe('submitBatch', () => {
 })
 
 describe('collectBatch', () => {
+  // A batch still running is an answer rather than a fault: the run file still holds its identifier
+  // and the next invocation collects it. Throwing made an operator read a stack trace for the one
+  // outcome that is entirely normal.
+  it('reports a batch that has not ended rather than throwing', async () => {
+    server.use(running())
+
+    await expect(collectBatch('batch_1', { key: KEY, api: API })).resolves.toEqual({
+      ended: false,
+      status: 'in_progress',
+    })
+  })
+
   // Results arrive in any order, so they are keyed by the identifier that was sent rather than by
   // position. Reading them by position is the bug this test exists to make impossible.
   it('keys every result by its subject rather than by the order it arrives in', async () => {
@@ -89,7 +101,7 @@ describe('collectBatch', () => {
       results([resultLine('ハ', 'la fourche'), resultLine('九', 'le neuf')]),
     )
 
-    const collected = await collectBatch('batch_1', { key: KEY, api: API })
+    const collected = await ofEnded()
 
     expect(collected.answered.get('九')?.text).toBe('le neuf')
     expect(collected.answered.get('ハ')?.text).toBe('la fourche')
@@ -100,7 +112,7 @@ describe('collectBatch', () => {
   it('carries the four token counts rather than the one that under-reports', async () => {
     server.use(ended(), results([resultLine('九', 'le neuf')]))
 
-    const collected = await collectBatch('batch_1', { key: KEY, api: API })
+    const collected = await ofEnded()
 
     expect(collected.answered.get('九')?.spent).toEqual({
       input: 12,
@@ -121,7 +133,7 @@ describe('collectBatch', () => {
       ]),
     )
 
-    const collected = await collectBatch('batch_1', { key: KEY, api: API })
+    const collected = await ofEnded()
 
     expect(collected.answered.size).toBe(0)
     expect(collected.failed.get('殺')).toBe('errored')
@@ -133,7 +145,7 @@ describe('collectBatch', () => {
   it('refuses a truncated answer instead of storing half of one', async () => {
     server.use(ended(), results([resultLine('九', 'le ne', 'max_tokens')]))
 
-    const collected = await collectBatch('batch_1', { key: KEY, api: API })
+    const collected = await ofEnded()
 
     expect(collected.answered.size).toBe(0)
     expect(collected.failed.get('九')).toBe('truncated')
@@ -156,12 +168,26 @@ describe('collectBatch', () => {
       ]),
     )
 
-    const collected = await collectBatch('batch_1', { key: KEY, api: API })
+    const collected = await ofEnded()
 
     expect(collected.answered.size).toBe(0)
     expect(collected.failed.get('殺')).toBe('refusal')
   })
 })
+
+// The ended shape, narrowed once here so every test below reads a result rather than a union.
+async function ofEnded() {
+  const collected = await collectBatch('batch_1', { key: KEY, api: API })
+  if (!collected.ended) throw new Error('the batch was expected to have ended')
+
+  return collected
+}
+
+function running() {
+  return http.get(`${API}/v1/messages/batches/batch_1`, () =>
+    HttpResponse.json({ id: 'batch_1', processing_status: 'in_progress' }),
+  )
+}
 
 function ended() {
   return http.get(`${API}/v1/messages/batches/batch_1`, () =>
