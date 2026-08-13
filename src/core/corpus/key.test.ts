@@ -42,6 +42,31 @@ describe('chooseKeys', () => {
   it('settles nothing for a character the source does not gloss', () => {
     expect(chooseKeys(['々'], glossesOf)).toEqual({ keys: {}, unsettled: ['々'] })
   })
+
+  // The rescue, and the reason it is a second pass rather than an order. 言 states one gloss, dire, and
+  // 申 takes it first while still holding another it can move to. A shape stories name cannot be left
+  // mute, so it takes the word and its holder steps sideways: one key moves, where serving the shapes
+  // first would have moved hundreds to save this one.
+  it('takes a word back for a shape left with none, where its holder can move', () => {
+    const spoken = (one: string) => (one === '申' ? ['dire', 'singe'] : ['dire'])
+
+    expect(chooseKeys(['申', '言'], spoken, new Set(['言'])).keys).toEqual({ 申: 'singe', 言: 'dire' })
+  })
+
+  it('leaves the shape unsettled where its holder has nowhere to move', () => {
+    const spoken = () => ['dire']
+
+    expect(chooseKeys(['申', '言'], spoken, new Set(['言']))).toEqual({ keys: { 申: 'dire' }, unsettled: ['言'] })
+  })
+
+  // The rescue serves a shape stories name, and nothing else: a leaf kanji left without a word is a
+  // character the reader meets once, and taking a key off a settled character for it would be churn
+  // rather than repair.
+  it('rescues nothing for a character that names no shape', () => {
+    const spoken = (one: string) => (one === '申' ? ['dire', 'singe'] : ['dire'])
+
+    expect(chooseKeys(['申', '言'], spoken).unsettled).toEqual(['言'])
+  })
 })
 
 describe('isOrderOf', () => {

@@ -21,6 +21,7 @@ const XML = `<kanjidic2>
 <meaning m_lang="fr">(sens figuré)</meaning>
 <meaning m_lang="fr">"(x) ans" (âge)</meaning>
 <meaning m_lang="fr">petit (âge)</meaning>
+<meaning m_lang="fr">s'appeler</meaning>
 <meaning m_lang="fr">bas</meaning>
 </rmgroup></reading_meaning></character>
 <character><literal>々</literal><reading_meaning><rmgroup>
@@ -43,7 +44,7 @@ describe('parseGlosses', () => {
   // is the whole of what a learner types. The word it qualifies is kept and the aside is not, and a
   // gloss that is nothing but an aside leaves no word behind.
   it('keeps the word a parenthesis qualifies and drops the aside', () => {
-    expect(parseGlosses(XML, 'fr').get('低')).toEqual(['petit', 'ans', 'bas'])
+    expect(parseGlosses(XML, 'fr').get('低')).toEqual(['petit', 'ans', "s'appeler", 'bas'])
   })
 
   // Two glosses telling themselves apart only by their asides are one word once the asides are gone,
@@ -57,6 +58,12 @@ describe('parseGlosses', () => {
   // the quotes around nothing, and a key is a word rather than punctuation.
   it('leaves no quotation behind when an aside sat inside one', () => {
     expect(parseGlosses(XML, 'fr').get('低')).not.toContain('" ans"')
+  })
+
+  // The apostrophe is a letter's neighbour in French, not a quotation, and a gloss losing it is a word
+  // no dictionary states.
+  it('keeps an apostrophe inside a word', () => {
+    expect(parseGlosses(XML, 'fr').get('低')).toContain("s'appeler")
   })
 
   it('reads nothing for a language the release does not carry', () => {
