@@ -24,7 +24,7 @@
       "haut",
       "au-dessus",
       "monter",
-      "donner (je te donne)"
+      "donner"
     ],
     "円": [
       "cercle",
@@ -36,13 +36,13 @@
       "au-dessous",
       "descendre",
       "inférieur",
-      "donner (vous me donnez)"
+      "donner"
     ],
     "中": [
       "milieu",
       "centre",
       "dedans",
-      "à l'intérieur",
+      "à lintérieur",
       "dans",
       "moyenne"
     ],
@@ -52,12 +52,12 @@
     ],
     "木": [
       "arbre",
-      "bois (matière)"
+      "bois"
     ],
     "才": [
       "génie",
-      "\"(x) ans\" (âge)",
-      "shaku cubique (18,04 ml)"
+      "ans",
+      "shaku cubique"
     ],
     "工": [
       "construction",
@@ -72,7 +72,7 @@
       "vérité",
       "réalité",
       "présent",
-      "compteur d'objets allongés"
+      "compteur dobjets allongés"
     ],
     "女": [
       "femme",
@@ -88,8 +88,8 @@
       "puissance",
       "fort",
       "tension",
-      "s'efforcer",
-      "employer (force)",
+      "sefforcer",
+      "employer",
       "tenir le coup"
     ],
     "人": [
@@ -103,12 +103,12 @@
       "expérience",
       "classe",
       "faveur",
-      "pièce (Go)",
+      "pièce",
       "numérateur ordinal"
     ],
     "丁": [
       "pâté de maison",
-      "tranche d'aliment",
+      "tranche daliment",
       "exactitude",
       "soin extrême",
       "quatrième",
@@ -119,7 +119,7 @@
       "arrondir",
       "se rouler en boule",
       "se pelotonner",
-      "entier (mois)",
+      "entier",
       "perfection",
       "pilule",
       "suffixe des bateaux",
@@ -162,7 +162,7 @@
       "style",
       "art",
       "décoration",
-      "figure (de style)",
+      "figure",
       "plan"
     ],
     "王": [
@@ -172,10 +172,10 @@
     ],
     "子": [
       "enfant",
-      "signe du Rat (zodiaque)",
+      "signe du Rat",
       "signe de la 1ère branche terrestre",
       "23 h à 01 h",
-      "Nord (0°)"
+      "Nord"
     ],
     "切": [
       "couper",

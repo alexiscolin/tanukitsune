@@ -31,7 +31,7 @@ import {
 } from '../src/data/corpus/artifact.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
-import { nextStep, readSubmitted, submittedFile } from '../src/data/corpus/naming-run.ts'
+import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
 import { asOptional } from '../src/data/optional-text.ts'
 
 try {
@@ -101,13 +101,10 @@ async function collect(id: string): Promise<void> {
   const { answered, failed } = collected
   const unusable = new Map(failed)
   const proposed: { component: string; name: string }[] = []
-  const spent = { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 }
+  const spent = noSpend()
 
   for (const [component, one] of answered) {
-    spent.input += one.spent.input
-    spent.output += one.spent.output
-    spent.cacheCreation += one.spent.cacheCreation
-    spent.cacheRead += one.spent.cacheRead
+    add(spent, one.spent)
 
     const name = readComponentName(one.text)
     if (name === null) unusable.set(component, 'unreadable')
@@ -125,9 +122,7 @@ async function collect(id: string): Promise<void> {
   process.stdout.write(`still owed: ${owed.length - kept.size}, asked again by the next run\n`)
   report('refused', [...refused].map(([component, why]) => `${component} ${why}`))
   report('no answer', [...unusable].map(([component, why]) => `${component} ${why}`))
-  process.stdout.write(
-    `spent: ${spent.input} in, ${spent.output} out, ${spent.cacheCreation} written to cache, ${spent.cacheRead} read from it\n`,
-  )
+  process.stdout.write(spentLine(spent))
 }
 
 function report(label: string, entries: readonly string[]): void {

@@ -15,6 +15,9 @@ const LISTING = /\(no\.\s*\d+\)/
 // A parenthesis qualifies a gloss for somebody reading a dictionary and means nothing on a card, where
 // the key is the whole of what a learner types. The word it qualifies is kept and the aside is not.
 const ASIDE = /\s*\([^)]*\)/g
+// The release quotes a gloss that quotes itself, and an aside taken out of the middle of one leaves
+// the quotes around what is left. A key is a word rather than punctuation.
+const QUOTES = /["']/g
 
 export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const glossed = new Map<string, readonly string[]>()
@@ -29,10 +32,17 @@ export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, r
       [...body.matchAll(spoken)]
         .map(([, gloss = '']) => gloss)
         .filter((gloss) => !LISTING.test(gloss))
-        .map((gloss) => gloss.replace(ASIDE, '').trim())
-        .filter((gloss) => gloss !== ''),
+        .map((gloss) => plain(gloss))
+        .filter((gloss, at, all) => gloss !== '' && all.indexOf(gloss) === at),
     )
   }
 
   return glossed
+}
+
+// Two glosses telling themselves apart only by their asides are one word once the asides are gone, so
+// the caller sees the word once: a list holding it twice is a list no order over it can satisfy, and
+// the character would be asked for forever.
+function plain(gloss: string): string {
+  return gloss.replace(ASIDE, '').replace(QUOTES, '').replace(/\s+/g, ' ').trim()
 }

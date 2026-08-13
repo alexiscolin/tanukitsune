@@ -22,7 +22,7 @@ import {
 import { keyOrderFile, readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
-import { nextStep, readSubmitted, submittedFile } from '../src/data/corpus/naming-run.ts'
+import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
 import { isOrderOf } from '../src/core/corpus/key.ts'
 import { asOptional } from '../src/data/optional-text.ts'
 import { fetched, list } from './corpus-command.ts'
@@ -107,13 +107,10 @@ async function collect(id: string): Promise<void> {
   const { answered, failed } = collected
   const unusable = new Map(failed)
   const kept = new Map<string, readonly string[]>()
-  const spent = { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 }
+  const spent = noSpend()
 
   for (const [character, one] of answered) {
-    spent.input += one.spent.input
-    spent.output += one.spent.output
-    spent.cacheCreation += one.spent.cacheCreation
-    spent.cacheRead += one.spent.cacheRead
+    add(spent, one.spent)
 
     const order = readKeyChoice(one.text, glosses.get(character) ?? [])
     if (order === null) unusable.set(character, 'not an order over the glosses it was given')
@@ -128,7 +125,5 @@ async function collect(id: string): Promise<void> {
   process.stdout.write(`collected: ${kept.size} ordered, written to ${orderFile}\n`)
   process.stdout.write(`still to weigh: ${owed.length - kept.size}, asked again by the next run\n`)
   process.stdout.write(`refused: ${list([...unusable.keys()])}\n`)
-  process.stdout.write(
-    `spent: ${spent.input} in, ${spent.output} out, ${spent.cacheCreation} written to cache, ${spent.cacheRead} read from it\n`,
-  )
+  process.stdout.write(spentLine(spent))
 }

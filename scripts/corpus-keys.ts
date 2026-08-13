@@ -52,11 +52,21 @@ const chosen: ReadonlyMap<string, readonly string[]> = existsSync(orderFile)
   ? readKeyOrder(readFileSync(orderFile, 'utf8'))
   : new Map()
 
+// An order settled over glosses the release has since restated, or that a cleaning rule has moved, no
+// longer describes them. It is walked past rather than trusted, and said rather than walked past in
+// silence: it is a judgement already paid for that this run is not using.
+const stale: string[] = []
+
 const keyed = chooseKeys(characters, (character) => {
   const glosses = spoken.get(character) ?? []
   const order = chosen.get(character)
 
-  return order !== undefined && isOrderOf(order, glosses) ? order : glosses
+  if (order === undefined) return glosses
+  if (isOrderOf(order, glosses)) return order
+
+  stale.push(character)
+
+  return glosses
 })
 const written = characters.filter((character) => keyed.keys[character] !== undefined)
 
@@ -71,6 +81,7 @@ process.stdout.write(`keys: ${written.length} of ${characters.length} written to
 // different things: one waits on a gloss to be written, the other on a word to be freed.
 const unglossed = keyed.unsettled.filter((one) => (spoken.get(one) ?? []).length === 0)
 
+process.stdout.write(`orders no longer describing their glosses, weighed again: ${list(stale)}\n`)
 process.stdout.write(`the release glosses nothing in ${locale}: ${list(unglossed)}\n`)
 process.stdout.write(
   `every gloss the release states is already a key: ${list(keyed.unsettled.filter((one) => !unglossed.includes(one)))}\n`,

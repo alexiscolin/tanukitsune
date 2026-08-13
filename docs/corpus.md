@@ -75,7 +75,7 @@ about a key.** `corpus:key-choice` asks it to order the glosses, from the sense 
 plainly carries to the one it carries least, and writes that order to `corpus/<locale>/key-choice.json`.
 It writes no word: an answer that is not a reordering of the glosses it was given, one inventing,
 dropping or repeating one, is refused and the release's own order stands. Selection and uniqueness stay
-the table's, which is why 1742 of the 2101 are weighed and the other 359 need no model at all. A
+the table's, which is why only a character with more than one gloss is weighed at all. A
 character nobody has weighed keeps the order the release states, so the keys can be written before a
 single request is paid for.
 
@@ -83,8 +83,13 @@ single request is paid for.
 the one taught first and a later character takes the next gloss it has. A character whose every gloss
 is already spoken for is reported rather than given a word nobody wrote, and so is one the release does
 not gloss at all, the two apart because one waits on a gloss and the other on a word to be freed.
+Two shapes of gloss are cleaned before any of this: the Kangxi listing the release states as a meaning
+of its own, "radical hameçon (no. 5)", which says where a character sits in a table rather than what it
+means, and a parenthesised aside, which qualifies a gloss for a dictionary reader and means nothing on
+a card. The word an aside qualifies is kept and the aside is not.
+
 Against the 2101 kanji the curriculum deals rather than the jouyou set the licence covers, French
-leaves 159 unsettled, 153 unglossed and 6 whose every gloss is taken. A language the release does not
+leaves 162 unsettled, 153 unglossed and 9 whose every gloss is taken. A language the release does not
 carry leaves all of them, which is the same path rather than a different one.
 
 **Component names.** Written here, one name per component and one component per name across the whole
@@ -112,6 +117,11 @@ against chic, 氏 la bannière against nom de famille, 非 les persiennes agains
 against chacun, and 也 le serpent, whose kanji the release does not gloss in French at all. Those nine
 are the whole of the exception, so the report line counting names written on a shape a kanji writes
 reads nine, and a tenth is a new one to answer for.
+
+**A shape can fall between the two rules and be taught under no word at all**, being owed no name
+because a kanji writes it while that kanji was left without a key because every gloss it has was
+already spoken for. `corpus:report` counts those on their own line, four today: 巾, 言, 莫 and 龍. It is
+the one hole neither the owed count nor the collision check can see.
 
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
 Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing

@@ -49,6 +49,14 @@ export function componentNamesFile(current: string, added: ReadonlyMap<string, s
   return `${JSON.stringify({ ...file, names }, null, 2)}\n`
 }
 
+// The word each character is taught and graded under, written by corpus:keys. Read here so the report
+// can say which components a key names, since a component a kanji writes has no name of its own.
+const keyList = z.object({ keys: z.record(z.string(), z.string()) })
+
+export function readKeys(json: string): Readonly<Record<string, string>> {
+  return keyList.parse(JSON.parse(json)).keys
+}
+
 // The order a run settled over each character's glosses, which is the only thing the model decides
 // about a key. Absent before the first run, and a character it does not name keeps the order the
 // dictionary states, so the file is an improvement over that order rather than a requirement for it.

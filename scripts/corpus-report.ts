@@ -17,10 +17,11 @@ import {
   MOST_PARTS,
   namesKanjiWrites,
   unnamedComponents,
+  wordlessComponents,
 } from '../src/core/corpus/decomposition.ts'
 import type { Decomposition } from '../src/core/corpus/decomposition.ts'
 import { list } from './corpus-command.ts'
-import { readComponentNames, readDecompositions } from '../src/data/corpus/artifact.ts'
+import { readComponentNames, readDecompositions, readKeys } from '../src/data/corpus/artifact.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -38,9 +39,9 @@ const inventory = existsSync(INVENTORY_FILE) ? readInventoryFile(readFileSync(IN
 const { read, unplaced, drawn, owed } = inventory === null ? againstShape() : againstCurriculum(inventory)
 
 report('characters read', String(read.length))
-report('characters the drawing does not decompose', list(read.filter((one) => one.parts.length === 0).map(named)))
-report('characters the source does not fully state', list(read.filter((one) => !isFullyStated(one)).map(named)))
-report(`characters opened past ${MOST_PARTS} parts`, list(read.filter(holdsTooManyParts).map(named)))
+report('characters the drawing does not decompose', list(read.filter((one) => one.parts.length === 0).map(characterOf)))
+report('characters the source does not fully state', list(read.filter((one) => !isFullyStated(one)).map(characterOf)))
+report(`characters opened past ${MOST_PARTS} parts`, list(read.filter(holdsTooManyParts).map(characterOf)))
 report(`components ${locale} has not named`, list(owed))
 report('parts the drawing does not place', list(unplaced))
 report('names serving more than one component', list(collidingNames(names)))
@@ -52,6 +53,26 @@ if (drawn.length > 0) {
 // Only where the curriculum is present, since which shapes a kanji writes is what it says.
 if (inventory !== null) {
   report(`names ${locale} wrote on a component a kanji writes`, list(namesKanjiWrites(names, written(inventory.subjects))))
+  report(`components ${locale} teaches under no word`, list(wordlessComponents(named(inventory.subjects), names, keyed())))
+}
+
+// The components a kanji writes, which are the ones no other line watches: they are owed no name of
+// their own, so the line above counts them out, and a key is the only word they can have.
+function named(subjects: readonly InventorySubject[]): readonly string[] {
+  const kanji = written(subjects)
+
+  return subjects.flatMap((one) =>
+    one.type === 'radical' && one.characters !== null && !one.hidden && kanji.has(one.characters)
+      ? [one.characters]
+      : [],
+  )
+}
+
+// Absent before the keys are written, which is a locale owing every one of them rather than a fault.
+function keyed(): ReadonlySet<string> {
+  const file = `corpus/${locale}/keys.json`
+
+  return existsSync(file) ? new Set(Object.keys(readKeys(readFileSync(file, 'utf8')))) : new Set()
 }
 
 function againstCurriculum(read: { upTo: number; subjects: readonly InventorySubject[] }) {
@@ -76,7 +97,7 @@ function againstShape() {
   return { read, unplaced: [], drawn: [], owed: unnamedComponents(read, names) }
 }
 
-function named(decomposition: Decomposition): string {
+function characterOf(decomposition: Decomposition): string {
   return decomposition.character
 }
 
