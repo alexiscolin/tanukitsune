@@ -33,3 +33,15 @@ export function chooseKeys(
 
   return { keys, unsettled }
 }
+
+// Whether an order is a reordering of exactly these glosses, inventing, dropping or repeating none.
+// It is what makes a stored order safe to walk: a release that restates a character, or a rule that
+// cleans a gloss, leaves an order naming words that are no longer there, and an order that no longer
+// describes the glosses is not one.
+export function isOrderOf(order: readonly string[], glosses: readonly string[]): boolean {
+  if (order.length !== glosses.length) return false
+
+  const left = new Set(glosses)
+
+  return order.every((gloss) => left.delete(gloss))
+}

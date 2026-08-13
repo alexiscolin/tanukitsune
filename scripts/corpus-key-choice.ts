@@ -23,6 +23,7 @@ import { keyOrderFile, readKeyOrder, readNaming } from '../src/data/corpus/artif
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
 import { nextStep, readSubmitted, submittedFile } from '../src/data/corpus/naming-run.ts'
+import { isOrderOf } from '../src/core/corpus/key.ts'
 import { asOptional } from '../src/data/optional-text.ts'
 import { fetched, list } from './corpus-command.ts'
 
@@ -66,7 +67,14 @@ const owed = subjects
   .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
   .sort((one, other) => one.level - other.level || one.id - other.id)
   .map((one) => one.characters as string)
-  .filter((character) => (glosses.get(character) ?? []).length > 1 && !settled.has(character))
+  .filter((character) => {
+    const spoken = glosses.get(character) ?? []
+    const order = settled.get(character)
+
+    // A stored order that no longer describes the glosses is weighed again rather than trusted, which
+    // is what stops a cleaned gloss leaving a character ordered by words the release no longer states.
+    return spoken.length > 1 && (order === undefined || !isOrderOf(order, spoken))
+  })
 
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
 const step = nextStep(saved, owed.slice(0, most), KEY_CHOICE_VERSION)

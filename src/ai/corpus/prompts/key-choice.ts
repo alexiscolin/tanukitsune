@@ -2,6 +2,8 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
+import { isOrderOf } from '@/core/corpus/key'
+
 // Which of a character's glosses is the word it should be taught under, asked one character at a time.
 // The model orders what it is given and never writes a word: the key is still selected from a gloss
 // the dictionary states, and uniqueness across the corpus stays a table's decision. Judgement is the
@@ -22,12 +24,8 @@ const FORMAT = zodOutputFormat(keyChoice)
 export function readKeyChoice(text: string, glosses: readonly string[]): readonly string[] | null {
   try {
     const { order } = keyChoice.parse(JSON.parse(text))
-    if (order.length !== glosses.length) return null
 
-    const left = new Set(glosses)
-    for (const gloss of order) if (!left.delete(gloss)) return null
-
-    return order
+    return isOrderOf(order, glosses) ? order : null
   } catch {
     return null
   }

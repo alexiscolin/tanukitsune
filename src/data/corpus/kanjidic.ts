@@ -12,6 +12,9 @@ const LITERAL = /<literal>(.*?)<\/literal>/
 // the character is in a table rather than what it means. Twenty characters carry one, and it is never
 // a word a reader can be graded on.
 const LISTING = /\(no\.\s*\d+\)/
+// A parenthesis qualifies a gloss for somebody reading a dictionary and means nothing on a card, where
+// the key is the whole of what a learner types. The word it qualifies is kept and the aside is not.
+const ASIDE = /\s*\([^)]*\)/g
 
 export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const glossed = new Map<string, readonly string[]>()
@@ -23,7 +26,11 @@ export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, r
 
     glossed.set(
       character,
-      [...body.matchAll(spoken)].map(([, gloss = '']) => gloss).filter((gloss) => !LISTING.test(gloss)),
+      [...body.matchAll(spoken)]
+        .map(([, gloss = '']) => gloss)
+        .filter((gloss) => !LISTING.test(gloss))
+        .map((gloss) => gloss.replace(ASIDE, '').trim())
+        .filter((gloss) => gloss !== ''),
     )
   }
 

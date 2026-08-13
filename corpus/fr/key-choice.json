@@ -4,5 +4,201 @@
     "how": "Written by pnpm corpus:key-choice, read by pnpm corpus:keys. A character absent from this file keeps the order the release states.",
     "source": "The glosses ordered here are KANJIDIC2's, CC BY-SA 4.0, Electronic Dictionary Research and Development Group. See docs/sources.md."
   },
-  "order": {}
+  "order": {
+    "土": [
+      "terre",
+      "sol",
+      "terrain",
+      "Turquie"
+    ],
+    "出": [
+      "sortir",
+      "quitter",
+      "présence"
+    ],
+    "川": [
+      "rivière",
+      "fleuve"
+    ],
+    "上": [
+      "haut",
+      "au-dessus",
+      "monter",
+      "donner (je te donne)"
+    ],
+    "円": [
+      "cercle",
+      "yen",
+      "rond"
+    ],
+    "下": [
+      "bas",
+      "au-dessous",
+      "descendre",
+      "inférieur",
+      "donner (vous me donnez)"
+    ],
+    "中": [
+      "milieu",
+      "centre",
+      "dedans",
+      "à l'intérieur",
+      "dans",
+      "moyenne"
+    ],
+    "月": [
+      "lune",
+      "mois"
+    ],
+    "木": [
+      "arbre",
+      "bois (matière)"
+    ],
+    "才": [
+      "génie",
+      "\"(x) ans\" (âge)",
+      "shaku cubique (18,04 ml)"
+    ],
+    "工": [
+      "construction",
+      "industrie",
+      "ingénierie"
+    ],
+    "本": [
+      "livre",
+      "origine",
+      "principal",
+      "essentiel",
+      "vérité",
+      "réalité",
+      "présent",
+      "compteur d'objets allongés"
+    ],
+    "女": [
+      "femme",
+      "féminin"
+    ],
+    "刀": [
+      "sabre",
+      "épée",
+      "couteau"
+    ],
+    "力": [
+      "force",
+      "puissance",
+      "fort",
+      "tension",
+      "s'efforcer",
+      "employer (force)",
+      "tenir le coup"
+    ],
+    "人": [
+      "personne",
+      "être humain"
+    ],
+    "目": [
+      "oeil",
+      "regard",
+      "aperçu",
+      "expérience",
+      "classe",
+      "faveur",
+      "pièce (Go)",
+      "numérateur ordinal"
+    ],
+    "丁": [
+      "pâté de maison",
+      "tranche d'aliment",
+      "exactitude",
+      "soin extrême",
+      "quatrième",
+      "signe du 4è tronc céleste"
+    ],
+    "丸": [
+      "rond",
+      "arrondir",
+      "se rouler en boule",
+      "se pelotonner",
+      "entier (mois)",
+      "perfection",
+      "pilule",
+      "suffixe des bateaux",
+      "séduire",
+      "justifier"
+    ],
+    "分": [
+      "part",
+      "portion",
+      "minute",
+      "section",
+      "degré",
+      "taux",
+      "son lot dans la vie",
+      "devoir",
+      "comprendre",
+      "savoir",
+      "chances",
+      "1%",
+      "bu = 1/100 de shaku = 3.03 mm"
+    ],
+    "正": [
+      "correct",
+      "juste",
+      "droit",
+      "positif",
+      "10**40"
+    ],
+    "万": [
+      "10000",
+      "myriade"
+    ],
+    "入": [
+      "entrer",
+      "insérer"
+    ],
+    "文": [
+      "phrase",
+      "littérature",
+      "style",
+      "art",
+      "décoration",
+      "figure (de style)",
+      "plan"
+    ],
+    "王": [
+      "roi",
+      "magnat",
+      "régner"
+    ],
+    "子": [
+      "enfant",
+      "signe du Rat (zodiaque)",
+      "signe de la 1ère branche terrestre",
+      "23 h à 01 h",
+      "Nord (0°)"
+    ],
+    "切": [
+      "couper",
+      "trancher",
+      "tranchant",
+      "sérieux",
+      "passionné"
+    ],
+    "天": [
+      "ciel",
+      "cieux",
+      "impérial"
+    ],
+    "日": [
+      "jour",
+      "soleil",
+      "Japon",
+      "compteur de jours"
+    ],
+    "玉": [
+      "boule",
+      "balle",
+      "bijoux"
+    ]
+  }
 }

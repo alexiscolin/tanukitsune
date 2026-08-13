@@ -12,7 +12,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 import { fetched, list } from './corpus-command.ts'
-import { chooseKeys } from '../src/core/corpus/key.ts'
+import { chooseKeys, isOrderOf } from '../src/core/corpus/key.ts'
 import { readKeyOrder } from '../src/data/corpus/artifact.ts'
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -52,7 +52,12 @@ const chosen: ReadonlyMap<string, readonly string[]> = existsSync(orderFile)
   ? readKeyOrder(readFileSync(orderFile, 'utf8'))
   : new Map()
 
-const keyed = chooseKeys(characters, (character) => chosen.get(character) ?? spoken.get(character) ?? [])
+const keyed = chooseKeys(characters, (character) => {
+  const glosses = spoken.get(character) ?? []
+  const order = chosen.get(character)
+
+  return order !== undefined && isOrderOf(order, glosses) ? order : glosses
+})
 const written = characters.filter((character) => keyed.keys[character] !== undefined)
 
 const lines = written
