@@ -42,7 +42,7 @@
       "milieu",
       "centre",
       "dedans",
-      "à lintérieur",
+      "à l'intérieur",
       "dans",
       "moyenne"
     ],
@@ -72,7 +72,7 @@
       "vérité",
       "réalité",
       "présent",
-      "compteur dobjets allongés"
+      "compteur d'objets allongés"
     ],
     "女": [
       "femme",
@@ -88,7 +88,7 @@
       "puissance",
       "fort",
       "tension",
-      "sefforcer",
+      "s'efforcer",
       "employer",
       "tenir le coup"
     ],
@@ -108,7 +108,7 @@
     ],
     "丁": [
       "pâté de maison",
-      "tranche daliment",
+      "tranche d'aliment",
       "exactitude",
       "soin extrême",
       "quatrième",
@@ -199,6 +199,10364 @@
       "boule",
       "balle",
       "bijoux"
+    ],
+    "惨": [
+      "misérable",
+      "désastre",
+      "cruauté",
+      "choquant",
+      "rude"
+    ],
+    "舶": [
+      "bateau",
+      "paquebot"
+    ],
+    "晩": [
+      "soir",
+      "crépuscule"
+    ],
+    "劇": [
+      "théâtre",
+      "pièce"
+    ],
+    "向": [
+      "direction",
+      "se diriger vers",
+      "en face",
+      "de l'autre côté",
+      "approcher",
+      "confronter",
+      "défier",
+      "avoir tendance",
+      "éloigné"
+    ],
+    "困": [
+      "embarras",
+      "affligé",
+      "ennuyé"
+    ],
+    "否": [
+      "non",
+      "nier",
+      "refuser",
+      "décliner"
+    ],
+    "項": [
+      "article",
+      "paragraphe",
+      "clause",
+      "nuque",
+      "terme"
+    ],
+    "招": [
+      "inviter",
+      "appeler",
+      "faire signe",
+      "éveiller"
+    ],
+    "取": [
+      "prendre",
+      "aller chercher"
+    ],
+    "臭": [
+      "odeur",
+      "malodorant",
+      "sentir mauvais",
+      "puer",
+      "parfum",
+      "saveur",
+      "aspect louche",
+      "brillant"
+    ],
+    "匹": [
+      "compteur de petits animaux",
+      "tête",
+      "égal",
+      "rouleau de tissu"
+    ],
+    "迭": [
+      "alternance",
+      "transférer"
+    ],
+    "壇": [
+      "estrade",
+      "podium",
+      "tribune",
+      "gradins",
+      "le monde des ..."
+    ],
+    "数": [
+      "nombre",
+      "compter",
+      "chiffres",
+      "destin",
+      "loi"
+    ],
+    "繊": [
+      "fin",
+      "effilé",
+      "kimono léger"
+    ],
+    "塔": [
+      "tour",
+      "pagode",
+      "clocher"
+    ],
+    "鉱": [
+      "minéral",
+      "minerai"
+    ],
+    "影": [
+      "ombre portée",
+      "silhouette",
+      "fantôme"
+    ],
+    "斗": [
+      "tonnelet de saké",
+      "to",
+      "Grande Ourse"
+    ],
+    "号": [
+      "numéro",
+      "nom",
+      "pseudonyme",
+      "surnom",
+      "titre",
+      "appel",
+      "article"
+    ],
+    "穫": [
+      "récolte",
+      "moisson"
+    ],
+    "防": [
+      "défendre",
+      "protéger",
+      "prévenir",
+      "résister"
+    ],
+    "弊": [
+      "mal",
+      "abus",
+      "vice",
+      "impropre à tout usage",
+      "humblement"
+    ],
+    "世": [
+      "monde",
+      "génération",
+      "société",
+      "public"
+    ],
+    "己": [
+      "soi",
+      "signe du 6è tronc céleste",
+      "serpent"
+    ],
+    "砕": [
+      "briser",
+      "casser",
+      "fracasser",
+      "familier",
+      "populaire"
+    ],
+    "監": [
+      "surveiller",
+      "gouverner",
+      "administrer",
+      "officiel",
+      "bureau administratif"
+    ],
+    "免": [
+      "excuser",
+      "licenciement"
+    ],
+    "筋": [
+      "muscle",
+      "tendon",
+      "fibre",
+      "veine",
+      "intrigue",
+      "lignée",
+      "raison"
+    ],
+    "来": [
+      "venir",
+      "suivant",
+      "devenir",
+      "causer",
+      "dû à"
+    ],
+    "問": [
+      "question",
+      "demander",
+      "problème"
+    ],
+    "瓶": [
+      "pot",
+      "fiole",
+      "pichet",
+      "cuve",
+      "urne",
+      "pot de fleurs"
+    ],
+    "蒸": [
+      "cuire à la vapeur",
+      "chauffer",
+      "torride",
+      "renfermé",
+      "fomenter"
+    ],
+    "船": [
+      "bateau",
+      "navire"
+    ],
+    "了": [
+      "fini",
+      "achevé"
+    ],
+    "到": [
+      "arrivée",
+      "arriver à",
+      "atteindre",
+      "aboutir à"
+    ],
+    "隔": [
+      "séparer",
+      "isoler",
+      "distance",
+      "fossé",
+      "tous les deux"
+    ],
+    "愛": [
+      "amour",
+      "affection",
+      "favori"
+    ],
+    "且": [
+      "de plus",
+      "en outre",
+      "et aussi"
+    ],
+    "突": [
+      "poignarder",
+      "piquer",
+      "percer",
+      "enfoncer",
+      "irruption",
+      "saillant"
+    ],
+    "絵": [
+      "dessin",
+      "peinture",
+      "image",
+      "esquisse"
+    ],
+    "憎": [
+      "haine",
+      "détester"
+    ],
+    "撤": [
+      "retirer",
+      "enlever",
+      "démanteler",
+      "désarmer",
+      "rejeter",
+      "exclure"
+    ],
+    "略": [
+      "abréviation",
+      "omission",
+      "résumé",
+      "raccourcir",
+      "capture",
+      "pillage"
+    ],
+    "舌": [
+      "langue",
+      "anche",
+      "battant"
+    ],
+    "遅": [
+      "retard",
+      "lent",
+      "plus tard",
+      "précédent"
+    ],
+    "場": [
+      "lieu",
+      "place",
+      "aire",
+      "champ"
+    ],
+    "素": [
+      "élément",
+      "principe",
+      "nu",
+      "découvert"
+    ],
+    "悩": [
+      "ennuis",
+      "détresse",
+      "peine",
+      "soucieux",
+      "maladie"
+    ],
+    "投": [
+      "jeter",
+      "lancer",
+      "abandonner",
+      "mettre au rebut",
+      "investir",
+      "se lancer dans",
+      "vendre à perte"
+    ],
+    "畳": [
+      "tatami",
+      "replier",
+      "empiler",
+      "compteur de tatamis",
+      "surface : 182 cm x 91 cm",
+      "fermer, boucler",
+      "terminer",
+      "répété"
+    ],
+    "禁": [
+      "interdiction",
+      "défense de"
+    ],
+    "戚": [
+      "parenté",
+      "relations familiales",
+      "peine"
+    ],
+    "恥": [
+      "honte",
+      "déshonneur"
+    ],
+    "翼": [
+      "aile",
+      "avion",
+      "flanc"
+    ],
+    "競": [
+      "compétition",
+      "rivaliser",
+      "concours",
+      "course",
+      "combat",
+      "enchère",
+      "vente aux enchères"
+    ],
+    "垂": [
+      "pendre",
+      "suspendre",
+      "tomber",
+      "goutter",
+      "être avachi"
+    ],
+    "禅": [
+      "Zen",
+      "méditation"
+    ],
+    "洪": [
+      "inondation",
+      "déluge",
+      "vaste"
+    ],
+    "戸": [
+      "porte",
+      "compteur de maisons",
+      "radical porte"
+    ],
+    "舗": [
+      "magasin",
+      "échoppe",
+      "étalage"
+    ],
+    "海": [
+      "mer",
+      "océan"
+    ],
+    "険": [
+      "escarpé",
+      "à pic",
+      "raide",
+      "lieu inaccessible",
+      "position imprenable",
+      "regard aiguisé"
+    ],
+    "説": [
+      "théorie",
+      "opinion",
+      "thèse",
+      "rumeur"
+    ],
+    "眠": [
+      "dormir",
+      "somnolent",
+      "mourir"
+    ],
+    "伸": [
+      "allonger",
+      "étirer",
+      "étendre",
+      "accroître",
+      "augmenter"
+    ],
+    "協": [
+      "coopération",
+      "co-"
+    ],
+    "棄": [
+      "abandonner",
+      "jeter",
+      "se débarrasser",
+      "rejeter",
+      "renoncer",
+      "sacrifier"
+    ],
+    "溶": [
+      "fondre",
+      "dissoudre"
+    ],
+    "荷": [
+      "bagages",
+      "chargement",
+      "cargaison",
+      "fret",
+      "porter",
+      "épauler",
+      "balancier"
+    ],
+    "急": [
+      "urgence",
+      "se dépêcher",
+      "soudain",
+      "raide",
+      "abrupt",
+      "aigu"
+    ],
+    "愉": [
+      "plaisir",
+      "joyeux",
+      "agréable"
+    ],
+    "票": [
+      "bulletin",
+      "vote",
+      "ticket",
+      "signe"
+    ],
+    "暁": [
+      "aube",
+      "point du jour",
+      "au cas où"
+    ],
+    "削": [
+      "tailler",
+      "raboter",
+      "affiler",
+      "réduire",
+      "supprimer",
+      "parer"
+    ],
+    "危": [
+      "dangereux",
+      "crainte",
+      "gêne"
+    ],
+    "妨": [
+      "empêcher",
+      "gêner",
+      "entraver",
+      "obstruction",
+      "déranger",
+      "saboter",
+      "brouiller"
+    ],
+    "起": [
+      "se lever",
+      "se réveiller",
+      "début",
+      "se produire",
+      "provoquer"
+    ],
+    "減": [
+      "diminuer",
+      "réduire",
+      "décroître",
+      "décliner",
+      "avoir faim"
+    ],
+    "仮": [
+      "temporaire",
+      "factice",
+      "intérim",
+      "informel",
+      "emprunt",
+      "ka"
+    ],
+    "摩": [
+      "frictionner",
+      "gratter",
+      "caresser",
+      "polir",
+      "moudre",
+      "irriter"
+    ],
+    "移": [
+      "déplacer",
+      "déménager",
+      "transférer",
+      "transporter",
+      "changer",
+      "inconstant",
+      "prendre"
+    ],
+    "検": [
+      "examen",
+      "inspection"
+    ],
+    "及": [
+      "s'étendre",
+      "tendre le bras",
+      "allonger",
+      "causer",
+      "exercice"
+    ],
+    "縁": [
+      "bord",
+      "bordure",
+      "relation",
+      "rapport",
+      "affinité",
+      "karma"
+    ],
+    "緊": [
+      "tendu",
+      "serré",
+      "dur",
+      "solide",
+      "fiable"
+    ],
+    "化": [
+      "transformation",
+      "prendre la forme de",
+      "influence",
+      "enchanter",
+      "tromper",
+      "fantôme",
+      "maquillage",
+      "chimie",
+      "-isation"
+    ],
+    "労": [
+      "labeur",
+      "soucis",
+      "remerciement pour",
+      "récompense pour",
+      "être plein d'attentions"
+    ],
+    "話": [
+      "parler",
+      "histoire"
+    ],
+    "崇": [
+      "adoration",
+      "respect",
+      "culte",
+      "révérer"
+    ],
+    "殿": [
+      "palais",
+      "résidence",
+      "hall",
+      "temple",
+      "seigneur",
+      "Monseigneur"
+    ],
+    "胸": [
+      "poitrine",
+      "coeur",
+      "seins",
+      "sentiments"
+    ],
+    "児": [
+      "enfant",
+      "nouveau-né",
+      "petit d'animal"
+    ],
+    "屈": [
+      "se courber",
+      "fléchir",
+      "céder",
+      "soumission"
+    ],
+    "為": [
+      "faire",
+      "bénéfice",
+      "avantage",
+      "bien-être",
+      "être utile",
+      "bon",
+      "servir pour",
+      "changer",
+      "atteindre",
+      "essayer",
+      "s'entraîner",
+      "coûter",
+      "par suite de"
+    ],
+    "紛": [
+      "confusion",
+      "emmêler",
+      "s'égarer",
+      "détourner"
+    ],
+    "相": [
+      "mutuel",
+      "ensemble",
+      "aspect",
+      "physionomie",
+      "ministre",
+      "phase",
+      "inter-"
+    ],
+    "透": [
+      "transparent",
+      "pénétrer",
+      "s'infiltrer"
+    ],
+    "恩": [
+      "faveur",
+      "bienfait",
+      "bonté",
+      "gentillesse",
+      "grâce",
+      "pitié",
+      "bénédiction"
+    ],
+    "死": [
+      "mort",
+      "mourir"
+    ],
+    "要": [
+      "besoin",
+      "essentiel",
+      "point principal",
+      "point clef",
+      "pivot"
+    ],
+    "並": [
+      "rangée",
+      "mettre en rang",
+      "faire la queue",
+      "égal",
+      "rival",
+      "et",
+      "en outre",
+      "de plus"
+    ],
+    "費": [
+      "dépense",
+      "coût",
+      "dépenser",
+      "consommer",
+      "gaspiller"
+    ],
+    "俸": [
+      "salaire",
+      "traitement"
+    ],
+    "庫": [
+      "entrepôt",
+      "magasin",
+      "stock"
+    ],
+    "超": [
+      "dépasser",
+      "super-",
+      "sur-"
+    ],
+    "弱": [
+      "faible",
+      "fragile"
+    ],
+    "忙": [
+      "occupé",
+      "affairé",
+      "agité"
+    ],
+    "爪": [
+      "ongle",
+      "griffe",
+      "serre",
+      "plectre"
+    ],
+    "督": [
+      "superviseur",
+      "commander",
+      "mener",
+      "entraîner",
+      "pousser à faire"
+    ],
+    "猶": [
+      "encore",
+      "de plus",
+      "en outre"
+    ],
+    "横": [
+      "côté",
+      "horizontal",
+      "largeur",
+      "latéral",
+      "trame"
+    ],
+    "冊": [
+      "volume",
+      "tome",
+      "compteur de livres"
+    ],
+    "年": [
+      "année",
+      "compteur d'années"
+    ],
+    "就": [
+      "prendre un poste",
+      "s'installer",
+      "prendre place",
+      "se rendre à",
+      "adhérer à",
+      "étudier",
+      "concernant",
+      "par"
+    ],
+    "実": [
+      "réalité",
+      "vérité"
+    ],
+    "殉": [
+      "martyre",
+      "suivre dans la mort",
+      "se sacrifier"
+    ],
+    "次": [
+      "suivant",
+      "ordre",
+      "successivement"
+    ],
+    "暗": [
+      "obscurité",
+      "ombre",
+      "s'assombrir",
+      "être aveuglé",
+      "disparaître",
+      "informel"
+    ],
+    "想": [
+      "pensée",
+      "idée",
+      "concept"
+    ],
+    "賊": [
+      "bandit",
+      "voleur",
+      "cambrioleur",
+      "rebelle",
+      "traitre"
+    ],
+    "陣": [
+      "campement",
+      "ordre de bataille",
+      "rang",
+      "position"
+    ],
+    "径": [
+      "chemin",
+      "diamètre",
+      "méthode"
+    ],
+    "堪": [
+      "endurer",
+      "supporter",
+      "résister",
+      "résistance"
+    ],
+    "搬": [
+      "transporter",
+      "transporteur"
+    ],
+    "治": [
+      "gouvernement",
+      "règne",
+      "guérir",
+      "maîtriser",
+      "réprimer",
+      "se calmer",
+      "être en paix",
+      "réparer",
+      "préserver"
+    ],
+    "模": [
+      "imitation",
+      "copie",
+      "maquette",
+      "simulation"
+    ],
+    "刊": [
+      "publier",
+      "graver",
+      "ciseler"
+    ],
+    "併": [
+      "joindre",
+      "unir",
+      "faire correspondre",
+      "simultané",
+      "cependant"
+    ],
+    "詠": [
+      "poème",
+      "récitation",
+      "composer",
+      "chanson"
+    ],
+    "宴": [
+      "banquet",
+      "fête",
+      "réception",
+      "repos"
+    ],
+    "町": [
+      "ville",
+      "quartier",
+      "village",
+      "rue"
+    ],
+    "争": [
+      "se disputer",
+      "se quereller"
+    ],
+    "貯": [
+      "épargne",
+      "économies",
+      "réserve",
+      "stocker",
+      "porter la moustache"
+    ],
+    "参": [
+      "visiter",
+      "aller",
+      "venir",
+      "être battu",
+      "déconcerté",
+      "dérouté",
+      "follement amoureux",
+      "mourir",
+      "trois"
+    ],
+    "償": [
+      "compensation",
+      "indemnisation",
+      "réparation",
+      "se racheter",
+      "récompense"
+    ],
+    "召": [
+      "appeler",
+      "faire venir à soi",
+      "inviter",
+      "manger",
+      "boire",
+      "porter",
+      "prendre",
+      "acheter",
+      "conduire",
+      "attraper"
+    ],
+    "属": [
+      "faire partie de",
+      "affilié à",
+      "genre",
+      "fonctionnaire subalterne"
+    ],
+    "未": [
+      "pas encore",
+      "encore",
+      "jusqu'ici",
+      "même maintenant",
+      "non-",
+      "signe du Mouton",
+      "signe de la 8ème branche terrestre",
+      "13 à 15 heures"
+    ],
+    "致": [
+      "causer",
+      "provoquer",
+      "faire",
+      "commettre",
+      "envoyer",
+      "expédier",
+      "encourir",
+      "engager"
+    ],
+    "距": [
+      "longue distance",
+      "éperon",
+      "fanon"
+    ],
+    "酷": [
+      "cruel",
+      "atroce",
+      "sévère",
+      "injuste"
+    ],
+    "倍": [
+      "double",
+      "deux fois",
+      "fois",
+      "plier"
+    ],
+    "磨": [
+      "polir",
+      "brosser",
+      "récurer",
+      "moudre",
+      "améliorer"
+    ],
+    "甘": [
+      "sucré",
+      "doux",
+      "dorloter",
+      "enjôler",
+      "être content"
+    ],
+    "診": [
+      "examiner",
+      "diagnostic",
+      "bilan de santé",
+      "auscultation"
+    ],
+    "覇": [
+      "hégémonie",
+      "suprématie",
+      "champion",
+      "leadership"
+    ],
+    "寧": [
+      "paisible",
+      "plutôt",
+      "de préférence"
+    ],
+    "雰": [
+      "atmosphère",
+      "ambiance",
+      "brouillard"
+    ],
+    "輩": [
+      "camarade",
+      "compagnons",
+      "gens"
+    ],
+    "陽": [
+      "soleil",
+      "éclat solaire",
+      "positif",
+      "Yang",
+      "mâle",
+      "journée",
+      "paradis"
+    ],
+    "的": [
+      "cible",
+      "but",
+      "objectif",
+      "terminaison d'adjectif"
+    ],
+    "制": [
+      "système",
+      "règle",
+      "loi",
+      "contrôle",
+      "régime"
+    ],
+    "諾": [
+      "consentement",
+      "accord",
+      "assentiment"
+    ],
+    "衝": [
+      "choc",
+      "collision",
+      "percer",
+      "piquer",
+      "poignarder",
+      "point clé",
+      "route principale",
+      "opposition"
+    ],
+    "博": [
+      "docteur",
+      "exposition",
+      "foire",
+      "estimé",
+      "gain",
+      "ovation"
+    ],
+    "貸": [
+      "prêter",
+      "louer"
+    ],
+    "駄": [
+      "fardeau",
+      "cheval de bât",
+      "charge de cheval",
+      "envoyé par cheval"
+    ],
+    "窓": [
+      "fenêtre",
+      "vitre"
+    ],
+    "処": [
+      "lieu",
+      "traiter",
+      "se débarrasser",
+      "agir",
+      "se comporter",
+      "sentence",
+      "condamner",
+      "vierge"
+    ],
+    "犯": [
+      "crime",
+      "délit",
+      "péché"
+    ],
+    "聖": [
+      "saint",
+      "sage",
+      "maître",
+      "prêtre"
+    ],
+    "呼": [
+      "appeler",
+      "inviter"
+    ],
+    "関": [
+      "barrière",
+      "relation",
+      "lien",
+      "rapport",
+      "concerner"
+    ],
+    "殊": [
+      "particulièrement",
+      "spécialement",
+      "exceptionnellement"
+    ],
+    "彰": [
+      "clair",
+      "patent"
+    ],
+    "緩": [
+      "relâcher",
+      "lâche",
+      "modéré",
+      "aise",
+      "décompresser",
+      "abaisser"
+    ],
+    "厄": [
+      "malchance",
+      "infortune",
+      "désastre"
+    ],
+    "鏡": [
+      "miroir",
+      "-scope",
+      "tonneau",
+      "gâteau de riz de Nouvel an"
+    ],
+    "誕": [
+      "nativité",
+      "être né",
+      "exagération",
+      "être arbitraire",
+      "déclinaison"
+    ],
+    "縄": [
+      "corde",
+      "corde de paille"
+    ],
+    "堅": [
+      "dur",
+      "solide",
+      "ferme",
+      "tenace",
+      "fiable",
+      "strict"
+    ],
+    "旬": [
+      "décade",
+      "saison"
+    ],
+    "挟": [
+      "pincer",
+      "entre deux"
+    ],
+    "非": [
+      "faute",
+      "injustice",
+      "non-",
+      "négatif",
+      "in-",
+      "condamner"
+    ],
+    "希": [
+      "espoir",
+      "demander",
+      "prier",
+      "implorer",
+      "rare",
+      "peu nombreux",
+      "phénoménal",
+      "dilution",
+      "Grèce"
+    ],
+    "教": [
+      "enseigner",
+      "doctrine",
+      "foi"
+    ],
+    "旋": [
+      "rotation",
+      "révolution"
+    ],
+    "敢": [
+      "audace",
+      "frêle",
+      "faible",
+      "triste",
+      "pitoyable",
+      "tragique"
+    ],
+    "憾": [
+      "regrets",
+      "remords",
+      "être désolé",
+      "maudire"
+    ],
+    "院": [
+      "institution",
+      "temple",
+      "hôpital",
+      "école",
+      "résidence"
+    ],
+    "倹": [
+      "frugal",
+      "économe",
+      "austère"
+    ],
+    "更": [
+      "se faire tard",
+      "veiller",
+      "de plus",
+      "bien sûr"
+    ],
+    "簿": [
+      "registre",
+      "livre"
+    ],
+    "狭": [
+      "étroit",
+      "exigu",
+      "serré",
+      "se contracter"
+    ],
+    "羨": [
+      "envieux",
+      "jaloux",
+      "convoiter"
+    ],
+    "珍": [
+      "rare",
+      "curieux",
+      "étrange"
+    ],
+    "凝": [
+      "congeler",
+      "geler",
+      "coagulation",
+      "rigide",
+      "être absorbé"
+    ],
+    "邦": [
+      "pays",
+      "pays natal",
+      "Japon"
+    ],
+    "哲": [
+      "philosophie",
+      "clair"
+    ],
+    "境": [
+      "frontière",
+      "région",
+      "environnement"
+    ],
+    "泥": [
+      "boue",
+      "fange",
+      "voleur",
+      "tenir à"
+    ],
+    "轄": [
+      "contrôle",
+      "cale"
+    ],
+    "限": [
+      "limite",
+      "limiter",
+      "restreindre",
+      "autant que possible"
+    ],
+    "童": [
+      "enfant",
+      "jeune"
+    ],
+    "妃": [
+      "reine",
+      "princesse"
+    ],
+    "吉": [
+      "bonne chance",
+      "joie",
+      "félicitations"
+    ],
+    "群": [
+      "groupe",
+      "foule",
+      "troupeau",
+      "essaim"
+    ],
+    "拙": [
+      "maladroit",
+      "bâclé",
+      "mon humble"
+    ],
+    "炉": [
+      "fournaise",
+      "foyer",
+      "four",
+      "réacteur"
+    ],
+    "修": [
+      "discipline",
+      "étudier",
+      "maîtriser",
+      "bien se conduire"
+    ],
+    "段": [
+      "marche",
+      "escalier",
+      "étape"
+    ],
+    "呉": [
+      "tu me donnes",
+      "faire pour moi"
+    ],
+    "是": [
+      "justice",
+      "juste",
+      "comme il faut",
+      "ceci"
+    ],
+    "振": [
+      "secouer",
+      "balancer",
+      "remuer",
+      "saupoudrer",
+      "feindre"
+    ],
+    "毛": [
+      "cheveux",
+      "pelage",
+      "plumage",
+      "duvet",
+      "pilosité"
+    ],
+    "徒": [
+      "élève",
+      "bande",
+      "parti",
+      "vide",
+      "futilité",
+      "inutilité",
+      "vanité",
+      "chose éphémère",
+      "inexpérimenté"
+    ],
+    "踊": [
+      "danser",
+      "sautiller",
+      "saut",
+      "bond"
+    ],
+    "摂": [
+      "prendre",
+      "remplaçant",
+      "substitut",
+      "faire simultanément"
+    ],
+    "殴": [
+      "frapper",
+      "battre",
+      "rosser",
+      "attaque",
+      "assaut"
+    ],
+    "奪": [
+      "prendre de force",
+      "arracher",
+      "dérober",
+      "déposséder",
+      "piller",
+      "usurper"
+    ],
+    "拒": [
+      "refuser",
+      "rejeter",
+      "repousser",
+      "décliner"
+    ],
+    "長": [
+      "long",
+      "chef"
+    ],
+    "軽": [
+      "léger",
+      "insignifiant",
+      "sans importance"
+    ],
+    "之": [
+      "de",
+      "ceci",
+      "avancer"
+    ],
+    "会": [
+      "réunion",
+      "rencontre",
+      "meeting",
+      "association",
+      "entrevue",
+      "rejoindre",
+      "parti"
+    ],
+    "校": [
+      "école",
+      "correction",
+      "épreuve",
+      "impression",
+      "examen"
+    ],
+    "幾": [
+      "combien",
+      "quelques",
+      "quel"
+    ],
+    "楽": [
+      "musique",
+      "confort",
+      "agréable"
+    ],
+    "烈": [
+      "violent",
+      "ardent",
+      "véhément",
+      "furieux",
+      "sévère",
+      "extrême"
+    ],
+    "屯": [
+      "garnison",
+      "camp militaire",
+      "poste de police"
+    ],
+    "騰": [
+      "augmentation",
+      "inflation",
+      "avance"
+    ],
+    "叔": [
+      "oncle",
+      "tante",
+      "frère ou soeur cadets des parents"
+    ],
+    "割": [
+      "diviser",
+      "briser",
+      "couper",
+      "séparer",
+      "proportion",
+      "pourcentage"
+    ],
+    "音": [
+      "son",
+      "bruit"
+    ],
+    "如": [
+      "comme",
+      "ressemblance",
+      "similaire",
+      "égal",
+      "comme si",
+      "paraître",
+      "meilleur",
+      "mieux"
+    ],
+    "餓": [
+      "faim",
+      "famine",
+      "soif"
+    ],
+    "示": [
+      "montrer",
+      "indiquer",
+      "signaler",
+      "exprimer",
+      "exposer"
+    ],
+    "穂": [
+      "épi",
+      "pointe",
+      "crête"
+    ],
+    "斉": [
+      "égal",
+      "semblable",
+      "même variété",
+      "arranger"
+    ],
+    "故": [
+      "raison",
+      "cause",
+      "circonstances",
+      "feu ...",
+      "destin",
+      "coïncidence",
+      "intentionnellement",
+      "spécialement",
+      "c'est pour ça que..."
+    ],
+    "具": [
+      "outils",
+      "ustensiles",
+      "moyens",
+      "ingrédients",
+      "possession",
+      "compteur d'armures, costumes, meubles",
+      "minutieusement"
+    ],
+    "担": [
+      "porter",
+      "se charger de",
+      "soutenir",
+      "responsable"
+    ],
+    "乃": [
+      "de",
+      "enclitique no",
+      "par conséquence",
+      "a la suite de quoi"
+    ],
+    "伴": [
+      "compagnon",
+      "être accompagné",
+      "amener avec soi",
+      "époux / épouse"
+    ],
+    "両": [
+      "les deux",
+      "2",
+      "ryou",
+      "compteur de wagons"
+    ],
+    "称": [
+      "nom",
+      "appellation",
+      "titre",
+      "louanges",
+      "admirer",
+      "renommée"
+    ],
+    "挑": [
+      "défier",
+      "provoquer",
+      "rivaliser",
+      "faire des avances"
+    ],
+    "成": [
+      "devenir",
+      "se changer en",
+      "accomplir",
+      "obtenir",
+      "croissance",
+      "s'écouler"
+    ],
+    "黙": [
+      "silence",
+      "se taire",
+      "laisser en l'état"
+    ],
+    "奉": [
+      "offrande",
+      "présent",
+      "obéissance",
+      "se consacrer"
+    ],
+    "倫": [
+      "éthique",
+      "camarade"
+    ],
+    "完": [
+      "achèvement",
+      "accompli",
+      "parfait"
+    ],
+    "災": [
+      "désastre",
+      "catastrophe",
+      "calamité",
+      "malheur"
+    ],
+    "臣": [
+      "serviteur",
+      "sujet",
+      "servant"
+    ],
+    "准": [
+      "semi-",
+      "associé",
+      "presque"
+    ],
+    "害": [
+      "mal",
+      "tort",
+      "blessure"
+    ],
+    "垣": [
+      "clôture",
+      "haie",
+      "mur"
+    ],
+    "秩": [
+      "ordre",
+      "régularité",
+      "salaire"
+    ],
+    "配": [
+      "distribuer",
+      "rationner",
+      "exiler",
+      "épouse"
+    ],
+    "随": [
+      "suivre",
+      "obéir",
+      "se soumettre à",
+      "se conformer à",
+      "à la merci",
+      "pendant",
+      "tout",
+      "les deux",
+      "quoique",
+      "néanmoins"
+    ],
+    "擦": [
+      "frotter",
+      "gratter",
+      "racler",
+      "râper",
+      "récurer",
+      "abrasion",
+      "irriter"
+    ],
+    "評": [
+      "évaluer",
+      "critiquer",
+      "commenter"
+    ],
+    "発": [
+      "départ",
+      "partir de",
+      "émettre",
+      "publier",
+      "divulguer",
+      "décharge",
+      "dégagement",
+      "compteur de coups de feu"
+    ],
+    "休": [
+      "repos",
+      "jour de repos",
+      "dormir",
+      "se coucher"
+    ],
+    "富": [
+      "richesse",
+      "fortune",
+      "abondance"
+    ],
+    "懲": [
+      "punition",
+      "châtiment",
+      "sanction",
+      "pénal"
+    ],
+    "軌": [
+      "ornière",
+      "rails",
+      "orbite",
+      "modèle",
+      "façon de faire"
+    ],
+    "謝": [
+      "excuses",
+      "remerciements",
+      "refus"
+    ],
+    "生": [
+      "vie",
+      "naissance",
+      "cru",
+      "authentique"
+    ],
+    "閥": [
+      "clique",
+      "faction",
+      "clan",
+      "lignée",
+      "ascendance"
+    ],
+    "俗": [
+      "coutumes",
+      "vulgaire",
+      "manières",
+      "séculier",
+      "temporel"
+    ],
+    "軸": [
+      "axe",
+      "pivot",
+      "tige",
+      "compteur de livres en rouleaux"
+    ],
+    "窮": [
+      "indigent",
+      "fauché",
+      "acculé",
+      "souffrir",
+      "perplexe",
+      "extrêmement"
+    ],
+    "佳": [
+      "beau",
+      "excellent",
+      "bon",
+      "plaisant",
+      "habile"
+    ],
+    "沼": [
+      "marais",
+      "marécage",
+      "étang",
+      "mare",
+      "lac"
+    ],
+    "安": [
+      "paisible",
+      "calme",
+      "tranquille",
+      "reposant",
+      "pas cher",
+      "satisfait"
+    ],
+    "劣": [
+      "infériorité",
+      "inférieur à",
+      "être moins bon que"
+    ],
+    "脳": [
+      "cerveau",
+      "mémoire"
+    ],
+    "燃": [
+      "brûler",
+      "flamber"
+    ],
+    "固": [
+      "solide",
+      "durcir",
+      "résolu",
+      "coaguler",
+      "cailler"
+    ],
+    "阿": [
+      "flatter",
+      "flagorner",
+      "coin",
+      "recoin",
+      "Afrique"
+    ],
+    "循": [
+      "circulation",
+      "cycle",
+      "camarade"
+    ],
+    "鎌": [
+      "faucille",
+      "serpe",
+      "faux",
+      "duper"
+    ],
+    "密": [
+      "secret",
+      "densité",
+      "minutieux",
+      "consciencieux"
+    ],
+    "療": [
+      "soins",
+      "traitement"
+    ],
+    "星": [
+      "étoile",
+      "marque",
+      "point"
+    ],
+    "合": [
+      "joindre",
+      "correspondre",
+      "convenir",
+      "go"
+    ],
+    "末": [
+      "fin",
+      "extrémité",
+      "dernier",
+      "avenir",
+      "postérité",
+      "poudre"
+    ],
+    "干": [
+      "sec",
+      "dessécher"
+    ],
+    "騎": [
+      "cavalier",
+      "monter à cheval",
+      "compteur de cavaliers"
+    ],
+    "脅": [
+      "menacer",
+      "contraindre"
+    ],
+    "測": [
+      "mesurer",
+      "sonder",
+      "plan",
+      "brasse"
+    ],
+    "情": [
+      "sentiments",
+      "émotion",
+      "compassion",
+      "passion",
+      "circonstances",
+      "faits"
+    ],
+    "程": [
+      "degré",
+      "ampleur",
+      "quantité",
+      "limites",
+      "distance",
+      "loi",
+      "formule",
+      "bientôt"
+    ],
+    "真": [
+      "vrai",
+      "réalité",
+      "exact",
+      "secte bouddhiste"
+    ],
+    "責": [
+      "blâmer",
+      "condamner",
+      "critiquer"
+    ],
+    "墨": [
+      "encre de Chine",
+      "encre noire",
+      "bâtonnet d'encre",
+      "Mexique"
+    ],
+    "束": [
+      "fagot",
+      "gerbe",
+      "bouquet",
+      "mettre en liasse",
+      "rame",
+      "promesse",
+      "contrôler",
+      "gouverner",
+      "diriger"
+    ],
+    "航": [
+      "naviguer",
+      "faire voile",
+      "voler",
+      "croiser"
+    ],
+    "先": [
+      "avant",
+      "devant",
+      "précédent",
+      "futur",
+      "antériorité"
+    ],
+    "番": [
+      "numéro dans une série",
+      "tour"
+    ],
+    "越": [
+      "traverser",
+      "surpasser",
+      "doubler",
+      "muter",
+      "Vietnam"
+    ],
+    "存": [
+      "croire",
+      "supposer",
+      "être conscient de",
+      "sentir"
+    ],
+    "弾": [
+      "boulet",
+      "rebond",
+      "chiquenaude",
+      "vibration"
+    ],
+    "酌": [
+      "servir à boire",
+      "tirer",
+      "louche",
+      "hôte",
+      "pompe"
+    ],
+    "置": [
+      "placer",
+      "poser",
+      "déposer",
+      "laisser derrière",
+      "garder",
+      "employer",
+      "faire à l'avance",
+      "gage"
+    ],
+    "隷": [
+      "esclave",
+      "serviteur",
+      "prisonnier",
+      "criminel",
+      "adepte"
+    ],
+    "拐": [
+      "rapt",
+      "falsifier"
+    ],
+    "机": [
+      "bureau",
+      "table"
+    ],
+    "揮": [
+      "brandir",
+      "agiter",
+      "secouer",
+      "remuer",
+      "balancer"
+    ],
+    "排": [
+      "rejeter",
+      "exclure",
+      "expulser",
+      "répudier"
+    ],
+    "織": [
+      "tisser",
+      "tissu"
+    ],
+    "幕": [
+      "rideaux",
+      "acte",
+      "guirlande"
+    ],
+    "失": [
+      "perdre",
+      "faute",
+      "erreur",
+      "désavantage"
+    ],
+    "盲": [
+      "aveugle",
+      "ignorant"
+    ],
+    "純": [
+      "pureté",
+      "innocence",
+      "authentique",
+      "net"
+    ],
+    "竜": [
+      "dragon",
+      "impérial"
+    ],
+    "逸": [
+      "s'évader",
+      "échapper à",
+      "dévier",
+      "s'écarter",
+      "diverger",
+      "rater",
+      "loisirs",
+      "oisiveté",
+      "parer"
+    ],
+    "廉": [
+      "pas cher",
+      "bonne affaire",
+      "honnête",
+      "pureté",
+      "charge",
+      "suspicion",
+      "point",
+      "compte",
+      "raison",
+      "paisible",
+      "reposé",
+      "satisfait"
+    ],
+    "煩": [
+      "souci",
+      "anxiété",
+      "tourment",
+      "nuisance",
+      "ennuyeux",
+      "douleur",
+      "malade"
+    ],
+    "衆": [
+      "foule",
+      "multitude",
+      "grand nombre",
+      "peuple"
+    ],
+    "激": [
+      "violent",
+      "enragé",
+      "s'exciter",
+      "s'énerver",
+      "inciter"
+    ],
+    "吹": [
+      "souffler",
+      "respirer",
+      "bouffées",
+      "émettre",
+      "fumer"
+    ],
+    "送": [
+      "envoyer",
+      "escorter"
+    ],
+    "補": [
+      "supplément",
+      "complément",
+      "compenser",
+      "améliorer",
+      "assistant",
+      "stagiaire"
+    ],
+    "塀": [
+      "mur",
+      "barrière"
+    ],
+    "擁": [
+      "étreindre",
+      "prendre dans les bras",
+      "posséder",
+      "protéger",
+      "diriger"
+    ],
+    "概": [
+      "grandes lignes",
+      "approximation",
+      "en gros",
+      "en général",
+      "dans l'ensemble"
+    ],
+    "定": [
+      "fixé",
+      "déterminé",
+      "décidé",
+      "établi"
+    ],
+    "趣": [
+      "teneur",
+      "fond",
+      "sens",
+      "aspect",
+      "apparence",
+      "tendance",
+      "devenir"
+    ],
+    "似": [
+      "ressembler",
+      "imiter",
+      "contrefaire",
+      "approprié",
+      "devenir"
+    ],
+    "露": [
+      "rosée",
+      "dévoiler",
+      "larmes",
+      "Russie"
+    ],
+    "善": [
+      "bien",
+      "bonté",
+      "vertu"
+    ],
+    "最": [
+      "le plus",
+      "extrême",
+      "ultra-"
+    ],
+    "載": [
+      "charger",
+      "embarquer",
+      "monter dans",
+      "placer",
+      "étaler",
+      "10**44"
+    ],
+    "飼": [
+      "élever",
+      "nourrir",
+      "domestiquer",
+      "garder"
+    ],
+    "団": [
+      "groupe",
+      "association"
+    ],
+    "接": [
+      "contact",
+      "joindre",
+      "toucher",
+      "recoller"
+    ],
+    "励": [
+      "encourager",
+      "être appliqué",
+      "pousser à"
+    ],
+    "指": [
+      "doigt",
+      "indiquer",
+      "désigner",
+      "mesure",
+      "jouer"
+    ],
+    "廊": [
+      "couloir",
+      "hall",
+      "tour"
+    ],
+    "嘆": [
+      "se lamenter",
+      "gémir",
+      "soupirer",
+      "peine"
+    ],
+    "支": [
+      "soutien",
+      "support",
+      "branche",
+      "filiale",
+      "succursale"
+    ],
+    "誘": [
+      "inviter",
+      "séduire",
+      "tenter",
+      "inciter",
+      "entraîner",
+      "charme"
+    ],
+    "婿": [
+      "gendre",
+      "fiancé"
+    ],
+    "由": [
+      "raison",
+      "cause",
+      "origine",
+      "c'est pourquoi",
+      "grave"
+    ],
+    "穀": [
+      "céréale",
+      "grains"
+    ],
+    "午": [
+      "midi",
+      "signe du Cheval",
+      "signe de la 7ème branche terrestre",
+      "11 h à 13 h",
+      "Sud"
+    ],
+    "提": [
+      "tenir en main",
+      "emmener",
+      "proposition"
+    ],
+    "藻": [
+      "algue",
+      "lentille d'eau"
+    ],
+    "匿": [
+      "cacher",
+      "abriter",
+      "protéger"
+    ],
+    "慕": [
+      "désir ardent",
+      "languir",
+      "adorer",
+      "aimer"
+    ],
+    "往": [
+      "aller",
+      "voyage",
+      "aller simple",
+      "parer",
+      "parfois"
+    ],
+    "連": [
+      "emmener",
+      "série",
+      "se mettre en rang",
+      "s'unir",
+      "bande",
+      "clique",
+      "parti"
+    ],
+    "欠": [
+      "manquer",
+      "lacune",
+      "rater"
+    ],
+    "帳": [
+      "cahier",
+      "livre de comptes",
+      "album"
+    ],
+    "節": [
+      "noeud",
+      "jointure",
+      "articulation",
+      "saison",
+      "période",
+      "occasion",
+      "instant",
+      "air",
+      "mélodie",
+      "vers",
+      "stance",
+      "honneur",
+      "bosse"
+    ],
+    "易": [
+      "facile",
+      "simple",
+      "divination",
+      "voyance",
+      "commerce",
+      "prêt-à-..."
+    ],
+    "飾": [
+      "décorer",
+      "orner",
+      "parer",
+      "embellir"
+    ],
+    "重": [
+      "lourd",
+      "empiler",
+      "entasser",
+      "s'emboîter",
+      "- couches"
+    ],
+    "弟": [
+      "frère cadet",
+      "disciple",
+      "apprenti",
+      "service déférent aux ainés"
+    ],
+    "蜜": [
+      "miel",
+      "nectar",
+      "mélasse"
+    ],
+    "京": [
+      "capitale",
+      "10**16"
+    ],
+    "虐": [
+      "tyranniser",
+      "opprimer"
+    ],
+    "伏": [
+      "prostré",
+      "se courber",
+      "s'incliner",
+      "couvrir",
+      "poser",
+      "tendre"
+    ],
+    "層": [
+      "couche",
+      "strate",
+      "classe sociale",
+      "étage"
+    ],
+    "虫": [
+      "insecte",
+      "ver",
+      "vermine",
+      "reptile",
+      "colère"
+    ],
+    "訳": [
+      "traduire",
+      "cause",
+      "circonstance",
+      "excuse",
+      "cas"
+    ],
+    "魅": [
+      "fasciner",
+      "charmer",
+      "ensorceler"
+    ],
+    "神": [
+      "divinité",
+      "esprit",
+      "âme"
+    ],
+    "選": [
+      "choisir",
+      "sélection",
+      "élection",
+      "préférer"
+    ],
+    "婦": [
+      "femme",
+      "épouse",
+      "femme mariée",
+      "dame"
+    ],
+    "渉": [
+      "gué",
+      "traverser",
+      "bac",
+      "port"
+    ],
+    "詐": [
+      "fraude",
+      "tromper",
+      "duper",
+      "mentir",
+      "fausseté",
+      "feindre"
+    ],
+    "差": [
+      "différence",
+      "distinction",
+      "variation",
+      "divergence",
+      "marge",
+      "balance"
+    ],
+    "究": [
+      "recherche",
+      "étudier"
+    ],
+    "慶": [
+      "se réjouir",
+      "féliciter",
+      "être heureux",
+      "jubiler"
+    ],
+    "糾": [
+      "enquêter",
+      "vérifier",
+      "entortiller",
+      "demander"
+    ],
+    "鑑": [
+      "échantillon",
+      "apprendre de",
+      "être mis en garde"
+    ],
+    "因": [
+      "cause",
+      "facteur",
+      "dépendre de",
+      "associé à",
+      "limité à"
+    ],
+    "価": [
+      "valeur",
+      "prix"
+    ],
+    "断": [
+      "trancher",
+      "rupture",
+      "décision",
+      "jugement",
+      "refus",
+      "décliner",
+      "rejeter",
+      "interdire",
+      "prévenir",
+      "excuses"
+    ],
+    "青": [
+      "bleu",
+      "vert"
+    ],
+    "刻": [
+      "graver",
+      "gravure",
+      "moment",
+      "hacher",
+      "émincer",
+      "découper"
+    ],
+    "鶴": [
+      "grue",
+      "cigogne"
+    ],
+    "従": [
+      "suivre",
+      "obéir",
+      "se soumettre à",
+      "se conformer à",
+      "accompagner",
+      "s'ensuivre",
+      "subordonné",
+      "secondaire",
+      "accessoire"
+    ],
+    "半": [
+      "moitié",
+      "demi",
+      "milieu",
+      "nombre impair"
+    ],
+    "勧": [
+      "recommander",
+      "conseiller",
+      "encourager",
+      "persuader",
+      "offre"
+    ],
+    "玄": [
+      "mystérieux",
+      "sombre",
+      "occulte"
+    ],
+    "郵": [
+      "courrier",
+      "relais de poste"
+    ],
+    "啓": [
+      "ouvrir",
+      "révéler",
+      "dire"
+    ],
+    "勢": [
+      "vigueur",
+      "énergie",
+      "forces",
+      "puissance militaire"
+    ],
+    "親": [
+      "parent",
+      "parenté",
+      "intimité",
+      "familiarité",
+      "donneur"
+    ],
+    "命": [
+      "vie",
+      "destin",
+      "destinée",
+      "ordre",
+      "décret",
+      "nommer"
+    ],
+    "応": [
+      "répondre",
+      "accepter",
+      "combler",
+      "postuler",
+      "oui",
+      "OK"
+    ],
+    "鬼": [
+      "démon",
+      "monstre"
+    ],
+    "弔": [
+      "condoléances",
+      "deuil",
+      "funérailles"
+    ],
+    "謡": [
+      "chanter",
+      "chant Noh"
+    ],
+    "造": [
+      "fabriquer",
+      "créer",
+      "structure",
+      "physique",
+      "maquillage"
+    ],
+    "憤": [
+      "indignation",
+      "colère",
+      "rancune",
+      "excité"
+    ],
+    "汁": [
+      "jus",
+      "soupe",
+      "bouillon",
+      "sève",
+      "pus"
+    ],
+    "錬": [
+      "endurcir",
+      "entrainer",
+      "perfectionner",
+      "améliorer",
+      "écrouir"
+    ],
+    "帽": [
+      "casquette",
+      "couvre-chef"
+    ],
+    "内": [
+      "intérieur",
+      "dedans",
+      "parmi",
+      "entre",
+      "maison"
+    ],
+    "傾": [
+      "incliner",
+      "pencher",
+      "tendance",
+      "déclin",
+      "sombrer",
+      "ruiner",
+      "gîte"
+    ],
+    "践": [
+      "piétiner",
+      "pratique",
+      "monter sur",
+      "réaliser",
+      "accéder"
+    ],
+    "令": [
+      "ordre",
+      "décret",
+      "anciennes lois"
+    ],
+    "丘": [
+      "colline",
+      "butte"
+    ],
+    "笛": [
+      "flûte",
+      "sifflet",
+      "pipeau",
+      "clarinette",
+      "piccolo",
+      "cornemuse"
+    ],
+    "誇": [
+      "fierté",
+      "orgueil",
+      "vantardise",
+      "triomphant"
+    ],
+    "岩": [
+      "rocher",
+      "roc",
+      "falaise"
+    ],
+    "催": [
+      "tenir",
+      "donner",
+      "prendre en charge",
+      "mécène"
+    ],
+    "視": [
+      "regarder",
+      "voir",
+      "inspection",
+      "point de vue"
+    ],
+    "抱": [
+      "prendre dans les bras",
+      "étreindre",
+      "embrasser"
+    ],
+    "揺": [
+      "balancer",
+      "secouer",
+      "osciller",
+      "trembler",
+      "vibrer"
+    ],
+    "抹": [
+      "frotter",
+      "effacer",
+      "enduire"
+    ],
+    "秀": [
+      "excellence",
+      "exceller",
+      "dépasser",
+      "beauté"
+    ],
+    "引": [
+      "tirer",
+      "citation",
+      "référence",
+      "attraper",
+      "installer",
+      "admettre",
+      "jouer"
+    ],
+    "缶": [
+      "boîte de conserve",
+      "récipient"
+    ],
+    "井": [
+      "puits",
+      "margelle",
+      "communauté",
+      "ville"
+    ],
+    "裁": [
+      "juge",
+      "tribunal",
+      "tailler",
+      "décision",
+      "tailleur"
+    ],
+    "盾": [
+      "bouclier",
+      "écu",
+      "prétexte"
+    ],
+    "待": [
+      "attendre",
+      "compter sur"
+    ],
+    "在": [
+      "exister",
+      "situé à",
+      "banlieue"
+    ],
+    "算": [
+      "calculer",
+      "nombre",
+      "abaque",
+      "prédire",
+      "probabilité"
+    ],
+    "遂": [
+      "accompli",
+      "réussi",
+      "parvenir à",
+      "consommer",
+      "commettre"
+    ],
+    "仙": [
+      "ermite",
+      "magicien",
+      "centime",
+      "sacrum"
+    ],
+    "系": [
+      "lignée",
+      "système"
+    ],
+    "畑": [
+      "champ",
+      "jardin",
+      "ferme",
+      "sa spécialité"
+    ],
+    "挿": [
+      "insérer",
+      "mettre dans",
+      "greffer",
+      "porter"
+    ],
+    "拘": [
+      "arrestation",
+      "saisir",
+      "adhérer",
+      "être concerné",
+      "malgré"
+    ],
+    "儀": [
+      "cérémonie",
+      "manières",
+      "règle",
+      "affaire",
+      "cas",
+      "matière"
+    ],
+    "悟": [
+      "Eveil",
+      "illumination",
+      "comprendre",
+      "réaliser",
+      "percevoir",
+      "discerner"
+    ],
+    "央": [
+      "centre",
+      "milieu"
+    ],
+    "罪": [
+      "crime",
+      "péché",
+      "faute",
+      "délit",
+      "culpabilité",
+      "responsabilité"
+    ],
+    "始": [
+      "commencer",
+      "débuter"
+    ],
+    "智": [
+      "intelligence",
+      "raison"
+    ],
+    "泌": [
+      "sécréter",
+      "suinter",
+      "couler",
+      "s'infiltrer",
+      "absorber"
+    ],
+    "戯": [
+      "jeu",
+      "divertissement",
+      "sport"
+    ],
+    "母": [
+      "mère",
+      "maman"
+    ],
+    "脇": [
+      "aisselle",
+      "flanc",
+      "de côté",
+      "ailleurs",
+      "second rôle"
+    ],
+    "嫌": [
+      "aversion",
+      "détester",
+      "haïr"
+    ],
+    "搭": [
+      "embarquement",
+      "charger",
+      "prendre"
+    ],
+    "廷": [
+      "cour impériale",
+      "tribunaux",
+      "bureau du gouvernement"
+    ],
+    "喫": [
+      "manger",
+      "boire",
+      "fumer",
+      "consommer",
+      "recevoir"
+    ],
+    "鉢": [
+      "bol",
+      "pot",
+      "bol à riz",
+      "couronne"
+    ],
+    "泣": [
+      "pleurer",
+      "gémir"
+    ],
+    "総": [
+      "général",
+      "total",
+      "tout",
+      "entier",
+      "complet"
+    ],
+    "陶": [
+      "poterie",
+      "porcelaine"
+    ],
+    "胃": [
+      "estomac",
+      "ventre",
+      "jabot"
+    ],
+    "飛": [
+      "voler",
+      "sauter",
+      "répandre"
+    ],
+    "喝": [
+      "gronder",
+      "rauque"
+    ],
+    "肌": [
+      "épiderme",
+      "corps",
+      "texture",
+      "grain"
+    ],
+    "御": [
+      "honorable",
+      "contrôler",
+      "diriger"
+    ],
+    "峡": [
+      "gorge",
+      "ravin",
+      "vallée étroite"
+    ],
+    "看": [
+      "regarder attentivement",
+      "veiller sur"
+    ],
+    "便": [
+      "commodité",
+      "courrier",
+      "vol",
+      "nouvelles"
+    ],
+    "縦": [
+      "vertical",
+      "hauteur",
+      "longueur",
+      "égoïste",
+      "entêté"
+    ],
+    "樹": [
+      "bois",
+      "grume"
+    ],
+    "授": [
+      "accorder",
+      "attribuer",
+      "conférer",
+      "enseigner"
+    ],
+    "炭": [
+      "charbon de bois",
+      "charbon"
+    ],
+    "拝": [
+      "culte",
+      "adorer",
+      "prier"
+    ],
+    "詩": [
+      "poème",
+      "poésie"
+    ],
+    "編": [
+      "compilation",
+      "éditer",
+      "tricoter",
+      "tresse",
+      "natte",
+      "partie d'un livre",
+      "poème complet"
+    ],
+    "絶": [
+      "couper",
+      "rompre",
+      "cesser",
+      "interrompre",
+      "supprimer",
+      "s'abstenir",
+      "au-delà"
+    ],
+    "筒": [
+      "tube",
+      "cylindre",
+      "tuyau",
+      "canon",
+      "manche"
+    ],
+    "錯": [
+      "confus",
+      "embrouillé",
+      "mélange",
+      "complexe"
+    ],
+    "河": [
+      "fleuve",
+      "rivière"
+    ],
+    "掌": [
+      "paume",
+      "diriger",
+      "administrer",
+      "gouverner",
+      "manipuler"
+    ],
+    "謀": [
+      "plan",
+      "projet",
+      "conspirer",
+      "concevoir",
+      "avoir dans l'idée",
+      "duper",
+      "tricher",
+      "imposer"
+    ],
+    "乙": [
+      "second",
+      "dernier",
+      "chic",
+      "étrange",
+      "signe du 2ème tronc céleste"
+    ],
+    "紳": [
+      "gentilhomme",
+      "seigneur",
+      "écharpe de chevalier"
+    ],
+    "幅": [
+      "largeur",
+      "tenture murale",
+      "kakémono"
+    ],
+    "種": [
+      "espèce",
+      "graine",
+      "sorte",
+      "variété",
+      "classe"
+    ],
+    "仕": [
+      "servir",
+      "faire",
+      "officiel"
+    ],
+    "峠": [
+      "col",
+      "crête",
+      "sommet"
+    ],
+    "鳥": [
+      "oiseau",
+      "poulet"
+    ],
+    "持": [
+      "tenir",
+      "avoir"
+    ],
+    "侍": [
+      "samouraï",
+      "serviteur",
+      "servir"
+    ],
+    "確": [
+      "certitude",
+      "sûr",
+      "confirmation",
+      "solide",
+      "clair",
+      "évident"
+    ],
+    "助": [
+      "aider",
+      "secourir",
+      "assister"
+    ],
+    "渓": [
+      "vallée étroite",
+      "gorge",
+      "torrent"
+    ],
+    "託": [
+      "confier",
+      "remettre",
+      "requête",
+      "conseil",
+      "prétexter"
+    ],
+    "貰": [
+      "recevoir",
+      "obtenir",
+      "avoir"
+    ],
+    "能": [
+      "capacité",
+      "talent",
+      "habileté",
+      "adresse"
+    ],
+    "掃": [
+      "balayer",
+      "nettoyer",
+      "brosser"
+    ],
+    "回": [
+      "tourner",
+      "fois",
+      "tour",
+      "rond",
+      "révolution",
+      "manche",
+      "compteur de fois",
+      "récurrence"
+    ],
+    "将": [
+      "général",
+      "commandant",
+      "dirigeant",
+      "amiral",
+      "bientôt",
+      "à partir de maintenant",
+      "l'un après l'autre",
+      "à peu près",
+      "ou"
+    ],
+    "潜": [
+      "s'immerger",
+      "se cacher",
+      "se dissimuler",
+      "s'embusquer",
+      "voix basse",
+      "chut!"
+    ],
+    "衛": [
+      "défense",
+      "protection"
+    ],
+    "願": [
+      "demande",
+      "souhait",
+      "prière",
+      "voeu",
+      "espoir"
+    ],
+    "棟": [
+      "faîte",
+      "bâtiment"
+    ],
+    "宣": [
+      "proclamer",
+      "annoncer",
+      "dire"
+    ],
+    "西": [
+      "Ouest",
+      "Espagne"
+    ],
+    "祈": [
+      "prier",
+      "voeu"
+    ],
+    "備": [
+      "équiper",
+      "préparation",
+      "approvisionnement"
+    ],
+    "飽": [
+      "rassasié",
+      "lassé",
+      "fatigué",
+      "saturé"
+    ],
+    "条": [
+      "article",
+      "clause",
+      "bande",
+      "rai",
+      "filet",
+      "brindille",
+      "petite chose longue"
+    ],
+    "沿": [
+      "longer",
+      "suivre",
+      "parallèle à"
+    ],
+    "踏": [
+      "marcher",
+      "monter sur",
+      "piétiner",
+      "évaluer",
+      "réaliser",
+      "basé sur",
+      "éviter de payer"
+    ],
+    "給": [
+      "salaire",
+      "paye",
+      "allocation",
+      "subventions",
+      "cadeau",
+      "accorder",
+      "conférer à"
+    ],
+    "政": [
+      "politique",
+      "gouvernement"
+    ],
+    "続": [
+      "continuer",
+      "suite",
+      "série"
+    ],
+    "績": [
+      "performance",
+      "cocons non déroulés"
+    ],
+    "霧": [
+      "brouillard",
+      "brume"
+    ],
+    "圧": [
+      "pression",
+      "pousser",
+      "oppresser",
+      "dominer",
+      "submerger"
+    ],
+    "維": [
+      "fibre",
+      "corde",
+      "cordon",
+      "conservation"
+    ],
+    "旗": [
+      "drapeau",
+      "bannière",
+      "étendard"
+    ],
+    "融": [
+      "fondre",
+      "dissoudre"
+    ],
+    "集": [
+      "rassembler",
+      "réunir",
+      "collection",
+      "attroupement",
+      "grouiller"
+    ],
+    "適": [
+      "approprié",
+      "qualifié",
+      "capable",
+      "occasionnel",
+      "rare"
+    ],
+    "象": [
+      "éléphant",
+      "forme",
+      "image",
+      "phénomène",
+      "signe",
+      "modèle",
+      "imiter"
+    ],
+    "締": [
+      "serrer",
+      "attacher",
+      "lier",
+      "fermer",
+      "verrouiller"
+    ],
+    "渦": [
+      "tourbillon",
+      "remous",
+      "vortex"
+    ],
+    "裸": [
+      "nudité",
+      "nu",
+      "découvert",
+      "partiellement habillé"
+    ],
+    "誤": [
+      "erreur",
+      "faute",
+      "mal faire",
+      "induire en erreur"
+    ],
+    "賃": [
+      "salaire",
+      "location",
+      "tarif",
+      "frais",
+      "prix",
+      "charges",
+      "droits"
+    ],
+    "賭": [
+      "parier",
+      "miser",
+      "jouer"
+    ],
+    "鋳": [
+      "couler",
+      "frapper"
+    ],
+    "業": [
+      "activité",
+      "vocation",
+      "arts",
+      "représentation",
+      "karma"
+    ],
+    "扶": [
+      "aider",
+      "assister",
+      "prêter main forte"
+    ],
+    "貞": [
+      "chasteté",
+      "vertu",
+      "pureté",
+      "intègre"
+    ],
+    "棒": [
+      "bâton",
+      "barre",
+      "baguette",
+      "canne",
+      "perche",
+      "massue",
+      "ligne"
+    ],
+    "牧": [
+      "pâturage",
+      "élevage",
+      "berger",
+      "nourrir",
+      "soigner"
+    ],
+    "部": [
+      "partie",
+      "section",
+      "portion",
+      "service",
+      "bureau",
+      "classe",
+      "copie",
+      "compteur de copies"
+    ],
+    "芝": [
+      "pelouse",
+      "gazon"
+    ],
+    "首": [
+      "cou",
+      "compteur de chansons ou poèmes"
+    ],
+    "坑": [
+      "fosse",
+      "trou",
+      "mine"
+    ],
+    "比": [
+      "comparer",
+      "proportion",
+      "compétition",
+      "Philippines"
+    ],
+    "零": [
+      "zéro",
+      "rien",
+      "déborder",
+      "se répandre",
+      "code"
+    ],
+    "額": [
+      "front",
+      "somme",
+      "montant",
+      "peinture",
+      "plaque",
+      "tablette",
+      "volume"
+    ],
+    "聴": [
+      "écouter",
+      "sans même demander",
+      "têtu",
+      "vilain"
+    ],
+    "遣": [
+      "envoyer",
+      "expédier",
+      "donner",
+      "faire",
+      "entreprendre"
+    ],
+    "撲": [
+      "frapper",
+      "battre",
+      "coup",
+      "claque",
+      "dire",
+      "parler"
+    ],
+    "講": [
+      "cours magistral",
+      "association",
+      "club"
+    ],
+    "席": [
+      "siège",
+      "place",
+      "natte",
+      "occasion"
+    ],
+    "功": [
+      "succès",
+      "réussite",
+      "réalisation",
+      "mérite",
+      "honneur",
+      "crédit"
+    ],
+    "私": [
+      "moi",
+      "je",
+      "privé"
+    ],
+    "賓": [
+      "hôte",
+      "invité d'honneur",
+      "V.I.P"
+    ],
+    "泉": [
+      "source",
+      "fontaine"
+    ],
+    "階": [
+      "étage",
+      "niveau",
+      "compteur d'étages"
+    ],
+    "資": [
+      "capital",
+      "fonds",
+      "actifs",
+      "ressources",
+      "données",
+      "contribuer à",
+      "favorable à"
+    ],
+    "扉": [
+      "porte d'entrée",
+      "page de titre",
+      "première page"
+    ],
+    "勲": [
+      "mérite",
+      "fait méritoire",
+      "haut fait"
+    ],
+    "碑": [
+      "monument",
+      "pierre tombale"
+    ],
+    "宗": [
+      "religion",
+      "secte",
+      "confession",
+      "point principal",
+      "origine",
+      "essence"
+    ],
+    "耐": [
+      "endurant",
+      "résistant",
+      "durable",
+      "à l'épreuve de"
+    ],
+    "範": [
+      "modèle",
+      "exemple"
+    ],
+    "活": [
+      "vivant",
+      "animé",
+      "résurrection",
+      "être aidé"
+    ],
+    "欄": [
+      "colonne de journal",
+      "espace",
+      "blanc",
+      "rampe"
+    ],
+    "表": [
+      "surface",
+      "face",
+      "tableau",
+      "graphique",
+      "diagramme"
+    ],
+    "侮": [
+      "mépriser",
+      "dédaigner",
+      "irrespect",
+      "prendre à la légère"
+    ],
+    "偶": [
+      "par hasard",
+      "nombre pair",
+      "couple",
+      "homme et femme",
+      "même espèce"
+    ],
+    "吟": [
+      "réciter",
+      "chant",
+      "récital",
+      "versifier"
+    ],
+    "窃": [
+      "cambrioler",
+      "secret",
+      "privé",
+      "discret",
+      "à voix basse"
+    ],
+    "屋": [
+      "toit",
+      "maison",
+      "échoppe",
+      "vendeur",
+      "négociant"
+    ],
+    "矛": [
+      "hallebarde",
+      "armes",
+      "char de festival"
+    ],
+    "脂": [
+      "graisse",
+      "gras",
+      "suif",
+      "lard",
+      "résine",
+      "gomme",
+      "goudron"
+    ],
+    "較": [
+      "comparer",
+      "contraste"
+    ],
+    "独": [
+      "seul",
+      "célibataire",
+      "spontanément",
+      "Allemagne"
+    ],
+    "代": [
+      "remplacer",
+      "substituer",
+      "génération",
+      "âge",
+      "ère",
+      "période",
+      "prix",
+      "montant d'argent",
+      "taux",
+      "redevance",
+      "changer",
+      "convertir"
+    ],
+    "虜": [
+      "captif",
+      "esclave",
+      "barbare",
+      "épithète péjorative pour l'ennemi"
+    ],
+    "劾": [
+      "censure",
+      "enquête criminelle"
+    ],
+    "鎖": [
+      "chaîne",
+      "fers",
+      "liens"
+    ],
+    "釣": [
+      "pêche à la ligne",
+      "attraper",
+      "capturer",
+      "attirer",
+      "rendre la monnaie"
+    ],
+    "線": [
+      "ligne",
+      "voie"
+    ],
+    "材": [
+      "matériaux",
+      "bois de charpente",
+      "ingrédients",
+      "talent",
+      "bûche",
+      "bille de bois"
+    ],
+    "効": [
+      "efficacité",
+      "mérite",
+      "bénéfique"
+    ],
+    "漢": [
+      "Chine",
+      "sino-"
+    ],
+    "施": [
+      "donner",
+      "aumône",
+      "poser des bandages",
+      "administrer 1ers secours"
+    ],
+    "機": [
+      "machine",
+      "mécanique",
+      "opportunité",
+      "métier à tisser",
+      "avion",
+      "organique"
+    ],
+    "封": [
+      "sceller",
+      "fermeture"
+    ],
+    "源": [
+      "source",
+      "origine"
+    ],
+    "粒": [
+      "grain",
+      "goutte",
+      "compteur de particules"
+    ],
+    "妥": [
+      "calme",
+      "pacifique",
+      "compromis",
+      "approprié",
+      "aimable"
+    ],
+    "達": [
+      "atteindre",
+      "aboutir",
+      "accompli",
+      "suffixe pluriel"
+    ],
+    "兵": [
+      "soldat",
+      "simple soldat",
+      "troupes",
+      "armée",
+      "guerre",
+      "stratégie",
+      "tactique"
+    ],
+    "柄": [
+      "manche",
+      "poignée",
+      "dessin",
+      "motif",
+      "nature",
+      "bouton",
+      "manivelle",
+      "construire"
+    ],
+    "営": [
+      "diriger",
+      "travail",
+      "exécuter",
+      "construire",
+      "camp"
+    ],
+    "稚": [
+      "immature",
+      "jeunesse"
+    ],
+    "旨": [
+      "portée",
+      "volonté",
+      "délicieux",
+      "savoureux",
+      "expert",
+      "intelligent",
+      "très bien",
+      "avoir un penchant pour"
+    ],
+    "都": [
+      "capitale",
+      "métropole"
+    ],
+    "僕": [
+      "je",
+      "moi",
+      "serviteur"
+    ],
+    "園": [
+      "jardin",
+      "parc",
+      "ferme"
+    ],
+    "烏": [
+      "corbeau",
+      "corneille"
+    ],
+    "匠": [
+      "artisan",
+      "charpentier",
+      "ouvrier"
+    ],
+    "運": [
+      "destin",
+      "chance",
+      "sort",
+      "destinée",
+      "porter",
+      "progrès"
+    ],
+    "藩": [
+      "domaine",
+      "fief",
+      "clan"
+    ],
+    "麻": [
+      "chanvre",
+      "lin"
+    ],
+    "撃": [
+      "attaquer",
+      "battre",
+      "vaincre",
+      "conquérir"
+    ],
+    "喪": [
+      "deuil",
+      "perte"
+    ],
+    "終": [
+      "fin",
+      "finir"
+    ],
+    "酸": [
+      "acide",
+      "aigre",
+      "amer",
+      "sur"
+    ],
+    "漬": [
+      "saumure",
+      "tremper",
+      "imbiber",
+      "humecter"
+    ],
+    "募": [
+      "recruter",
+      "enrôler",
+      "appel",
+      "mener une campagne",
+      "devenir violent"
+    ],
+    "格": [
+      "rang",
+      "statut",
+      "caractère",
+      "capacité",
+      "cas"
+    ],
+    "淑": [
+      "gracieux",
+      "doux",
+      "pur"
+    ],
+    "鐘": [
+      "cloche",
+      "gong",
+      "carillon"
+    ],
+    "至": [
+      "atteindre",
+      "arriver à",
+      "aboutissement",
+      "résultat",
+      "paroxysme",
+      "direction",
+      "solstice"
+    ],
+    "漁": [
+      "pêcher",
+      "pêcherie"
+    ],
+    "解": [
+      "délier",
+      "défaire",
+      "résoudre",
+      "expliquer",
+      "compréhension",
+      "explication",
+      "répondre",
+      "annuler",
+      "absoudre",
+      "clé",
+      "notes",
+      "minute"
+    ],
+    "筆": [
+      "pinceau",
+      "écriture"
+    ],
+    "粘": [
+      "collant",
+      "gluant",
+      "persévérer",
+      "graisseux"
+    ],
+    "短": [
+      "court",
+      "bref",
+      "défaut",
+      "point faible",
+      "faute"
+    ],
+    "庸": [
+      "ordinaire",
+      "banal",
+      "emploi"
+    ],
+    "恋": [
+      "amour",
+      "idylle",
+      "chérir",
+      "languir",
+      "manquer"
+    ],
+    "替": [
+      "remplacer",
+      "échanger",
+      "substituer"
+    ],
+    "理": [
+      "raison",
+      "logique",
+      "principe",
+      "vérité",
+      "justice"
+    ],
+    "精": [
+      "énergie",
+      "vitalité",
+      "raffiné",
+      "pureté",
+      "excellence",
+      "habileté",
+      "sperme",
+      "fantôme",
+      "féérique"
+    ],
+    "乱": [
+      "désordre",
+      "confusion",
+      "troubles",
+      "émeute",
+      "tumulte",
+      "guerre"
+    ],
+    "猟": [
+      "chasse sportive",
+      "tir",
+      "jeu",
+      "sac"
+    ],
+    "豆": [
+      "haricot",
+      "pois",
+      "infime"
+    ],
+    "叙": [
+      "raconter",
+      "relater",
+      "décrire",
+      "conférer"
+    ],
+    "顔": [
+      "visage",
+      "expression"
+    ],
+    "箱": [
+      "boîte",
+      "caisse",
+      "coffre",
+      "wagon"
+    ],
+    "伯": [
+      "oncle",
+      "comte",
+      "chef",
+      "Brésil"
+    ],
+    "剖": [
+      "disséquer",
+      "diviser"
+    ],
+    "仏": [
+      "Bouddha",
+      "défunt",
+      "France"
+    ],
+    "峰": [
+      "sommet",
+      "pic",
+      "pointe"
+    ],
+    "渋": [
+      "astringent",
+      "hésiter",
+      "rechigner",
+      "chic",
+      "diarrhée"
+    ],
+    "甲": [
+      "carapace",
+      "armure",
+      "première classe",
+      "premier ordre",
+      "cou-de-pied",
+      "haute",
+      "ancien",
+      "signe du 1er tronc céleste"
+    ],
+    "底": [
+      "fond",
+      "partie basse",
+      "base",
+      "semelle",
+      "profondeur",
+      "prix plancher",
+      "sorte"
+    ],
+    "枯": [
+      "se faner",
+      "dépérir",
+      "sec",
+      "mourir"
+    ],
+    "爆": [
+      "exploser",
+      "bombe",
+      "faire éclater",
+      "craquer"
+    ],
+    "森": [
+      "forêt",
+      "bois"
+    ],
+    "喜": [
+      "se réjouir",
+      "prendre plaisir à"
+    ],
+    "着": [
+      "porter",
+      "enfiler",
+      "arriver",
+      "compteur de vêtements"
+    ],
+    "荒": [
+      "sauvage",
+      "rude",
+      "dévaster",
+      "brutalité"
+    ],
+    "光": [
+      "lumière",
+      "rayon"
+    ],
+    "洋": [
+      "océan",
+      "style occidental"
+    ],
+    "調": [
+      "enquête",
+      "ton",
+      "mélodie",
+      "préparer",
+      "style d'écriture",
+      "exorciser"
+    ],
+    "流": [
+      "courant",
+      "flux",
+      "style",
+      "mode",
+      "évier",
+      "confisquer"
+    ],
+    "高": [
+      "haut",
+      "élevé",
+      "grand",
+      "cher"
+    ],
+    "狩": [
+      "chasse",
+      "poursuivre",
+      "ramasser"
+    ],
+    "慈": [
+      "affection",
+      "miséricorde",
+      "pitié"
+    ],
+    "卑": [
+      "vil",
+      "ignoble",
+      "vulgaire",
+      "humble"
+    ],
+    "捜": [
+      "chercher",
+      "rechercher",
+      "repérer",
+      "détecter"
+    ],
+    "卵": [
+      "oeuf",
+      "frai"
+    ],
+    "務": [
+      "tâche",
+      "devoir",
+      "travail"
+    ],
+    "以": [
+      "au moyen de",
+      "parce que",
+      "en vue de",
+      "comparé à"
+    ],
+    "侵": [
+      "invasion",
+      "intrusion",
+      "empiéter",
+      "entrer sans permission",
+      "violer",
+      "raid"
+    ],
+    "滋": [
+      "nourrissant",
+      "luxuriant",
+      "plantation",
+      "de plus en plus",
+      "turbidité"
+    ],
+    "漸": [
+      "progressivement",
+      "finalement",
+      "en fin de compte",
+      "tout juste"
+    ],
+    "堕": [
+      "dégénérer",
+      "sombrer",
+      "s'abaisser"
+    ],
+    "炎": [
+      "flamme",
+      "incendie",
+      "inflammation"
+    ],
+    "慢": [
+      "paresse",
+      "vanité",
+      "ridicule"
+    ],
+    "坪": [
+      "tsubo",
+      "aire de 2 tatamis standards"
+    ],
+    "没": [
+      "couler",
+      "sombrer",
+      "immersion",
+      "disparaître",
+      "mourir",
+      "cacher"
+    ],
+    "宙": [
+      "espace",
+      "plein ciel",
+      "air",
+      "mémorisation",
+      "intervalle de temps"
+    ],
+    "諸": [
+      "divers",
+      "plusieurs",
+      "différents",
+      "multiples",
+      "ensemble"
+    ],
+    "産": [
+      "production",
+      "produire",
+      "donner naissance",
+      "porter",
+      "natal",
+      "propriété"
+    ],
+    "尉": [
+      "officier",
+      "rang",
+      "geôlier",
+      "vieil homme"
+    ],
+    "夢": [
+      "rêve",
+      "vision",
+      "illusion"
+    ],
+    "征": [
+      "conquête",
+      "attaquer les barbares",
+      "collecter les taxes"
+    ],
+    "史": [
+      "histoire",
+      "chronique"
+    ],
+    "遍": [
+      "partout",
+      "-fois",
+      "largement",
+      "généralement"
+    ],
+    "散": [
+      "disperser",
+      "éparpiller",
+      "dépenser",
+      "gaspiller"
+    ],
+    "信": [
+      "confiance",
+      "foi",
+      "fidélité",
+      "vérité",
+      "communication"
+    ],
+    "彩": [
+      "colorer",
+      "peindre",
+      "maquillage"
+    ],
+    "献": [
+      "offrande",
+      "don",
+      "offrir",
+      "faire cadeau",
+      "compteur de boissons"
+    ],
+    "昆": [
+      "insecte",
+      "frère ainé",
+      "descendant"
+    ],
+    "凹": [
+      "concave",
+      "creux",
+      "dépression"
+    ],
+    "択": [
+      "choisir",
+      "sélectionner",
+      "élire",
+      "préférer"
+    ],
+    "作": [
+      "fabriquer",
+      "produire",
+      "construire",
+      "préparer"
+    ],
+    "菌": [
+      "bactérie",
+      "germe",
+      "champignon"
+    ],
+    "辞": [
+      "mot",
+      "expression",
+      "terme",
+      "démission"
+    ],
+    "量": [
+      "quantité",
+      "mesure",
+      "poids",
+      "estimation",
+      "conjecture",
+      "étudier"
+    ],
+    "員": [
+      "membre",
+      "employé",
+      "personne en charge",
+      "nombre"
+    ],
+    "香": [
+      "parfum",
+      "senteur",
+      "encens"
+    ],
+    "際": [
+      "occasion",
+      "bord",
+      "côté",
+      "temps",
+      "accotement",
+      "quand",
+      "dangereux",
+      "aventureux",
+      "indécent"
+    ],
+    "貴": [
+      "précieux",
+      "de valeur",
+      "estimé",
+      "prisé",
+      "honneur"
+    ],
+    "貧": [
+      "pauvreté",
+      "pauvre"
+    ],
+    "墓": [
+      "tombe",
+      "tombeau"
+    ],
+    "浦": [
+      "baie",
+      "anse",
+      "crique",
+      "rivage",
+      "côte",
+      "plage",
+      "golfe"
+    ],
+    "勤": [
+      "travailler",
+      "être employé",
+      "assiduité",
+      "application"
+    ],
+    "肖": [
+      "ressemblance",
+      "portrait"
+    ],
+    "美": [
+      "beauté",
+      "beau, belle"
+    ],
+    "身": [
+      "personne",
+      "individu",
+      "situation sociale"
+    ],
+    "后": [
+      "impératrice",
+      "reine",
+      "après",
+      "derrière",
+      "arrière",
+      "plus tard"
+    ],
+    "頻": [
+      "fréquemment",
+      "récurrent",
+      "sans cesse"
+    ],
+    "促": [
+      "inciter",
+      "pousser à",
+      "encourager",
+      "stimuler",
+      "demander"
+    ],
+    "考": [
+      "réfléchir",
+      "considérer"
+    ],
+    "押": [
+      "pousser",
+      "appuyer",
+      "presser",
+      "maintenir",
+      "saisir",
+      "contrôler",
+      "soumettre",
+      "arrêter",
+      "attacher",
+      "sceau",
+      "faire en dépit de"
+    ],
+    "風": [
+      "vent",
+      "style",
+      "manière",
+      "air"
+    ],
+    "濁": [
+      "boueux",
+      "troubler",
+      "impureté",
+      "faux",
+      "consonne sonore"
+    ],
+    "時": [
+      "temps",
+      "heure"
+    ],
+    "付": [
+      "attacher",
+      "coller",
+      "ajouter",
+      "soumettre à"
+    ],
+    "籍": [
+      "registre",
+      "domicile",
+      "adhésion",
+      "enrôler"
+    ],
+    "瞬": [
+      "cligner",
+      "pétiller"
+    ],
+    "宜": [
+      "convenable",
+      "bon",
+      "mes amitiés!"
+    ],
+    "誠": [
+      "sincérité",
+      "vérité",
+      "fidélité",
+      "avertir",
+      "prévenir",
+      "interdire"
+    ],
+    "挙": [
+      "faire monter",
+      "conduite",
+      "actions",
+      "plan",
+      "projet"
+    ],
+    "豊": [
+      "abondance",
+      "riche",
+      "somptueux"
+    ],
+    "簡": [
+      "simplicité",
+      "brièveté"
+    ],
+    "球": [
+      "balle",
+      "sphère"
+    ],
+    "詳": [
+      "détaillé",
+      "précis",
+      "complet",
+      "bien informé"
+    ],
+    "夫": [
+      "mari",
+      "homme"
+    ],
+    "率": [
+      "taux",
+      "proportion",
+      "rapport",
+      "coefficient",
+      "facteur",
+      "%"
+    ],
+    "述": [
+      "déclarer",
+      "mentionner",
+      "raconter",
+      "parler"
+    ],
+    "兆": [
+      "présage",
+      "signe",
+      "augures",
+      "symptômes",
+      "1000 milliards",
+      "10**12"
+    ],
+    "道": [
+      "route",
+      "voie",
+      "rue",
+      "voyage",
+      "morale",
+      "enseignements",
+      "région"
+    ],
+    "忠": [
+      "loyauté",
+      "fidélité"
+    ],
+    "隻": [
+      "compteur de bateaux",
+      "l'un d'une paire",
+      "vaisseaux",
+      "compteur d'oiseaux",
+      "poissons",
+      "flèches"
+    ],
+    "頂": [
+      "sommet",
+      "pic",
+      "sommet de la tête",
+      "recevoir",
+      "placer au sommet"
+    ],
+    "祝": [
+      "célébrer",
+      "féliciter"
+    ],
+    "核": [
+      "noyau",
+      "nucléaire",
+      "coeur"
+    ],
+    "被": [
+      "subir",
+      "couvrir",
+      "souffrir",
+      "victime",
+      "porter",
+      "mettre",
+      "voile",
+      "abri",
+      "être exposé",
+      "ruminer"
+    ],
+    "塁": [
+      "base",
+      "bases",
+      "rempart",
+      "fort",
+      "murs"
+    ],
+    "間": [
+      "intervalle",
+      "espace"
+    ],
+    "訓": [
+      "instructions",
+      "explication",
+      "lecture japonaise",
+      "lire"
+    ],
+    "転": [
+      "tourner",
+      "rouler",
+      "changer"
+    ],
+    "依": [
+      "dépendant",
+      "dû à",
+      "par conséquent",
+      "donc"
+    ],
+    "局": [
+      "bureau",
+      "pièce",
+      "affaire",
+      "conclusion",
+      "local",
+      "dame de cour",
+      "dame d'honneur",
+      "son appartement à elle"
+    ],
+    "度": [
+      "degré",
+      "fois",
+      "occurrence",
+      "compteur d'occurrences"
+    ],
+    "孤": [
+      "orphelin",
+      "seul"
+    ],
+    "兼": [
+      "cumuler",
+      "simultanément",
+      "et"
+    ],
+    "養": [
+      "nourrir",
+      "élever",
+      "cultiver",
+      "soigner",
+      "développer"
+    ],
+    "晶": [
+      "cristal",
+      "clair",
+      "étinceler"
+    ],
+    "累": [
+      "amasser",
+      "continuellement",
+      "implication",
+      "ennuis",
+      "liens"
+    ],
+    "芸": [
+      "art",
+      "technique",
+      "interprétation",
+      "tour",
+      "métier",
+      "cascade"
+    ],
+    "掛": [
+      "accrocher",
+      "suspendre",
+      "dépendre",
+      "verser",
+      "arriver à",
+      "taxe"
+    ],
+    "逆": [
+      "contraire",
+      "inverse",
+      "opposé",
+      "mauvais"
+    ],
+    "等": [
+      "égal",
+      "semblable",
+      "classe",
+      "qualité",
+      "et ainsi de suite",
+      "etc...",
+      "pluriel"
+    ],
+    "案": [
+      "plan",
+      "projet",
+      "proposition",
+      "suggestion",
+      "idée",
+      "réflexion",
+      "attente",
+      "peur"
+    ],
+    "宝": [
+      "trésor",
+      "objets de valeur",
+      "richesses"
+    ],
+    "性": [
+      "nature",
+      "sexe",
+      "propriétés",
+      "genre"
+    ],
+    "灯": [
+      "lampe",
+      "lumière",
+      "compteur de lampes"
+    ],
+    "洞": [
+      "grotte",
+      "antre",
+      "excavation"
+    ],
+    "酔": [
+      "ivre",
+      "se sentir malade",
+      "transporté de joie",
+      "subjugué",
+      "empoisonné"
+    ],
+    "辺": [
+      "environs",
+      "voisinage",
+      "frontière"
+    ],
+    "過": [
+      "passer",
+      "dépasser",
+      "excéder",
+      "erreur"
+    ],
+    "求": [
+      "demander",
+      "réclamer",
+      "désirer",
+      "vouloir"
+    ],
+    "暑": [
+      "chaud",
+      "chaleur d'été",
+      "torride",
+      "temps lourd"
+    ],
+    "把": [
+      "saisir",
+      "agripper",
+      "paquet",
+      "fagot",
+      "compteur de paquets"
+    ],
+    "推": [
+      "déduire",
+      "présumer",
+      "supposer",
+      "deviner",
+      "soutenir"
+    ],
+    "歳": [
+      "âge",
+      "compteur d'années",
+      "fin d'année",
+      "occasion",
+      "opportunité"
+    ],
+    "悦": [
+      "joie",
+      "ravissement",
+      "extase"
+    ],
+    "倒": [
+      "renverser",
+      "tomber",
+      "s'écrouler",
+      "s'effondrer",
+      "dégringoler"
+    ],
+    "巻": [
+      "rouleau",
+      "enrouler",
+      "envelopper",
+      "volume",
+      "tome",
+      "livre",
+      "partie",
+      "compteur de textes"
+    ],
+    "唐": [
+      "Chine",
+      "T'ang"
+    ],
+    "飢": [
+      "faim",
+      "famine"
+    ],
+    "尾": [
+      "queue",
+      "bout",
+      "bas de pente",
+      "compteur de poissons"
+    ],
+    "潤": [
+      "mouillé",
+      "tremper",
+      "être arrosé",
+      "profit",
+      "bénéfice",
+      "favoriser",
+      "charmer"
+    ],
+    "武": [
+      "guerrier",
+      "militaire",
+      "armes",
+      "chevalerie"
+    ],
+    "巧": [
+      "habile",
+      "adroit",
+      "ingénieux"
+    ],
+    "主": [
+      "maître",
+      "seigneur",
+      "propriétaire",
+      "chef",
+      "principal",
+      "mari"
+    ],
+    "枠": [
+      "cadre",
+      "structure",
+      "bobine",
+      "bounding box"
+    ],
+    "追": [
+      "poursuivre",
+      "pourchasser",
+      "suivre",
+      "chasser",
+      "pendant ce temps"
+    ],
+    "派": [
+      "faction",
+      "groupe",
+      "parti",
+      "école",
+      "clan",
+      "secte"
+    ],
+    "羽": [
+      "plume",
+      "compteur d'oiseaux, lapins"
+    ],
+    "壌": [
+      "sol",
+      "terrain",
+      "lot de terrain"
+    ],
+    "滞": [
+      "stagner",
+      "retard",
+      "arriérés"
+    ],
+    "盛": [
+      "prospérité",
+      "boom",
+      "copuler"
+    ],
+    "甚": [
+      "excessivement",
+      "très",
+      "terriblement",
+      "formidable"
+    ],
+    "哀": [
+      "chagrin",
+      "peine",
+      "pitié",
+      "pitoyable",
+      "pathétique",
+      "compatir"
+    ],
+    "券": [
+      "ticket",
+      "coupon"
+    ],
+    "枢": [
+      "pivot",
+      "charnière",
+      "porte"
+    ],
+    "襟": [
+      "col",
+      "revers",
+      "nuque"
+    ],
+    "頃": [
+      "temps",
+      "époque",
+      "environ",
+      "vers"
+    ],
+    "輸": [
+      "transporter",
+      "envoyer",
+      "être inférieur"
+    ],
+    "油": [
+      "huile",
+      "gras"
+    ],
+    "奨": [
+      "encourager",
+      "exhorter",
+      "pousser à"
+    ],
+    "塗": [
+      "peinture",
+      "peindre",
+      "enduire",
+      "tartiner",
+      "barbouiller",
+      "recouvrir"
+    ],
+    "座": [
+      "siège",
+      "s'asseoir",
+      "s'accroupir",
+      "coussin",
+      "théâtre",
+      "constellation",
+      "rassemblement"
+    ],
+    "租": [
+      "impôt",
+      "taxe",
+      "droits",
+      "emprunt"
+    ],
+    "帝": [
+      "empereur",
+      "souverain",
+      "dieu",
+      "créateur"
+    ],
+    "整": [
+      "mettre en ordre",
+      "arranger",
+      "organiser",
+      "ton",
+      "air",
+      "clef",
+      "mètre"
+    ],
+    "億": [
+      "cent millions",
+      "10**8"
+    ],
+    "論": [
+      "argumentation",
+      "discours"
+    ],
+    "朱": [
+      "vermillon",
+      "rouge",
+      "écarlate",
+      "sanglant"
+    ],
+    "酢": [
+      "vinaigre",
+      "aigre",
+      "acide",
+      "sur"
+    ],
+    "崎": [
+      "cap",
+      "promontoire",
+      "pointe"
+    ],
+    "保": [
+      "protéger",
+      "garder",
+      "préserver",
+      "conserver",
+      "garantir",
+      "soutenir"
+    ],
+    "優": [
+      "gentillesse",
+      "tendresse",
+      "exceller",
+      "surpasser",
+      "supériorité",
+      "acteur"
+    ],
+    "殻": [
+      "coquille",
+      "enveloppe"
+    ],
+    "照": [
+      "illuminer",
+      "briller",
+      "comparer",
+      "timide"
+    ],
+    "試": [
+      "essai",
+      "test",
+      "épreuve",
+      "tentative",
+      "expérience"
+    ],
+    "培": [
+      "culture",
+      "entretenir"
+    ],
+    "塊": [
+      "motte",
+      "masse",
+      "caillot"
+    ],
+    "覆": [
+      "recouvrir",
+      "chavirer",
+      "manteau",
+      "store",
+      "être ruiné"
+    ],
+    "批": [
+      "critique",
+      "commentaire"
+    ],
+    "地": [
+      "terre",
+      "sol"
+    ],
+    "磁": [
+      "aimant",
+      "porcelaine"
+    ],
+    "襲": [
+      "attaquer",
+      "assaillir",
+      "agresser",
+      "hériter",
+      "accumuler"
+    ],
+    "飯": [
+      "repas",
+      "riz bouilli"
+    ],
+    "聞": [
+      "entendre",
+      "écouter",
+      "demander"
+    ],
+    "商": [
+      "commerce",
+      "affaire",
+      "vente",
+      "marchand",
+      "distributeur"
+    ],
+    "共": [
+      "ensemble",
+      "avec",
+      "tous",
+      "les deux",
+      "semblable",
+      "et",
+      "ni l'un ni l'autre"
+    ],
+    "負": [
+      "défaite",
+      "perdre",
+      "porter sur le dos",
+      "assumer",
+      "devoir à quelqu'un",
+      "négatif",
+      "moins",
+      "faire un rabais"
+    ],
+    "門": [
+      "portail",
+      "compteur de canons"
+    ],
+    "憶": [
+      "mémoire",
+      "souvenir",
+      "réminiscence"
+    ],
+    "有": [
+      "avoir",
+      "posséder",
+      "être",
+      "arriver"
+    ],
+    "郷": [
+      "village natal",
+      "lieu de naissance",
+      "village",
+      "région"
+    ],
+    "歩": [
+      "marcher",
+      "compteur de pas"
+    ],
+    "遷": [
+      "déménagement",
+      "changement",
+      "transition",
+      "dégrader"
+    ],
+    "仁": [
+      "humanité",
+      "bienveillance",
+      "vertu",
+      "charité",
+      "grandeur d'âme",
+      "homme",
+      "noyau"
+    ],
+    "浅": [
+      "peu profond",
+      "superficiel",
+      "frivole",
+      "misérable",
+      "honteux"
+    ],
+    "逮": [
+      "arrêter",
+      "appréhender",
+      "poursuivre"
+    ],
+    "進": [
+      "avancer",
+      "progresser",
+      "promouvoir"
+    ],
+    "掲": [
+      "afficher",
+      "hisser",
+      "publier",
+      "faire paraître",
+      "décrire",
+      "insertion",
+      "cité"
+    ],
+    "穏": [
+      "calme",
+      "paisible",
+      "modéré"
+    ],
+    "注": [
+      "verser",
+      "arroser",
+      "servir",
+      "se jeter dans",
+      "note",
+      "annotation",
+      "commentaire",
+      "remarque"
+    ],
+    "駐": [
+      "stationner",
+      "résident"
+    ],
+    "矯": [
+      "redresser",
+      "rectifier",
+      "corriger",
+      "réformer",
+      "guérir",
+      "contrôler",
+      "faire semblant",
+      "falsifier"
+    ],
+    "貫": [
+      "percer",
+      "pénétrer",
+      "cohérence",
+      "soutien",
+      "kan"
+    ],
+    "砲": [
+      "canon",
+      "fusil"
+    ],
+    "鮮": [
+      "frais",
+      "vif",
+      "clair",
+      "brillant",
+      "Corée"
+    ],
+    "敵": [
+      "ennemi",
+      "adversaire"
+    ],
+    "訂": [
+      "corriger",
+      "réviser",
+      "décider"
+    ],
+    "込": [
+      "encombré",
+      "inclus",
+      "mélange",
+      "en gros"
+    ],
+    "朗": [
+      "clair",
+      "brillant",
+      "radieux",
+      "joyeux",
+      "serein",
+      "mélodieux"
+    ],
+    "預": [
+      "dépôt",
+      "garde",
+      "confier",
+      "laisser avec"
+    ],
+    "株": [
+      "action boursière",
+      "souche",
+      "titre",
+      "compteur de petites plantes"
+    ],
+    "夜": [
+      "nuit",
+      "soirée"
+    ],
+    "歓": [
+      "joie",
+      "plaisir",
+      "ravissement"
+    ],
+    "器": [
+      "récipient",
+      "ustensile",
+      "instrument",
+      "appareil",
+      "outil",
+      "capacité",
+      "service"
+    ],
+    "幸": [
+      "joie",
+      "fortune",
+      "bénédiction"
+    ],
+    "勿": [
+      "ne pas",
+      "ne pas faire",
+      "ne pas devoir",
+      "ne pas être"
+    ],
+    "任": [
+      "responsabilité",
+      "devoir",
+      "confier à",
+      "nommer",
+      "terme"
+    ],
+    "妙": [
+      "bizarre",
+      "merveilleux",
+      "excellent",
+      "exquis",
+      "délicat",
+      "surprenant",
+      "charmant",
+      "mystère"
+    ],
+    "閲": [
+      "inspection",
+      "révision",
+      "revue"
+    ],
+    "値": [
+      "valeur",
+      "prix",
+      "coût"
+    ],
+    "圏": [
+      "sphère",
+      "zone",
+      "domaine",
+      "bloc",
+      "rayon",
+      "orbite"
+    ],
+    "揚": [
+      "hisser",
+      "frire"
+    ],
+    "返": [
+      "rendre",
+      "répondre",
+      "rembourser",
+      "s'estomper"
+    ],
+    "剛": [
+      "force",
+      "fermeté",
+      "vigoureux"
+    ],
+    "鍛": [
+      "former",
+      "entraîner",
+      "discipliner"
+    ],
+    "申": [
+      "dire",
+      "s'appeler",
+      "j'ai l'honneur de",
+      "signe du Singe",
+      "signe de la 9ème branche terrestre",
+      "15 h à 17 h"
+    ],
+    "法": [
+      "loi",
+      "méthode",
+      "règle",
+      "principe",
+      "modèle",
+      "système"
+    ],
+    "魔": [
+      "démon",
+      "esprit malfaisant",
+      "sorcière"
+    ],
+    "紋": [
+      "armoiries",
+      "motif"
+    ],
+    "築": [
+      "construire",
+      "bâtir",
+      "fabriquer"
+    ],
+    "卒": [
+      "fin d'études",
+      "soldat",
+      "privé",
+      "mourir"
+    ],
+    "奔": [
+      "courir",
+      "précipitation",
+      "agitation"
+    ],
+    "採": [
+      "cueillir",
+      "prendre",
+      "aller chercher"
+    ],
+    "止": [
+      "arrêter",
+      "cesser"
+    ],
+    "紹": [
+      "introduction",
+      "présentations",
+      "hériter",
+      "aider"
+    ],
+    "罷": [
+      "arrêter",
+      "quitter",
+      "abandon",
+      "se retirer",
+      "aller"
+    ],
+    "曹": [
+      "sous-officier",
+      "ami",
+      "fils de bonne famille",
+      "élève officier"
+    ],
+    "杯": [
+      "verre",
+      "coupe à saké",
+      "verre de vin",
+      "toast",
+      "compteur de verres"
+    ],
+    "専": [
+      "spécialité",
+      "exclusivement",
+      "uniquement",
+      "principalement"
+    ],
+    "錦": [
+      "brocart",
+      "belle robe",
+      "honneurs"
+    ],
+    "翌": [
+      "suivant",
+      "celui d'après"
+    ],
+    "渡": [
+      "traversée",
+      "gué",
+      "bac",
+      "transit",
+      "migrer",
+      "livrer",
+      "import",
+      "diamètre"
+    ],
+    "冷": [
+      "froid",
+      "froide",
+      "refroidir",
+      "fraîche"
+    ],
+    "俊": [
+      "excellence",
+      "génie",
+      "sagacité",
+      "avisé"
+    ],
+    "店": [
+      "magasin",
+      "échoppe"
+    ],
+    "騒": [
+      "tapage",
+      "faire du bruit",
+      "clameur",
+      "émeute",
+      "déranger",
+      "exciter"
+    ],
+    "貨": [
+      "biens",
+      "fret"
+    ],
+    "勇": [
+      "courage",
+      "bravoure",
+      "héroïsme",
+      "remonter le moral",
+      "être en verve"
+    ],
+    "近": [
+      "près",
+      "proche",
+      "tôt",
+      "équivalent à"
+    ],
+    "膚": [
+      "peau",
+      "corps",
+      "texture",
+      "grain",
+      "disposition"
+    ],
+    "払": [
+      "payer",
+      "nettoyer",
+      "se débarrasser de",
+      "tailler",
+      "bannir"
+    ],
+    "郭": [
+      "enceinte",
+      "fortifications",
+      "quartiers",
+      "quartier chaud"
+    ],
+    "躍": [
+      "bond",
+      "sautiller",
+      "danse"
+    ],
+    "紀": [
+      "chronique",
+      "histoire",
+      "annales",
+      "narration",
+      "compte-rendu",
+      "ère géologique"
+    ],
+    "蛇": [
+      "serpent",
+      "gros buveur"
+    ],
+    "湯": [
+      "eau chaude",
+      "bain",
+      "source chaude"
+    ],
+    "赴": [
+      "se rendre à",
+      "se diriger vers",
+      "aller",
+      "devenir"
+    ],
+    "村": [
+      "village",
+      "ville"
+    ],
+    "睦": [
+      "intime",
+      "amical",
+      "harmonieux"
+    ],
+    "謙": [
+      "modestie",
+      "humilité",
+      "condescendre"
+    ],
+    "広": [
+      "vaste",
+      "large",
+      "spacieux"
+    ],
+    "公": [
+      "public",
+      "officiel",
+      "gouvernemental",
+      "prince"
+    ],
+    "復": [
+      "retourner",
+      "restaurer",
+      "reprendre"
+    ],
+    "陰": [
+      "ombre",
+      "Yin",
+      "négatif",
+      "secret",
+      "organes sexuels"
+    ],
+    "見": [
+      "voir",
+      "regarder",
+      "visible",
+      "opinion",
+      "idée",
+      "espoirs",
+      "chances"
+    ],
+    "守": [
+      "protéger",
+      "garder",
+      "défendre",
+      "obéir",
+      "respect"
+    ],
+    "打": [
+      "frapper",
+      "taper",
+      "coup",
+      "marteler",
+      "douzaine"
+    ],
+    "展": [
+      "développement",
+      "déploiement"
+    ],
+    "迅": [
+      "rapide",
+      "vif"
+    ],
+    "涙": [
+      "larme",
+      "compassion"
+    ],
+    "妄": [
+      "illusion",
+      "imprudent",
+      "sans autorisation",
+      "inutile"
+    ],
+    "胆": [
+      "vésicule biliaire",
+      "courage",
+      "cran"
+    ],
+    "跡": [
+      "traces",
+      "marques",
+      "empreinte",
+      "vestiges"
+    ],
+    "警": [
+      "avertissement",
+      "réprimander",
+      "commandement"
+    ],
+    "罰": [
+      "punition",
+      "châtiment"
+    ],
+    "譜": [
+      "partition",
+      "musique",
+      "note",
+      "portée",
+      "généalogie",
+      "liste"
+    ],
+    "憩": [
+      "repos",
+      "détente",
+      "relaxation",
+      "vacances"
+    ],
+    "衰": [
+      "déclin",
+      "s'affaiblir",
+      "diminuer"
+    ],
+    "吸": [
+      "aspirer",
+      "inhaler",
+      "absorber",
+      "siroter"
+    ],
+    "当": [
+      "frapper",
+      "juste",
+      "approprié",
+      "lui-même"
+    ],
+    "般": [
+      "général",
+      "global",
+      "transporter",
+      "transporteur"
+    ],
+    "俳": [
+      "acteur",
+      "haïku"
+    ],
+    "無": [
+      "néant",
+      "rien",
+      "non",
+      "négatif",
+      "ne pas",
+      "in-"
+    ],
+    "男": [
+      "homme",
+      "mâle"
+    ],
+    "足": [
+      "pied",
+      "jambe",
+      "suffire",
+      "ajouter",
+      "compteur de paires de chaussures"
+    ],
+    "蓄": [
+      "accumuler",
+      "stocker",
+      "mettre de côté",
+      "avoir une maîtresse",
+      "gramophone"
+    ],
+    "漂": [
+      "flotter",
+      "dériver"
+    ],
+    "行": [
+      "aller",
+      "voyage"
+    ],
+    "裏": [
+      "envers",
+      "revers",
+      "verso",
+      "arrière",
+      "doublure",
+      "mauvais côté",
+      "intérieur",
+      "semelle",
+      "paume"
+    ],
+    "滝": [
+      "cascade",
+      "chute d'eau",
+      "rapides"
+    ],
+    "暴": [
+      "violence",
+      "force",
+      "rage",
+      "cruauté",
+      "agitation",
+      "outrage",
+      "explosion",
+      "dévoiler"
+    ],
+    "農": [
+      "agriculture",
+      "fermier"
+    ],
+    "絞": [
+      "étrangler",
+      "tordre",
+      "serrer"
+    ],
+    "阻": [
+      "faire obstacle",
+      "obstruer",
+      "empêcher",
+      "contrarier",
+      "dissuader",
+      "séparer"
+    ],
+    "候": [
+      "climat",
+      "saison",
+      "temps"
+    ],
+    "猛": [
+      "féroce",
+      "sauvagerie",
+      "force",
+      "devenir furieux",
+      "fulminer",
+      "se ruer"
+    ],
+    "均": [
+      "nivelé",
+      "égalisé",
+      "moyenne"
+    ],
+    "結": [
+      "nouer",
+      "lier",
+      "attacher",
+      "joindre",
+      "organiser",
+      "contrat",
+      "se coiffer"
+    ],
+    "盤": [
+      "plateau",
+      "plat",
+      "échiquier",
+      "disque",
+      "bassin",
+      "bol creux"
+    ],
+    "舞": [
+      "danse",
+      "voltiger",
+      "cercle",
+      "roue"
+    ],
+    "僧": [
+      "moine",
+      "prêtre bouddhiste"
+    ],
+    "統": [
+      "gouverner",
+      "régner",
+      "relation",
+      "général"
+    ],
+    "獲": [
+      "capturer",
+      "prise",
+      "obtenir",
+      "acquérir",
+      "gagner",
+      "pouvoir",
+      "pouvoir faire"
+    ],
+    "慣": [
+      "avoir l'habitude",
+      "s'accoutumer",
+      "coutumes",
+      "expérience"
+    ],
+    "曇": [
+      "temps couvert",
+      "se couvrir"
+    ],
+    "雅": [
+      "élégant",
+      "gracieux",
+      "raffiné",
+      "bon goût"
+    ],
+    "菜": [
+      "légume",
+      "accompagnement"
+    ],
+    "庭": [
+      "jardin",
+      "cour"
+    ],
+    "肪": [
+      "graisse",
+      "gras",
+      "gros",
+      "obèse"
+    ],
+    "少": [
+      "un peu",
+      "un petit peu"
+    ],
+    "老": [
+      "vieillard",
+      "âgé",
+      "vieillir"
+    ],
+    "諭": [
+      "admonestation",
+      "réprimande",
+      "conseiller",
+      "persuader",
+      "prévenir"
+    ],
+    "各": [
+      "chaque",
+      "chacun"
+    ],
+    "癖": [
+      "mauvaise habitude",
+      "manie",
+      "vice",
+      "défaut",
+      "trait",
+      "frisé"
+    ],
+    "喚": [
+      "crier",
+      "hurler"
+    ],
+    "板": [
+      "planche",
+      "plaque",
+      "panneau",
+      "stade"
+    ],
+    "軍": [
+      "armée",
+      "troupes",
+      "forces",
+      "guerriers",
+      "bataille"
+    ],
+    "術": [
+      "technique",
+      "art",
+      "moyens",
+      "ressources",
+      "tour",
+      "magie"
+    ],
+    "料": [
+      "matériau",
+      "frais",
+      "prix",
+      "redevance",
+      "recette"
+    ],
+    "剣": [
+      "épée",
+      "sabre",
+      "lame",
+      "aiguille de montre"
+    ],
+    "措": [
+      "mettre à l'écart",
+      "rejeter",
+      "abandonner",
+      "suspendre",
+      "exclure",
+      "renvoyer"
+    ],
+    "然": [
+      "si c'est comme ça",
+      "dans ce cas",
+      "un certain",
+      "suffixe adverbial"
+    ],
+    "狂": [
+      "fou",
+      "insensé",
+      "aliéné",
+      "confusion"
+    ],
+    "粧": [
+      "cosmétique",
+      "se maquiller"
+    ],
+    "鈍": [
+      "émoussé",
+      "lent",
+      "bête"
+    ],
+    "披": [
+      "ouvrir",
+      "exposer"
+    ],
+    "同": [
+      "identique",
+      "égal",
+      "similaire"
+    ],
+    "領": [
+      "territoire",
+      "domaine",
+      "juridiction",
+      "fief"
+    ],
+    "倉": [
+      "entrepôt",
+      "dépôt",
+      "magasin",
+      "cellier",
+      "trésor"
+    ],
+    "握": [
+      "s'agripper",
+      "tenir",
+      "mouler",
+      "soudoyer"
+    ],
+    "酪": [
+      "produits laitiers",
+      "petit-lait",
+      "bouillon",
+      "jus de fruits"
+    ],
+    "章": [
+      "chapitre",
+      "badge",
+      "composition",
+      "poème",
+      "dessin",
+      "clairement visible"
+    ],
+    "睡": [
+      "dormir",
+      "ensommeillé",
+      "mourir"
+    ],
+    "繰": [
+      "embobiner",
+      "bobine",
+      "tourner",
+      "faire tourner",
+      "feuilleter",
+      "parler de"
+    ],
+    "歌": [
+      "chanson",
+      "chanter"
+    ],
+    "銭": [
+      "monnaie",
+      "piécette",
+      "1 centime de yen"
+    ],
+    "升": [
+      "boîte mesure",
+      "boîte",
+      "cellule"
+    ],
+    "臓": [
+      "entrailles",
+      "viscères",
+      "intestins"
+    ],
+    "苗": [
+      "plant",
+      "jeune arbre",
+      "bourgeon"
+    ],
+    "皿": [
+      "assiette",
+      "plat",
+      "portion"
+    ],
+    "描": [
+      "dessiner",
+      "peindre",
+      "croquis",
+      "écrire",
+      "composer"
+    ],
+    "頑": [
+      "têtu",
+      "obstination",
+      "opiniâtre",
+      "tenace",
+      "stupide"
+    ],
+    "拾": [
+      "ramasser",
+      "cueillir",
+      "trouver",
+      "10",
+      "aller à pied"
+    ],
+    "省": [
+      "ministère",
+      "omission",
+      "économie",
+      "éliminer",
+      "faire le point",
+      "abréviation"
+    ],
+    "序": [
+      "ordre",
+      "préface",
+      "début",
+      "priorité",
+      "occasion",
+      "avant",
+      "en passant"
+    ],
+    "嘱": [
+      "charger de",
+      "demander",
+      "envoyer un message",
+      "appartenir"
+    ],
+    "縫": [
+      "coudre",
+      "broder",
+      "suturer"
+    ],
+    "輪": [
+      "roue",
+      "cercle",
+      "anneau",
+      "boucle",
+      "maillon",
+      "compteur de roues ou fleurs"
+    ],
+    "居": [
+      "résider",
+      "se trouver",
+      "être",
+      "exister",
+      "vivre avec"
+    ],
+    "難": [
+      "difficile",
+      "problème",
+      "accident",
+      "défaut",
+      "impossible"
+    ],
+    "硬": [
+      "dur",
+      "raide"
+    ],
+    "訟": [
+      "accusation",
+      "poursuites"
+    ],
+    "癒": [
+      "guérison",
+      "guérir",
+      "assouvir",
+      "désaltérer"
+    ],
+    "跳": [
+      "sauter",
+      "bondir",
+      "caracoler",
+      "ruer",
+      "jaillir",
+      "gicler",
+      "craquer",
+      "collision"
+    ],
+    "遭": [
+      "mauvaise rencontre",
+      "rencontre",
+      "entrevue",
+      "joindre",
+      "association",
+      "parti"
+    ],
+    "宇": [
+      "toit",
+      "maison",
+      "auvent",
+      "cieux",
+      "firmament"
+    ],
+    "孔": [
+      "trou",
+      "cavité",
+      "fente",
+      "grand",
+      "très",
+      "extrêmement"
+    ],
+    "凶": [
+      "malchance",
+      "désastre",
+      "mauvais",
+      "vaurien"
+    ],
+    "装": [
+      "tenue",
+      "revêtir",
+      "déguisement",
+      "faire semblant",
+      "prétendre"
+    ],
+    "雄": [
+      "mâle",
+      "masculin",
+      "héros",
+      "chef",
+      "supériorité",
+      "excellence"
+    ],
+    "妊": [
+      "grossesse",
+      "enceinte"
+    ],
+    "族": [
+      "famille",
+      "tribu"
+    ],
+    "州": [
+      "province",
+      "état"
+    ],
+    "焦": [
+      "brûler",
+      "roussir",
+      "carboniser",
+      "impatient",
+      "pressé",
+      "foyer"
+    ],
+    "淡": [
+      "pâle",
+      "dilué",
+      "vague",
+      "éphémère"
+    ],
+    "福": [
+      "bénédiction",
+      "fortune",
+      "chance",
+      "richesse"
+    ],
+    "誉": [
+      "honneur",
+      "réputation",
+      "gloire",
+      "louanges"
+    ],
+    "異": [
+      "étrangeté",
+      "bizarrerie",
+      "inhabituel",
+      "curieux",
+      "extraordinaire",
+      "surprenant"
+    ],
+    "杉": [
+      "cèdre",
+      "cryptomère"
+    ],
+    "噴": [
+      "éruption",
+      "jaillir",
+      "gicler",
+      "émettre"
+    ],
+    "怠": [
+      "paresse",
+      "négligence"
+    ],
+    "和": [
+      "harmonie",
+      "paix",
+      "Japon",
+      "style japonais",
+      "adoucir"
+    ],
+    "畜": [
+      "bétail",
+      "animaux domestiques"
+    ],
+    "針": [
+      "aiguille",
+      "épingle",
+      "agrafe",
+      "dard"
+    ],
+    "版": [
+      "édition",
+      "impression",
+      "plaque d'impression",
+      "bloc d'impression",
+      "version"
+    ],
+    "債": [
+      "dette",
+      "prêt",
+      "titre"
+    ],
+    "嬢": [
+      "jeune fille",
+      "mademoiselle",
+      "fille"
+    ],
+    "裂": [
+      "déchirer",
+      "fente",
+      "arracher"
+    ],
+    "頼": [
+      "confiance",
+      "demande"
+    ],
+    "賀": [
+      "félicitations",
+      "joie"
+    ],
+    "映": [
+      "refléter",
+      "réflexion",
+      "projection"
+    ],
+    "斜": [
+      "oblique",
+      "diagonale",
+      "penché"
+    ],
+    "暫": [
+      "un moment",
+      "un certain temps",
+      "temporaire",
+      "depuis longtemps"
+    ],
+    "乾": [
+      "sécheresse",
+      "sécher",
+      "dessécher",
+      "vider",
+      "cieux",
+      "empereur"
+    ],
+    "索": [
+      "corde",
+      "câble",
+      "chercher"
+    ],
+    "憲": [
+      "constitution",
+      "loi"
+    ],
+    "響": [
+      "écho",
+      "résonner",
+      "son",
+      "sonner",
+      "vibrer"
+    ],
+    "常": [
+      "habituel",
+      "ordinaire",
+      "normal"
+    ],
+    "祭": [
+      "fête",
+      "célébration",
+      "rituel",
+      "adoration",
+      "prières",
+      "déifier",
+      "enchâsser"
+    ],
+    "浴": [
+      "bain",
+      "bénéficier de",
+      "dorer"
+    ],
+    "登": [
+      "monter",
+      "escalader"
+    ],
+    "刷": [
+      "imprimer",
+      "impression"
+    ],
+    "放": [
+      "libérer",
+      "relâcher",
+      "émettre",
+      "renvoyer",
+      "bannir",
+      "enflammer"
+    ],
+    "望": [
+      "espoir",
+      "désir",
+      "ambition",
+      "aspirer à",
+      "contempler",
+      "dominer",
+      "pleine lune"
+    ],
+    "肉": [
+      "viande",
+      "chair"
+    ],
+    "栄": [
+      "prospérité",
+      "florissant",
+      "gloire",
+      "honneur",
+      "splendeur"
+    ],
+    "副": [
+      "vice-",
+      "copie",
+      "duplicata"
+    ],
+    "粋": [
+      "élégance",
+      "chic",
+      "style",
+      "pureté",
+      "essence",
+      "élite",
+      "de choix"
+    ],
+    "唆": [
+      "inciter",
+      "tenter",
+      "promouvoir"
+    ],
+    "履": [
+      "chaussures",
+      "chausser",
+      "bottes",
+      "enfiler",
+      "expérience"
+    ],
+    "郊": [
+      "banlieue",
+      "périphérie",
+      "zone rurale"
+    ],
+    "婆": [
+      "vieille femme",
+      "grand-mère",
+      "nourrice"
+    ],
+    "閉": [
+      "fermer",
+      "clore"
+    ],
+    "奴": [
+      "mec",
+      "type",
+      "esclave",
+      "valet",
+      "suffixe insultant"
+    ],
+    "糧": [
+      "provisions",
+      "vivres",
+      "nourriture",
+      "pain"
+    ],
+    "証": [
+      "preuve",
+      "évidence",
+      "certificat"
+    ],
+    "路": [
+      "chemin",
+      "route",
+      "distance"
+    ],
+    "亜": [
+      "Asie",
+      "sous-",
+      "sub-",
+      "suivant"
+    ],
+    "規": [
+      "norme",
+      "mesure"
+    ],
+    "陪": [
+      "accompagner",
+      "assister",
+      "suivre",
+      "respect"
+    ],
+    "徳": [
+      "vertu",
+      "bonté",
+      "bienveillance",
+      "respectable"
+    ],
+    "暦": [
+      "calendrier",
+      "almanach"
+    ],
+    "型": [
+      "moule",
+      "modèle",
+      "type"
+    ],
+    "醜": [
+      "laid",
+      "hideux",
+      "honteux",
+      "malpropre"
+    ],
+    "康": [
+      "tranquille",
+      "paisible"
+    ],
+    "賄": [
+      "pot-de-vin",
+      "corruption",
+      "nourrir",
+      "fourniture",
+      "préparation",
+      "payer"
+    ],
+    "札": [
+      "étiquette",
+      "billet de banque",
+      "affiche",
+      "offre",
+      "compteur d'obligations"
+    ],
+    "戻": [
+      "revenir",
+      "revenir en arrière",
+      "rendre",
+      "reprendre",
+      "restaurer",
+      "re-"
+    ],
+    "占": [
+      "divination",
+      "bonne aventure",
+      "prédiction",
+      "occuper",
+      "posséder",
+      "tenir",
+      "prendre",
+      "avoir"
+    ],
+    "張": [
+      "étirer",
+      "allonger",
+      "étaler",
+      "monter",
+      "compteur d'arcs et instruments à cordes"
+    ],
+    "君": [
+      "jeune homme",
+      "tu",
+      "suffixe de nom"
+    ],
+    "池": [
+      "étang",
+      "mare",
+      "réservoir"
+    ],
+    "堂": [
+      "hall",
+      "salle",
+      "temple",
+      "édifice public",
+      "grandiose"
+    ],
+    "岸": [
+      "rive",
+      "côte",
+      "plage"
+    ],
+    "刃": [
+      "lame",
+      "épée",
+      "fil"
+    ],
+    "贈": [
+      "cadeau",
+      "offrir",
+      "donner",
+      "envoyer",
+      "remise",
+      "accorder",
+      "conférer"
+    ],
+    "基": [
+      "fondements",
+      "fondations",
+      "radical",
+      "compteur de machines"
+    ],
+    "師": [
+      "maître",
+      "professeur",
+      "expert",
+      "modèle",
+      "exemplaire",
+      "armée",
+      "guerre"
+    ],
+    "畔": [
+      "levée de terre",
+      "digue"
+    ],
+    "粉": [
+      "poudre",
+      "farine",
+      "poussière"
+    ],
+    "類": [
+      "sorte",
+      "genre",
+      "classe",
+      "variété"
+    ],
+    "綱": [
+      "corde",
+      "câble",
+      "haussière",
+      "classe"
+    ],
+    "霊": [
+      "esprits",
+      "âmes"
+    ],
+    "凸": [
+      "convexe",
+      "inégal",
+      "gros sourcils"
+    ],
+    "笠": [
+      "chapeau de bambou",
+      "influence"
+    ],
+    "伐": [
+      "abattre",
+      "attaquer",
+      "punir",
+      "frapper"
+    ],
+    "刑": [
+      "peine",
+      "punition",
+      "sanction",
+      "condamnation"
+    ],
+    "貿": [
+      "commerce",
+      "négoce",
+      "échanges"
+    ],
+    "雇": [
+      "embaucher",
+      "employer"
+    ],
+    "告": [
+      "annoncer",
+      "informer",
+      "dire",
+      "révélation"
+    ],
+    "帥": [
+      "commandant",
+      "mener des troupes",
+      "gouverneur"
+    ],
+    "消": [
+      "éteindre",
+      "effacer",
+      "disparaître",
+      "annuler",
+      "neutraliser"
+    ],
+    "典": [
+      "code",
+      "loi",
+      "règle",
+      "cérémonie"
+    ],
+    "腰": [
+      "taille",
+      "reins",
+      "hanche",
+      "lambris à hauteur de taille"
+    ],
+    "袋": [
+      "sac",
+      "sacoche",
+      "mère"
+    ],
+    "息": [
+      "respirer",
+      "fils",
+      "intérêts"
+    ],
+    "緯": [
+      "latitude",
+      "trame",
+      "horizontal",
+      "gauche et droite"
+    ],
+    "疾": [
+      "maladie",
+      "rapide"
+    ],
+    "陛": [
+      "son altesse",
+      "marches"
+    ],
+    "枚": [
+      "feuille de",
+      "compteur d'objets plats"
+    ],
+    "薬": [
+      "médicament",
+      "produit chimique",
+      "poudre à canon",
+      "émail",
+      "bénéfice"
+    ],
+    "社": [
+      "compagnie",
+      "firme",
+      "temple shinto",
+      "association",
+      "bureau"
+    ],
+    "蛍": [
+      "luciole",
+      "ver luisant"
+    ],
+    "落": [
+      "tomber",
+      "chute",
+      "perdre"
+    ],
+    "民": [
+      "peuple",
+      "nation",
+      "citoyen"
+    ],
+    "麗": [
+      "beau",
+      "belle",
+      "jolie",
+      "charmant"
+    ],
+    "画": [
+      "dessin",
+      "trait de plume",
+      "écran",
+      "compteur de traits de kanji"
+    ],
+    "膨": [
+      "gonfler",
+      "grossir",
+      "épais"
+    ],
+    "周": [
+      "circonférence",
+      "tour",
+      "alentours"
+    ],
+    "隊": [
+      "groupe",
+      "brigade",
+      "régiment",
+      "compagnie"
+    ],
+    "方": [
+      "direction",
+      "personne",
+      "alternative"
+    ],
+    "再": [
+      "encore une fois",
+      "une deuxième fois",
+      "deux fois"
+    ],
+    "勝": [
+      "victoire",
+      "gagner",
+      "l'emporter",
+      "surpasser"
+    ],
+    "権": [
+      "autorité",
+      "pouvoir",
+      "droits"
+    ],
+    "昨": [
+      "hier",
+      "précédent",
+      "~ dernière"
+    ],
+    "痴": [
+      "idiot",
+      "stupide"
+    ],
+    "柔": [
+      "tendre",
+      "douceur",
+      "faiblesse"
+    ],
+    "観": [
+      "vue",
+      "apparence",
+      "aspect",
+      "perspective",
+      "condition"
+    ],
+    "尽": [
+      "épuiser",
+      "arriver au bout",
+      "être à court de",
+      "servir",
+      "être dégoûté",
+      "prendre en amitié"
+    ],
+    "括": [
+      "lier",
+      "attacher",
+      "serrer",
+      "arrêter"
+    ],
+    "変": [
+      "changer",
+      "étrange",
+      "insolite"
+    ],
+    "泰": [
+      "paix",
+      "calme",
+      "paisible",
+      "tranquille",
+      "Thaïlande"
+    ],
+    "鋭": [
+      "pointu",
+      "aigu",
+      "tranchant",
+      "violent",
+      "arme",
+      "radical"
+    ],
+    "旦": [
+      "aube",
+      "aurore",
+      "point du jour"
+    ],
+    "双": [
+      "paire",
+      "ensemble",
+      "compteur de paires",
+      "comparaison"
+    ],
+    "彼": [
+      "lui",
+      "celui-là"
+    ],
+    "隆": [
+      "prospérité",
+      "haut",
+      "protubérance",
+      "noble"
+    ],
+    "談": [
+      "parler",
+      "discuter"
+    ],
+    "賢": [
+      "intelligent",
+      "sage",
+      "sagesse"
+    ],
+    "狙": [
+      "viser",
+      "mire",
+      "rôder",
+      "ombre"
+    ],
+    "米": [
+      "grain de riz",
+      "Amérique",
+      "un mètre"
+    ],
+    "岡": [
+      "colline",
+      "butte",
+      "mont"
+    ],
+    "飲": [
+      "boire",
+      "prendre",
+      "fumer"
+    ],
+    "点": [
+      "point",
+      "note",
+      "allumer",
+      "virgule"
+    ],
+    "暇": [
+      "temps libre",
+      "loisirs",
+      "repos",
+      "congé",
+      "temps"
+    ],
+    "詰": [
+      "hermétiquement clos",
+      "conserve",
+      "coincé",
+      "réprimande",
+      "blâme"
+    ],
+    "加": [
+      "ajouter",
+      "addition",
+      "augmentation",
+      "rejoindre",
+      "inclure",
+      "Canada"
+    ],
+    "佐": [
+      "assistant",
+      "aide"
+    ],
+    "刺": [
+      "piquer",
+      "percer",
+      "enfoncer",
+      "épine",
+      "coudre",
+      "tailler",
+      "carte de visite"
+    ],
+    "燥": [
+      "dessécher",
+      "être joyeux"
+    ],
+    "錠": [
+      "serrure",
+      "fers",
+      "chaines"
+    ],
+    "済": [
+      "finir",
+      "achever",
+      "excusable",
+      "s'en sortir sans"
+    ],
+    "期": [
+      "période",
+      "temps",
+      "date",
+      "terme"
+    ],
+    "墜": [
+      "tomber",
+      "s'écraser"
+    ],
+    "悪": [
+      "mal",
+      "mauvais",
+      "vice",
+      "vaurien",
+      "faux"
+    ],
+    "良": [
+      "bon",
+      "plaisant",
+      "habile"
+    ],
+    "名": [
+      "nom",
+      "réputation",
+      "célèbre",
+      "fameux"
+    ],
+    "知": [
+      "savoir",
+      "sagesse"
+    ],
+    "懇": [
+      "cordial",
+      "gentil",
+      "courtois",
+      "hospitalier",
+      "sociable"
+    ],
+    "悲": [
+      "triste",
+      "peine",
+      "regret",
+      "déplorer"
+    ],
+    "朽": [
+      "pourri",
+      "délabré",
+      "rester reclus"
+    ],
+    "即": [
+      "instantané",
+      "en l'état",
+      "c'est-à-dire",
+      "se conformer",
+      "être adapté",
+      "être d'accord"
+    ],
+    "尚": [
+      "encore",
+      "de plus",
+      "en outre",
+      "respecter",
+      "vénérer"
+    ],
+    "亭": [
+      "pavillon",
+      "tonnelle",
+      "résidence",
+      "restaurant",
+      "music hall",
+      "variétés",
+      "nom de scène"
+    ],
+    "受": [
+      "recevoir",
+      "accepter",
+      "subir",
+      "prendre",
+      "obtenir",
+      "répondre"
+    ],
+    "覚": [
+      "mémoriser",
+      "se rappeler",
+      "réveil",
+      "perception",
+      "sens",
+      "dessoûler"
+    ],
+    "抜": [
+      "arracher",
+      "extraire",
+      "enlever",
+      "omettre",
+      "chaparder",
+      "faire une erreur"
+    ],
+    "里": [
+      "hameau",
+      "village natal",
+      "maison de ses parents",
+      "ri"
+    ],
+    "辱": [
+      "humilier",
+      "déshonorer",
+      "embarrasser"
+    ],
+    "混": [
+      "mélanger",
+      "confusion"
+    ],
+    "意": [
+      "idée",
+      "pensée",
+      "esprit",
+      "coeur",
+      "attention",
+      "désir",
+      "goût"
+    ],
+    "県": [
+      "préfecture",
+      "département"
+    ],
+    "肥": [
+      "engrais",
+      "grossir",
+      "fertile",
+      "fumier",
+      "choyer"
+    ],
+    "麦": [
+      "blé",
+      "orge"
+    ],
+    "逝": [
+      "mourir",
+      "défunt"
+    ],
+    "態": [
+      "état",
+      "condition",
+      "attitude",
+      "apparence",
+      "forme"
+    ],
+    "盆": [
+      "plateau",
+      "bassin",
+      "fête des lanternes"
+    ],
+    "捨": [
+      "jeter",
+      "mettre au rebut",
+      "abandonner",
+      "rejet",
+      "sacrifice",
+      "démissionner"
+    ],
+    "尋": [
+      "demander",
+      "interroger",
+      "rechercher",
+      "brasse"
+    ],
+    "該": [
+      "concerné",
+      "la chose en question",
+      "le dit",
+      "ci-dessus"
+    ],
+    "姿": [
+      "silhouette",
+      "forme",
+      "aspect"
+    ],
+    "側": [
+      "côté",
+      "pencher",
+      "opposer",
+      "regretter"
+    ],
+    "別": [
+      "séparer",
+      "un autre",
+      "diverger",
+      "spécialement",
+      "extra"
+    ],
+    "据": [
+      "installer",
+      "poser les fondations",
+      "équiper",
+      "s'asseoir",
+      "s'accroupir"
+    ],
+    "蔵": [
+      "entrepôt",
+      "salle de stockage",
+      "cacher",
+      "posséder",
+      "avoir"
+    ],
+    "計": [
+      "calcul",
+      "mesure",
+      "planifier",
+      "projeter"
+    ],
+    "奥": [
+      "intérieur",
+      "fond",
+      "coeur",
+      "épouse"
+    ],
+    "覧": [
+      "voir",
+      "lecture",
+      "prendre connaissance"
+    ],
+    "銘": [
+      "inscription",
+      "signature"
+    ],
+    "胎": [
+      "utérus",
+      "foetus"
+    ],
+    "根": [
+      "racine",
+      "radical",
+      "point noir"
+    ],
+    "褒": [
+      "éloge",
+      "louer"
+    ],
+    "歯": [
+      "dent",
+      "dentée",
+      "crémaillère"
+    ],
+    "阪": [
+      "pente",
+      "coteaux"
+    ],
+    "幽": [
+      "obscur",
+      "sombre",
+      "profond",
+      "faible",
+      "isolé",
+      "confiné",
+      "isoler",
+      "tranquille",
+      "calme"
+    ],
+    "直": [
+      "droit devant",
+      "directement",
+      "honnêteté",
+      "franchise",
+      "réparer",
+      "guérir",
+      "tout de suite"
+    ],
+    "疲": [
+      "fatigue",
+      "épuisé",
+      "las"
+    ],
+    "府": [
+      "préfecture urbaine",
+      "bureau de gouvernement",
+      "arrondissement",
+      "corps représentatif",
+      "entrepôt"
+    ],
+    "眺": [
+      "regarder",
+      "contempler",
+      "voir",
+      "examiner",
+      "fixer",
+      "dévisager"
+    ],
+    "埼": [
+      "cap",
+      "promontoire",
+      "pointe"
+    ],
+    "好": [
+      "aimer bien",
+      "apprécié",
+      "agréable"
+    ],
+    "焼": [
+      "brûler",
+      "griller"
+    ],
+    "迷": [
+      "s'égarer",
+      "perdu",
+      "se tromper",
+      "hésiter",
+      "être perplexe",
+      "illusion"
+    ],
+    "茎": [
+      "tige",
+      "queue"
+    ],
+    "満": [
+      "remplir",
+      "satisfaire",
+      "assez",
+      "fier"
+    ],
+    "奈": [
+      "Nara",
+      "comment ?"
+    ],
+    "娯": [
+      "divertissement",
+      "distraction"
+    ],
+    "財": [
+      "fortune",
+      "argent",
+      "propriété",
+      "actifs"
+    ],
+    "沈": [
+      "couler",
+      "être submergé",
+      "s'enfoncer",
+      "être déprimé",
+      "aloès"
+    ],
+    "串": [
+      "brochette",
+      "broche"
+    ],
+    "誌": [
+      "document",
+      "dossier"
+    ],
+    "坂": [
+      "pente",
+      "colline",
+      "incliner"
+    ],
+    "級": [
+      "classe",
+      "grade",
+      "niveau",
+      "rang"
+    ],
+    "感": [
+      "sentiment",
+      "émotion",
+      "sensation"
+    ],
+    "室": [
+      "chambre",
+      "pièce",
+      "appartement",
+      "cave",
+      "serre"
+    ],
+    "祖": [
+      "ancêtre",
+      "fondateur",
+      "pionnier"
+    ],
+    "全": [
+      "tout",
+      "entier",
+      "totalité",
+      "complet",
+      "accomplir"
+    ],
+    "窒": [
+      "obstruer",
+      "suffoquer",
+      "azote"
+    ],
+    "許": [
+      "permettre",
+      "autorisation",
+      "seulement"
+    ],
+    "革": [
+      "cuir",
+      "peau",
+      "fourrure",
+      "réforme",
+      "rénovation",
+      "devenir sérieux"
+    ],
+    "扇": [
+      "éventail",
+      "ventilateur"
+    ],
+    "摘": [
+      "cueillir",
+      "pincer",
+      "saisir du bout des doigts",
+      "tailler",
+      "récapituler"
+    ],
+    "岬": [
+      "cap",
+      "promontoire",
+      "pointe",
+      "avancée de terre"
+    ],
+    "吐": [
+      "vomir",
+      "cracher",
+      "avouer",
+      "dire des mensonges",
+      "roter"
+    ],
+    "敏": [
+      "vivacité d'esprit",
+      "vif",
+      "intelligent"
+    ],
+    "寄": [
+      "s'approcher",
+      "approcher",
+      "faire une visite",
+      "rassembler",
+      "collecter",
+      "envoyer",
+      "faire suivre"
+    ],
+    "祥": [
+      "bon présage",
+      "bonheur",
+      "prometteur"
+    ],
+    "彫": [
+      "sculpter",
+      "graver",
+      "ciseler"
+    ],
+    "酒": [
+      "alcool",
+      "saké"
+    ],
+    "住": [
+      "habiter",
+      "résider",
+      "vivre"
+    ],
+    "需": [
+      "demande",
+      "besoin",
+      "requête"
+    ],
+    "用": [
+      "utiliser",
+      "employer",
+      "se servir de",
+      "affaires",
+      "service"
+    ],
+    "様": [
+      "apparence",
+      "état",
+      "manière",
+      "sorte",
+      "Monsieur, Madame",
+      "suffixe de politesse"
+    ],
+    "議": [
+      "délibération",
+      "débat",
+      "entretien",
+      "considération"
+    ],
+    "煮": [
+      "bouillir",
+      "cuire",
+      "mijoter"
+    ],
+    "与": [
+      "donner",
+      "fournir",
+      "don",
+      "conférer",
+      "décerner",
+      "participer à",
+      "cause",
+      "don du ciel"
+    ],
+    "奮": [
+      "excitation",
+      "stimulation",
+      "tonifié",
+      "épanoui"
+    ],
+    "牙": [
+      "croc",
+      "défense"
+    ],
+    "湾": [
+      "baie",
+      "golfe",
+      "crique"
+    ],
+    "縛": [
+      "lier",
+      "attacher",
+      "ficeler",
+      "contrainte",
+      "arrêts"
+    ],
+    "艇": [
+      "petit bateau",
+      "barque"
+    ],
+    "洗": [
+      "laver",
+      "examiner",
+      "fouiller"
+    ],
+    "端": [
+      "bord",
+      "bout",
+      "pointe",
+      "bordure",
+      "rebord",
+      "origine",
+      "cap"
+    ],
+    "暮": [
+      "coucher de soleil",
+      "vivre",
+      "mener sa vie",
+      "arriver à son terme"
+    ],
+    "審": [
+      "jugement",
+      "audience",
+      "audition"
+    ],
+    "恐": [
+      "peur",
+      "crainte",
+      "épouvante"
+    ],
+    "図": [
+      "dessin",
+      "plan",
+      "carte",
+      "inattendu",
+      "accidentellement"
+    ],
+    "祉": [
+      "bien-être",
+      "bonheur"
+    ],
+    "芳": [
+      "parfum",
+      "parfumé",
+      "embaumé"
+    ],
+    "郡": [
+      "arrondissement",
+      "comté"
+    ],
+    "列": [
+      "rang",
+      "file",
+      "queue",
+      "colonne"
+    ],
+    "愚": [
+      "stupide",
+      "idiot",
+      "bête",
+      "absurdité"
+    ],
+    "組": [
+      "association",
+      "assembler",
+      "unir",
+      "construire",
+      "tresse",
+      "natte",
+      "coopérer",
+      "se débattre avec"
+    ],
+    "違": [
+      "différence",
+      "différer"
+    ],
+    "却": [
+      "au contraire",
+      "plutôt",
+      "au lieu de"
+    ],
+    "我": [
+      "moi",
+      "je",
+      "soi-même",
+      "ego",
+      "égoïste",
+      "notre"
+    ],
+    "科": [
+      "section",
+      "département",
+      "cours",
+      "science"
+    ],
+    "寮": [
+      "dortoir",
+      "foyer",
+      "pavillon",
+      "pavillon de thé"
+    ],
+    "寝": [
+      "dormir",
+      "être couché",
+      "se reposer",
+      "lit",
+      "invendu"
+    ],
+    "孫": [
+      "petits-enfants",
+      "descendants"
+    ],
+    "射": [
+      "tir à l'arc",
+      "lancer une flèche",
+      "briller",
+      "sur"
+    ],
+    "構": [
+      "structure",
+      "construire",
+      "position",
+      "concerné",
+      "préoccupé"
+    ],
+    "抑": [
+      "répression",
+      "presser",
+      "pousser",
+      "sceau",
+      "faire en dépit de",
+      "en premier lieu",
+      "maintenant",
+      "bon..!"
+    ],
+    "濃": [
+      "épais",
+      "concentré",
+      "sombre",
+      "non dilué"
+    ],
+    "質": [
+      "qualité",
+      "matière",
+      "substance",
+      "tempérament"
+    ],
+    "忍": [
+      "endurer",
+      "supporter",
+      "cacher",
+      "dissimuler",
+      "secret",
+      "espion",
+      "se glisser",
+      "subrepticement"
+    ],
+    "障": [
+      "gêne",
+      "faire du mal"
+    ],
+    "早": [
+      "tôt",
+      "rapide"
+    ],
+    "太": [
+      "gros",
+      "gras",
+      "dodu"
+    ],
+    "英": [
+      "Angleterre",
+      "anglais",
+      "brillant",
+      "fleur éclose"
+    ],
+    "拓": [
+      "défricher",
+      "conquête"
+    ],
+    "柱": [
+      "poteau",
+      "support",
+      "cylindre"
+    ],
+    "棋": [
+      "pièce d'échec",
+      "échecs japonais",
+      "shogi"
+    ],
+    "還": [
+      "retour",
+      "renvoyer"
+    ],
+    "沸": [
+      "bouillir",
+      "bouillonner",
+      "fermenter",
+      "exciter",
+      "élever"
+    ],
+    "句": [
+      "phrase",
+      "clause",
+      "passage",
+      "paragraphe",
+      "compteur de haïku"
+    ],
+    "房": [
+      "chambre",
+      "maison",
+      "grappe",
+      "touffe",
+      "pompon",
+      "frange",
+      "quartier",
+      "épouse",
+      "boucle",
+      "chauffage / climatisation"
+    ],
+    "者": [
+      "personne",
+      "quelqu'un"
+    ],
+    "葉": [
+      "feuille",
+      "aiguille",
+      "brin",
+      "fragment",
+      "lobe",
+      "compteur d'objets plats"
+    ],
+    "控": [
+      "se retenir",
+      "s'abstenir",
+      "se retirer",
+      "modéré",
+      "réservé"
+    ],
+    "届": [
+      "parvenir",
+      "arriver",
+      "livrer",
+      "remettre",
+      "transmettre",
+      "notification",
+      "rapport"
+    ],
+    "頁": [
+      "page",
+      "feuille"
+    ],
+    "邪": [
+      "mauvais",
+      "pervers",
+      "dépravé",
+      "sournois"
+    ],
+    "触": [
+      "toucher",
+      "contact",
+      "sentir",
+      "frapper",
+      "conflit",
+      "proclamer",
+      "annoncer"
+    ],
+    "約": [
+      "promettre",
+      "environ",
+      "abréger",
+      "raccourcir"
+    ],
+    "臨": [
+      "faire face à",
+      "affronter",
+      "assister à",
+      "rencontrer",
+      "se rendre sur place",
+      "passer voir",
+      "exceptionnel"
+    ],
+    "詞": [
+      "mots",
+      "partie du discours",
+      "poésie"
+    ],
+    "護": [
+      "protection",
+      "garde"
+    ],
+    "波": [
+      "vague",
+      "onde",
+      "Pologne"
+    ],
+    "憂": [
+      "chagrin",
+      "mélancolie",
+      "lamentation",
+      "dépression",
+      "triste",
+      "anxieux",
+      "malheureux"
+    ],
+    "粗": [
+      "grossier",
+      "rude"
+    ],
+    "冒": [
+      "risque",
+      "braver",
+      "affronter",
+      "défier",
+      "dommage",
+      "emprunter"
+    ],
+    "官": [
+      "fonctionnaire",
+      "gouvernemental"
+    ],
+    "件": [
+      "affaire",
+      "cas",
+      "matière",
+      "article"
+    ],
+    "念": [
+      "pensée",
+      "idée",
+      "sentiment",
+      "désir",
+      "souhait",
+      "attention",
+      "sens"
+    ],
+    "若": [
+      "jeune",
+      "immature",
+      "inexpérimenté",
+      "petit nombre",
+      "si",
+      "peut-être",
+      "ou bien"
+    ],
+    "堤": [
+      "digue",
+      "berge",
+      "rive"
+    ],
+    "宅": [
+      "maison",
+      "domicile",
+      "résidence",
+      "notre maison",
+      "mon mari"
+    ],
+    "庶": [
+      "peuple",
+      "roturier",
+      "bâtard",
+      "tout"
+    ],
+    "途": [
+      "route",
+      "voie",
+      "trajet"
+    ],
+    "郎": [
+      "fils",
+      "compteur de fils"
+    ],
+    "亡": [
+      "décédé",
+      "mourir",
+      "périr",
+      "détruire",
+      "feu ...",
+      "mon regretté ..."
+    ],
+    "巨": [
+      "gigantesque",
+      "grand",
+      "gros"
+    ],
+    "悔": [
+      "regret",
+      "repentir"
+    ],
+    "予": [
+      "à l'avance",
+      "auparavant",
+      "moi",
+      "je"
+    ],
+    "服": [
+      "habillement",
+      "obéir",
+      "admettre",
+      "avaler",
+      "libérer"
+    ],
+    "設": [
+      "établir",
+      "fonder",
+      "créer",
+      "préparer"
+    ],
+    "賛": [
+      "approuver",
+      "accord",
+      "louanges",
+      "assister",
+      "inscription sur une peinture"
+    ],
+    "努": [
+      "s'efforcer",
+      "faire tout son possible",
+      "travailler dur",
+      "appliqué"
+    ],
+    "棚": [
+      "étagère",
+      "rayon",
+      "tablette",
+      "support",
+      "rebord",
+      "treillis",
+      "manteau"
+    ],
+    "弦": [
+      "corde d'arc",
+      "corde",
+      "hypoténuse"
+    ],
+    "悼": [
+      "deuil",
+      "déplorer",
+      "se lamenter"
+    ],
+    "宛": [
+      "adresse",
+      "comme si",
+      "de chaque",
+      "heureusement"
+    ],
+    "役": [
+      "rôle",
+      "fonctions",
+      "poste",
+      "service",
+      "corvée",
+      "guerre",
+      "campagne"
+    ],
+    "幼": [
+      "enfance",
+      "tendre enfance"
+    ],
+    "震": [
+      "tremblement",
+      "secouer",
+      "frémir",
+      "frissonner"
+    ],
+    "改": [
+      "changer",
+      "modifier",
+      "réforme",
+      "améliorer",
+      "renouveler",
+      "examiner",
+      "inspecter",
+      "chercher"
+    ],
+    "増": [
+      "augmenter",
+      "accroissement",
+      "ajouter",
+      "gain",
+      "promouvoir"
+    ],
+    "対": [
+      "opposition",
+      "en face",
+      "vis-à-vis",
+      "comparer",
+      "égal",
+      "régulier",
+      "anti-"
+    ],
+    "空": [
+      "ciel",
+      "vide",
+      "vacant",
+      "creux"
+    ],
+    "後": [
+      "après",
+      "derrière",
+      "plus tard"
+    ],
+    "傑": [
+      "excellence",
+      "grandeur"
+    ],
+    "請": [
+      "demander",
+      "solliciter",
+      "inviter"
+    ],
+    "欺": [
+      "tromperie",
+      "tricherie",
+      "supercherie"
+    ],
+    "凍": [
+      "gelé",
+      "congeler",
+      "réfrigérer"
+    ],
+    "腕": [
+      "bras",
+      "talent",
+      "aptitude"
+    ],
+    "堀": [
+      "fossé",
+      "douves",
+      "canal"
+    ],
+    "菓": [
+      "gâteau",
+      "friandise",
+      "fruit"
+    ],
+    "初": [
+      "commencement",
+      "première fois"
+    ],
+    "心": [
+      "coeur",
+      "esprit"
+    ],
+    "惜": [
+      "regret",
+      "économe",
+      "frugal",
+      "radin"
+    ],
+    "戦": [
+      "guerre",
+      "bataille",
+      "match"
+    ],
+    "通": [
+      "circulation",
+      "passer par",
+      "trajet",
+      "avenue",
+      "compteur de lettres, notes, ..."
+    ],
+    "肝": [
+      "foie",
+      "courage",
+      "cran",
+      "audace"
+    ],
+    "卓": [
+      "table",
+      "éminent",
+      "haut"
+    ],
+    "識": [
+      "connaissance",
+      "discernement",
+      "écrire"
+    ],
+    "留": [
+      "retenir",
+      "rester",
+      "s'arrêter",
+      "attacher"
+    ],
+    "技": [
+      "technique",
+      "habileté",
+      "art",
+      "arts",
+      "prouesse",
+      "métier",
+      "vocation",
+      "jeu"
+    ],
+    "交": [
+      "mélanger",
+      "mêler",
+      "échanges",
+      "association",
+      "aller et venir"
+    ],
+    "塾": [
+      "école privée",
+      "cours du soir"
+    ],
+    "虚": [
+      "vide",
+      "contre-vérité",
+      "impréparation",
+      "fissure",
+      "craquelure"
+    ],
+    "迎": [
+      "accueil",
+      "saluer",
+      "rencontrer"
+    ],
+    "潮": [
+      "marée",
+      "eau salée",
+      "opportunité"
+    ],
+    "豚": [
+      "porc",
+      "cochon"
+    ],
+    "熱": [
+      "chaleur",
+      "fièvre",
+      "température",
+      "passion",
+      "manie"
+    ],
+    "礁": [
+      "récif",
+      "écueil"
+    ],
+    "勘": [
+      "intuition",
+      "perception"
+    ],
+    "岳": [
+      "montagne",
+      "pic",
+      "pointe"
+    ],
+    "瀬": [
+      "rapides",
+      "courant",
+      "torrent",
+      "hauts fonds"
+    ],
+    "演": [
+      "représentation",
+      "jouer",
+      "interpréter",
+      "mettre en scène",
+      "réciter",
+      "numéro"
+    ],
+    "貢": [
+      "tribut",
+      "contribution",
+      "financer"
+    ],
+    "舎": [
+      "maison",
+      "hutte",
+      "chaumière",
+      "auberge",
+      "résidence"
+    ],
+    "墳": [
+      "tombeau",
+      "tumulus"
+    ],
+    "動": [
+      "mouvement",
+      "bouger",
+      "secouer",
+      "changement",
+      "confusion"
+    ],
+    "埋": [
+      "enterrer",
+      "être rempli",
+      "enfoncé"
+    ],
+    "誓": [
+      "jurer",
+      "prêter serment",
+      "promettre"
+    ],
+    "宿": [
+      "auberge",
+      "logement",
+      "habitation",
+      "habiter",
+      "séjourner",
+      "relais",
+      "porter en soi",
+      "être enceinte"
+    ],
+    "渇": [
+      "soif",
+      "sécheresse"
+    ],
+    "隅": [
+      "coin",
+      "recoin"
+    ],
+    "乳": [
+      "lait",
+      "seins"
+    ],
+    "沖": [
+      "au large",
+      "en haute mer",
+      "montée au ciel"
+    ],
+    "須": [
+      "nécessité",
+      "devrait faire",
+      "certainement"
+    ],
+    "享": [
+      "recevoir",
+      "accepter",
+      "obtenir",
+      "prendre",
+      "répondre"
+    ],
+    "除": [
+      "enlever",
+      "exclure",
+      "abolir",
+      "annuler",
+      "division"
+    ],
+    "捕": [
+      "attraper",
+      "capturer"
+    ],
+    "秘": [
+      "garder secret",
+      "cacher"
+    ],
+    "剤": [
+      "médicament",
+      "drogue",
+      "dose",
+      "produit pour..."
+    ],
+    "懸": [
+      "suspendre",
+      "pendre",
+      "installer",
+      "dépendre",
+      "consulter",
+      "10%"
+    ],
+    "慌": [
+      "déconcerté",
+      "précipité",
+      "confus",
+      "écervelé"
+    ],
+    "栽": [
+      "plantation",
+      "cultiver",
+      "élever"
+    ],
+    "稼": [
+      "gagner de l'argent",
+      "travail",
+      "gains"
+    ],
+    "穴": [
+      "trou",
+      "orifice",
+      "grotte",
+      "tanière",
+      "fente"
+    ],
+    "果": [
+      "fruit",
+      "récompense",
+      "achever",
+      "finir",
+      "compléter",
+      "remplir",
+      "réussir",
+      "atteindre un but"
+    ],
+    "車": [
+      "voiture",
+      "véhicule"
+    ],
+    "寿": [
+      "longévité",
+      "vie",
+      "félicitations"
+    ],
+    "械": [
+      "machine",
+      "instrument",
+      "entrave"
+    ],
+    "雷": [
+      "tonnerre",
+      "foudre"
+    ],
+    "恨": [
+      "rancune",
+      "ressentiment",
+      "regret",
+      "haine",
+      "méchanceté"
+    ],
+    "賜": [
+      "cadeau",
+      "faveur",
+      "gratifier",
+      "bourse",
+      "résultats"
+    ],
+    "尊": [
+      "révérer",
+      "noble",
+      "précieux",
+      "haut placé"
+    ],
+    "浸": [
+      "tremper",
+      "plonger dans",
+      "immersion",
+      "mouiller",
+      "humidifier",
+      "humecter"
+    ],
+    "充": [
+      "être plein",
+      "attribuer",
+      "affecter",
+      "répartir"
+    ],
+    "物": [
+      "chose",
+      "objet",
+      "matière"
+    ],
+    "承": [
+      "consentir",
+      "recevoir",
+      "entendre",
+      "écouter",
+      "être informé"
+    ],
+    "叫": [
+      "crier",
+      "hurler",
+      "s'exclamer"
+    ],
+    "慎": [
+      "prudent",
+      "discret",
+      "circonspect",
+      "humilité"
+    ],
+    "髄": [
+      "moelle",
+      "quintessence"
+    ],
+    "怖": [
+      "effrayant",
+      "faire peur",
+      "affreux",
+      "épouvantable"
+    ],
+    "著": [
+      "écrire",
+      "ouvrage littéraire",
+      "auteur",
+      "publier",
+      "remarquable",
+      "renommé",
+      "phénoménal",
+      "porter",
+      "arrivée",
+      "compteur de vêtements"
+    ],
+    "曲": [
+      "courber",
+      "mélodie",
+      "musique",
+      "composition",
+      "pencher",
+      "injustice",
+      "faute",
+      "malhonnête",
+      "pervers",
+      "plaisir"
+    ],
+    "背": [
+      "dos",
+      "arrière",
+      "taille",
+      "stature",
+      "se rebeller",
+      "désobéir",
+      "défier",
+      "revenir sur"
+    ],
+    "頭": [
+      "tête",
+      "compteur de gros animaux"
+    ],
+    "戴": [
+      "recevoir",
+      "couronnement",
+      "vivre sous"
+    ],
+    "明": [
+      "clair",
+      "lumière"
+    ],
+    "炊": [
+      "cuisiner",
+      "cuire"
+    ],
+    "士": [
+      "samouraï",
+      "gentilhomme"
+    ],
+    "停": [
+      "arrêt",
+      "halte"
+    ],
+    "氷": [
+      "glace",
+      "glaçon",
+      "geler",
+      "congeler",
+      "grêle"
+    ],
+    "経": [
+      "passer",
+      "expérimenter",
+      "expiré",
+      "sûtra",
+      "longitude",
+      "chaîne"
+    ],
+    "市": [
+      "marché",
+      "ville",
+      "cité"
+    ],
+    "霜": [
+      "gel",
+      "givre"
+    ],
+    "礎": [
+      "première pierre",
+      "première angulaire"
+    ],
+    "微": [
+      "ténu",
+      "délicat",
+      "insignifiant"
+    ],
+    "余": [
+      "reste",
+      "surplus",
+      "trop",
+      "autre",
+      "moi-même"
+    ],
+    "絡": [
+      "enlacer",
+      "entrelacer",
+      "s'enrouler autour",
+      "s'empêtrer dans"
+    ],
+    "寂": [
+      "solitude",
+      "tranquillement",
+      "patiné",
+      "mûr",
+      "mort d'un prêtre"
+    ],
+    "衡": [
+      "balance",
+      "équilibre"
+    ],
+    "避": [
+      "éviter",
+      "fuir",
+      "se dérober",
+      "écarter",
+      "parer",
+      "empêcher"
+    ],
+    "銃": [
+      "fusil",
+      "armes"
+    ],
+    "幹": [
+      "tronc d'arbre",
+      "pièce principale"
+    ],
+    "怒": [
+      "colère",
+      "offenser"
+    ],
+    "染": [
+      "teindre",
+      "colorer",
+      "tache",
+      "peindre",
+      "imprimer",
+      "pollution"
+    ],
+    "原": [
+      "prairie",
+      "pré",
+      "champ",
+      "original",
+      "primitif",
+      "désert",
+      "toundra"
+    ],
+    "離": [
+      "séparer",
+      "détacher",
+      "diviser",
+      "s'écarter"
+    ],
+    "逃": [
+      "fuir",
+      "s'échapper",
+      "s'évader",
+      "se dérober à",
+      "libérer"
+    ],
+    "疎": [
+      "clairsemé",
+      "épars",
+      "négligence",
+      "grossier",
+      "éviter",
+      "aliéner",
+      "ignorer"
+    ],
+    "浮": [
+      "flotter",
+      "faire surface",
+      "venir à l'esprit",
+      "avoir l'air"
+    ],
+    "伝": [
+      "transmettre",
+      "communiquer",
+      "rapporter",
+      "tradition",
+      "légende",
+      "suivre",
+      "côtoyer"
+    ],
+    "弧": [
+      "arc",
+      "arc de cercle",
+      "arche"
+    ],
+    "納": [
+      "payer",
+      "obtenir",
+      "récolter",
+      "installer",
+      "réserve",
+      "remise",
+      "hangar"
+    ],
+    "企": [
+      "plan",
+      "projet",
+      "entreprendre",
+      "essai",
+      "concept"
+    ],
+    "策": [
+      "plan",
+      "stratégie",
+      "mesures",
+      "politique",
+      "moyen",
+      "projet"
+    ],
+    "繁": [
+      "luxuriant",
+      "épais",
+      "envahi",
+      "fréquence",
+      "complexité",
+      "ennuis"
+    ],
+    "琴": [
+      "koto",
+      "harpe"
+    ],
+    "牲": [
+      "sacrifice animal",
+      "offrande"
+    ],
+    "皆": [
+      "tout",
+      "tous"
+    ],
+    "拡": [
+      "élargir",
+      "étendre",
+      "agrandir",
+      "développer"
+    ],
+    "氏": [
+      "nom de famille",
+      "nom",
+      "clan",
+      "Monsieur"
+    ],
+    "弓": [
+      "arc",
+      "archet"
+    ],
+    "桟": [
+      "traverse",
+      "cadre",
+      "pont",
+      "jetée",
+      "quai",
+      "échafaudage",
+      "verrou"
+    ],
+    "館": [
+      "bâtiment",
+      "grand bâtiment",
+      "résidence",
+      "palais"
+    ],
+    "幣": [
+      "espèces",
+      "offrande Shinto",
+      "papier découpé",
+      "don",
+      "corde",
+      "mauvaise habitude",
+      "préfixe humble"
+    ],
+    "盟": [
+      "alliance",
+      "serment"
+    ],
+    "包": [
+      "envelopper",
+      "emballer",
+      "recouvrir",
+      "cacher"
+    ],
+    "則": [
+      "règle",
+      "règlement",
+      "loi",
+      "norme",
+      "suivre"
+    ],
+    "旧": [
+      "ancien temps",
+      "anciennes choses",
+      "ancien ami",
+      "ancien -",
+      "ex-"
+    ],
+    "尺": [
+      "mesure",
+      "règle",
+      "échelle",
+      "shaku"
+    ],
+    "寸": [
+      "dimension",
+      "sun = 3,03 cm",
+      "un peu"
+    ],
+    "呈": [
+      "présenter",
+      "offrir",
+      "exposer",
+      "dévoiler",
+      "envoyer"
+    ],
+    "床": [
+      "plancher",
+      "lit",
+      "tatami",
+      "rembourrage",
+      "compteur de lits"
+    ],
+    "攻": [
+      "attaque",
+      "agression"
+    ],
+    "拍": [
+      "battement",
+      "applaudir",
+      "temps"
+    ],
+    "去": [
+      "quitter",
+      "parti",
+      "passé",
+      "éliminer",
+      "s'écouler",
+      "divorce"
+    ],
+    "症": [
+      "symptôme",
+      "maladie"
+    ],
+    "丹": [
+      "rouge",
+      "couleur de rouille",
+      "minium",
+      "pilules"
+    ],
+    "仲": [
+      "relation",
+      "intermédiaire",
+      "médiation"
+    ],
+    "縮": [
+      "rétrécir",
+      "contracter",
+      "raccourcir",
+      "réduire",
+      "friser"
+    ],
+    "謹": [
+      "révérencieusement",
+      "humblement",
+      "discret"
+    ],
+    "添": [
+      "ajouter",
+      "joindre",
+      "accompagner",
+      "annexer",
+      "garnir",
+      "se marier",
+      "satisfaire",
+      "imiter"
+    ],
+    "舟": [
+      "bateau",
+      "vaisseau"
+    ],
+    "快": [
+      "agréable",
+      "plaisant",
+      "confortable",
+      "gai"
+    ],
+    "練": [
+      "pratiquer",
+      "s'entraîner",
+      "s'exercer",
+      "perfectionner",
+      "peaufiner",
+      "lustrer"
+    ],
+    "濯": [
+      "lessive",
+      "laver",
+      "rincer",
+      "verser"
+    ],
+    "葬": [
+      "funérailles",
+      "enterrer",
+      "abandonner"
+    ],
+    "奏": [
+      "jouer de la musique",
+      "concert",
+      "parler à l'Empereur",
+      "mener à bien"
+    ],
+    "片": [
+      "simple face",
+      "feuille"
+    ],
+    "準": [
+      "standard",
+      "se conformer à",
+      "correspondre à",
+      "proportionnel à",
+      "demi-"
+    ],
+    "介": [
+      "intermédiaire",
+      "intervention",
+      "immixtion",
+      "s'occuper de",
+      "coquillage"
+    ],
+    "又": [
+      "de plus",
+      "ou encore",
+      "d'un autre côté"
+    ],
+    "乏": [
+      "insuffisant",
+      "limité",
+      "indigent"
+    ],
+    "遇": [
+      "rencontrer",
+      "entrevue",
+      "traiter",
+      "recevoir",
+      "distraire"
+    ],
+    "客": [
+      "client",
+      "visiteur",
+      "hôte"
+    ],
+    "容": [
+      "contenir",
+      "forme",
+      "apparence"
+    ],
+    "操": [
+      "manipuler",
+      "manoeuvre",
+      "faite marcher",
+      "diriger",
+      "fidélité",
+      "chasteté",
+      "virginité"
+    ],
+    "形": [
+      "forme",
+      "style"
+    ],
+    "宮": [
+      "palais",
+      "sanctuaire",
+      "princesse",
+      "constellations"
+    ],
+    "清": [
+      "pur",
+      "purifier",
+      "nettoyer",
+      "exorciser",
+      "dynastie Mandchoue"
+    ],
+    "網": [
+      "filet",
+      "réseau"
+    ],
+    "魂": [
+      "âme",
+      "esprit"
+    ],
+    "損": [
+      "perte",
+      "dommages",
+      "nuire",
+      "blesser"
+    ],
+    "僚": [
+      "collègue",
+      "compagnon",
+      "fonctionnaire"
+    ],
+    "剰": [
+      "surplus",
+      "en outre",
+      "par dessus le marché"
+    ],
+    "壁": [
+      "mur",
+      "paroi",
+      "barrière"
+    ],
+    "獣": [
+      "bête",
+      "animal"
+    ],
+    "姻": [
+      "mariage",
+      "conjugal"
+    ],
+    "閣": [
+      "tour",
+      "palais"
+    ],
+    "賠": [
+      "dédommagement",
+      "indemnité",
+      "compensations"
+    ],
+    "厳": [
+      "sévère",
+      "strict",
+      "rigide"
+    ],
+    "探": [
+      "chercher",
+      "enquête",
+      "tâtonner"
+    ],
+    "粛": [
+      "solennellement",
+      "tranquillement",
+      "doucement"
+    ],
+    "肢": [
+      "membre",
+      "bras et jambes"
+    ],
+    "低": [
+      "bas",
+      "petit",
+      "humble"
+    ],
+    "液": [
+      "liquide",
+      "fluide",
+      "jus",
+      "sève",
+      "sécrétion"
+    ],
+    "枝": [
+      "branche",
+      "rameau",
+      "brindille",
+      "compteur de branches"
+    ],
+    "誰": [
+      "qui",
+      "quelqu'un"
+    ],
+    "印": [
+      "sceau",
+      "tampon",
+      "marque",
+      "empreinte",
+      "impression",
+      "symbole",
+      "emblème",
+      "preuve",
+      "souvenir",
+      "Inde"
+    ],
+    "開": [
+      "ouvrir",
+      "s'ouvrir",
+      "briser le sceau"
+    ],
+    "顕": [
+      "apparaître",
+      "existant"
+    ],
+    "涯": [
+      "horizon",
+      "rivage"
+    ],
+    "斎": [
+      "purification",
+      "pièce",
+      "adorer",
+      "éviter",
+      "nourriture bouddhiste",
+      "semblable"
+    ],
+    "義": [
+      "justice",
+      "moralité",
+      "vertu",
+      "honneur",
+      "loyauté",
+      "signification"
+    ],
+    "鼓": [
+      "tambour",
+      "battement",
+      "encourager",
+      "appel"
+    ],
+    "恵": [
+      "grâce",
+      "gentillesse",
+      "faveur divine",
+      "bénéficier de"
+    ],
+    "鳴": [
+      "crier",
+      "pousser son cri",
+      "sonner",
+      "écho",
+      "gazouiller",
+      "aboyer",
+      "cacarder"
+    ],
+    "殖": [
+      "multiplier",
+      "augmenter",
+      "croître",
+      "élever"
+    ],
+    "極": [
+      "extrêmes",
+      "pôles",
+      "fin",
+      "plus haut rang",
+      "extrêmement",
+      "très",
+      "le plus",
+      "hautement",
+      "conclusion",
+      "décision",
+      "pôles électriques",
+      "10**48"
+    ],
+    "奇": [
+      "étrange",
+      "étrangeté",
+      "curieux"
+    ],
+    "体": [
+      "corps",
+      "substance",
+      "objet",
+      "réalité",
+      "compteur d'images"
+    ],
+    "位": [
+      "rang",
+      "position",
+      "grade",
+      "trône",
+      "couronne",
+      "à peu près"
+    ],
+    "沢": [
+      "marais",
+      "ruisseau de montagne",
+      "abondance"
+    ],
+    "退": [
+      "retraite",
+      "se retirer",
+      "démissionner",
+      "repousser",
+      "rejeter",
+      "exclure"
+    ],
+    "宰": [
+      "directeur",
+      "superviseur",
+      "diriger",
+      "premier ministre"
+    ],
+    "降": [
+      "descendre",
+      "tomber",
+      "pleuvoir",
+      "se rendre",
+      "précipiter"
+    ],
+    "細": [
+      "mince",
+      "long et fin",
+      "étroit",
+      "fluet",
+      "délicat",
+      "menu"
+    ],
+    "徹": [
+      "pénétrer",
+      "percer",
+      "clair",
+      "toucher",
+      "toute la nuit"
+    ],
+    "複": [
+      "duplication",
+      "copie",
+      "composé",
+      "multiple",
+      "compliqué"
+    ],
+    "顧": [
+      "considération",
+      "revoir",
+      "reconsidérer",
+      "retourner",
+      "conseiller"
+    ],
+    "陸": [
+      "continent",
+      "six"
+    ],
+    "驚": [
+      "étonnement",
+      "surpris",
+      "stupéfié",
+      "effrayé"
+    ],
+    "湿": [
+      "humide",
+      "moite",
+      "mouillé"
+    ],
+    "囚": [
+      "prison",
+      "criminel",
+      "capturer",
+      "attraper",
+      "arrêter"
+    ],
+    "珠": [
+      "perle",
+      "joyau",
+      "gemme"
+    ],
+    "邸": [
+      "résidence",
+      "hôtel particulier"
+    ],
+    "坊": [
+      "moine",
+      "prêtre bouddhiste",
+      "garçon",
+      "résidence du moine"
+    ],
+    "耕": [
+      "labourer",
+      "cultiver"
+    ],
+    "華": [
+      "fleur",
+      "pétale",
+      "splendeur",
+      "lustre",
+      "briller",
+      "magnifique",
+      "voyant",
+      "ostentatoire"
+    ],
+    "辛": [
+      "épicé",
+      "piquant",
+      "âcre",
+      "amer"
+    ],
+    "隠": [
+      "cacher",
+      "dissimuler",
+      "couvrir"
+    ],
+    "党": [
+      "parti politique",
+      "faction",
+      "clique"
+    ],
+    "育": [
+      "élever",
+      "grandir"
+    ],
+    "拠": [
+      "point d'appui",
+      "prise",
+      "basé sur",
+      "suivre",
+      "par conséquent"
+    ],
+    "冗": [
+      "superflu",
+      "inutile"
+    ],
+    "税": [
+      "taxe",
+      "droits"
+    ],
+    "班": [
+      "groupe",
+      "équipe",
+      "unité",
+      "corps"
+    ],
+    "毒": [
+      "poison",
+      "venin",
+      "virus",
+      "germe",
+      "mal",
+      "méchanceté",
+      "blessure"
+    ],
+    "惑": [
+      "perplexité",
+      "égarer",
+      "séduire"
+    ],
+    "胞": [
+      "placenta",
+      "cavité",
+      "gaine"
+    ],
+    "司": [
+      "directeur",
+      "fonctionnaire",
+      "administrer",
+      "gouverner",
+      "bureau administratif"
+    ],
+    "苦": [
+      "peine",
+      "souffrir",
+      "affliction",
+      "souci",
+      "amer",
+      "renfrogné"
+    ],
+    "積": [
+      "entasser",
+      "empiler",
+      "amasser",
+      "charger",
+      "volume",
+      "aire",
+      "contenu",
+      "produit"
+    ],
+    "薄": [
+      "fin",
+      "léger",
+      "dilué"
+    ],
+    "津": [
+      "port",
+      "havre",
+      "bac"
+    ],
+    "昔": [
+      "autrefois",
+      "antiquité",
+      "il était une fois"
+    ],
+    "昼": [
+      "journée",
+      "midi"
+    ],
+    "浜": [
+      "plage",
+      "rivage"
+    ],
+    "伺": [
+      "demander",
+      "questionner",
+      "s'informer",
+      "visiter",
+      "présenter ses respects",
+      "implorer"
+    ],
+    "委": [
+      "confier à",
+      "laisser à",
+      "comité",
+      "abandonner",
+      "se consacrer"
+    ],
+    "薦": [
+      "recommander",
+      "conseiller",
+      "proposer",
+      "encourager",
+      "natte"
+    ],
+    "伊": [
+      "Italie",
+      "celui-là"
+    ],
+    "面": [
+      "face",
+      "surface",
+      "masque",
+      "traits"
+    ],
+    "購": [
+      "acheter",
+      "acquisition",
+      "souscrire",
+      "s'abonner"
+    ],
+    "記": [
+      "inscrire",
+      "compte-rendu",
+      "narration"
+    ],
+    "偏": [
+      "biais",
+      "partial",
+      "incliné",
+      "côté",
+      "radical gauche d'un kanji"
+    ],
+    "符": [
+      "marque",
+      "signe",
+      "ticket",
+      "amulette",
+      "compte"
+    ],
+    "款": [
+      "article",
+      "section",
+      "amitié",
+      "bonne volonté",
+      "fraternisation",
+      "connivence"
+    ],
+    "式": [
+      "cérémonie",
+      "forme",
+      "type",
+      "système",
+      "rituel",
+      "protocole",
+      "processus",
+      "fonction"
+    ],
+    "悠": [
+      "permanence",
+      "éternité",
+      "éloigné",
+      "tranquille"
+    ],
+    "角": [
+      "angle",
+      "corne",
+      "coin",
+      "carré",
+      "bois"
+    ],
+    "導": [
+      "guider",
+      "mener",
+      "conduire",
+      "directives"
+    ],
+    "管": [
+      "tuyau",
+      "tube",
+      "gestion",
+      "instrument à vent",
+      "discours d'ivrogne"
+    ],
+    "帯": [
+      "ceinture",
+      "obi",
+      "écharpe",
+      "zone",
+      "région"
+    ],
+    "既": [
+      "déjà",
+      "auparavant",
+      "il y a longtemps"
+    ],
+    "疑": [
+      "douter",
+      "soupçon",
+      "méfiance",
+      "question"
+    ],
+    "漠": [
+      "désert",
+      "vague",
+      "obscur",
+      "vaste"
+    ],
+    "滑": [
+      "glisser",
+      "glissant",
+      "rater"
+    ],
+    "陵": [
+      "mausolée",
+      "tombe impériale"
+    ],
+    "匂": [
+      "parfum",
+      "puanteur",
+      "éclat",
+      "suggérer",
+      "insinuer"
+    ],
+    "巡": [
+      "patrouille",
+      "faire le tour",
+      "pèlerinage",
+      "circonférence"
+    ],
+    "茨": [
+      "épine",
+      "églantier"
+    ],
+    "衣": [
+      "vêtement",
+      "habillement"
+    ],
+    "抽": [
+      "extraire",
+      "tirer",
+      "exceller"
+    ],
+    "抵": [
+      "résister",
+      "toucher",
+      "parvenir"
+    ],
+    "写": [
+      "copie",
+      "décrire",
+      "être photographié"
+    ],
+    "岐": [
+      "bifurcation",
+      "embranchement",
+      "scène",
+      "théâtre",
+      "arène"
+    ],
+    "吾": [
+      "moi",
+      "mon",
+      "notre",
+      "son propre"
+    ],
+    "析": [
+      "analyser",
+      "diviser",
+      "hacher",
+      "déchirer"
+    ],
+    "標": [
+      "marque",
+      "panneau",
+      "cible",
+      "symbole",
+      "emblème",
+      "empreinte",
+      "sceau",
+      "tampon",
+      "souvenir",
+      "évidence"
+    ],
+    "報": [
+      "information",
+      "rapport",
+      "faire savoir",
+      "récompense",
+      "rétribution"
+    ],
+    "咲": [
+      "fleurir",
+      "floraison"
+    ],
+    "丈": [
+      "longueur",
+      "taille",
+      "stature",
+      "mesure",
+      "10 pieds",
+      "tout",
+      "seulement",
+      "c'est tout",
+      "M",
+      "Mme"
+    ],
+    "兄": [
+      "frère aîné",
+      "grand frère"
+    ],
+    "偽": [
+      "faux",
+      "mensonge",
+      "contrefaçon",
+      "imitation",
+      "berner",
+      "prétendre"
+    ],
+    "必": [
+      "certain",
+      "inévitable",
+      "nécessairement",
+      "invariablement"
+    ],
+    "語": [
+      "langage",
+      "mot",
+      "raconter"
+    ],
+    "鳩": [
+      "pigeon",
+      "colombe"
+    ],
+    "互": [
+      "mutuel",
+      "réciproque",
+      "ensemble"
+    ],
+    "係": [
+      "chargé de",
+      "liaison",
+      "s'occuper de",
+      "devoir"
+    ],
+    "救": [
+      "sauver",
+      "sauvetage",
+      "secourir",
+      "aider",
+      "récupérer"
+    ],
+    "嫁": [
+      "belle-fille",
+      "mariage",
+      "prendre mari"
+    ],
+    "歴": [
+      "historique",
+      "curriculum",
+      "passage du temps",
+      "continuation"
+    ],
+    "漆": [
+      "laque",
+      "vernis",
+      "sept"
+    ],
+    "携": [
+      "porter en main",
+      "portatif",
+      "amener",
+      "armé"
+    ],
+    "刈": [
+      "faucher",
+      "moissonner",
+      "tondre",
+      "couper",
+      "tailler"
+    ],
+    "駆": [
+      "courir",
+      "galoper",
+      "conduire",
+      "pousser à",
+      "aiguillonner"
+    ],
+    "痛": [
+      "douleur",
+      "mal",
+      "contusion, bleu",
+      "dommage"
+    ],
+    "字": [
+      "caractère",
+      "lettre",
+      "mot",
+      "hameau"
+    ],
+    "壊": [
+      "casser",
+      "détruire",
+      "démolition"
+    ],
+    "討": [
+      "attaquer",
+      "débat",
+      "châtier",
+      "vaincre",
+      "conquérir",
+      "détruire"
+    ],
+    "翻": [
+      "voltiger",
+      "faire flotter",
+      "changer de sens",
+      "changer"
+    ],
+    "継": [
+      "hériter",
+      "succession",
+      "relais",
+      "rapiécer",
+      "greffe"
+    ],
+    "折": [
+      "plier",
+      "casser",
+      "fracture",
+      "courber",
+      "tourner",
+      "céder",
+      "soumettre"
+    ],
+    "陳": [
+      "présenter",
+      "expliquer",
+      "raconter",
+      "informer"
+    ],
+    "汚": [
+      "sale",
+      "souiller",
+      "polluer",
+      "profaner",
+      "disgrâce"
+    ],
+    "骨": [
+      "os",
+      "squelette",
+      "restes",
+      "charpente"
+    ],
+    "溝": [
+      "fossé",
+      "rigole",
+      "égout",
+      "10**32"
+    ],
+    "験": [
+      "examen",
+      "vérification",
+      "effet"
+    ],
+    "前": [
+      "devant",
+      "avant"
+    ],
+    "第": [
+      "numéro",
+      "résidence"
+    ],
+    "抗": [
+      "résister",
+      "s'opposer à",
+      "confrontation",
+      "contester",
+      "nier",
+      "anti-"
+    ],
+    "速": [
+      "rapide",
+      "vite"
+    ],
+    "普": [
+      "universel",
+      "généralement",
+      "largement",
+      "Prusse"
+    ],
+    "擬": [
+      "imitation",
+      "comparer",
+      "nommer",
+      "pointer une arme"
+    ],
+    "駒": [
+      "poulain",
+      "cheval",
+      "poney"
+    ],
+    "供": [
+      "offrir",
+      "présenter",
+      "soumettre",
+      "proposer",
+      "servir",
+      "accompagner",
+      "pluriel cérémonieux"
+    ],
+    "欲": [
+      "désirer",
+      "convoitise",
+      "avidité",
+      "passion",
+      "besoin"
+    ],
+    "冠": [
+      "couronne",
+      "le meilleur",
+      "inégalable"
+    ],
+    "漏": [
+      "fuite",
+      "s'échapper",
+      "temps"
+    ],
+    "決": [
+      "décider",
+      "fixer",
+      "arrangement",
+      "se mettre d'accord"
+    ],
+    "察": [
+      "deviner",
+      "supposer",
+      "présumer",
+      "comprendre",
+      "juger"
+    ],
+    "迫": [
+      "forcer",
+      "pousser",
+      "harceler",
+      "imminent",
+      "éperonner"
+    ],
+    "像": [
+      "statue",
+      "image",
+      "portrait",
+      "figure",
+      "représentation"
+    ],
+    "徐": [
+      "lentement",
+      "doucement",
+      "petit à petit",
+      "posément"
+    ],
+    "課": [
+      "leçon",
+      "chapitre",
+      "section",
+      "service",
+      "division",
+      "compteur de chapitres"
+    ],
+    "壮": [
+      "robuste",
+      "âge d'homme",
+      "prospérité"
+    ],
+    "気": [
+      "esprit",
+      "air",
+      "humeur",
+      "atmosphère"
+    ],
+    "遠": [
+      "loin",
+      "distant"
+    ],
+    "囲": [
+      "entourer",
+      "encercler",
+      "enceinte",
+      "palissade",
+      "assiéger",
+      "garder",
+      "réserve"
+    ],
+    "他": [
+      "autre",
+      "un autre",
+      "les autres"
+    ],
+    "矢": [
+      "flèche",
+      "fléchette"
+    ],
+    "野": [
+      "champ",
+      "sauvage",
+      "rustique",
+      "vie civile"
+    ],
+    "品": [
+      "marchandise",
+      "article",
+      "dignité",
+      "raffinement",
+      "compteur de plats"
+    ],
+    "乗": [
+      "monter",
+      "embarquer",
+      "prendre",
+      "chevaucher",
+      "se joindre à",
+      "profiter",
+      "multiplication",
+      "compteur de véhicules",
+      "mentionner"
+    ],
+    "援": [
+      "aide",
+      "assistance",
+      "renfort"
+    ],
+    "克": [
+      "surmonter",
+      "habile",
+      "aimable"
+    ],
+    "醸": [
+      "brasser",
+      "causer"
+    ],
+    "江": [
+      "baie",
+      "crique",
+      "anse",
+      "rivière"
+    ],
+    "益": [
+      "bénéfice",
+      "profit",
+      "gain",
+      "avantage"
+    ],
+    "媛": [
+      "belle femme",
+      "princesse"
+    ],
+    "徴": [
+      "signe",
+      "indication",
+      "symptôme",
+      "collecter",
+      "appel",
+      "chercher"
+    ],
+    "台": [
+      "piédestal",
+      "socle",
+      "compteur de voitures ou machines"
+    ],
+    "借": [
+      "emprunter",
+      "louer"
+    ],
+    "域": [
+      "zone",
+      "région",
+      "champ",
+      "limites",
+      "niveau",
+      "stade"
+    ],
+    "敬": [
+      "respect",
+      "honorer",
+      "révérer",
+      "déférence"
+    ],
+    "澄": [
+      "limpide",
+      "clair",
+      "clarifier",
+      "se dégager",
+      "lucidité",
+      "attitude composée",
+      "tendre"
+    ],
+    "浪": [
+      "vagues",
+      "flots",
+      "ondes"
+    ],
+    "鼻": [
+      "nez",
+      "museau",
+      "groin"
+    ],
+    "賞": [
+      "prix",
+      "récompense",
+      "louanges"
+    ],
+    "篤": [
+      "gentil",
+      "cordial",
+      "sérieux",
+      "grave",
+      "intense",
+      "délibéré"
+    ],
+    "唯": [
+      "seulement",
+      "simplement",
+      "unique"
+    ],
+    "久": [
+      "longtemps",
+      "vieille histoire"
+    ],
+    "槽": [
+      "cuve",
+      "réservoir",
+      "bac"
+    ],
+    "唱": [
+      "chant",
+      "réciter",
+      "choeur",
+      "invoquer",
+      "hurlement"
+    ],
+    "販": [
+      "vente",
+      "commerce",
+      "commercialisation"
+    ],
+    "延": [
+      "prolonger",
+      "allonger",
+      "étendre"
+    ],
+    "懐": [
+      "coeur",
+      "sentiments",
+      "poche",
+      "seins",
+      "nostalgie",
+      "manquer",
+      "aspirer à",
+      "s'attacher à",
+      "apprivoiser",
+      "bourse"
+    ],
+    "陥": [
+      "tomber dans",
+      "tomber",
+      "glisser dans",
+      "s'écrouler",
+      "piège",
+      "capituler"
+    ],
+    "媒": [
+      "intermédiaire",
+      "médiateur"
+    ],
+    "製": [
+      "fabrication",
+      "fabriqué en"
+    ],
+    "敗": [
+      "défaite",
+      "revers",
+      "défaut"
+    ],
+    "慨": [
+      "regret",
+      "soupir",
+      "plainte",
+      "repentir",
+      "triste"
+    ],
+    "志": [
+      "intention",
+      "dessein",
+      "résolution",
+      "aspirer à",
+      "espoirs",
+      "plan",
+      "motif",
+      "shilling"
+    ],
+    "訴": [
+      "plainte",
+      "accusation",
+      "poursuites",
+      "faire appel"
+    ],
+    "職": [
+      "emploi",
+      "poste de travail",
+      "travail"
+    ],
+    "利": [
+      "profit",
+      "avantage",
+      "bénéfice"
+    ],
+    "現": [
+      "le présent",
+      "actuel",
+      "montrer",
+      "existant"
+    ],
+    "羅": [
+      "gaze",
+      "soie fine",
+      "Rome"
+    ],
+    "元": [
+      "origine",
+      "commencement",
+      "ancien temps"
+    ],
+    "泡": [
+      "bulle",
+      "mousse",
+      "écume"
+    ],
+    "胴": [
+      "tronc",
+      "torse",
+      "coque",
+      "moyeu"
+    ],
+    "況": [
+      "situation",
+      "condition",
+      "à plus forte raison",
+      "encore plus",
+      "encore moins"
+    ],
+    "恒": [
+      "constance",
+      "toujours"
+    ],
+    "脚": [
+      "pied",
+      "train d'atterrissage",
+      "patins"
+    ],
+    "仰": [
+      "regarder en l'air",
+      "respecter",
+      "révérer",
+      "dire",
+      "dépendre",
+      "chercher",
+      "boire",
+      "prendre"
+    ],
+    "腸": [
+      "intestin",
+      "entrailles",
+      "viscères"
+    ],
+    "脱": [
+      "déshabiller",
+      "enlever",
+      "s'échapper de",
+      "s'enfuir",
+      "se débarrasser de",
+      "être oublié"
+    ],
+    "灰": [
+      "cendre",
+      "incinéré",
+      "lessive"
+    ],
+    "可": [
+      "possible",
+      "acceptable",
+      "ne doit pas",
+      "ne pas, négatif"
+    ],
+    "稿": [
+      "manuscrit",
+      "brouillon",
+      "copie",
+      "paille"
+    ],
+    "汗": [
+      "sueur",
+      "transpirer"
+    ],
+    "健": [
+      "santé",
+      "sain",
+      "bien portant",
+      "force",
+      "persistance"
+    ],
+    "呂": [
+      "colonne vertébrale",
+      "épine dorsale",
+      "grand bâtiment"
+    ],
+    "酬": [
+      "récompense",
+      "rémunération",
+      "rembourser"
+    ],
+    "妻": [
+      "épouse",
+      "femme"
+    ],
+    "遮": [
+      "intercepter",
+      "interrompre",
+      "obstruer"
+    ],
+    "訪": [
+      "rendre visite",
+      "rechercher",
+      "demander",
+      "présenter ses condoléances",
+      "accuser"
+    ],
+    "斤": [
+      "hache",
+      "kin = 1/160 monme = 600 grammes",
+      "compteur de pains",
+      "rosse"
+    ],
+    "扱": [
+      "prendre en main",
+      "manoeuvrer",
+      "battre",
+      "arracher"
+    ],
+    "茂": [
+      "pousser dru",
+      "luxuriant",
+      "s'épaissir"
+    ],
+    "律": [
+      "loi",
+      "régulation",
+      "contrôle",
+      "ordonner",
+      "rythme",
+      "jauge"
+    ],
+    "単": [
+      "simple",
+      "unique",
+      "un",
+      "seulement"
+    ],
+    "巣": [
+      "nid",
+      "ruche",
+      "toile",
+      "antre",
+      "colonie"
+    ],
+    "不": [
+      "négation",
+      "non",
+      "mauvais",
+      "maladroit",
+      "laid"
+    ],
+    "個": [
+      "compteur d'articles",
+      "individuel",
+      "privé",
+      "compteur d'unités militaires"
+    ],
+    "怪": [
+      "mystère",
+      "apparition",
+      "méfiant"
+    ],
+    "豪": [
+      "puissant",
+      "grand",
+      "écrasant",
+      "éminent",
+      "Australie"
+    ],
+    "契": [
+      "promesse",
+      "engagement",
+      "voeux"
+    ],
+    "潔": [
+      "pur",
+      "immaculé",
+      "clair",
+      "droit",
+      "brave",
+      "viril"
+    ],
+    "架": [
+      "étagère",
+      "construire",
+      "suspendre",
+      "ériger",
+      "monter",
+      "supporter"
+    ],
+    "答": [
+      "réponse",
+      "solution"
+    ],
+    "署": [
+      "bureau",
+      "commissariat de police",
+      "signature",
+      "autorités publiques"
+    ],
+    "拷": [
+      "torture",
+      "tabasser"
+    ],
+    "肯": [
+      "consentement",
+      "accord",
+      "affirmatif",
+      "se conformer à"
+    ],
+    "輝": [
+      "briller",
+      "scintiller",
+      "étincelle",
+      "étincelant"
+    ],
+    "学": [
+      "étudier",
+      "apprendre",
+      "science"
+    ],
+    "遺": [
+      "laisser derrière",
+      "léguer",
+      "garder"
+    ],
+    "順": [
+      "ordre",
+      "obéir",
+      "docilité",
+      "juste",
+      "occasion"
+    ],
+    "威": [
+      "dignité",
+      "majesté",
+      "intimidant",
+      "menacer"
+    ],
+    "俵": [
+      "sac de paille",
+      "sac",
+      "botte de paille",
+      "compteur de sacs"
+    ],
+    "栓": [
+      "bouchon",
+      "bonde",
+      "robinet"
+    ],
+    "皮": [
+      "peau",
+      "cuir",
+      "fourrure"
+    ],
+    "脈": [
+      "veine",
+      "pouls",
+      "chaîne",
+      "espoir"
+    ],
+    "塚": [
+      "tertre",
+      "butte",
+      "tombe",
+      "borne"
+    ],
+    "弁": [
+      "éloquence",
+      "dialecte",
+      "valve",
+      "pétale",
+      "discernement",
+      "distinguer",
+      "résoudre",
+      "tresse"
+    ],
+    "厚": [
+      "épais",
+      "lourd",
+      "cordial",
+      "chaleureux",
+      "gentil",
+      "effronté",
+      "éhonté"
+    ],
+    "熟": [
+      "mûrir",
+      "maturité",
+      "acquérir des capacités"
+    ],
+    "荘": [
+      "villa",
+      "maison de campagne",
+      "auberge",
+      "manoir féodal"
+    ],
+    "敷": [
+      "étaler",
+      "paver",
+      "s'asseoir",
+      "promulguer"
+    ],
+    "医": [
+      "médecin",
+      "docteur"
+    ],
+    "患": [
+      "maladie",
+      "souffrir de",
+      "affection",
+      "patient"
+    ],
+    "味": [
+      "goût",
+      "saveur"
+    ],
+    "虎": [
+      "tigre",
+      "ivrogne"
+    ],
+    "収": [
+      "récolter",
+      "obtenir",
+      "revenu",
+      "réserve",
+      "payer",
+      "fournir"
+    ],
+    "腐": [
+      "pourrir",
+      "putréfier",
+      "aigre"
+    ],
+    "浄": [
+      "purifier",
+      "nettoyer",
+      "laver",
+      "dynastie Mandchoue"
+    ],
+    "裕": [
+      "abondant",
+      "riche",
+      "aisé",
+      "opulent",
+      "fertile"
+    ],
+    "幻": [
+      "illusion",
+      "fantôme",
+      "vision",
+      "apparition",
+      "rêve",
+      "fantasme",
+      "chimère"
+    ],
+    "寛": [
+      "tolérant",
+      "indulgent",
+      "générosité",
+      "ouverture d'esprit",
+      "être à l'aise",
+      "se sentir chez soi"
+    ],
+    "芽": [
+      "bourgeon",
+      "germe",
+      "pousse",
+      "brin"
+    ],
+    "区": [
+      "arrondissement",
+      "circonscription"
+    ],
+    "永": [
+      "éternité",
+      "long",
+      "permanent"
+    ],
+    "平": [
+      "plat",
+      "paix",
+      "plan"
+    ],
+    "戒": [
+      "avertissement",
+      "châtiment"
+    ],
+    "創": [
+      "fondation",
+      "origine",
+      "genèse",
+      "début",
+      "blessure"
+    ],
+    "紅": [
+      "cramoisi",
+      "rouge foncé"
+    ],
+    "事": [
+      "chose",
+      "fait",
+      "affaire",
+      "matière",
+      "raison",
+      "peut-être"
+    ],
+    "含": [
+      "inclure",
+      "comprendre",
+      "retenir",
+      "chérir"
+    ],
+    "朝": [
+      "matin",
+      "dynastie",
+      "époque",
+      "période",
+      "régime",
+      "Corée"
+    ],
+    "研": [
+      "polir",
+      "étudier",
+      "aiguiser"
+    ],
+    "執": [
+      "saisir",
+      "prendre en charge",
+      "ténacité",
+      "prendre à coeur"
+    ],
+    "帰": [
+      "retour à la maison",
+      "arriver à",
+      "aboutir à",
+      "mener à",
+      "renvoyer"
+    ],
+    "某": [
+      "untel",
+      "un certain",
+      "cette personne"
+    ],
+    "譲": [
+      "céder",
+      "transférer",
+      "transmettre"
+    ],
+    "滅": [
+      "détruire",
+      "anéantir",
+      "ruiner",
+      "périr",
+      "renverser"
+    ],
+    "慮": [
+      "prudence",
+      "considérer",
+      "idée",
+      "délibérer",
+      "sollicitude",
+      "peur"
+    ],
+    "例": [
+      "exemple",
+      "précédent",
+      "coutume",
+      "usage"
+    ],
+    "釈": [
+      "explication",
+      "justification"
+    ],
+    "興": [
+      "intérêt",
+      "plaisir",
+      "divertir",
+      "ranimer",
+      "prospérer",
+      "rétablir"
+    ],
+    "慰": [
+      "consoler",
+      "réconforter",
+      "divertissement",
+      "remonter",
+      "s'amuser de",
+      "séduire"
+    ],
+    "認": [
+      "reconnaître",
+      "approuver",
+      "certifier",
+      "distinguer",
+      "apprécier",
+      "croire"
+    ],
+    "食": [
+      "manger",
+      "nourriture"
+    ],
+    "腹": [
+      "ventre",
+      "abdomen"
+    ],
+    "鈴": [
+      "clochette",
+      "sonnerie"
+    ],
+    "環": [
+      "anneau",
+      "cercle",
+      "maillon",
+      "roue"
+    ],
+    "破": [
+      "déchirer",
+      "casser",
+      "détruire",
+      "défaire",
+      "frustrer"
+    ],
+    "街": [
+      "ville",
+      "rue",
+      "boulevard"
+    ],
+    "廃": [
+      "abolition",
+      "cessation",
+      "abandonner",
+      "mettre au rebut",
+      "obsolète",
+      "déchets"
+    ],
+    "泊": [
+      "passer la nuit",
+      "loger",
+      "séjour",
+      "être au mouillage"
+    ],
+    "多": [
+      "beaucoup",
+      "nombreux",
+      "fréquent"
+    ],
+    "殺": [
+      "tuer",
+      "meurtre",
+      "massacrer",
+      "abattre",
+      "trancher",
+      "fendre",
+      "réduire",
+      "diminuer",
+      "gâcher"
+    ],
+    "涼": [
+      "frais",
+      "rafraîchissant"
+    ],
+    "朴": [
+      "simple",
+      "brut",
+      "honnête",
+      "docile"
+    ],
+    "緒": [
+      "lanière",
+      "corde",
+      "sangle",
+      "début",
+      "bout",
+      "fin"
+    ],
+    "掘": [
+      "creuser",
+      "déterrer",
+      "fouiller"
+    ],
+    "袖": [
+      "manche",
+      "aile",
+      "rallonge",
+      "virer qu'un"
+    ],
+    "漫": [
+      "manga",
+      "imprécis",
+      "involontaire",
+      "à contre-coeur",
+      "corrompre"
+    ],
+    "偉": [
+      "grandeur",
+      "admirable",
+      "remarquable",
+      "excellent",
+      "célèbre",
+      "vaniteux"
+    ],
+    "闘": [
+      "lutte",
+      "guerre"
+    ],
+    "崩": [
+      "s'effondrer",
+      "démolir",
+      "niveler",
+      "mourir"
+    ],
+    "寡": [
+      "très peu",
+      "minorité",
+      "veuve"
+    ],
+    "礼": [
+      "salut",
+      "courbette",
+      "remerciements",
+      "cérémonie",
+      "rémunération"
+    ],
+    "傷": [
+      "blessure",
+      "entaille",
+      "cicatrice",
+      "douleur",
+      "faire mal",
+      "abîmer",
+      "point faible"
+    ],
+    "景": [
+      "paysage",
+      "vue"
+    ],
+    "得": [
+      "obtenir",
+      "gain",
+      "gagner",
+      "acquérir",
+      "profit",
+      "avantage",
+      "bénéfice",
+      "trouver",
+      "pouvoir"
+    ],
+    "残": [
+      "reste",
+      "solde"
+    ],
+    "軒": [
+      "auvent",
+      "gouttière",
+      "compteur de maisons"
+    ],
+    "傍": [
+      "à côté",
+      "tout près",
+      "spectateur",
+      "observateur",
+      "les autres",
+      "pendant que",
+      "en outre"
+    ],
+    "忌": [
+      "détester",
+      "deuil",
+      "répugnant",
+      "anniversaire du décès"
+    ],
+    "状": [
+      "état des choses",
+      "conditions",
+      "circonstances",
+      "forme",
+      "apparence",
+      "lettre"
+    ],
+    "換": [
+      "échanger",
+      "remplacer",
+      "convertir",
+      "change"
+    ],
+    "盗": [
+      "vol",
+      "dérober",
+      "chaparder"
+    ],
+    "判": [
+      "jugement",
+      "sceau",
+      "tampon",
+      "signature"
+    ],
+    "草": [
+      "herbe",
+      "mauvaise herbe",
+      "plantes",
+      "pâturage",
+      "ébauche",
+      "écrire"
     ]
   }
 }

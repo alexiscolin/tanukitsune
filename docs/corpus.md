@@ -88,8 +88,14 @@ of its own, "radical hameçon (no. 5)", which says where a character sits in a t
 means, and a parenthesised aside, which qualifies a gloss for a dictionary reader and means nothing on
 a card. The word an aside qualifies is kept and the aside is not.
 
+**A shape left with no word takes one back.** Where a character the curriculum also deals as a radical
+ends the walk unsettled, it takes a gloss from whoever holds it and that holder steps to another it has
+free, so one key moves rather than the order of the whole curriculum: 言 states dire and nothing else,
+and a character taught earlier would otherwise leave a shape 193 characters are built from with no name
+at all. A leaf kanji is not rescued, being met once rather than everywhere.
+
 Against the 2101 kanji the curriculum deals rather than the jouyou set the licence covers, French
-leaves 162 unsettled, 153 unglossed and 9 whose every gloss is taken. A language the release does not
+leaves 176 unsettled, 153 unglossed and 23 whose every gloss is taken. A language the release does not
 carry leaves all of them, which is the same path rather than a different one.
 
 **Component names.** Written here, one name per component and one component per name across the whole
@@ -120,8 +126,9 @@ reads nine, and a tenth is a new one to answer for.
 
 **A shape can fall between the two rules and be taught under no word at all**, being owed no name
 because a kanji writes it while that kanji was left without a key because every gloss it has was
-already spoken for. `corpus:report` counts those on their own line, four today: 巾, 言, 莫 and 龍. It is
-the one hole neither the owed count nor the collision check can see.
+already spoken for. `corpus:report` counts those on their own line. It is
+the one hole neither the owed count nor the collision check can see. Three stand there today, 巾, 莫
+and 龍, each because the release states no French gloss for it at all.
 
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
 Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing

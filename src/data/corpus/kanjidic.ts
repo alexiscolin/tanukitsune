@@ -16,8 +16,9 @@ const LISTING = /\(no\.\s*\d+\)/
 // the key is the whole of what a learner types. The word it qualifies is kept and the aside is not.
 const ASIDE = /\s*\([^)]*\)/g
 // The release quotes a gloss that quotes itself, and an aside taken out of the middle of one leaves
-// the quotes around what is left. A key is a word rather than punctuation.
-const QUOTES = /["']/g
+// the quotes around what is left. A key is a word rather than punctuation. Only the double quote: the
+// apostrophe is a letter's neighbour in French, and stripping it turns s'appeler into sappeler.
+const QUOTES = /"/g
 
 export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const glossed = new Map<string, readonly string[]>()

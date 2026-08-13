@@ -57,17 +57,27 @@ const chosen: ReadonlyMap<string, readonly string[]> = existsSync(orderFile)
 // silence: it is a judgement already paid for that this run is not using.
 const stale: string[] = []
 
-const keyed = chooseKeys(characters, (character) => {
-  const glosses = spoken.get(character) ?? []
-  const order = chosen.get(character)
+// The shapes the curriculum deals as radicals, which are the ones a story has to be able to name.
+const naming = new Set(
+  subjects.flatMap((one) => (one.type === 'radical' && one.characters !== null && !one.hidden ? [one.characters] : [])),
+)
 
-  if (order === undefined) return glosses
-  if (isOrderOf(order, glosses)) return order
+const keyed = chooseKeys(
+  characters,
+  (character) => {
+    const glosses = spoken.get(character) ?? []
+    const order = chosen.get(character)
 
-  stale.push(character)
+    if (order === undefined) return glosses
+    if (isOrderOf(order, glosses)) return order
 
-  return glosses
-})
+    stale.push(character)
+
+    return glosses
+  },
+  naming,
+)
+
 const written = characters.filter((character) => keyed.keys[character] !== undefined)
 
 const lines = written
