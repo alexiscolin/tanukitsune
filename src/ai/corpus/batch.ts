@@ -29,13 +29,20 @@ type Answered = {
   readonly spent: Spent
 }
 
-export type Collected = {
-  readonly answered: ReadonlyMap<string, Answered>
-  // Everything that came back without usable prose, keyed by subject and carrying why. It is what
-  // the next batch re-submits, so a run that drops it silently is a corpus with holes that reads as
-  // complete.
-  readonly failed: ReadonlyMap<string, string>
-}
+// A batch still running and a batch that ended are two outcomes rather than one outcome and a fault,
+// since submitting one and reading it later is the whole shape of the thing. They are told apart by a
+// field a caller has to read, so a run cannot mistake a job still going for a job that answered
+// nothing and drop the identifier that would have collected it.
+export type Collected =
+  | { readonly ended: false; readonly status: string }
+  | {
+      readonly ended: true
+      readonly answered: ReadonlyMap<string, Answered>
+      // Everything that came back without usable prose, keyed by subject and carrying why. It is what
+      // the next batch re-submits, so a run that drops it silently is a corpus with holes that reads
+      // as complete.
+      readonly failed: ReadonlyMap<string, string>
+    }
 
 export type Reach = {
   readonly key: string
@@ -73,7 +80,7 @@ export async function collectBatch(id: string, reach: Reach): Promise<Collected>
   const client = clientFor(reach)
   const batch = await client.messages.batches.retrieve(id)
 
-  if (batch.processing_status !== 'ended') throw new Error(`batch ${id} is ${batch.processing_status}`)
+  if (batch.processing_status !== 'ended') return { ended: false, status: batch.processing_status }
 
   const answered = new Map<string, Answered>()
   const failed = new Map<string, string>()
@@ -91,7 +98,7 @@ export async function collectBatch(id: string, reach: Reach): Promise<Collected>
     else answered.set(subject, read)
   }
 
-  return { answered, failed }
+  return { ended: true, answered, failed }
 }
 
 // An answer, or the one word saying why there is none. A safety decline arrives as a successful

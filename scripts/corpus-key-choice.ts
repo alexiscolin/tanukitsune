@@ -90,7 +90,13 @@ async function submit(characters: readonly string[]): Promise<void> {
 }
 
 async function collect(id: string): Promise<void> {
-  const { answered, failed } = await collectBatch(id, reach)
+  const collected = await collectBatch(id, reach)
+  if (!collected.ended) {
+    process.stdout.write(`batch ${id} is ${collected.status}. Run pnpm corpus:key-choice ${locale} again to collect it\n`)
+    return
+  }
+
+  const { answered, failed } = collected
   const unusable = new Map(failed)
   const kept = new Map<string, readonly string[]>()
   const spent = { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 }
