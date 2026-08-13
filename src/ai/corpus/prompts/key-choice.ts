@@ -2,7 +2,10 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
-import { isOrderOf } from '@/core/corpus/key'
+// The extension and the relative path are there for the reason inventory.ts states: the corpus
+// commands run this file through Node rather than a bundler, where an alias resolves to nothing. It
+// binds only a value import, a type one being erased before Node sees it.
+import { isOrderOf } from '../../../core/corpus/key.ts'
 
 // Which of a character's glosses is the word it should be taught under, asked one character at a time.
 // The model orders what it is given and never writes a word: the key is still selected from a gloss
