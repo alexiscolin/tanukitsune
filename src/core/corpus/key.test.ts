@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { chooseKeys } from './key'
+import { chooseKeys, isOrderOf } from './key'
 
 const glosses: Record<string, readonly string[]> = {
   犬: ['chien'],
@@ -41,5 +41,23 @@ describe('chooseKeys', () => {
 
   it('settles nothing for a character the source does not gloss', () => {
     expect(chooseKeys(['々'], glossesOf)).toEqual({ keys: {}, unsettled: ['々'] })
+  })
+})
+
+describe('isOrderOf', () => {
+  it('holds for a reordering of exactly those glosses', () => {
+    expect(isOrderOf(['second', 'chic'], ['chic', 'second'])).toBe(true)
+  })
+
+  // What makes a stored order self-healing. A release that restates a character, or a rule that cleans
+  // a gloss, leaves an order describing words that are no longer there, and walking it would teach a
+  // word the dictionary no longer states. Such an order is not one, so the source order stands and the
+  // character is weighed again.
+  it('fails where a gloss has moved out from under the order', () => {
+    expect(isOrderOf(['petit (taille)', 'bas'], ['petit', 'bas'])).toBe(false)
+  })
+
+  it('fails where the order is short of a gloss', () => {
+    expect(isOrderOf(['chic'], ['chic', 'second'])).toBe(false)
   })
 })
