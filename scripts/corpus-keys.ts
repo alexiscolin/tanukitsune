@@ -69,11 +69,18 @@ const naming = new Set(
   subjects.flatMap((one) => (one.type === 'radical' && one.characters !== null && !one.hidden ? [one.characters] : [])),
 )
 
+// The glosses a character actually has here, read once so the run and the report answer the same
+// question: a character carried across has words, and calling it unglossed names the wrong reason.
+const glossesFor = (character: string) => {
+  const stated = spoken.get(character) ?? []
+
+  return stated.length === 0 ? (carried.get(character) ?? []) : stated
+}
+
 const keyed = chooseKeys(
   characters,
   (character) => {
-    const stated = spoken.get(character) ?? []
-    const glosses = stated.length === 0 ? (carried.get(character) ?? []) : stated
+    const glosses = glossesFor(character)
     const order = chosen.get(character)
 
     if (order === undefined) return glosses
@@ -97,10 +104,10 @@ writeFileSync(output, `{\n"header":${JSON.stringify(HEADER)},\n"keys":{\n${lines
 process.stdout.write(`keys: ${written.length} of ${characters.length} written to ${output}\n`)
 // The two reasons a character leaves the run without a key, apart, because they are settled by
 // different things: one waits on a gloss to be written, the other on a word to be freed.
-const unglossed = keyed.unsettled.filter((one) => (spoken.get(one) ?? []).length === 0)
+const unglossed = keyed.unsettled.filter((one) => glossesFor(one).length === 0)
 
 process.stdout.write(`orders no longer describing their glosses, weighed again: ${list(stale)}\n`)
-process.stdout.write(`the release glosses nothing in ${locale}: ${list(unglossed)}\n`)
+process.stdout.write(`no word to select from, neither stated nor carried across: ${list(unglossed)}\n`)
 process.stdout.write(
   `every gloss the release states is already a key: ${list(keyed.unsettled.filter((one) => !unglossed.includes(one)))}\n`,
 )
