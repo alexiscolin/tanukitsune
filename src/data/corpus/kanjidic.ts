@@ -22,7 +22,11 @@ const QUOTES = /"/g
 
 export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const glossed = new Map<string, readonly string[]>()
-  const spoken = new RegExp(`<meaning m_lang="${locale}">(.*?)</meaning>`, 'g')
+  // English carries no attribute at all, the release implying it by its absence, so it is the one
+  // language that cannot be asked for by name. It is what corpus:key-translation reads, a character the
+  // release does not gloss in the locale being carried across from the English it does state.
+  const spoken =
+    locale === 'en' ? /<meaning>(.*?)<\/meaning>/g : new RegExp(`<meaning m_lang="${locale}">(.*?)</meaning>`, 'g')
 
   for (const [, body = ''] of xml.matchAll(ENTRY)) {
     const character = LITERAL.exec(body)?.[1]

@@ -66,6 +66,12 @@ describe('parseGlosses', () => {
     expect(parseGlosses(XML, 'fr').get('低')).toContain("s'appeler")
   })
 
+  // English is the one language the release states by the absence of an attribute rather than by name,
+  // and it is what a character with no gloss in the locale is carried across from.
+  it('reads English from the meanings that carry no language', () => {
+    expect(parseGlosses(XML, 'en').get('犬')).toEqual(['dog'])
+  })
+
   it('reads nothing for a language the release does not carry', () => {
     expect(parseGlosses(XML, 'de').get('犬')).toEqual([])
   })
