@@ -21,7 +21,7 @@ import {
   readKeyTranslation,
 } from '../src/ai/corpus/prompts/key-translation.ts'
 import { faultInKey } from '../src/core/corpus/key.ts'
-import { keyOrderFile, readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
+import { keyOrderFile, readKeyOrder, readKeys, readNaming } from '../src/data/corpus/artifact.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
@@ -58,6 +58,11 @@ if (!existsSync(carriedFile)) {
 }
 
 const naming = readNaming(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
+// The words already written, so a run proposes none of them twice. Absent before the first
+// corpus:keys, which is a run with nothing taken rather than a fault.
+const keysFile = `corpus/${locale}/keys.json`
+const keys = existsSync(keysFile) ? readKeys(readFileSync(keysFile, 'utf8')) : {}
+const held = new Map(Object.entries(keys).map(([character, word]) => [word.toLowerCase(), character]))
 const carried = readKeyOrder(readFileSync(carriedFile, 'utf8'))
 const xml = await fetched(SOURCE, 'KANJIDIC2')
 const spoken = parseGlosses(xml, locale)
@@ -78,8 +83,19 @@ const owed = dealt
     (character) =>
       (spoken.get(character) ?? []).length === 0 &&
       (english.get(character) ?? []).length > 0 &&
-      !carried.has(character),
+      // Never carried, or carried a word that answers for somebody else: the run that carried it could
+      // not know what was taken, so the character has a word and no key until it is asked again.
+      (!carried.has(character) || takenElsewhere(character)),
   )
+
+function takenElsewhere(character: string): boolean {
+  const word = carried.get(character)?.[0]
+  if (word === undefined) return false
+
+  const holder = held.get(word.toLowerCase())
+
+  return holder !== undefined && holder !== character
+}
 
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
 const step = nextStep(saved, owed.slice(0, most), KEY_TRANSLATION_VERSION)
@@ -89,7 +105,7 @@ else if (step.do === 'collect') await collect(step.id)
 else process.stdout.write(`${locale}: every character the release does not gloss has a word carried across\n`)
 
 async function submit(characters: readonly string[]): Promise<void> {
-  const prefix = keyTranslationPrefix(naming.language)
+  const prefix = keyTranslationPrefix(naming.language, Object.values(keys))
   const asked = characters.map((character) => ({
     subject: character,
     params: keyTranslationRequest(prefix, {

@@ -96,7 +96,9 @@ a card. The word an aside qualifies is kept and the aside is not.
 `corpus:key-translation` asks for the word and writes it to `corpus/<locale>/key-translation.json`,
 which `corpus:keys` then reads as that character's only gloss, so selection and uniqueness are
 unchanged by it. This is the one place a key is not lifted straight out of the locale's own dictionary,
-and it is still anchored to a stated meaning rather than an invented one: what the course teaches is
+The words already written travel with the request, since two characters answering to one word cannot be
+told apart and only the model can propose another. It is still anchored to a stated meaning rather than
+an invented one: what the course teaches is
 the target, and the dictionary's English settles the wording, because the dictionary orders its English
 by the classical Chinese sense and states truth before abandon for 諦 while the course teaches give up. A word the locale cannot
 write is refused by the same shape rules a name answers to, minus the article: a key is what the reader

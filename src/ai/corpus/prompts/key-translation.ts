@@ -12,7 +12,7 @@ import { z } from 'zod'
 //
 // Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
 // row and two runs sharing a version make the provenance false while looking satisfied.
-export const KEY_TRANSLATION_VERSION = 2
+export const KEY_TRANSLATION_VERSION = 3
 
 const keyTranslation = z.strictObject({ key: z.string() })
 
@@ -37,8 +37,10 @@ export type Untranslated = {
   readonly taught: readonly string[]
 }
 
-// Everything identical across a run, rendered once and shared by every request in it.
-export function keyTranslationPrefix(language: string): string {
+// Everything identical across a run, rendered once and shared by every request in it. The words
+// already answering for another character travel here, sorted rather than left in whatever order a map
+// yielded, because a byte moving invalidates the cache for every request behind it.
+export function keyTranslationPrefix(language: string, taken: readonly string[]): string {
   return [
     `You give the ${language} word a Japanese character is taught and answered under, for a kanji`,
     'course. A learner types that word and is graded on it, so it is the plainest one the character',
@@ -49,6 +51,10 @@ export function keyTranslationPrefix(language: string): string {
     'settle the wording where the taught one is broad, and never to replace it: where the two disagree,',
     'the taught meaning is the one the reader answers on. Give the word on its own, with no article, no',
     'gloss and no parenthesis.',
+    '',
+    'These words already answer for another character, and two characters answering to one word cannot',
+    'be told apart. Give a different one, as close to the taught meaning as the language allows:',
+    [...taken].sort().join(', '),
   ].join('\n')
 }
 
