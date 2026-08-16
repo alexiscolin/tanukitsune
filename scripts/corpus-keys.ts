@@ -12,8 +12,8 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 import { fetched, list } from './corpus-command.ts'
-import { chooseKeys, isOrderOf } from '../src/core/corpus/key.ts'
-import { readKeyOrder } from '../src/data/corpus/artifact.ts'
+import { chooseKeys, faultInKey, isOrderOf } from '../src/core/corpus/key.ts'
+import { readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
 import { parseGlosses, releaseOf } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
@@ -41,6 +41,8 @@ const spoken = parseGlosses(xml, locale)
 // later one takes the next gloss it has. Sorted here rather than trusted from the file, since the
 // selection is only reproducible if the order is.
 const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
+// What this language can write, which is what says whether a gloss is a word here at all.
+const naming = readNaming(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
 const characters = subjects
   .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
   .sort((one, other) => one.level - other.level || one.id - other.id)
@@ -67,7 +69,7 @@ const chosen: ReadonlyMap<string, readonly string[]> = existsSync(orderFile)
 const stale = new Set<string>()
 
 // The shapes the curriculum deals as radicals, which are the ones a story has to be able to name.
-const naming = new Set(
+const shapes = new Set(
   subjects.flatMap((one) => (one.type === 'radical' && one.characters !== null && !one.hidden ? [one.characters] : [])),
 )
 
@@ -90,7 +92,7 @@ const glossesFor = (character: string) => {
   return [...ordered, ...(carried.get(character) ?? []).filter((one) => !ordered.includes(one))]
 }
 
-const keyed = chooseKeys(characters, glossesFor, naming)
+const keyed = chooseKeys(characters, glossesFor, shapes)
 
 const written = characters.filter((character) => keyed.keys[character] !== undefined)
 
@@ -110,6 +112,19 @@ process.stdout.write(`keys: ${written.length} of ${characters.length} written to
 // different things: one waits on a gloss to be written, the other on a word to be freed.
 const unglossed = keyed.unsettled.filter((one) => glossesFor(one).length === 0)
 
+// What the read left behind that the locale cannot write. The cleaning takes the shapes a dictionary
+// carries and a card does not, and a shape it does not know about survives it silently, so the run says
+// what it saw rather than selecting around it in silence.
+const unwritable = characters.flatMap((character) =>
+  glossesFor(character)
+    .filter((gloss) => faultInKey(gloss, naming) !== null)
+    .map((gloss) => `${character} ${gloss}`),
+)
+
+process.stdout.write(
+  `keys a rescue moved: ${list(keyed.moved.map((one) => `${one.character} ${one.from} to ${one.to}`))}\n`,
+)
+process.stdout.write(`glosses ${locale} cannot write, left unselected: ${list(unwritable)}\n`)
 process.stdout.write(`orders no longer describing their glosses, weighed again: ${list([...stale])}\n`)
 process.stdout.write(`no word to select from, neither stated nor carried across: ${list(unglossed)}\n`)
 process.stdout.write(

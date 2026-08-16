@@ -40,7 +40,7 @@ describe('chooseKeys', () => {
   })
 
   it('settles nothing for a character the source does not gloss', () => {
-    expect(chooseKeys(['々'], glossesOf)).toEqual({ keys: {}, unsettled: ['々'] })
+    expect(chooseKeys(['々'], glossesOf)).toEqual({ keys: {}, unsettled: ['々'], moved: [] })
   })
 
   // The rescue, and the reason it is a second pass rather than an order. 言 states one gloss, dire, and
@@ -53,10 +53,38 @@ describe('chooseKeys', () => {
     expect(chooseKeys(['申', '言'], spoken, new Set(['言'])).keys).toEqual({ 申: 'singe', 言: 'dire' })
   })
 
+  // Nothing is decided in silence, and a rescue decides for two characters: the one it settles and the
+  // one it moves. The second is the one nobody would otherwise see.
+  it('names the character a rescue moved off its word', () => {
+    const spoken = (one: string) => (one === '申' ? ['dire', 'singe'] : ['dire'])
+
+    expect(chooseKeys(['申', '言'], spoken, new Set(['言'])).moved).toEqual([{ character: '申', from: 'dire', to: 'singe' }])
+  })
+
+  it('names nobody where no rescue happened', () => {
+    expect(chooseKeys(['犬'], glossesOf).moved).toEqual([])
+  })
+
+  // Three characters and two rescues, which is what the two-character cases could never show: the word
+  // 話 takes was settled by an earlier rescue, so the bookkeeping has to survive being written twice.
+  it('keeps one word per character across a second rescue', () => {
+    const spoken = (one: string) =>
+      one === '申' ? ['dire', 'singe'] : one === '言' ? ['dire', 'parole'] : ['dire']
+    const { keys } = chooseKeys(['申', '話', '言'], spoken, new Set(['言']))
+    const words = Object.values(keys).map((one) => one.toLowerCase())
+
+    expect(new Set(words).size).toBe(words.length)
+    expect(Object.keys(keys).sort()).toEqual(['申', '言', '話'])
+  })
+
   it('leaves the shape unsettled where its holder has nowhere to move', () => {
     const spoken = () => ['dire']
 
-    expect(chooseKeys(['申', '言'], spoken, new Set(['言']))).toEqual({ keys: { 申: 'dire' }, unsettled: ['言'] })
+    expect(chooseKeys(['申', '言'], spoken, new Set(['言']))).toEqual({
+      keys: { 申: 'dire' },
+      unsettled: ['言'],
+      moved: [],
+    })
   })
 
   // No character is left without a word where one can be freed for it, a card nobody can be graded on

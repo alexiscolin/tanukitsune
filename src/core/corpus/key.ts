@@ -26,6 +26,10 @@ export function faultInKey(word: string, shape: Shape): KeyFault | null {
 export type Keyed = {
   readonly keys: Readonly<Record<string, string>>
   readonly unsettled: readonly string[]
+  // Who a rescue moved off the word the walk had given them, and where to. A rescue settles one
+  // character by unsettling another's first choice, and the second is the one nobody would otherwise
+  // see: it leaves the run with a word still, so no count changes and no report would name it.
+  readonly moved: readonly { readonly character: string; readonly from: string; readonly to: string }[]
 }
 
 export function chooseKeys(
@@ -63,47 +67,51 @@ export function chooseKeys(
   // Who holds each word, kept beside the keys rather than searched for: a scan of every key per gloss
   // per character costs the square of the curriculum, which is the cost composedBy exists not to pay.
   const holders = new Map(Object.entries(keys).map(([character, word]) => [word.toLowerCase(), character]))
+  const moved: { character: string; from: string; to: string }[] = []
   const left: string[] = []
   const first = unsettled.filter((one) => naming.has(one))
 
   for (const character of [...first, ...unsettled.filter((one) => !naming.has(one))]) {
-    if (rescued(character, { keys, holders, taken }, glossesOf) === null) left.push(character)
+    if (!rescued(character, { keys, holders, taken, moved }, glossesOf)) left.push(character)
   }
 
-  return { keys, unsettled: left }
+  return { keys, unsettled: left, moved }
 }
 
-// The first gloss of this character whose holder can step sideways, applied to both of them. Nothing
-// where no holder can move, which leaves the character reported rather than another one displaced.
+// Takes the first gloss of this character whose holder can step sideways, applying the move to both of
+// them and writing it down. False where no holder can move, which leaves the character reported rather
+// than another one displaced.
 // What the walk settled, and who holds what, together because a rescue moves all three at once.
 type Board = {
   readonly keys: Record<string, string>
   readonly holders: Map<string, string>
   readonly taken: Set<string>
+  readonly moved: { character: string; from: string; to: string }[]
 }
 
 function rescued(
   character: string,
-  { keys, holders, taken }: Board,
+  { keys, holders, taken, moved }: Board,
   glossesOf: (character: string) => readonly string[],
-): string | null {
+): boolean {
   for (const wanted of glossesOf(character)) {
     const holder = holders.get(wanted.toLowerCase())
     if (holder === undefined) continue
 
-    const moved = glossesOf(holder).find((one) => !taken.has(one.toLowerCase()))
-    if (moved === undefined) continue
+    const free = glossesOf(holder).find((one) => !taken.has(one.toLowerCase()))
+    if (free === undefined) continue
 
-    keys[holder] = moved
+    keys[holder] = free
     keys[character] = wanted
-    taken.add(moved.toLowerCase())
-    holders.set(moved.toLowerCase(), holder)
+    taken.add(free.toLowerCase())
+    holders.set(free.toLowerCase(), holder)
     holders.set(wanted.toLowerCase(), character)
+    moved.push({ character: holder, from: wanted, to: free })
 
-    return wanted
+    return true
   }
 
-  return null
+  return false
 }
 
 // Whether an order is a reordering of exactly these glosses, inventing, dropping or repeating none.
