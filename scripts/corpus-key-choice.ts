@@ -12,7 +12,6 @@
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
-import type { Reach } from '../src/ai/corpus/batch.ts'
 import {
   KEY_CHOICE_VERSION,
   keyChoicePrefix,
@@ -24,28 +23,9 @@ import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
 import { isOrderOf } from '../src/core/corpus/key.ts'
-import { asOptional } from '../src/data/optional-text.ts'
-import { fetched, list } from './corpus-command.ts'
+import { asked, fetched, KANJIDIC, list, taughtCharacters } from './corpus-command.ts'
 
-try {
-  process.loadEnvFile('.env.local')
-} catch {
-  // Absent before the first bootstrap, which is not an error.
-}
-
-const SOURCE = 'http://www.edrdg.org/kanjidic/kanjidic2.xml.gz'
-
-const locale = process.argv[2] ?? 'fr'
-const bound = process.argv[3]
-if (bound !== undefined && (!Number.isInteger(Number(bound)) || Number(bound) < 1)) {
-  throw new Error(`most must be a whole number above zero, got ${bound}`)
-}
-const most = bound === undefined ? Infinity : Number(bound)
-
-const key = asOptional(process.env['ANTHROPIC_API_KEY'])
-if (key === undefined) throw new Error('ANTHROPIC_API_KEY is not set')
-
-const reach: Reach = { key }
+const { locale, most, reach } = asked(process.argv)
 const orderFile = `corpus/${locale}/key-choice.json`
 const runFile = `corpus/${locale}/.key-choice-batch.json`
 
@@ -58,15 +38,12 @@ if (!existsSync(orderFile)) {
 
 const naming = readNaming(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
 const settled = readKeyOrder(readFileSync(orderFile, 'utf8'))
-const glosses = parseGlosses(await fetched(SOURCE, 'KANJIDIC2'), locale)
+const glosses = parseGlosses(await fetched(KANJIDIC, 'KANJIDIC2'), locale)
 const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 
 // A character with one gloss has no order to settle, and one already settled is not asked again. What
 // is left is the whole of what a run can pay for.
-const owed = subjects
-  .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
-  .sort((one, other) => one.level - other.level || one.id - other.id)
-  .map((one) => one.characters as string)
+const owed = taughtCharacters(subjects)
   .filter((character) => {
     const spoken = glosses.get(character) ?? []
     const order = settled.get(character)

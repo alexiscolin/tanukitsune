@@ -11,13 +11,11 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
-import { fetched, list } from './corpus-command.ts'
+import { fetched, KANJIDIC, list, taughtCharacters } from './corpus-command.ts'
 import { chooseKeys, faultInKey, isOrderOf } from '../src/core/corpus/key.ts'
 import { readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
 import { parseGlosses, releaseOf } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
-
-const SOURCE = 'http://www.edrdg.org/kanjidic/kanjidic2.xml.gz'
 
 // Written by the run rather than fixed here, because the release states its own version and the address
 // serving it does not.
@@ -34,7 +32,7 @@ const locale = process.argv[2] ?? 'fr'
 const given = process.argv[3]
 const output = `corpus/${locale}/keys.json`
 
-const xml = given === undefined ? await fetched(SOURCE, 'KANJIDIC2') : readFileSync(given, 'utf8')
+const xml = given === undefined ? await fetched(KANJIDIC, 'KANJIDIC2') : readFileSync(given, 'utf8')
 const spoken = parseGlosses(xml, locale)
 
 // The order the reader meets them in, so the plainest word goes to the character taught first and a
@@ -43,10 +41,7 @@ const spoken = parseGlosses(xml, locale)
 const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 // What this language can write, which is what says whether a gloss is a word here at all.
 const naming = readNaming(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
-const characters = subjects
-  .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
-  .sort((one, other) => one.level - other.level || one.id - other.id)
-  .map((one) => one.characters as string)
+const characters = taughtCharacters(subjects)
 
 // Where a run has weighed a character's glosses, that order is walked instead of the dictionary's.
 // Absent before the first such run and never required: a character nobody weighed keeps the order the

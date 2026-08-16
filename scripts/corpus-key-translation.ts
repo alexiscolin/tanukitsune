@@ -14,7 +14,6 @@
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
-import type { Reach } from '../src/ai/corpus/batch.ts'
 import {
   KEY_TRANSLATION_VERSION,
   keyTranslationPrefix,
@@ -26,28 +25,9 @@ import { keyOrderFile, readKeyOrder, readKeys, readNaming } from '../src/data/co
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
-import { asOptional } from '../src/data/optional-text.ts'
-import { fetched, list } from './corpus-command.ts'
+import { asked, fetched, KANJIDIC, list, taughtCharacters } from './corpus-command.ts'
 
-try {
-  process.loadEnvFile('.env.local')
-} catch {
-  // Absent before the first bootstrap, which is not an error.
-}
-
-const SOURCE = 'http://www.edrdg.org/kanjidic/kanjidic2.xml.gz'
-
-const locale = process.argv[2] ?? 'fr'
-const bound = process.argv[3]
-if (bound !== undefined && (!Number.isInteger(Number(bound)) || Number(bound) < 1)) {
-  throw new Error(`most must be a whole number above zero, got ${bound}`)
-}
-const most = bound === undefined ? Infinity : Number(bound)
-
-const key = asOptional(process.env['ANTHROPIC_API_KEY'])
-if (key === undefined) throw new Error('ANTHROPIC_API_KEY is not set')
-
-const reach: Reach = { key }
+const { locale, most, reach } = asked(process.argv)
 const carriedFile = `corpus/${locale}/key-translation.json`
 const runFile = `corpus/${locale}/.key-translation-batch.json`
 
@@ -66,7 +46,7 @@ const written = existsSync(keysFile)
 const keys = written ? readKeys(readFileSync(keysFile, 'utf8')) : {}
 const held = new Map(Object.entries(keys).map(([character, word]) => [word.toLowerCase(), character]))
 const carried = readKeyOrder(readFileSync(carriedFile, 'utf8'))
-const xml = await fetched(SOURCE, 'KANJIDIC2')
+const xml = await fetched(KANJIDIC, 'KANJIDIC2')
 const spoken = parseGlosses(xml, locale)
 const english = parseGlosses(xml, 'en')
 const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
@@ -75,15 +55,9 @@ const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 // does not gloss here, and one whose every gloss answers for somebody else, are the same problem seen
 // twice. Before the first corpus:keys there are no keys to read, so it is whoever the release does not
 // gloss. A character already carried is asked again only where the word carried answers for another.
-const dealt = subjects
-  .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
-  .sort((one, other) => one.level - other.level || one.id - other.id)
+const taught = new Map(subjects.map((one) => [one.characters ?? '', one.meanings]))
 
-const taught = new Map(dealt.map((one) => [one.characters as string, one.meanings]))
-
-const owed = dealt
-  .map((one) => one.characters as string)
-  .filter(
+const owed = taughtCharacters(subjects).filter(
     (character) =>
       (english.get(character) ?? []).length > 0 &&
       (written ? keys[character] === undefined : (spoken.get(character) ?? []).length === 0) &&
