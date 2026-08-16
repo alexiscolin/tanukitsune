@@ -62,7 +62,7 @@ const chosen: ReadonlyMap<string, readonly string[]> = existsSync(orderFile)
 // An order settled over glosses the release has since restated, or that a cleaning rule has moved, no
 // longer describes them. It is walked past rather than trusted, and said rather than walked past in
 // silence: it is a judgement already paid for that this run is not using.
-const stale: string[] = []
+const stale = new Set<string>()
 
 // The shapes the curriculum deals as radicals, which are the ones a story has to be able to name.
 const naming = new Set(
@@ -73,25 +73,22 @@ const naming = new Set(
 // question: a character carried across has words, and calling it unglossed names the wrong reason.
 const glossesFor = (character: string) => {
   const stated = spoken.get(character) ?? []
+  const order = chosen.get(character)
+  // A weighed order describes the stated glosses and nothing else, so it is applied to those and the
+  // carried word follows them: a run weighed what the release states, not a word written afterwards.
+  const ordered = order !== undefined && isOrderOf(order, stated) ? order : stated
 
-  return stated.length === 0 ? (carried.get(character) ?? []) : stated
+  // A set, because the glosses are read once for the walk and again for the rescue, and a character
+  // named twice reads as two characters.
+  if (order !== undefined && !isOrderOf(order, stated) && stated.length > 0) stale.add(character)
+
+  // Last rather than instead of, because a character can state glosses and have every one of them
+  // answering for somebody else: 蛮 states three, all taken, and would never reach the word carried for
+  // it if the carried one only stood in for an empty list.
+  return [...ordered, ...(carried.get(character) ?? []).filter((one) => !ordered.includes(one))]
 }
 
-const keyed = chooseKeys(
-  characters,
-  (character) => {
-    const glosses = glossesFor(character)
-    const order = chosen.get(character)
-
-    if (order === undefined) return glosses
-    if (isOrderOf(order, glosses)) return order
-
-    stale.push(character)
-
-    return glosses
-  },
-  naming,
-)
+const keyed = chooseKeys(characters, glossesFor, naming)
 
 const written = characters.filter((character) => keyed.keys[character] !== undefined)
 
@@ -106,7 +103,7 @@ process.stdout.write(`keys: ${written.length} of ${characters.length} written to
 // different things: one waits on a gloss to be written, the other on a word to be freed.
 const unglossed = keyed.unsettled.filter((one) => glossesFor(one).length === 0)
 
-process.stdout.write(`orders no longer describing their glosses, weighed again: ${list(stale)}\n`)
+process.stdout.write(`orders no longer describing their glosses, weighed again: ${list([...stale])}\n`)
 process.stdout.write(`no word to select from, neither stated nor carried across: ${list(unglossed)}\n`)
 process.stdout.write(
   `every gloss the release states is already a key: ${list(keyed.unsettled.filter((one) => !unglossed.includes(one)))}\n`,

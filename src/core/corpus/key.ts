@@ -60,11 +60,14 @@ export function chooseKeys(
   // The shapes stories name go first, since a rescue can only move a holder that has somewhere to go
   // and whoever is asked first has the most room. Nobody is left out: a card nobody can be graded on is
   // worse than a card on its second choice.
+  // Who holds each word, kept beside the keys rather than searched for: a scan of every key per gloss
+  // per character costs the square of the curriculum, which is the cost composedBy exists not to pay.
+  const holders = new Map(Object.entries(keys).map(([character, word]) => [word.toLowerCase(), character]))
   const left: string[] = []
   const first = unsettled.filter((one) => naming.has(one))
 
   for (const character of [...first, ...unsettled.filter((one) => !naming.has(one))]) {
-    if (rescued(character, keys, glossesOf, taken) === null) left.push(character)
+    if (rescued(character, { keys, holders, taken }, glossesOf) === null) left.push(character)
   }
 
   return { keys, unsettled: left }
@@ -72,14 +75,20 @@ export function chooseKeys(
 
 // The first gloss of this character whose holder can step sideways, applied to both of them. Nothing
 // where no holder can move, which leaves the character reported rather than another one displaced.
+// What the walk settled, and who holds what, together because a rescue moves all three at once.
+type Board = {
+  readonly keys: Record<string, string>
+  readonly holders: Map<string, string>
+  readonly taken: Set<string>
+}
+
 function rescued(
   character: string,
-  keys: Record<string, string>,
+  { keys, holders, taken }: Board,
   glossesOf: (character: string) => readonly string[],
-  taken: Set<string>,
 ): string | null {
   for (const wanted of glossesOf(character)) {
-    const holder = Object.keys(keys).find((one) => keys[one]?.toLowerCase() === wanted.toLowerCase())
+    const holder = holders.get(wanted.toLowerCase())
     if (holder === undefined) continue
 
     const moved = glossesOf(holder).find((one) => !taken.has(one.toLowerCase()))
@@ -88,6 +97,8 @@ function rescued(
     keys[holder] = moved
     keys[character] = wanted
     taken.add(moved.toLowerCase())
+    holders.set(moved.toLowerCase(), holder)
+    holders.set(wanted.toLowerCase(), character)
 
     return wanted
   }
