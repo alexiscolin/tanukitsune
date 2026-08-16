@@ -5,7 +5,7 @@ import { keyTranslationPrefix, keyTranslationRequest, readKeyTranslation } from 
 
 // A language that is not French, so a rule leaking back into the prompt shows up here rather than in a
 // run six months from now.
-const prefix = keyTranslationPrefix('Latin')
+const prefix = keyTranslationPrefix('Latin', ['canis', 'draco'])
 
 describe('keyTranslationPrefix', () => {
   it('names the language it is translating into', () => {
@@ -20,6 +20,13 @@ describe('keyTranslationPrefix', () => {
 
   it('names what the course teaches as the meaning to land on', () => {
     expect(prefix).toContain('taught')
+  })
+
+  // One word per subject and one subject per word. A word already answering for another character
+  // cannot answer for this one, and the model is the only thing that can propose a different one: 俺
+  // came back as je, which 僕 holds, and stood without a key rather than being asked again.
+  it('carries the words already answering for another character', () => {
+    expect(prefix).toContain('canis, draco')
   })
 })
 

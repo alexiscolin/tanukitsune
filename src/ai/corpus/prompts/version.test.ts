@@ -28,6 +28,7 @@ const RECORDED_CHOICE: Record<number, string> = {
 const RECORDED_TRANSLATION: Record<number, string> = {
   1: '9cb0874172bf33f89dd853cd0b3a524fc36cd3c6106453d12219f83dd34a2183',
   2: '7041569055c4f0920e8a5b0e9bd5fdbd568d1ec9bc9470f4cbbe05f1c83738b8',
+  3: 'fa91dbc6851e5202e5659504d54d84dc50868b57428334580f19b28c771265fd',
 }
 
 describe('the key translation prompt', () => {
@@ -43,7 +44,7 @@ describe('the key translation prompt', () => {
 })
 
 function renderedTranslation(): string {
-  const asked = keyTranslationRequest(keyTranslationPrefix('French'), {
+  const asked = keyTranslationRequest(keyTranslationPrefix('French', ['chien']), {
     character: '龍',
     english: ['dragon'],
     taught: ['Dragon'],
