@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { chooseKeys, isOrderOf } from './key'
+import { chooseKeys, faultInKey, isOrderOf } from './key'
 
 const glosses: Record<string, readonly string[]> = {
   犬: ['chien'],
@@ -84,5 +84,32 @@ describe('isOrderOf', () => {
 
   it('fails where the order is short of a gloss', () => {
     expect(isOrderOf(['chic'], ['chic', 'second'])).toBe(false)
+  })
+})
+
+// French as its material states it, so a rule leaking into the engine shows up here.
+const SHAPE = { opensWith: ['le ', 'la '], letters: "abcdefghijklmnopqrstuvwxyzàâçéèêëîïôùûœ", joiners: "' -", mostWords: 2 }
+
+describe('faultInKey', () => {
+  it('accepts a word the locale writes', () => {
+    expect(faultInKey('dragon', SHAPE)).toBeNull()
+  })
+
+  // A key carries no article, unlike a component name: the reader types the word and is graded on it,
+  // and la lune would be refused by every grader that reads lune.
+  it('accepts a word with no article, which a name would be refused for', () => {
+    expect(faultInKey('serviette', SHAPE)).toBeNull()
+  })
+
+  it('refuses a word another script wrote', () => {
+    expect(faultInKey('dragon 龍', SHAPE)).toBe('not the locale')
+  })
+
+  it('refuses what carries no letter at all', () => {
+    expect(faultInKey('- -', SHAPE)).toBe('nothing to read')
+  })
+
+  it('refuses what runs past what the locale allows', () => {
+    expect(faultInKey('un très grand dragon', SHAPE)).toBe('too long')
   })
 })

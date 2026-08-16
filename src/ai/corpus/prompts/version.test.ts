@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } from './component-name'
 import { KEY_CHOICE_VERSION, keyChoicePrefix, keyChoiceRequest } from './key-choice'
+import { KEY_TRANSLATION_VERSION, keyTranslationPrefix, keyTranslationRequest } from './key-translation'
 
 // A version constant nobody bumps is worse than no version constant. `prompt_version` is a column on
 // every corpus row and the prompt is expected to change between the budgeted runs, so two runs sharing
@@ -22,6 +23,30 @@ const RECORDED: Record<number, string> = {
 
 const RECORDED_CHOICE: Record<number, string> = {
   1: '75ed2507db9e8e07e5b5cbd620e3964cee7da51a2652cd944837ae5a58c4505a',
+}
+
+const RECORDED_TRANSLATION: Record<number, string> = {
+  1: '9cb0874172bf33f89dd853cd0b3a524fc36cd3c6106453d12219f83dd34a2183',
+}
+
+describe('the key translation prompt', () => {
+  it('has not changed without its version changing', () => {
+    const recorded = RECORDED_TRANSLATION[KEY_TRANSLATION_VERSION]
+
+    expect(
+      recorded,
+      `version ${KEY_TRANSLATION_VERSION} has no recorded hash. Record ${renderedTranslation()} against it.`,
+    ).toBeDefined()
+    expect(renderedTranslation(), 'the prompt changed. Bump its version and record the new hash.').toBe(recorded)
+  })
+})
+
+function renderedTranslation(): string {
+  const asked = keyTranslationRequest(keyTranslationPrefix('French'), { character: '龍', english: ['dragon'] })
+
+  return createHash('sha256')
+    .update(JSON.stringify({ ...asked, model: undefined }))
+    .digest('hex')
 }
 
 describe('the key choice prompt', () => {
