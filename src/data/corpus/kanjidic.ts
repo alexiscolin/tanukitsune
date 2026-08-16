@@ -51,6 +51,9 @@ export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, r
         .map(([, gloss = '']) => gloss)
         .filter((gloss) => !LISTING.test(gloss))
         .map((gloss) => plain(gloss))
+        // Two glosses telling themselves apart only by their asides are one word once the asides are
+        // gone, and a list holding a word twice is a list no order over it can satisfy, which would
+        // leave the character asked for forever.
         .filter((gloss, at, all) => isWord(gloss) && all.indexOf(gloss) === at),
     )
   }

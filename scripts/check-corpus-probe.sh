@@ -14,9 +14,9 @@ check() { node --experimental-strip-types --disable-warning=ExperimentalWarning 
 fail=0
 report() { printf '%s\n' "$1" >&2; fail=1; }
 
-if ! check >/dev/null; then
+if ! committed=$(check 2>&1); then
   report 'the committed corpus does not pass its own check'
-  check
+  printf '%s\n' "$committed" >&2
 fi
 
 root=$(mktemp -d)

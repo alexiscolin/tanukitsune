@@ -46,9 +46,12 @@ const written = existsSync(keysFile)
 const keys = written ? readKeys(readFileSync(keysFile, 'utf8')) : {}
 const held = new Map(Object.entries(keys).map(([character, word]) => [word.toLowerCase(), character]))
 const carried = readKeyOrder(readFileSync(carriedFile, 'utf8'))
-const xml = await fetched(KANJIDIC, 'KANJIDIC2')
-const spoken = parseGlosses(xml, locale)
-const english = parseGlosses(xml, 'en')
+// Read straight into the two gloss maps rather than through a binding: the release is 15 MB and would
+// otherwise stay reachable through the batch round trip, for a value nothing reads after this line.
+const { spoken, english } = ((xml: string) => ({
+  spoken: parseGlosses(xml, locale),
+  english: parseGlosses(xml, 'en'),
+}))(await fetched(KANJIDIC, 'KANJIDIC2'))
 const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 
 // Who is owed a word. Once the keys are written, it is simply whoever has none: a character the release

@@ -13,8 +13,8 @@
 
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 
+import { asked } from './corpus-command.ts'
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
-import type { Reach } from '../src/ai/corpus/batch.ts'
 import {
   COMPONENT_NAME_VERSION,
   componentNamePrefix,
@@ -32,25 +32,8 @@ import {
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
-import { asOptional } from '../src/data/optional-text.ts'
 
-try {
-  process.loadEnvFile('.env.local')
-} catch {
-  // Absent before the first bootstrap, which is not an error.
-}
-
-const locale = process.argv[2] ?? 'fr'
-const bound = process.argv[3]
-if (bound !== undefined && (!Number.isInteger(Number(bound)) || Number(bound) < 1)) {
-  throw new Error(`most must be a whole number above zero, got ${bound}`)
-}
-const most = bound === undefined ? Infinity : Number(bound)
-
-const key = asOptional(process.env['ANTHROPIC_API_KEY'])
-if (key === undefined) throw new Error('ANTHROPIC_API_KEY is not set')
-
-const reach: Reach = { key }
+const { locale, most, reach } = asked(process.argv)
 
 const namesFile = `corpus/${locale}/components.json`
 const runFile = `corpus/${locale}/.naming-batch.json`

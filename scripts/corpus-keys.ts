@@ -61,7 +61,7 @@ const chosen: ReadonlyMap<string, readonly string[]> = existsSync(orderFile)
 // An order settled over glosses the release has since restated, or that a cleaning rule has moved, no
 // longer describes them. It is walked past rather than trusted, and said rather than walked past in
 // silence: it is a judgement already paid for that this run is not using.
-const stale = new Set<string>()
+
 
 // The shapes the curriculum deals as radicals, which are the ones a story has to be able to name.
 const shapes = new Set(
@@ -70,21 +70,25 @@ const shapes = new Set(
 
 // The glosses a character actually has here, read once so the run and the report answer the same
 // question: a character carried across has words, and calling it unglossed names the wrong reason.
+// The glosses a character has here, read once so the run and the report answer the same question. A
+// weighed order describes the stated glosses and nothing else, so it is applied to those; a word written
+// for the character follows them rather than replacing them, since a character can state glosses and
+// have every one of them answering for somebody else.
+const stale: string[] = []
+
 const glossesFor = (character: string) => {
   const stated = spoken.get(character) ?? []
   const order = chosen.get(character)
-  // A weighed order describes the stated glosses and nothing else, so it is applied to those and the
-  // carried word follows them: a run weighed what the release states, not a word written afterwards.
-  const ordered = order !== undefined && isOrderOf(order, stated) ? order : stated
+  const after = (glosses: readonly string[]) => [
+    ...glosses,
+    ...(carried.get(character) ?? []).filter((one) => !glosses.includes(one)),
+  ]
 
-  // A set, because the glosses are read once for the walk and again for the rescue, and a character
-  // named twice reads as two characters.
-  if (order !== undefined && !isOrderOf(order, stated) && stated.length > 0) stale.add(character)
+  if (order === undefined) return after(stated)
+  if (isOrderOf(order, stated)) return after(order)
+  if (stated.length > 0) stale.push(character)
 
-  // Last rather than instead of, because a character can state glosses and have every one of them
-  // answering for somebody else: 蛮 states three, all taken, and would never reach the word carried for
-  // it if the carried one only stood in for an empty list.
-  return [...ordered, ...(carried.get(character) ?? []).filter((one) => !ordered.includes(one))]
+  return after(stated)
 }
 
 const keyed = chooseKeys(characters, glossesFor, shapes)
@@ -111,7 +115,7 @@ const unglossed = keyed.unsettled.filter((one) => glossesFor(one).length === 0)
 // carries and a card does not, and a shape it does not know about survives it silently, so the run says
 // what it saw rather than selecting around it in silence.
 const unwritable = characters.flatMap((character) =>
-  glossesFor(character)
+  (spoken.get(character) ?? [])
     .filter((gloss) => faultInKey(gloss, naming) !== null)
     .map((gloss) => `${character} ${gloss}`),
 )
@@ -119,8 +123,8 @@ const unwritable = characters.flatMap((character) =>
 process.stdout.write(
   `keys a rescue moved: ${list(keyed.moved.map((one) => `${one.character} ${one.from} to ${one.to}`))}\n`,
 )
-process.stdout.write(`glosses ${locale} cannot write, left unselected: ${list(unwritable)}\n`)
-process.stdout.write(`orders no longer describing their glosses, weighed again: ${list([...stale])}\n`)
+process.stdout.write(`glosses ${locale} cannot write, which no character was keyed on: ${list(unwritable)}\n`)
+process.stdout.write(`orders no longer describing their glosses, weighed again: ${list([...new Set(stale)])}\n`)
 process.stdout.write(`no word to select from, neither stated nor carried across: ${list(unglossed)}\n`)
 process.stdout.write(
   `every gloss the release states is already a key: ${list(keyed.unsettled.filter((one) => !unglossed.includes(one)))}\n`,

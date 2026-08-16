@@ -52,15 +52,15 @@ if (drawn.length > 0) {
 
 // Only where the curriculum is present, since which shapes a kanji writes is what it says.
 if (inventory !== null) {
-  report(`names ${locale} wrote on a component a kanji writes`, list(namesKanjiWrites(names, written(inventory.subjects))))
-  report(`components ${locale} teaches under no word`, list(wordlessComponents(named(inventory.subjects), names, keyed())))
+  const kanji = written(inventory.subjects)
+
+  report(`names ${locale} wrote on a component a kanji writes`, list(namesKanjiWrites(names, kanji)))
+  report(`components ${locale} teaches under no word`, list(wordlessComponents(shapesAKanjiWrites(inventory.subjects, kanji), names, keyed())))
 }
 
 // The components a kanji writes, which are the ones no other line watches: they are owed no name of
 // their own, so the line above counts them out, and a key is the only word they can have.
-function named(subjects: readonly InventorySubject[]): readonly string[] {
-  const kanji = written(subjects)
-
+function shapesAKanjiWrites(subjects: readonly InventorySubject[], kanji: ReadonlySet<string>): readonly string[] {
   return subjects.flatMap((one) =>
     one.type === 'radical' && one.characters !== null && !one.hidden && kanji.has(one.characters)
       ? [one.characters]
@@ -100,7 +100,6 @@ function againstShape() {
 function characterOf(decomposition: Decomposition): string {
   return decomposition.character
 }
-
 
 function report(label: string, value: string): void {
   process.stdout.write(`${label}: ${value}\n`)
