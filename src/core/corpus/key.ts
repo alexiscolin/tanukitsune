@@ -10,7 +10,7 @@ import type { Shape } from './name'
 // What a key has to be before anybody is graded on it. It is the sibling of `faultInName`, minus the
 // article: a name is a thing in a story, la lune, and a key is the word the reader types, lune, so
 // demanding an article here would refuse every key a grader accepts.
-export type KeyFault = 'not the locale' | 'nothing to read' | 'too long'
+export type KeyFault = 'not the locale' | 'nothing to read'
 
 export function faultInKey(word: string, shape: Shape): KeyFault | null {
   const written = word.toLowerCase().trim()
@@ -19,7 +19,6 @@ export function faultInKey(word: string, shape: Shape): KeyFault | null {
     return 'not the locale'
   }
   if (![...written].some((one) => shape.letters.includes(one))) return 'nothing to read'
-  if (written.split(' ').length > shape.mostWords) return 'too long'
 
   return null
 }

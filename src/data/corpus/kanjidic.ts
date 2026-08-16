@@ -38,7 +38,7 @@ export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, r
         .map(([, gloss = '']) => gloss)
         .filter((gloss) => !LISTING.test(gloss))
         .map((gloss) => plain(gloss))
-        .filter((gloss, at, all) => gloss !== '' && all.indexOf(gloss) === at),
+        .filter((gloss, at, all) => isWord(gloss) && all.indexOf(gloss) === at),
     )
   }
 
@@ -48,6 +48,13 @@ export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, r
 // Two glosses telling themselves apart only by their asides are one word once the asides are gone, so
 // the caller sees the word once: a list holding it twice is a list no order over it can satisfy, and
 // the character would be asked for forever.
+// A gloss carrying no letter in any script is a numeral or a mark rather than a word: the release
+// states 10000 among the meanings of 万, which is what the character counts and not what a reader
+// types. Language-neutral, since every language this reads writes its words in letters.
+function isWord(gloss: string): boolean {
+  return /\p{L}/u.test(gloss)
+}
+
 function plain(gloss: string): string {
   return gloss.replace(ASIDE, '').replace(QUOTES, '').replace(/\s+/g, ' ').trim()
 }
