@@ -88,6 +88,14 @@ of its own, "radical hameçon (no. 5)", which says where a character sits in a t
 means, and a parenthesised aside, which qualifies a gloss for a dictionary reader and means nothing on
 a card. The word an aside qualifies is kept and the aside is not.
 
+**Where the release states no gloss in the locale at all, the English one is carried across.**
+`corpus:key-translation` asks for the word and writes it to `corpus/<locale>/key-translation.json`,
+which `corpus:keys` then reads as that character's only gloss, so selection and uniqueness are
+unchanged by it. This is the one place a key is not lifted straight out of the locale's own dictionary,
+and it is still anchored to a stated meaning rather than an invented one. A word the locale cannot
+write is refused by the same shape rules a name answers to, minus the article: a key is what the reader
+types, so `lune` passes where `la lune` would not. 153 characters of the French curriculum stand there.
+
 **A shape left with no word takes one back.** Where a character the curriculum also deals as a radical
 ends the walk unsettled, it takes a gloss from whoever holds it and that holder steps to another it has
 free, so one key moves rather than the order of the whole curriculum: 言 states dire and nothing else,
@@ -255,9 +263,9 @@ instrument over a sample.
 
 ## The command
 
-One command, the locale as a parameter, re-runnable by reflex. Six of its steps exist today,
-`corpus:decomposition`, `corpus:inventory`, `corpus:keys`, `corpus:key-choice`, `corpus:report` and
-`corpus:name`; the prose itself is the
+One command, the locale as a parameter, re-runnable by reflex. Seven of its steps exist today,
+`corpus:decomposition`, `corpus:inventory`, `corpus:keys`, `corpus:key-choice`,
+`corpus:key-translation`, `corpus:report` and `corpus:name`; the prose itself is the
 shape the rest of this section describes and the next thing built, so nothing here is runnable end to
 end yet.
 

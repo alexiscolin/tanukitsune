@@ -1,0 +1,8 @@
+{
+  "header": {
+    "what": "The French word a character is taught under where KANJIDIC2 states no French gloss for it at all, carried across from the English meaning it does state.",
+    "how": "Written by pnpm corpus:key-translation, read by pnpm corpus:keys as the character's only gloss. A word the locale cannot write is refused rather than written.",
+    "source": "The English meanings carried across are KANJIDIC2's, CC BY-SA 4.0, Electronic Dictionary Research and Development Group. See docs/sources.md."
+  },
+  "order": {}
+}

@@ -1,9 +1,28 @@
+import type { Shape } from './name'
+
 // The word a subject is taught and graded on, one per subject and one subject per word. It is
 // selected from a gloss the source already states rather than invented, per docs/corpus.md: an
 // invented key is a key no dictionary agrees with, and the reader's account grades the same character.
 //
 // Nothing is settled in silence. A character whose every gloss is already spoken for is reported, so a
 // later run or a hand can settle it.
+
+// What a key has to be before anybody is graded on it. It is the sibling of `faultInName`, minus the
+// article: a name is a thing in a story, la lune, and a key is the word the reader types, lune, so
+// demanding an article here would refuse every key a grader accepts.
+export type KeyFault = 'not the locale' | 'nothing to read' | 'too long'
+
+export function faultInKey(word: string, shape: Shape): KeyFault | null {
+  const written = word.toLowerCase().trim()
+
+  if ([...written].some((one) => one !== ' ' && !shape.letters.includes(one) && !shape.joiners.includes(one))) {
+    return 'not the locale'
+  }
+  if (![...written].some((one) => shape.letters.includes(one))) return 'nothing to read'
+  if (written.split(' ').length > shape.mostWords) return 'too long'
+
+  return null
+}
 
 export type Keyed = {
   readonly keys: Readonly<Record<string, string>>

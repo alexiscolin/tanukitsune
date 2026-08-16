@@ -47,6 +47,13 @@ const characters = subjects
 // Where a run has weighed a character's glosses, that order is walked instead of the dictionary's.
 // Absent before the first such run and never required: a character nobody weighed keeps the order the
 // release states, so this command answers with or without a model having spoken.
+const carriedFile = `corpus/${locale}/key-translation.json`
+// A word carried across from the English, for a character the release does not gloss in this locale at
+// all. It arrives as the character's only gloss, so selection and uniqueness are unchanged by it.
+const carried: ReadonlyMap<string, readonly string[]> = existsSync(carriedFile)
+  ? readKeyOrder(readFileSync(carriedFile, 'utf8'))
+  : new Map()
+
 const orderFile = `corpus/${locale}/key-choice.json`
 const chosen: ReadonlyMap<string, readonly string[]> = existsSync(orderFile)
   ? readKeyOrder(readFileSync(orderFile, 'utf8'))
@@ -65,7 +72,8 @@ const naming = new Set(
 const keyed = chooseKeys(
   characters,
   (character) => {
-    const glosses = spoken.get(character) ?? []
+    const stated = spoken.get(character) ?? []
+    const glosses = stated.length === 0 ? (carried.get(character) ?? []) : stated
     const order = chosen.get(character)
 
     if (order === undefined) return glosses
