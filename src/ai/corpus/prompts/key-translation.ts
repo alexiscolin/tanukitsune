@@ -12,7 +12,7 @@ import { z } from 'zod'
 //
 // Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
 // row and two runs sharing a version make the provenance false while looking satisfied.
-export const KEY_TRANSLATION_VERSION = 1
+export const KEY_TRANSLATION_VERSION = 2
 
 const keyTranslation = z.strictObject({ key: z.string() })
 
@@ -29,6 +29,12 @@ export function readKeyTranslation(text: string): string | null {
 export type Untranslated = {
   readonly character: string
   readonly english: readonly string[]
+  // What the course teaches the character as, which is what the reader is graded on. The dictionary
+  // orders its English by the classical Chinese sense first, so 諦 states truth before abandon while
+  // the course teaches give up: carrying the dictionary's first word across teaches a meaning nobody
+  // is ever asked for. It travels as the target and never as text to reproduce, the words themselves
+  // being the account's and staying out of every file this writes.
+  readonly taught: readonly string[]
 }
 
 // Everything identical across a run, rendered once and shared by every request in it.
@@ -38,9 +44,11 @@ export function keyTranslationPrefix(language: string): string {
     'course. A learner types that word and is graded on it, so it is the plainest one the character',
     'means and nothing more.',
     '',
-    `The character's English meanings are given. Carry the first one into ${language} rather than`,
-    'describing the character or reaching for a meaning the English does not state. Give the word on',
-    'its own, with no article, no gloss and no parenthesis.',
+    'You are given what the course teaches the character as, and the English meanings a dictionary',
+    `states for it. Carry the taught meaning into ${language}. The dictionary meanings are there to`,
+    'settle the wording where the taught one is broad, and never to replace it: where the two disagree,',
+    'the taught meaning is the one the reader answers on. Give the word on its own, with no article, no',
+    'gloss and no parenthesis.',
   ].join('\n')
 }
 
@@ -59,8 +67,12 @@ export function keyTranslationRequest(prefix: string, one: Untranslated): Messag
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to
 // do. The meanings come from somebody else's file.
-function asks({ character, english }: Untranslated): string {
-  const listed = english.map((one) => `<meaning>${one}</meaning>`).join('\n')
+function asks({ character, english, taught }: Untranslated): string {
+  const lines = [
+    `<character>${character}</character>`,
+    ...taught.map((one) => `<taught>${one}</taught>`),
+    ...english.map((one) => `<meaning>${one}</meaning>`),
+  ]
 
-  return `<character>${character}</character>\n${listed}\n\nGive the word.`
+  return `${lines.join('\n')}\n\nGive the word.`
 }

@@ -51,9 +51,13 @@ covered the day it arrives rather than the day someone remembers it.
 morae, name the parts a reader can picture and refuse an allocation that gives one cue two answers.
 Japanese is written into them, being the language taught and therefore constant, and the table of
 sounds they compare against is the IPA, which every language draws from and none owns. What a particular language can and
-cannot do is material: `corpus/fr/components.json` holds what French calls each component,
-`corpus/fr/phonology.json` holds the sounds French cannot begin a word with, and the anchors and cast
-land beside them. A second language is those files and no code, which is the test to apply to anything
+cannot do is material, and a locale is the folder holding it: `naming.json` says what shape a name
+takes in that language, `components.json` what it calls each component, `phonology.json` the sounds it
+cannot begin a word with, `keys.json` the word each character is taught under, `key-choice.json` the
+order a run settled over a character's glosses and `key-translation.json` the words carried across
+where the release glosses none. The anchors and the cast land beside them. The first three are written
+by hand and seed the folder; the last three a command writes, and each says which file it needs when
+it is missing rather than guessing at one. A second language is those files and no code, which is the test to apply to anything
 added here: if German would need a branch, it belongs in the folder rather than in the engine.
 
 The decomposition is the neutral half and lives in `corpus/decomposition.json`, one line per character
@@ -92,7 +96,9 @@ a card. The word an aside qualifies is kept and the aside is not.
 `corpus:key-translation` asks for the word and writes it to `corpus/<locale>/key-translation.json`,
 which `corpus:keys` then reads as that character's only gloss, so selection and uniqueness are
 unchanged by it. This is the one place a key is not lifted straight out of the locale's own dictionary,
-and it is still anchored to a stated meaning rather than an invented one. A word the locale cannot
+and it is still anchored to a stated meaning rather than an invented one: what the course teaches is
+the target, and the dictionary's English settles the wording, because the dictionary orders its English
+by the classical Chinese sense and states truth before abandon for 諦 while the course teaches give up. A word the locale cannot
 write is refused by the same shape rules a name answers to, minus the article: a key is what the reader
 types, so `lune` passes where `la lune` would not. 153 characters of the French curriculum stand there.
 

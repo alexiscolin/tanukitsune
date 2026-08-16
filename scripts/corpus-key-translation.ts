@@ -66,9 +66,13 @@ const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 
 // A character the release glosses in the locale needs nothing carried, and one already carried is not
 // asked again. What is left is the whole of what a run can pay for.
-const owed = subjects
+const dealt = subjects
   .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
   .sort((one, other) => one.level - other.level || one.id - other.id)
+
+const taught = new Map(dealt.map((one) => [one.characters as string, one.meanings]))
+
+const owed = dealt
   .map((one) => one.characters as string)
   .filter(
     (character) =>
@@ -88,7 +92,11 @@ async function submit(characters: readonly string[]): Promise<void> {
   const prefix = keyTranslationPrefix(naming.language)
   const asked = characters.map((character) => ({
     subject: character,
-    params: keyTranslationRequest(prefix, { character, english: english.get(character) ?? [] }),
+    params: keyTranslationRequest(prefix, {
+      character,
+      english: english.get(character) ?? [],
+      taught: taught.get(character) ?? [],
+    }),
   }))
 
   const id = await submitBatch(asked, reach)
