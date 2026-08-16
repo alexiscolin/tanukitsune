@@ -20,6 +20,19 @@ const ASIDE = /\s*\([^)]*\)/g
 // apostrophe is a letter's neighbour in French, and stripping it turns s'appeler into sappeler.
 const QUOTES = /"/g
 
+// What the release says it is. The address it is served from is one rolling file rather than a
+// versioned one, so a run that recorded the URL would record nothing: two runs six months apart read
+// different data under the same name. The file states its own version, and that is what is written
+// beside what a run produced.
+export function releaseOf(xml: string): string {
+  const version = /<database_version>(.*?)<\/database_version>/.exec(xml)?.[1]
+  const created = /<date_of_creation>(.*?)<\/date_of_creation>/.exec(xml)?.[1]
+
+  if (version === undefined || created === undefined) return 'unstated'
+
+  return `${version}, created ${created}`
+}
+
 export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const glossed = new Map<string, readonly string[]>()
   // English carries no attribute at all, the release implying it by its absence, so it is the one

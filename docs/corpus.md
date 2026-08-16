@@ -92,27 +92,35 @@ of its own, "radical hameçon (no. 5)", which says where a character sits in a t
 means, and a parenthesised aside, which qualifies a gloss for a dictionary reader and means nothing on
 a card. The word an aside qualifies is kept and the aside is not.
 
-**Where the release states no gloss in the locale at all, the English one is carried across.**
-`corpus:key-translation` asks for the word and writes it to `corpus/<locale>/key-translation.json`,
-which `corpus:keys` then reads as that character's only gloss, so selection and uniqueness are
-unchanged by it. This is the one place a key is not lifted straight out of the locale's own dictionary,
-The words already written travel with the request, since two characters answering to one word cannot be
-told apart and only the model can propose another. It is still anchored to a stated meaning rather than
-an invented one: what the course teaches is
-the target, and the dictionary's English settles the wording, because the dictionary orders its English
-by the classical Chinese sense and states truth before abandon for 諦 while the course teaches give up. A word the locale cannot
-write is refused by the same shape rules a name answers to, minus the article: a key is what the reader
-types, so `lune` passes where `la lune` would not. 153 characters of the French curriculum stand there.
+**Where the release leaves a character with no word this corpus can use, one is written for it.**
+`corpus:key-translation` asks for it and writes it to `corpus/<locale>/key-translation.json`, which
+`corpus:keys` reads after the character's own glosses rather than instead of them, so a character
+reaches it only once its own are spent. Two cases arrive there: the release glosses the character in
+this locale nowhere, and every gloss it does state already answers for somebody else. Selection and
+uniqueness are unchanged by either.
 
-**A shape left with no word takes one back.** Where a character the curriculum also deals as a radical
-ends the walk unsettled, it takes a gloss from whoever holds it and that holder steps to another it has
-free, so one key moves rather than the order of the whole curriculum: 言 states dire and nothing else,
-and a character taught earlier would otherwise leave a shape 193 characters are built from with no name
-at all. A leaf kanji is not rescued, being met once rather than everywhere.
+This is the one place a word is not lifted out of a dictionary, and it is the price of the rule that no
+character goes without: 154 of the 2101 French keys are written here rather than selected, which
+`corpus/fr/keys.json` states in its own header, since the release's licence does not cover them. It is
+still aimed at a stated meaning: what the course teaches is the target and the dictionary's English
+settles the wording, the dictionary ordering its English by the classical Chinese sense and stating
+truth before abandon for 諦 where the course teaches give up. The words already written travel with the
+request, two characters answering to one word being impossible to tell apart. A word the locale cannot
+write is refused by the shape rules a name answers to, minus the article: a key is what the reader
+types, so `lune` passes where `la lune` would not.
 
-Against the 2101 kanji the curriculum deals rather than the jouyou set the licence covers, French
-leaves 176 unsettled, 153 unglossed and 23 whose every gloss is taken. A language the release does not
-carry leaves all of them, which is the same path rather than a different one.
+**A character left with no word takes one back.** Whoever ends the walk unsettled takes a gloss from
+whoever holds it, and that holder steps to another it has free, so one key moves rather than the order
+of the whole curriculum. The shapes stories are built from go first, a shape being met inside every
+character containing it while a leaf kanji is met once: 言 states dire and nothing else, and a character
+taught earlier would otherwise leave a shape 193 characters are built from with nothing to be called.
+Being asked first buys a word rather than a particular one, since a later rescue can take back what an
+earlier one settled. Nobody is left out, a card nobody can be graded on being worse than a card on its
+second choice.
+
+Against the 2101 kanji the curriculum deals rather than the jouyou set the licence covers, French now
+leaves none unsettled. A language the release does not carry reaches the same place by the same path,
+every one of its characters having its word written rather than selected.
 
 **Component names.** Written here, one name per component and one component per name across the whole
 corpus, which is the single most valuable consistency rule at scale. Kanji Alive's table gives 209 of
@@ -134,17 +142,18 @@ decision and never a model one: the model is not asked, so no answer of its has 
 a name of their own, which is the number `corpus:report` and `corpus:name` count.
 
 **Nine shapes are named apart from their kanji, because that kanji's key cannot be pictured**: 一 le
-sol against the key un, 十 la croix against dix, 又 la main droite against ou encore, 乙 le cygne
-against chic, 氏 la bannière against nom de famille, 非 les persiennes against the prefix in-, 示 l'offrande against the verb montrer, 各 la halte
-against chacun, and 也 le serpent, whose kanji the release does not gloss in French at all. Those nine
-are the whole of the exception, so the report line counting names written on a shape a kanji writes
-reads nine, and a tenth is a new one to answer for.
+sol, 十 la croix, 又 la main droite, 乙 le cygne, 氏 la bannière, 非 les persiennes, 示 l'offrande, 各 la
+halte and 也 le serpent. Each stands against a key that is a number, a pronoun, an adverb or a verb,
+and the keys themselves are in `corpus/fr/keys.json` rather than repeated here, a selection being
+allowed to move under a run while the nine are not. They are the whole of the exception, so the report
+line counting names written on a shape a kanji writes reads nine, and a tenth is a new one to answer
+for.
 
 **A shape can fall between the two rules and be taught under no word at all**, being owed no name
 because a kanji writes it while that kanji was left without a key because every gloss it has was
-already spoken for. `corpus:report` counts those on their own line. It is
-the one hole neither the owed count nor the collision check can see. Three stand there today, 巾, 莫
-and 龍, each because the release states no French gloss for it at all.
+already spoken for. `corpus:report` counts those on their own line, and it is the one hole neither the
+owed count nor the collision check can see. None stands there, every character the curriculum deals
+having a word since a word is written for whoever the release leaves without one.
 
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
 Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing

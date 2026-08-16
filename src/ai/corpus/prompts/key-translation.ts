@@ -2,10 +2,10 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
-// The word a character is taught under where the release states no gloss in the locale at all. This is
-// the one place a key is not lifted straight out of a dictionary, and it is still anchored to one: the
-// English meaning the release does state is carried across rather than a meaning being invented. 153
-// characters of the French curriculum stand there, 巾, 莫 and 龍 among them.
+// The word a character is taught under where the release leaves it with none this corpus can use. This
+// is the one place a key is not lifted out of a dictionary, and it is still anchored to one: the
+// English meaning the release does state is carried across rather than a meaning being invented. How
+// many characters stand there is in docs/corpus.md, which owns the count.
 //
 // What comes back is a word and not a decision. Whether the locale can write it is judged by
 // `faultInKey`, and whether it is free is the table's as ever.

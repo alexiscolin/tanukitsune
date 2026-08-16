@@ -14,19 +14,21 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { fetched, list } from './corpus-command.ts'
 import { chooseKeys, isOrderOf } from '../src/core/corpus/key.ts'
 import { readKeyOrder } from '../src/data/corpus/artifact.ts'
-import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
+import { parseGlosses, releaseOf } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
-const RELEASE = '2026-08-11'
 const SOURCE = 'http://www.edrdg.org/kanjidic/kanjidic2.xml.gz'
 
-const HEADER = {
+// Written by the run rather than fixed here, because the release states its own version and the address
+// serving it does not.
+const headerFor = (release: string, ours: readonly string[]) => ({
   source: 'KANJIDIC2 (https://www.edrdg.org/wiki/index.php/KANJIDIC_Project), Electronic Dictionary Research and Development Group',
-  licence: 'CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)',
-  release: RELEASE,
+  licence: 'CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), for the words selected from that release',
+  release,
   modified: 'One gloss selected per character and made unique. The readings, grades and stroke counts are not carried.',
+  written: `${ours.length} of these words are not the release's and are not covered by its licence: where it glosses a character in no French word this corpus can still use, the word is written for this corpus from the English meaning. They are listed in key-translation.json.`,
   shape: 'character to the key this locale teaches it under',
-}
+})
 
 const locale = process.argv[2] ?? 'fr'
 const given = process.argv[3]
@@ -96,7 +98,12 @@ const lines = written
   .map((character) => `${JSON.stringify(character)}:${JSON.stringify(keyed.keys[character])}`)
   .join(',\n')
 
-writeFileSync(output, `{\n"header":${JSON.stringify(HEADER)},\n"keys":{\n${lines}\n}\n}\n`)
+const ours = written.filter((character) => (spoken.get(character) ?? []).every((one) => one !== keyed.keys[character]))
+
+writeFileSync(
+  output,
+  `{\n"header":${JSON.stringify(headerFor(releaseOf(xml), ours))},\n"keys":{\n${lines}\n}\n}\n`,
+)
 
 process.stdout.write(`keys: ${written.length} of ${characters.length} written to ${output}\n`)
 // The two reasons a character leaves the run without a key, apart, because they are settled by

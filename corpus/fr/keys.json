@@ -1,5 +1,5 @@
 {
-"header":{"source":"KANJIDIC2 (https://www.edrdg.org/wiki/index.php/KANJIDIC_Project), Electronic Dictionary Research and Development Group","licence":"CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)","release":"2026-08-11","modified":"One gloss selected per character and made unique. The readings, grades and stroke counts are not carried.","shape":"character to the key this locale teaches it under"},
+"header":{"source":"KANJIDIC2 (https://www.edrdg.org/wiki/index.php/KANJIDIC_Project), Electronic Dictionary Research and Development Group","licence":"CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), for the words selected from that release","release":"2026-228, created 2026-08-16","modified":"One gloss selected per character and made unique. The readings, grades and stroke counts are not carried.","written":"154 of these words are not the release's and are not covered by its licence: where it glosses a character in no French word this corpus can still use, the word is written for this corpus from the English meaning. They are listed in key-translation.json.","shape":"character to the key this locale teaches it under"},
 "keys":{
 "一":"un",
 "二":"deux",

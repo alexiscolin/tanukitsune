@@ -1,7 +1,8 @@
-// The word a character is taught under where the release states no gloss in the locale, carried across
-// from the English it does state and written to corpus/<locale>/key-translation.json. `corpus:keys`
-// reads that file as one more gloss a character has, so the selection and the uniqueness stay where
-// they were.
+// The word a character is taught under where the release leaves it with none this corpus can use:
+// either it glosses the character in the locale nowhere, or every gloss it states for it already
+// answers for another character. Written from the English the release does state, to
+// corpus/<locale>/key-translation.json, which `corpus:keys` reads after the character's own glosses,
+// so the selection and the uniqueness stay where they were.
 //
 // Run with `pnpm corpus:key-translation [locale] [most]`, where `most` bounds a run so a first one can
 // be read by hand before the rest is paid for. The key comes from `.env.local`, which the command
@@ -103,7 +104,7 @@ const step = nextStep(saved, owed.slice(0, most), KEY_TRANSLATION_VERSION)
 
 if (step.do === 'submit') await submit(step.parts)
 else if (step.do === 'collect') await collect(step.id)
-else process.stdout.write(`${locale}: every character the release does not gloss has a word carried across\n`)
+else process.stdout.write(`${locale}: every character the release leaves without a word has one written for it\n`)
 
 async function submit(characters: readonly string[]): Promise<void> {
   const prefix = keyTranslationPrefix(naming.language, Object.values(keys))

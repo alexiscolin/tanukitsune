@@ -30,10 +30,10 @@ the gate refuses a merge nobody reviewed, and cannot refuse one somebody only cl
 
 ## The commands
 
-`pnpm gate` is `check:contrast`, `typecheck`, `check:docs`, `arch` and `lint`, in that order because
-`&&` stops at the first failure and the five cost 0.2, 1.0, 0.8, 1.3 and 2.9 seconds: a contrast, a
-type or a boundary failure is reported in about two seconds rather than after the type-aware lint has
-run. Six seconds in all, no database, which is what makes it usable from a hook that runs at
+`pnpm gate` is `check:contrast`, `check:corpus`, `typecheck`, `check:docs`, `arch` and `lint`, in that
+order because `&&` stops at the first failure and the cheap ones come first: a contrast, a corpus, a
+type or a boundary failure is reported in about three seconds rather than after the type-aware lint has
+run. Under ten seconds in all, no database, which is what makes it usable from a hook that runs at
 every turn.
 
 `check:contrast` sits here rather than in `verify` for two reasons. It needs no browser, which is what
@@ -77,6 +77,7 @@ fresh clone rather than about production.
 | `arch` | dependency-cruiser, then `check-boundaries.sh` | layer violations, and whether the rules still fire |
 | `check:contrast` | `check-contrast.mjs` | an ink token that falls under 4.5:1 on a ground it can land on, in either theme, and whether its own comparator still tells black on white from white on white |
 | `check:account` | `check-account-reach.sh` | whether the hook refusing a tool call to the WaniKani API still refuses one, whichever client carries it and wherever in the payload it sits, still passes a call to a local route, is still registered on `Bash` beside a deny entry naming the API, and whether the source still falls back to that API and nothing committed points it elsewhere |
+| `check:corpus` | `check-corpus-probe.sh` | whether every word a locale committed is one that locale can write, whether two subjects answer to one word or two components to one name, whether a stored order states a word twice, and whether the check still refuses a locale written to be refused |
 | `check:docs` | `check-docs.sh` | documentation discipline, enumerated below |
 | `check:review` | `check-review-coverage-probe.sh` | whether the coverage gate still refuses what it claims to |
 | `check:sketches` | `check-sketches.sh` | anything a design session left under `src/ui/sketches/`, which carries a story and so passes `arch` and `knip`, and whether the announcing hook still stays silent inside that area while still speaking outside it |

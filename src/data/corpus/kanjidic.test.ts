@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { parseGlosses } from './kanjidic'
+import { parseGlosses, releaseOf } from './kanjidic'
 
 // Two entries as the release states them: a meaning carries its language on an attribute, and
 // everything around them is reading data the corpus does not take.
 const XML = `<kanjidic2>
+<header><file_version>4</file_version><database_version>2026-233</database_version>
+<date_of_creation>2026-08-20</date_of_creation></header>
 <character><literal>犬</literal><reading_meaning><rmgroup>
 <reading r_type="ja_on">ケン</reading>
 <meaning>dog</meaning>
@@ -87,5 +89,17 @@ describe('parseGlosses', () => {
   // no meaning at all has to survive the read rather than fail it.
   it('carries a character the release states without a meaning', () => {
     expect(parseGlosses(XML, 'fr').get('々')).toEqual([])
+  })
+})
+
+describe('releaseOf', () => {
+  // The release states its own version, and the address it is served from does not: edrdg publishes one
+  // rolling file, so what a run read has to be taken from the file rather than from the URL.
+  it('reads the version the release states about itself', () => {
+    expect(releaseOf(XML)).toBe('2026-233, created 2026-08-20')
+  })
+
+  it('says so where the release states none', () => {
+    expect(releaseOf('<kanjidic2></kanjidic2>')).toBe('unstated')
   })
 })
