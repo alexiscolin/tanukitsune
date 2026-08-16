@@ -17,10 +17,14 @@ describe('keyTranslationPrefix', () => {
   it('asks for the English meaning carried across rather than for a new one', () => {
     expect(prefix).toContain('English')
   })
+
+  it('names what the course teaches as the meaning to land on', () => {
+    expect(prefix).toContain('taught')
+  })
 })
 
 describe('keyTranslationRequest', () => {
-  const request = keyTranslationRequest(prefix, { character: '龍', english: ['dragon', 'imperial'] })
+  const request = keyTranslationRequest(prefix, { character: '龍', english: ['dragon', 'imperial'], taught: ['Dragon'] })
 
   it('carries the prefix as a cached system block', () => {
     const [block] = request.system as TextBlockParam[]
@@ -34,6 +38,16 @@ describe('keyTranslationRequest', () => {
 
     expect(message?.content).toContain('<character>龍</character>')
     expect(message?.content).toContain('<meaning>dragon</meaning>')
+  })
+
+  // The course teaches 諦 as give up while the dictionary states truth first, its classical sense, so
+  // carrying the dictionary's first word across teaches a meaning the reader is never graded on. What
+  // the course teaches travels as the target and the dictionary as the support.
+  it('carries what the course teaches, apart from the dictionary meanings', () => {
+    const asked = keyTranslationRequest(prefix, { character: '諦', english: ['truth', 'abandon'], taught: ['Give Up'] })
+    const [message] = asked.messages
+
+    expect(message?.content).toContain('<taught>Give Up</taught>')
   })
 })
 
