@@ -21,6 +21,7 @@ const XML = `<kanjidic2>
 <meaning m_lang="fr">(sens figuré)</meaning>
 <meaning m_lang="fr">"(x) ans" (âge)</meaning>
 <meaning m_lang="fr">petit (âge)</meaning>
+<meaning m_lang="fr">10000</meaning>
 <meaning m_lang="fr">s'appeler</meaning>
 <meaning m_lang="fr">bas</meaning>
 </rmgroup></reading_meaning></character>
@@ -70,6 +71,12 @@ describe('parseGlosses', () => {
   // and it is what a character with no gloss in the locale is carried across from.
   it('reads English from the meanings that carry no language', () => {
     expect(parseGlosses(XML, 'en').get('犬')).toEqual(['dog'])
+  })
+
+  // The release states a numeral as a meaning of its own, 10000 for 万, which is what the character
+  // counts rather than a word anybody types. A gloss carrying no letter at all is not a word.
+  it('leaves out a gloss carrying no letter', () => {
+    expect(parseGlosses(XML, 'fr').get('低')).not.toContain('10000')
   })
 
   it('reads nothing for a language the release does not carry', () => {

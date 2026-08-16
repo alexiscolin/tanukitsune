@@ -109,7 +109,10 @@ describe('faultInKey', () => {
     expect(faultInKey('- -', SHAPE)).toBe('nothing to read')
   })
 
-  it('refuses what runs past what the locale allows', () => {
-    expect(faultInKey('un très grand dragon', SHAPE)).toBe('too long')
+  // A key is a noun phrase and not a name, so it carries no bound: pomme de terre is what 芋 means and
+  // refusing it for its three words would refuse the language. The bound in the material is the one a
+  // component name answers to, where a story has to carry the name in a clause.
+  it('accepts a phrase where a component name would be too long', () => {
+    expect(faultInKey('pomme de terre', SHAPE)).toBeNull()
   })
 })
