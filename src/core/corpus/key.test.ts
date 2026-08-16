@@ -59,13 +59,13 @@ describe('chooseKeys', () => {
     expect(chooseKeys(['申', '言'], spoken, new Set(['言']))).toEqual({ keys: { 申: 'dire' }, unsettled: ['言'] })
   })
 
-  // The rescue serves a shape stories name, and nothing else: a leaf kanji left without a word is a
-  // character the reader meets once, and taking a key off a settled character for it would be churn
-  // rather than repair.
-  it('rescues nothing for a character that names no shape', () => {
+  // No character is left without a word where one can be freed for it, a card nobody can be graded on
+  // being worse than a card on its second choice. The shapes stories name are served first, since a
+  // rescue can only move a holder that has somewhere to go and the first ones asked have the most room.
+  it('rescues a character that names no shape, once the shapes are served', () => {
     const spoken = (one: string) => (one === '申' ? ['dire', 'singe'] : ['dire'])
 
-    expect(chooseKeys(['申', '言'], spoken).unsettled).toEqual(['言'])
+    expect(chooseKeys(['申', '言'], spoken).keys).toEqual({ 申: 'singe', 言: 'dire' })
   })
 })
 

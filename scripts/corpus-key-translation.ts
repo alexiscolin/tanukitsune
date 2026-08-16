@@ -61,7 +61,8 @@ const naming = readNaming(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
 // The words already written, so a run proposes none of them twice. Absent before the first
 // corpus:keys, which is a run with nothing taken rather than a fault.
 const keysFile = `corpus/${locale}/keys.json`
-const keys = existsSync(keysFile) ? readKeys(readFileSync(keysFile, 'utf8')) : {}
+const written = existsSync(keysFile)
+const keys = written ? readKeys(readFileSync(keysFile, 'utf8')) : {}
 const held = new Map(Object.entries(keys).map(([character, word]) => [word.toLowerCase(), character]))
 const carried = readKeyOrder(readFileSync(carriedFile, 'utf8'))
 const xml = await fetched(SOURCE, 'KANJIDIC2')
@@ -69,8 +70,10 @@ const spoken = parseGlosses(xml, locale)
 const english = parseGlosses(xml, 'en')
 const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 
-// A character the release glosses in the locale needs nothing carried, and one already carried is not
-// asked again. What is left is the whole of what a run can pay for.
+// Who is owed a word. Once the keys are written, it is simply whoever has none: a character the release
+// does not gloss here, and one whose every gloss answers for somebody else, are the same problem seen
+// twice. Before the first corpus:keys there are no keys to read, so it is whoever the release does not
+// gloss. A character already carried is asked again only where the word carried answers for another.
 const dealt = subjects
   .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
   .sort((one, other) => one.level - other.level || one.id - other.id)
@@ -81,10 +84,8 @@ const owed = dealt
   .map((one) => one.characters as string)
   .filter(
     (character) =>
-      (spoken.get(character) ?? []).length === 0 &&
       (english.get(character) ?? []).length > 0 &&
-      // Never carried, or carried a word that answers for somebody else: the run that carried it could
-      // not know what was taken, so the character has a word and no key until it is asked again.
+      (written ? keys[character] === undefined : (spoken.get(character) ?? []).length === 0) &&
       (!carried.has(character) || takenElsewhere(character)),
   )
 

@@ -32,8 +32,8 @@ export function chooseKeys(
   characters: readonly string[],
   glossesOf: (character: string) => readonly string[],
   // The characters that also name a shape stories are built from. A shape is met inside every character
-  // containing it while a leaf kanji is met once, so one left without a word is rescued below and a
-  // leaf is not. Empty is a locale that names no shape of its own, which rescues nothing.
+  // containing it while a leaf kanji is met once, so it is rescued first below where both want the same
+  // word. Empty is a locale that names no shape of its own, which only changes the order.
   naming: ReadonlySet<string> = new Set(),
 ): Keyed {
   const keys: Record<string, string> = {}
@@ -53,19 +53,18 @@ export function chooseKeys(
     taken.add(free.toLowerCase())
   }
 
-  // The rescue, run once the walk is done rather than as an order over it. A shape left with no word
-  // takes one back from a character holding it that has another gloss free, and only that one key
-  // moves: serving the shapes first instead would reorder the whole curriculum to settle a handful.
+  // The rescue, run once the walk is done rather than as an order over it. A character left with no
+  // word takes one back from a holder that has another gloss free, and only that one key moves:
+  // serving everybody in this order from the start would reorder the whole curriculum instead.
+  //
+  // The shapes stories name go first, since a rescue can only move a holder that has somewhere to go
+  // and whoever is asked first has the most room. Nobody is left out: a card nobody can be graded on is
+  // worse than a card on its second choice.
   const left: string[] = []
+  const first = unsettled.filter((one) => naming.has(one))
 
-  for (const character of unsettled) {
-    if (!naming.has(character)) {
-      left.push(character)
-      continue
-    }
-
-    const taking = rescued(character, keys, glossesOf, taken)
-    if (taking === null) left.push(character)
+  for (const character of [...first, ...unsettled.filter((one) => !naming.has(one))]) {
+    if (rescued(character, keys, glossesOf, taken) === null) left.push(character)
   }
 
   return { keys, unsettled: left }
