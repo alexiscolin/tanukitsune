@@ -58,24 +58,17 @@ const chosen: ReadonlyMap<string, readonly string[]> = existsSync(orderFile)
   ? readKeyOrder(readFileSync(orderFile, 'utf8'))
   : new Map()
 
-// An order settled over glosses the release has since restated, or that a cleaning rule has moved, no
-// longer describes them. It is walked past rather than trusted, and said rather than walked past in
-// silence: it is a judgement already paid for that this run is not using.
-
-
 // The shapes the curriculum deals as radicals, which are the ones a story has to be able to name.
 const shapes = new Set(
   subjects.flatMap((one) => (one.type === 'radical' && one.characters !== null && !one.hidden ? [one.characters] : [])),
 )
 
-// The glosses a character actually has here, read once so the run and the report answer the same
-// question: a character carried across has words, and calling it unglossed names the wrong reason.
+const stale: string[] = []
+
 // The glosses a character has here, read once so the run and the report answer the same question. A
 // weighed order describes the stated glosses and nothing else, so it is applied to those; a word written
 // for the character follows them rather than replacing them, since a character can state glosses and
 // have every one of them answering for somebody else.
-const stale: string[] = []
-
 const glossesFor = (character: string) => {
   const stated = spoken.get(character) ?? []
   const order = chosen.get(character)
@@ -123,11 +116,9 @@ const unwritable = characters.flatMap((character) =>
 process.stdout.write(
   `keys a rescue moved: ${list(keyed.moved.map((one) => `${one.character} ${one.from} to ${one.to}`))}\n`,
 )
-process.stdout.write(`glosses ${locale} cannot write, which no character was keyed on: ${list(unwritable)}\n`)
+process.stdout.write(`glosses ${locale} cannot write, which the selection can still reach: ${list(unwritable)}\n`)
 process.stdout.write(`orders no longer describing their glosses, weighed again: ${list([...new Set(stale)])}\n`)
 process.stdout.write(`no word to select from, neither stated nor carried across: ${list(unglossed)}\n`)
 process.stdout.write(
   `every gloss the release states is already a key: ${list(keyed.unsettled.filter((one) => !unglossed.includes(one)))}\n`,
 )
-
-

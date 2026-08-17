@@ -46,9 +46,6 @@
     "贅": [
       "luxe"
     ],
-    "飴": [
-      "bonbon"
-    ],
     "憧": [
       "aspiration"
     ],
@@ -106,12 +103,6 @@
     "鮭": [
       "saumon"
     ],
-    "屁": [
-      "pet"
-    ],
-    "隙": [
-      "fissure"
-    ],
     "炒": [
       "faire revenir"
     ],
@@ -154,14 +145,8 @@
     "凄": [
       "incroyable"
     ],
-    "蜂": [
-      "abeille"
-    ],
     "弥": [
       "croissant"
-    ],
-    "曙": [
-      "aube"
     ],
     "汰": [
       "trier"
@@ -226,14 +211,8 @@
     "藍": [
       "indigo"
     ],
-    "眉": [
-      "sourcil"
-    ],
     "諒": [
       "comprendre"
-    ],
-    "唾": [
-      "salive"
     ],
     "蟹": [
       "crabe"
@@ -250,23 +229,14 @@
     "茜": [
       "garance"
     ],
-    "蓮": [
-      "lotus"
-    ],
     "靖": [
       "pacifique"
     ],
     "湧": [
       "jaillir"
     ],
-    "闇": [
-      "ténèbres"
-    ],
     "巾": [
       "serviette"
-    ],
-    "鍵": [
-      "clé"
     ],
     "隼": [
       "faucon"
@@ -279,9 +249,6 @@
     ],
     "呪": [
       "malédiction"
-    ],
-    "芯": [
-      "mèche"
     ],
     "脊": [
       "stature"
@@ -301,17 +268,11 @@
     "賑": [
       "animé"
     ],
-    "鍋": [
-      "casserole"
-    ],
     "咳": [
       "toux"
     ],
     "阜": [
       "monticule"
-    ],
-    "楓": [
-      "érable"
     ],
     "貼": [
       "coller"
@@ -325,17 +286,11 @@
     "姪": [
       "nièce"
     ],
-    "丼": [
-      "bol de riz"
-    ],
     "潰": [
       "écraser"
     ],
     "傲": [
       "orgueilleux"
-    ],
-    "柴": [
-      "broussailles"
     ],
     "蔑": [
       "mépris"
@@ -369,9 +324,6 @@
     ],
     "栞": [
       "marque-page"
-    ],
-    "唄": [
-      "ballade"
     ],
     "儲": [
       "gagner"
@@ -468,6 +420,54 @@
     ],
     "蛮": [
       "barbarie"
+    ],
+    "眉": [
+      "sourcil"
+    ],
+    "蓮": [
+      "lotus"
+    ],
+    "隙": [
+      "crevasse"
+    ],
+    "鍵": [
+      "clé"
+    ],
+    "鍋": [
+      "casserole"
+    ],
+    "唄": [
+      "ballade"
+    ],
+    "曙": [
+      "aurore"
+    ],
+    "芯": [
+      "mèche"
+    ],
+    "闇": [
+      "ténèbres"
+    ],
+    "蜂": [
+      "abeille"
+    ],
+    "唾": [
+      "salive"
+    ],
+    "楓": [
+      "érable"
+    ],
+    "柴": [
+      "broussailles"
+    ],
+    "屁": [
+      "pet"
+    ],
+    "丼": [
+      "bol de riz"
+    ],
+    "飴": [
+      "bonbon"
     ]
   }
 }

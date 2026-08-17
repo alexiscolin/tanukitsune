@@ -137,9 +137,9 @@ different answers and no code.
 kanji writes is named on its own. One shape teaches one French word, so a component named apart from
 the kanji it doubles would put a second word on the same drawing, one on each card, and a story naming
 the part would contradict the card teaching the character. Which components those are is a table
-decision and never a model one: the model is not asked, so no answer of its has to be caught. Of the
-320 components the curriculum deals that no French name covers, 231 are named this way and 89 are owed
-a name of their own, which is the number `corpus:report` and `corpus:name` count.
+decision and never a model one: the model is not asked, so no answer of its has to be caught. What is
+left for a model is what `corpus:report` counts as unnamed and `corpus:name` asks for, which is nothing
+today: every component the curriculum deals carries a word, its own or its kanji's.
 
 **Nine shapes are named apart from their kanji, because that kanji's key cannot be pictured**: 一 le
 sol, 十 la croix, 又 la main droite, 乙 le cygne, 氏 la bannière, 非 les persiennes, 示 l'offrande, 各 la

@@ -1,5 +1,5 @@
 {
-"header":{"source":"KANJIDIC2 (https://www.edrdg.org/wiki/index.php/KANJIDIC_Project), Electronic Dictionary Research and Development Group","licence":"CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), for the words selected from that release","release":"2026-228, created 2026-08-16","modified":"One gloss selected per character and made unique. The readings, grades and stroke counts are not carried.","written":"154 of these words are not the release's and are not covered by its licence: where it glosses a character in no French word this corpus can still use, the word is written for this corpus from the English meaning. They are listed in key-translation.json.","shape":"character to the key this locale teaches it under"},
+"header":{"source":"KANJIDIC2 (https://www.edrdg.org/wiki/index.php/KANJIDIC_Project), Electronic Dictionary Research and Development Group","licence":"CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), for the words selected from that release","release":"2026-229, created 2026-08-17","modified":"One gloss selected per character and made unique. The readings, grades and stroke counts are not carried.","written":"154 of these words are not the release's and are not covered by its licence: where it glosses a character in no French word this corpus can still use, the word is written for this corpus from the English meaning. They are listed in key-translation.json.","shape":"character to the key this locale teaches it under"},
 "keys":{
 "一":"un",
 "二":"deux",
@@ -1661,7 +1661,7 @@
 "辱":"humilier",
 "鉢":"bol",
 "闇":"ténèbres",
-"隙":"fissure",
+"隙":"crevasse",
 "霜":"gel",
 "飢":"faim",
 "餓":"famine",
@@ -1855,7 +1855,7 @@
 "鯉":"carpe",
 "戴":"couronnement",
 "緋":"écarlate",
-"曙":"aube",
+"曙":"aurore",
 "胡":"barbare",
 "瓜":"melon",
 "帥":"mener des troupes",
@@ -1923,7 +1923,7 @@
 "粗":"grossier",
 "循":"cycle",
 "凝":"congeler",
-"旦":"aurore",
+"旦":"aube",
 "愉":"joyeux",
 "抹":"effacer",
 "栓":"bouchon",

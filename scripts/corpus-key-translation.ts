@@ -58,7 +58,13 @@ const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 // does not gloss here, and one whose every gloss answers for somebody else, are the same problem seen
 // twice. Before the first corpus:keys there are no keys to read, so it is whoever the release does not
 // gloss. A character already carried is asked again only where the word carried answers for another.
-const taught = new Map(subjects.map((one) => [one.characters ?? '', one.meanings]))
+// Kanji only. A radical and a vocabulary item of the same shape are other subjects with other
+// meanings, and their names are WaniKani's inventions where a kanji's meaning is a fact: keying every
+// subject by its character let the last one win, so a request could carry Droopy where the course
+// teaches Droop.
+const taught = new Map(
+  subjects.filter((one) => one.type === 'kanji').map((one) => [one.characters ?? '', one.meanings]),
+)
 
 const owed = taughtCharacters(subjects).filter(
     (character) =>
@@ -111,6 +117,11 @@ async function collect(id: string): Promise<void> {
   const { answered, failed } = collected
   const refused = new Map(failed)
   const kept = new Map<string, readonly string[]>()
+  const holds = new Map(
+    [...Object.entries(keys), ...[...carried].map(([one, words]) => [one, words[0] ?? ''] as const)].map(
+      ([character, word]) => [word.toLowerCase(), character],
+    ),
+  )
   const spent = noSpend()
 
   for (const [character, one] of answered) {
@@ -125,8 +136,23 @@ async function collect(id: string): Promise<void> {
     // Judged here rather than written and found later: a word the locale cannot write is a card nobody
     // can answer, and the character is asked again by the next run like any other refusal.
     const fault = faultInKey(word, naming)
-    if (fault !== null) refused.set(character, `${word}: ${fault}`)
-    else kept.set(character, [word])
+    if (fault !== null) {
+      refused.set(character, `${word}: ${fault}`)
+      continue
+    }
+
+    // Against the answers beside it as well as the words already written. Each request was built
+    // without knowing what the others would say, so two of them landing on one word is a collision
+    // neither could have avoided, and writing both would leave the second character unsettled a run
+    // later with nothing saying why.
+    const taken = holds.get(word.toLowerCase())
+    if (taken !== undefined) {
+      refused.set(character, `${word}: already ${taken}'s`)
+      continue
+    }
+
+    holds.set(word.toLowerCase(), character)
+    kept.set(character, [word])
   }
 
   // Written before the run file is dropped. A write that fails leaves the batch collectable again,
