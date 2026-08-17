@@ -913,3 +913,11 @@
 {"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"src/core/corpus/key.ts","line":72,"outcome":"dismissed","reason":"Serving the shapes first buys a word rather than a particular one: a later rescue can take back what an earlier one settled. Deepening the search would settle more without a model call and is its own slice; docs/corpus.md states the limit rather than hiding it."}
 {"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"performance-check","file":"scripts/corpus-key-choice.ts","line":41,"outcome":"dismissed","reason":"Each invocation re-downloads the 15 MB release, costing about 1.6 seconds on a poll that does nothing else. Taking a local path would claim another argument position and change the command's contract, so it belongs with that change rather than in this one."}
 {"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","kind":"pass","base":"cdad4bb87a0861ccb00de5b8c48d7cd971e81897","head":"348736a3322fb04e204081610c8ff63222b763c4"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-key-translation.ts","line":61,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-keys.ts","line":126,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-key-translation.ts","line":127,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"docs/corpus.md","line":141,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-keys.ts","line":61,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-keys.ts","line":71,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"src/data/corpus/kanjidic.ts","line":64,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","kind":"pass","base":"cdad4bb87a0861ccb00de5b8c48d7cd971e81897","head":"6fb3c4e97cca047421a7990b4be724f1f0162ae2"}
