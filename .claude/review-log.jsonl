@@ -921,3 +921,4 @@
 {"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-keys.ts","line":71,"outcome":"fixed"}
 {"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"src/data/corpus/kanjidic.ts","line":64,"outcome":"fixed"}
 {"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","kind":"pass","base":"cdad4bb87a0861ccb00de5b8c48d7cd971e81897","head":"6fb3c4e97cca047421a7990b4be724f1f0162ae2"}
+{"date":"2026-08-18","branch":"feat/keys-from-kanjidic2","kind":"pass","base":"cdad4bb87a0861ccb00de5b8c48d7cd971e81897","head":"80634724bfd41471f40905e5b006e4138cbccfe1"}
