@@ -11,7 +11,7 @@ import type { Naming } from '@/core/corpus/name'
 // Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
 // row and two runs sharing a version make the provenance false while looking satisfied. The material
 // counts as the wording, since changing it changes what was asked.
-export const COMPONENT_NAME_VERSION = 3
+export const COMPONENT_NAME_VERSION = 4
 
 // Flat and shallow, and strict so an unexpected key fails rather than passes.
 export const componentName = z.strictObject({ name: z.string() })
@@ -31,10 +31,17 @@ export function readComponentName(text: string): string | null {
 }
 
 export type Part = {
-  readonly character: string
+  // Null where the curriculum draws the part rather than writing it. Fifteen of them carry no
+  // character, their artwork is the source's and is neither fetched nor read, so the shape below is
+  // what stands in for it.
+  readonly character: string | null
   // The kanji this component builds, which is the evidence a name is judged on: a name that pictures
   // nothing those characters contain is a name for a different shape.
   readonly composes: readonly string[]
+  // What those characters share, taken from the drawing rather than from the source's picture. Present
+  // only where they share anything: KanjiVG spells a part differently from one character to the next,
+  // so four of the fifteen share nothing and are named from the characters alone.
+  readonly shape?: readonly string[]
   readonly traditional?: string
 }
 
@@ -53,6 +60,8 @@ export function componentNamePrefix(naming: Naming, taken: readonly string[]): s
     `Give a ${naming.language} noun phrase that opens on one of ${naming.opensWith.join(', ')}, runs to`,
     `${words} words at most after that, and joins its words with ${joiners(naming.joiners)} or a space.`,
     `Pick what the shape looks like, and prefer a word that suits the characters the part builds.`,
+    'Where the course draws the part instead of writing it, no part is given: the characters it builds',
+    'are, and the strokes they share where they share any, and the name is taken from those.',
     `Examples: ${shown}.`,
     '',
     'These names are taken. Give a different one:',
@@ -91,10 +100,12 @@ function joiners(all: string): string {
 // do. The traditional name is the one that carries prose, and it comes from somebody else's file.
 function asks(part: Part): string {
   const composes = part.composes.length === 0 ? 'nothing on its own' : part.composes.join(' ')
+  const written = part.character === null ? '' : `<part>${part.character}</part>\n`
+  const shared = (part.shape ?? []).map((one) => `<shared>${one}</shared>`).join('\n')
   const traditional =
     part.traditional === undefined
       ? ''
       : `\n<traditional_name>${part.traditional}</traditional_name>\nUse it where it already names the shape.`
 
-  return `<part>${part.character}</part>\n<builds>${composes}</builds>${traditional}\n\nName the part.`
+  return `${written}<builds>${composes}</builds>\n${shared}${traditional}\n\nName the part.`
 }

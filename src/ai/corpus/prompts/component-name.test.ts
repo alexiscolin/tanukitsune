@@ -88,6 +88,33 @@ describe('componentNameRequest', () => {
   })
 })
 
+describe('a part the curriculum draws', () => {
+  // Fifteen carry no character. Their artwork is the source's and is neither fetched nor read, so what
+  // the model is given instead is the characters the part builds and the strokes those share, both of
+  // which are ours to read.
+  const drawn = componentNameRequest(prefix(), {
+    character: null,
+    composes: ['輸', '諭', '癒', '愉'],
+    shape: ['兪', '月'],
+  })
+
+  it('shows the strokes the characters it builds share', () => {
+    const [message] = drawn.messages
+
+    expect(message?.content).toContain('<shared>兪</shared>')
+  })
+
+  it('carries no part, there being no character to carry', () => {
+    const [message] = drawn.messages
+
+    expect(message?.content).not.toContain('<part>')
+  })
+
+  it('says the shape is the evidence, so a name is not asked of nothing', () => {
+    expect(prefix()).toContain('draws')
+  })
+})
+
 describe('readComponentName', () => {
   it('reads the name out of an answer shaped the way it was asked for', () => {
     expect(readComponentName('{"name":"la bouche"}')).toBe('la bouche')

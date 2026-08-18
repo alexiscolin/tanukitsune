@@ -156,6 +156,11 @@ owed count nor the collision check can see. None stands there, every character t
 having a word since a word is written for whoever the release leaves without one.
 
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
+`corpus:name` asks for it like any other, keyed by what the report calls it since it carries no
+character, and what travels instead of a character is the kanji it builds and the strokes those share in
+the drawing. Eleven of the fifteen share something, 兪 across 輸 諭 癒 愉 and 缶 across 揺 謡 遥; the
+other four are named from the characters alone, KanjiVG spelling a part differently from one character
+to the next.
 Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing
 here can name them by form alone. Their
 artwork is theirs and their terms forbid reproducing it, so it is not fetched, not stored and not read:

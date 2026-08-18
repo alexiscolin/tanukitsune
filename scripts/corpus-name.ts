@@ -21,7 +21,7 @@ import {
   componentNameRequest,
   readComponentName,
 } from '../src/ai/corpus/prompts/component-name.ts'
-import { composedBy } from '../src/core/corpus/decomposition.ts'
+import { composedBy, flatten } from '../src/core/corpus/decomposition.ts'
 import { acceptNames } from '../src/core/corpus/name.ts'
 import {
   componentNamesFile,
@@ -48,9 +48,33 @@ const naming = readNaming(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
 const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 
-const { read, owed } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
+const { read, drawn, owed } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
+
+// The parts the curriculum draws rather than writes, which owe a name like any other and cannot be
+// asked for like any other: they carry no character, so they are keyed by what the report calls them.
+const asking = [...owed, ...drawn.filter((one) => names[one] === undefined)]
+
+// Which kanji each drawn part builds, and what those kanji share in the drawing. The source's picture
+// is neither fetched nor read, so this is the whole of the evidence a name is taken from.
+const builtBy = new Map<string, readonly string[]>()
+for (const subject of subjects) {
+  if (subject.type !== 'kanji' || subject.characters === null || subject.hidden) continue
+
+  for (const id of subject.componentIds) {
+    const part = subjects.find((one) => one.id === id)
+    if (part === undefined || part.characters !== null) continue
+
+    builtBy.set(`${part.type}#${part.id}`, [...(builtBy.get(`${part.type}#${part.id}`) ?? []), subject.characters])
+  }
+}
+
+function sharedBy(characters: readonly string[]): readonly string[] {
+  const strokes = characters.map((one) => new Set(flatten(one, decompositions.get(one) ?? [], () => false).parts.flatMap((part) => (part.component === null ? [] : [part.component]))))
+
+  return [...(strokes[0] ?? [])].filter((one) => strokes.every((set) => set.has(one)))
+}
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
-const step = nextStep(saved, owed.slice(0, most), COMPONENT_NAME_VERSION)
+const step = nextStep(saved, asking.slice(0, most), COMPONENT_NAME_VERSION)
 
 if (step.do === 'submit') await submit(step.parts)
 else if (step.do === 'collect') await collect(step.id)
@@ -62,15 +86,24 @@ async function submit(parts: readonly string[]): Promise<void> {
   // taken travel in it, which is why a name settled by this run cannot be cached into the next one.
   const prefix = componentNamePrefix(naming, Object.values(names))
 
-  const asked = parts.map((character) => ({
-    subject: character,
-    params: componentNameRequest(prefix, { character, composes: builds.get(character) ?? [] }),
-  }))
+  const asked = parts.map((part) => {
+    const carries = builtBy.get(part)
+
+    return {
+      subject: part,
+      params: componentNameRequest(
+        prefix,
+        carries === undefined
+          ? { character: part, composes: builds.get(part) ?? [] }
+          : { character: null, composes: carries, shape: sharedBy(carries) },
+      ),
+    }
+  })
 
   const id = await submitBatch(asked, reach)
   writeFileSync(runFile, submittedFile({ id, version: COMPONENT_NAME_VERSION }))
 
-  process.stdout.write(`submitted: ${asked.length} of ${owed.length} components owed, batch ${id}\n`)
+  process.stdout.write(`submitted: ${asked.length} of ${asking.length} components owed, batch ${id}\n`)
   process.stdout.write(`run pnpm corpus:name ${locale} again to collect it\n`)
 }
 
@@ -102,7 +135,7 @@ async function collect(id: string): Promise<void> {
   rmSync(runFile)
 
   process.stdout.write(`collected: ${kept.size} named, written to ${namesFile}\n`)
-  process.stdout.write(`still owed: ${owed.length - kept.size}, asked again by the next run\n`)
+  process.stdout.write(`still owed: ${asking.length - kept.size}, asked again by the next run\n`)
   report('refused', [...refused].map(([component, why]) => `${component} ${why}`))
   report('no answer', [...unusable].map(([component, why]) => `${component} ${why}`))
   process.stdout.write(spentLine(spent))
