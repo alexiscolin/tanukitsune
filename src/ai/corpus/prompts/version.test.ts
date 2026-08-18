@@ -3,6 +3,8 @@ import { createHash } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
 
 import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } from './component-name'
+import { KEY_CHOICE_VERSION, keyChoicePrefix, keyChoiceRequest } from './key-choice'
+import { KEY_TRANSLATION_VERSION, keyTranslationPrefix, keyTranslationRequest } from './key-translation'
 
 // A version constant nobody bumps is worse than no version constant. `prompt_version` is a column on
 // every corpus row and the prompt is expected to change between the budgeted runs, so two runs sharing
@@ -17,6 +19,61 @@ import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } fro
 const RECORDED: Record<number, string> = {
   2: '62e15f5c4f64e5707fb1ec92477408d74dac4ce3cd81d065f2d0fa66bd195b9c',
   3: '8a4b85efd3327b554b64b4ed1e3cea70cc5e76c1a9e300c1d345655a9a56a1d3',
+}
+
+const RECORDED_CHOICE: Record<number, string> = {
+  1: '75ed2507db9e8e07e5b5cbd620e3964cee7da51a2652cd944837ae5a58c4505a',
+}
+
+const RECORDED_TRANSLATION: Record<number, string> = {
+  1: '9cb0874172bf33f89dd853cd0b3a524fc36cd3c6106453d12219f83dd34a2183',
+  2: '7041569055c4f0920e8a5b0e9bd5fdbd568d1ec9bc9470f4cbbe05f1c83738b8',
+  3: 'fa91dbc6851e5202e5659504d54d84dc50868b57428334580f19b28c771265fd',
+}
+
+describe('the key translation prompt', () => {
+  it('has not changed without its version changing', () => {
+    const recorded = RECORDED_TRANSLATION[KEY_TRANSLATION_VERSION]
+
+    expect(
+      recorded,
+      `version ${KEY_TRANSLATION_VERSION} has no recorded hash. Record ${renderedTranslation()} against it.`,
+    ).toBeDefined()
+    expect(renderedTranslation(), 'the prompt changed. Bump its version and record the new hash.').toBe(recorded)
+  })
+})
+
+function renderedTranslation(): string {
+  const asked = keyTranslationRequest(keyTranslationPrefix('French', ['chien']), {
+    character: '龍',
+    english: ['dragon'],
+    taught: ['Dragon'],
+  })
+
+  return createHash('sha256')
+    .update(JSON.stringify({ ...asked, model: undefined }))
+    .digest('hex')
+}
+
+describe('the key choice prompt', () => {
+  it('has not changed without its version changing', () => {
+    const recorded = RECORDED_CHOICE[KEY_CHOICE_VERSION]
+
+    expect(
+      recorded,
+      `version ${KEY_CHOICE_VERSION} has no recorded hash. Record ${renderedChoice()} against it.`,
+    ).toBeDefined()
+    expect(renderedChoice(), 'the prompt changed. Bump its version and record the new hash.').toBe(recorded)
+  })
+})
+
+// Fixed inputs, for the same reason: what moves is the wording and never the character asked about.
+function renderedChoice(): string {
+  const asked = keyChoiceRequest(keyChoicePrefix('French'), { character: '乙', glosses: ['chic', 'second'] })
+
+  return createHash('sha256')
+    .update(JSON.stringify({ ...asked, model: undefined }))
+    .digest('hex')
 }
 
 describe('the component name prompt', () => {

@@ -22,8 +22,7 @@ same agreement as everything under `docs/`. Read and write the rest when asked.
 pnpm bootstrap             one command from a fresh clone to a running app
 pnpm dev
 pnpm build                 the only gate that evaluates server modules, tokenless inside verify
-pnpm test                  unit tests over core/ and components, no database
-pnpm test path/to/file     one file
+pnpm test [path]           unit tests over core/ and components, no database; a path runs one file
 pnpm test:e2e              Playwright: the routes, and every story driven and audited by theme
 pnpm storybook             the review loop's six states by theme and viewport, :build for a site
 pnpm db:generate           write a migration from the schema
@@ -34,12 +33,13 @@ pnpm arch                  dependency-cruiser, plus a probe proving the rules fi
 pnpm knip                  unused exports, files and dependencies
 pnpm dupes                 jscpd, copy-paste ratchet
 pnpm check:contrast        every ink token on every ground, against the readable floor
+pnpm check:corpus          every word a locale committed against its own rules, and a probe proving it refuses
 pnpm check:docs            documentation discipline
 pnpm check:review          a probe proving the review coverage gate refuses what it claims to
 pnpm check:sketches        work left in src/ui/sketches, and the hook keeping that area quiet
 pnpm check:tests           a probe proving the test strength gate refuses a weakened test
 pnpm check:tokens          a probe proving the token rule refuses an arbitrary Tailwind value
-pnpm gate                  check:contrast, typecheck, check:docs, arch, lint: needs no database
+pnpm gate                  check:contrast, check:corpus, typecheck, check:docs, arch, lint: needs no database
 pnpm verify                gate, check:account, check:sketches, check:tokens, check:review, check:tests, build, test, knip, dupes
 ```
 

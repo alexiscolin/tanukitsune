@@ -119,6 +119,25 @@ export function collidingNames(names: ComponentNames): readonly string[] {
   return [...collisions]
 }
 
+// Names written on a component a kanji of the same shape already writes, which the key names on both
+// cards. Nothing owes these a name any more, so the walk no longer counts them and this is what is
+// left to see them: a name that survived the rule is invisible everywhere else.
+export function namesKanjiWrites(names: ComponentNames, written: ReadonlySet<string>): readonly string[] {
+  return Object.keys(names).filter((component) => written.has(component))
+}
+
+// Components taught under no word at all: no name of their own, and no key on a kanji of their shape.
+// A shape falls here by passing both rules rather than by failing either, which is why nothing else
+// sees it: it is owed no name because a kanji writes it, and its kanji was left without a key because
+// every gloss the dictionary states for it was already spoken for.
+export function wordlessComponents(
+  components: readonly string[],
+  names: ComponentNames,
+  keyed: ReadonlySet<string>,
+): readonly string[] {
+  return components.filter((one) => names[one] === undefined && !keyed.has(one))
+}
+
 // Whether every part of a character carries a component. False is not a defect in the data so much as
 // the edge of what it states, and it decides which characters a model may compose from.
 export function isFullyStated(decomposition: Decomposition): boolean {

@@ -13,8 +13,8 @@
 
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 
+import { asked } from './corpus-command.ts'
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
-import type { Reach } from '../src/ai/corpus/batch.ts'
 import {
   COMPONENT_NAME_VERSION,
   componentNamePrefix,
@@ -31,26 +31,9 @@ import {
 } from '../src/data/corpus/artifact.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
-import { nextStep, readSubmitted, submittedFile } from '../src/data/corpus/naming-run.ts'
-import { asOptional } from '../src/data/optional-text.ts'
+import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
 
-try {
-  process.loadEnvFile('.env.local')
-} catch {
-  // Absent before the first bootstrap, which is not an error.
-}
-
-const locale = process.argv[2] ?? 'fr'
-const bound = process.argv[3]
-if (bound !== undefined && (!Number.isInteger(Number(bound)) || Number(bound) < 1)) {
-  throw new Error(`most must be a whole number above zero, got ${bound}`)
-}
-const most = bound === undefined ? Infinity : Number(bound)
-
-const key = asOptional(process.env['ANTHROPIC_API_KEY'])
-if (key === undefined) throw new Error('ANTHROPIC_API_KEY is not set')
-
-const reach: Reach = { key }
+const { locale, most, reach } = asked(process.argv)
 
 const namesFile = `corpus/${locale}/components.json`
 const runFile = `corpus/${locale}/.naming-batch.json`
@@ -71,7 +54,7 @@ const step = nextStep(saved, owed.slice(0, most), COMPONENT_NAME_VERSION)
 
 if (step.do === 'submit') await submit(step.parts)
 else if (step.do === 'collect') await collect(step.id)
-else process.stdout.write(`${locale}: every component the curriculum deals has a name\n`)
+else process.stdout.write(`${locale}: every component owed a name of its own has one\n`)
 
 async function submit(parts: readonly string[]): Promise<void> {
   const builds = composedBy(read)
@@ -92,16 +75,19 @@ async function submit(parts: readonly string[]): Promise<void> {
 }
 
 async function collect(id: string): Promise<void> {
-  const { answered, failed } = await collectBatch(id, reach)
+  const collected = await collectBatch(id, reach)
+  if (!collected.ended) {
+    process.stdout.write(`batch ${id} is ${collected.status}. Run pnpm corpus:name ${locale} again to collect it\n`)
+    return
+  }
+
+  const { answered, failed } = collected
   const unusable = new Map(failed)
   const proposed: { component: string; name: string }[] = []
-  const spent = { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 }
+  const spent = noSpend()
 
   for (const [component, one] of answered) {
-    spent.input += one.spent.input
-    spent.output += one.spent.output
-    spent.cacheCreation += one.spent.cacheCreation
-    spent.cacheRead += one.spent.cacheRead
+    add(spent, one.spent)
 
     const name = readComponentName(one.text)
     if (name === null) unusable.set(component, 'unreadable')
@@ -119,9 +105,7 @@ async function collect(id: string): Promise<void> {
   process.stdout.write(`still owed: ${owed.length - kept.size}, asked again by the next run\n`)
   report('refused', [...refused].map(([component, why]) => `${component} ${why}`))
   report('no answer', [...unusable].map(([component, why]) => `${component} ${why}`))
-  process.stdout.write(
-    `spent: ${spent.input} in, ${spent.output} out, ${spent.cacheCreation} written to cache, ${spent.cacheRead} read from it\n`,
-  )
+  process.stdout.write(spentLine(spent))
 }
 
 function report(label: string, entries: readonly string[]): void {

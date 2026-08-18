@@ -889,3 +889,36 @@
 {"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"59be41fb3a7ae01ae4da288163d62bacdd2d88a5","head":"6a70d742118202c63d5e7b7d26aff030632cc774"}
 {"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"6a70d742118202c63d5e7b7d26aff030632cc774","head":"c2af6132f212a3a6c0b7e643e682c858012cd2cf"}
 {"date":"2026-08-11","branch":"feat/submit-and-collect-a-batch","kind":"pass","base":"c2af6132f212a3a6c0b7e643e682c858012cd2cf","head":"390372ae9d907df2a3c54659a8c069f6c6cb0f36"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"src/data/corpus/curriculum.ts","line":36,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"scripts/corpus-name.ts","line":74,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"src/core/corpus/decomposition.ts","line":129,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"src/data/corpus/kanjidic.ts","line":17,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"scripts/corpus-keys.ts","line":59,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"docs/corpus.md","line":111,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"corpus/fr/key-translation.json","line":3,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"src/core/corpus/key.ts","line":43,"outcome":"dismissed","reason":"chooseKeys given the same character twice leaves a word held by nobody. One WaniKani subject per kanji makes it unreachable, and asserting it would refuse an input no caller can build."}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"security-check","file":"corpus/fr/keys.json","line":2,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"security-check","file":"scripts/corpus-command.ts","line":14,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"security-check","file":"src/ai/corpus/prompts/version.test.ts","line":17,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"security-check","file":"corpus/fr/key-choice.json","line":27,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"architecture-check","file":"scripts/corpus-command.ts","line":35,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"architecture-check","file":"scripts/corpus-command.ts","line":56,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"architecture-check","file":"src/data/corpus/naming-run.ts","line":43,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"architecture-check","file":"scripts/corpus-name.ts","line":128,"outcome":"dismissed","reason":"corpus-name.ts keeps its own truncated-list printer. Its output contract differs, silent on an empty list and joined differently, so folding it onto list changes what the command prints, which a structural commit may not do."}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"requirement-check","file":"docs/corpus.md","line":136,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"requirement-check","file":"docs/verification.md","line":33,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"requirement-check","file":"docs/README.md","line":30,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"requirement-check","file":"src/ai/corpus/prompts/key-translation.ts","line":7,"outcome":"fixed"}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"requirement-check","file":"src/core/corpus/key.ts","line":56,"outcome":"dismissed","reason":"A model writes 154 of the 2101 keys, which the requirement to never invent forbids and the requirement that no character go without demands. The reader chose no holes twice; keys.json now names the 154 and states that the release licence does not cover them."}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"regression-check","file":"src/core/corpus/key.ts","line":72,"outcome":"dismissed","reason":"Serving the shapes first buys a word rather than a particular one: a later rescue can take back what an earlier one settled. Deepening the search would settle more without a model call and is its own slice; docs/corpus.md states the limit rather than hiding it."}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","reviewer":"performance-check","file":"scripts/corpus-key-choice.ts","line":41,"outcome":"dismissed","reason":"Each invocation re-downloads the 15 MB release, costing about 1.6 seconds on a poll that does nothing else. Taking a local path would claim another argument position and change the command's contract, so it belongs with that change rather than in this one."}
+{"date":"2026-08-16","branch":"feat/keys-from-kanjidic2","kind":"pass","base":"cdad4bb87a0861ccb00de5b8c48d7cd971e81897","head":"348736a3322fb04e204081610c8ff63222b763c4"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-key-translation.ts","line":61,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-keys.ts","line":126,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-key-translation.ts","line":127,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"docs/corpus.md","line":141,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-keys.ts","line":61,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"scripts/corpus-keys.ts","line":71,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"src/data/corpus/kanjidic.ts","line":64,"outcome":"fixed"}
+{"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","kind":"pass","base":"cdad4bb87a0861ccb00de5b8c48d7cd971e81897","head":"6fb3c4e97cca047421a7990b4be724f1f0162ae2"}
+{"date":"2026-08-18","branch":"feat/keys-from-kanjidic2","kind":"pass","base":"cdad4bb87a0861ccb00de5b8c48d7cd971e81897","head":"80634724bfd41471f40905e5b006e4138cbccfe1"}

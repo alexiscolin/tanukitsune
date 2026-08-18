@@ -30,10 +30,18 @@ export function walkCurriculum(
   const unplaced: string[] = []
   const drawn: string[] = []
   // A part that is itself a subject with a key of its own needs no component name: a word made of
-  // kanji names them by what they mean. A radical owes one even where a kanji of the same shape has a
-  // key, since a story names the part it draws rather than the character that shares its outline.
+  // kanji names them by what they mean. A radical sharing its shape with a kanji is that same case,
+  // the key naming both cards, so naming it separately would teach one shape two French words. Only a
+  // radical no kanji writes owes a name of its own.
+  // Withdrawn on the same grounds as the loop below: a kanji nobody can be shown teaches no key, so it
+  // names nothing.
+  const written = new Set(
+    subjects.filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden).map((one) => one.characters),
+  )
   const radicals = new Set(
-    subjects.filter((one) => one.type === 'radical' && one.characters !== null).map((one) => one.characters),
+    subjects
+      .filter((one) => one.type === 'radical' && one.characters !== null && !written.has(one.characters))
+      .map((one) => one.characters),
   )
 
   for (const subject of subjects) {

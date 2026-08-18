@@ -27,7 +27,7 @@ open them unless the task is about the documentation itself.
 `pnpm check:docs` enforces the discipline these documents are held to, so it does not depend on anyone
 remembering it. It runs inside `pnpm verify`, which a human runs before a pull request and which CI
 runs on pushes to main and on pull requests. The `Stop` hook at the end of every agent turn runs
-`pnpm gate`, which is `check:contrast`, typecheck, `check:docs`, the boundary check and lint: the full suite needs a
+`pnpm gate`, which is `check:contrast`, `check:corpus`, typecheck, `check:docs`, the boundary check and lint: the full suite needs a
 database and a browser, and a hook killed on its timeout blocks nothing while appearing to guard
 everything. `check:docs` belongs in the fast gate because a session that changes only documentation
 never reaches the slow one.

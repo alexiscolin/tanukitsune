@@ -1,0 +1,473 @@
+{
+  "header": {
+    "what": "The French word a character is taught under where KANJIDIC2 leaves it with none this corpus can use: either it glosses the character in French nowhere, or every gloss it states for it already answers for another character.",
+    "how": "Written by pnpm corpus:key-translation, read by pnpm corpus:keys after the character's own glosses rather than instead of them, so a character reaches it once its own are spent.",
+    "source": "The English meanings carried across are KANJIDIC2's, CC BY-SA 4.0, Electronic Dictionary Research and Development Group. See docs/sources.md.",
+    "byHand": "々 is the repetition mark rather than a character with a meaning, and the release glosses it in no language at all, so its word is written here by hand rather than carried across.",
+    "licence": "These words are written for this corpus from the English meaning the release states. They are not the release's and its licence does not cover them."
+  },
+  "order": {
+    "々": [
+      "répétition"
+    ],
+    "狼": [
+      "loup"
+    ],
+    "叶": [
+      "exaucer"
+    ],
+    "諦": [
+      "abandonner"
+    ],
+    "繋": [
+      "relier"
+    ],
+    "苛": [
+      "frustration"
+    ],
+    "餌": [
+      "appât"
+    ],
+    "痒": [
+      "démangeaison"
+    ],
+    "莫": [
+      "infini"
+    ],
+    "喉": [
+      "gorge"
+    ],
+    "尻": [
+      "fesses"
+    ],
+    "拭": [
+      "essuyer"
+    ],
+    "贅": [
+      "luxe"
+    ],
+    "憧": [
+      "aspiration"
+    ],
+    "苺": [
+      "fraise"
+    ],
+    "舐": [
+      "lécher"
+    ],
+    "挫": [
+      "foulure"
+    ],
+    "俺": [
+      "moi-même"
+    ],
+    "叩": [
+      "taper"
+    ],
+    "捻": [
+      "tordre"
+    ],
+    "冥": [
+      "enfers"
+    ],
+    "萌": [
+      "germer"
+    ],
+    "瑠": [
+      "lapis-lazuli"
+    ],
+    "那": [
+      "que"
+    ],
+    "沙": [
+      "sablon"
+    ],
+    "遥": [
+      "éloigné"
+    ],
+    "嘘": [
+      "mensonge"
+    ],
+    "駿": [
+      "vitesse"
+    ],
+    "蒙": [
+      "ignorance"
+    ],
+    "也": [
+      "considérablement"
+    ],
+    "柵": [
+      "clôture"
+    ],
+    "鮭": [
+      "saumon"
+    ],
+    "炒": [
+      "faire revenir"
+    ],
+    "椅": [
+      "chaise"
+    ],
+    "拉": [
+      "kidnapper"
+    ],
+    "噂": [
+      "rumeur"
+    ],
+    "伎": [
+      "acte"
+    ],
+    "颯": [
+      "soudain"
+    ],
+    "鰐": [
+      "crocodile"
+    ],
+    "斬": [
+      "sabrer"
+    ],
+    "漣": [
+      "ondulations"
+    ],
+    "噌": [
+      "bruyant"
+    ],
+    "綾": [
+      "motif"
+    ],
+    "龍": [
+      "dragon"
+    ],
+    "僅": [
+      "peu"
+    ],
+    "凄": [
+      "incroyable"
+    ],
+    "弥": [
+      "croissant"
+    ],
+    "汰": [
+      "trier"
+    ],
+    "狐": [
+      "renard"
+    ],
+    "濡": [
+      "mouillé"
+    ],
+    "捉": [
+      "capter"
+    ],
+    "葵": [
+      "rose trémière"
+    ],
+    "菅": [
+      "laîche"
+    ],
+    "拶": [
+      "approcher"
+    ],
+    "輔": [
+      "assistance"
+    ],
+    "賂": [
+      "corruption"
+    ],
+    "遡": [
+      "remonter"
+    ],
+    "遜": [
+      "modeste"
+    ],
+    "膝": [
+      "genou"
+    ],
+    "揃": [
+      "complet"
+    ],
+    "鬱": [
+      "dépression"
+    ],
+    "麺": [
+      "nouilles"
+    ],
+    "蒼": [
+      "azur"
+    ],
+    "蹴": [
+      "coup de pied"
+    ],
+    "遼": [
+      "lointain"
+    ],
+    "凛": [
+      "glacial"
+    ],
+    "瑛": [
+      "éclat"
+    ],
+    "藍": [
+      "indigo"
+    ],
+    "諒": [
+      "comprendre"
+    ],
+    "蟹": [
+      "crabe"
+    ],
+    "淀": [
+      "tourbillon"
+    ],
+    "胡": [
+      "barbare"
+    ],
+    "璧": [
+      "disque"
+    ],
+    "茜": [
+      "garance"
+    ],
+    "靖": [
+      "pacifique"
+    ],
+    "湧": [
+      "jaillir"
+    ],
+    "巾": [
+      "serviette"
+    ],
+    "隼": [
+      "faucon"
+    ],
+    "甥": [
+      "neveu"
+    ],
+    "嘩": [
+      "vacarme"
+    ],
+    "呪": [
+      "malédiction"
+    ],
+    "脊": [
+      "stature"
+    ],
+    "煎": [
+      "griller"
+    ],
+    "箸": [
+      "baguettes"
+    ],
+    "鞄": [
+      "sac"
+    ],
+    "翔": [
+      "planer"
+    ],
+    "賑": [
+      "animé"
+    ],
+    "咳": [
+      "toux"
+    ],
+    "阜": [
+      "monticule"
+    ],
+    "貼": [
+      "coller"
+    ],
+    "緋": [
+      "écarlate"
+    ],
+    "枕": [
+      "oreiller"
+    ],
+    "姪": [
+      "nièce"
+    ],
+    "潰": [
+      "écraser"
+    ],
+    "傲": [
+      "orgueilleux"
+    ],
+    "蔑": [
+      "mépris"
+    ],
+    "喋": [
+      "bavarder"
+    ],
+    "綺": [
+      "splendide"
+    ],
+    "崖": [
+      "falaise"
+    ],
+    "爽": [
+      "vivifiant"
+    ],
+    "謎": [
+      "énigme"
+    ],
+    "挨": [
+      "pousser pour ouvrir"
+    ],
+    "蘇": [
+      "ressusciter"
+    ],
+    "酎": [
+      "alcool fort"
+    ],
+    "股": [
+      "entrejambe"
+    ],
+    "栞": [
+      "marque-page"
+    ],
+    "儲": [
+      "gagner"
+    ],
+    "庄": [
+      "manoir"
+    ],
+    "壺": [
+      "pot"
+    ],
+    "哺": [
+      "allaiter"
+    ],
+    "聡": [
+      "sage"
+    ],
+    "騙": [
+      "tromperie"
+    ],
+    "餅": [
+      "mochi"
+    ],
+    "堰": [
+      "barrage"
+    ],
+    "莉": [
+      "jasmin"
+    ],
+    "斐": [
+      "chatoyant"
+    ],
+    "妖": [
+      "surnaturel"
+    ],
+    "凌": [
+      "braver"
+    ],
+    "嘉": [
+      "louer"
+    ],
+    "哉": [
+      "point d'interrogation"
+    ],
+    "椎": [
+      "vertèbre"
+    ],
+    "墟": [
+      "ruines"
+    ],
+    "叱": [
+      "gronder"
+    ],
+    "喧": [
+      "tapageur"
+    ],
+    "拳": [
+      "poing"
+    ],
+    "腫": [
+      "enflure"
+    ],
+    "璃": [
+      "vitreux"
+    ],
+    "噛": [
+      "mordre"
+    ],
+    "痩": [
+      "maigre"
+    ],
+    "瞭": [
+      "distinct"
+    ],
+    "瑞": [
+      "auspicieux"
+    ],
+    "覗": [
+      "épier"
+    ],
+    "惹": [
+      "attirer"
+    ],
+    "亮": [
+      "lumineux"
+    ],
+    "嬉": [
+      "heureux"
+    ],
+    "醤": [
+      "sauce soja"
+    ],
+    "呆": [
+      "stupéfaction"
+    ],
+    "蛮": [
+      "barbarie"
+    ],
+    "眉": [
+      "sourcil"
+    ],
+    "蓮": [
+      "lotus"
+    ],
+    "隙": [
+      "crevasse"
+    ],
+    "鍵": [
+      "clé"
+    ],
+    "鍋": [
+      "casserole"
+    ],
+    "唄": [
+      "ballade"
+    ],
+    "曙": [
+      "aurore"
+    ],
+    "芯": [
+      "mèche"
+    ],
+    "闇": [
+      "ténèbres"
+    ],
+    "蜂": [
+      "abeille"
+    ],
+    "唾": [
+      "salive"
+    ],
+    "楓": [
+      "érable"
+    ],
+    "柴": [
+      "broussailles"
+    ],
+    "屁": [
+      "pet"
+    ],
+    "丼": [
+      "bol de riz"
+    ],
+    "飴": [
+      "bonbon"
+    ]
+  }
+}

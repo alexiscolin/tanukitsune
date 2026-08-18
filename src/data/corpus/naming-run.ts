@@ -38,3 +38,27 @@ export function readSubmitted(json: string): Submitted {
 export function submittedFile(one: Submitted): string {
   return `${JSON.stringify(one, null, 2)}\n`
 }
+
+// What a batch cost, summed over its answers. Reported by every command that collects one, because the
+// input count alone reports the uncached remainder and a run reading it would call a cold prefix warm.
+export type Spend = {
+  input: number
+  output: number
+  cacheCreation: number
+  cacheRead: number
+}
+
+export function noSpend(): Spend {
+  return { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 }
+}
+
+export function add(spend: Spend, one: Spend): void {
+  spend.input += one.input
+  spend.output += one.output
+  spend.cacheCreation += one.cacheCreation
+  spend.cacheRead += one.cacheRead
+}
+
+export function spentLine(spend: Spend): string {
+  return `spent: ${spend.input} in, ${spend.output} out, ${spend.cacheCreation} written to cache, ${spend.cacheRead} read from it\n`
+}
