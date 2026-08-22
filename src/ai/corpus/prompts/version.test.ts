@@ -19,6 +19,8 @@ import { KEY_TRANSLATION_VERSION, keyTranslationPrefix, keyTranslationRequest } 
 const RECORDED: Record<number, string> = {
   2: '62e15f5c4f64e5707fb1ec92477408d74dac4ce3cd81d065f2d0fa66bd195b9c',
   3: '8a4b85efd3327b554b64b4ed1e3cea70cc5e76c1a9e300c1d345655a9a56a1d3',
+  4: '0d55511198d3766e3f65b57f8ca042e0655927c80a6539b6274ceea8d3dedf79',
+  5: '57b173e9e978e12f511637d1a3b1c80494eb95d37604ce57251e02589e9e42a6',
 }
 
 const RECORDED_CHOICE: Record<number, string> = {

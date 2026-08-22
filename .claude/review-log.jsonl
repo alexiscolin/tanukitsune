@@ -922,3 +922,12 @@
 {"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","reviewer":"code-review","file":"src/data/corpus/kanjidic.ts","line":64,"outcome":"fixed"}
 {"date":"2026-08-17","branch":"feat/keys-from-kanjidic2","kind":"pass","base":"cdad4bb87a0861ccb00de5b8c48d7cd971e81897","head":"6fb3c4e97cca047421a7990b4be724f1f0162ae2"}
 {"date":"2026-08-18","branch":"feat/keys-from-kanjidic2","kind":"pass","base":"cdad4bb87a0861ccb00de5b8c48d7cd971e81897","head":"80634724bfd41471f40905e5b006e4138cbccfe1"}
+{"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"regression-check","file":"scripts/corpus-name.ts","line":55,"outcome":"fixed"}
+{"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"requirement-check","file":"docs/corpus.md","line":141,"outcome":"fixed"}
+{"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"regression-check","file":"scripts/corpus-name.ts","line":96,"outcome":"fixed"}
+{"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"docs-conformity","file":"src/ai/corpus/prompts/component-name.ts","line":37,"outcome":"dismissed","reason":"the reader ruled the widening stands: nullable character is what lets a part carrying none be asked for, and the feature rests on it"}
+{"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"performance-check","file":"scripts/corpus-name.ts","line":64,"outcome":"fixed"}
+{"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"architecture-check","file":"scripts/corpus-name.ts","line":64,"outcome":"fixed"}
+{"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"requirement-check","file":"docs/corpus.md","line":166,"outcome":"fixed"}
+{"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"requirement-check","file":"docs/corpus.md","line":158,"outcome":"dismissed","reason":"the rule binds every run through the prompt, and a sweep over the names written under earlier versions is its own task rather than this slice"}
+{"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","kind":"pass","base":"f7e09146fa03a1a5eb941a058ef7e7e4fb9e32e8","head":"9562feb70bbd590e5d1f76a70c4c70895c06a0fe"}

@@ -66,13 +66,18 @@ describe('walkCurriculum', () => {
     expect(owed).toEqual([])
   })
 
-  // Fifteen of them carry no character, so there is no shape for a name to be taken from here and
-  // they are reported rather than counted as owed.
-  it('names a component the curriculum draws rather than writes', () => {
+  it('names a component the curriculum draws rather than writes, and owes it a name', () => {
     const { drawn, owed } = walkCurriculum([subject({ id: 9, type: 'radical' })], {}, shapeOf)
 
     expect(drawn).toEqual(['radical#9'])
-    expect(owed).toEqual([])
+    expect(owed).toEqual(['radical#9'])
+  })
+
+  it('owes nothing for a drawn component the locale has named', () => {
+    const walked = walkCurriculum([subject({ id: 9, type: 'radical' })], { 'radical#9': 'la barque' }, shapeOf)
+
+    expect(walked.drawn).toEqual(['radical#9'])
+    expect(walked.owed).toEqual([])
   })
 
   it('names a part the drawing does not place, character and part', () => {
