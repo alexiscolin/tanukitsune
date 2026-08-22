@@ -113,6 +113,13 @@ describe('a part the curriculum draws', () => {
   it('says the shape is the evidence, so a name is not asked of nothing', () => {
     expect(prefix()).toContain('draws')
   })
+
+  // A part named after what one of its characters means makes a story saying the thing is made of
+  // itself: 段 means steps, and a part called les marches turns its mnemonic into steps and a club
+  // making steps. The name has to be what the shape looks like, and the prompt has to say so.
+  it('refuses a name taken from what a character it builds means', () => {
+    expect(prefix()).toContain('means')
+  })
 })
 
 describe('readComponentName', () => {

@@ -155,6 +155,11 @@ already spoken for. `corpus:report` counts those on their own line, and it is th
 owed count nor the collision check can see. None stands there, every character the curriculum deals
 having a word since a word is written for whoever the release leaves without one.
 
+**A name is what the shape looks like, and never what a character built from it means.** A learner meets
+the part as a picture and has to recognise it by that picture; a part named after a character it builds
+gives that character a story saying it is made of itself, which teaches nothing. 段 means steps, so a
+part called les marches leaves its mnemonic saying that steps and a club make steps.
+
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
 `corpus:name` asks for it like any other, keyed by what the report calls it since it carries no
 character, and what travels instead of a character is the kanji it builds and the strokes those share in
