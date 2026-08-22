@@ -161,17 +161,15 @@ gives that character a story saying it is made of itself, which teaches nothing.
 part called les marches leaves its mnemonic saying that steps and a club make steps.
 
 **A component the curriculum draws rather than writes is named from its shape, never from theirs.**
-`corpus:name` asks for it like any other, keyed by what the report calls it since it carries no
-character, and what travels instead of a character is the kanji it builds and the strokes those share in
-the drawing. Eleven of the fifteen share something, 兪 across 輸 諭 癒 愉 and 缶 across 揺 謡 遥; the
-other four are named from the characters alone, KanjiVG spelling a part differently from one character
-to the next.
-Nineteen of their 504 components carry no character and fifteen of those are still dealt, so nothing
-here can name them by form alone. Their
-artwork is theirs and their terms forbid reproducing it, so it is not fetched, not stored and not read:
-the shape is taken from the characters that contain the component, and the name is written here. Where
-their own name is the obvious description of a shape, coinciding with it is a fact and costs nothing;
-where it is an invention, ours is something else.
+Nineteen of their 504 components carry no character and fifteen of those are still dealt. Their artwork
+is theirs and their terms forbid reproducing it, so it is not fetched, not stored and not read: the
+shape is taken from the characters that contain the component instead. `corpus:name` asks for such a
+part like any other, keyed by what the report calls it since it carries no character, and what travels
+instead of a character is the kanji it builds and the strokes those share in the drawing. Eleven of the
+fifteen share something, 兪 across 輸 諭 癒 愉 and 缶 across 揺 謡 遥; the other four are named from the
+characters alone, KanjiVG spelling a part differently from one character to the next. Where their own
+name is the obvious description of a shape, coinciding with it is a fact and costs nothing; where it is
+an invention, ours is something else.
 
 **Which parts get named at all comes from the curriculum**, per
 [ADR 0013](decisions/0013-the-curriculum-decides-the-parts.md): a story names the components the reader
