@@ -52,7 +52,7 @@ const { read, drawn, owed } = walkCurriculum(subjects, names, (character) => dec
 
 // The parts the curriculum draws rather than writes, which owe a name like any other and cannot be
 // asked for like any other: they carry no character, so they are keyed by what the report calls them.
-const asking = [...owed, ...drawn.filter((one) => names[one] === undefined)]
+const draws = new Set(drawn)
 
 // Which kanji each drawn part builds, and what those kanji share in the drawing. The source's picture
 // is neither fetched nor read, so this is the whole of the evidence a name is taken from.
@@ -74,7 +74,7 @@ function sharedBy(characters: readonly string[]): readonly string[] {
   return [...(strokes[0] ?? [])].filter((one) => strokes.every((set) => set.has(one)))
 }
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
-const step = nextStep(saved, asking.slice(0, most), COMPONENT_NAME_VERSION)
+const step = nextStep(saved, owed.slice(0, most), COMPONENT_NAME_VERSION)
 
 if (step.do === 'submit') await submit(step.parts)
 else if (step.do === 'collect') await collect(step.id)
@@ -87,15 +87,18 @@ async function submit(parts: readonly string[]): Promise<void> {
   const prefix = componentNamePrefix(naming, Object.values(names))
 
   const asked = parts.map((part) => {
-    const carries = builtBy.get(part)
+    // Which of the two a part is comes from the curriculum, never from whether a kanji was found to
+    // build it: a drawn part nothing non-withdrawn builds would otherwise be asked for as though the
+    // key the report calls it were a character to be pictured.
+    const carries = builtBy.get(part) ?? []
 
     return {
       subject: part,
       params: componentNameRequest(
         prefix,
-        carries === undefined
-          ? { character: part, composes: builds.get(part) ?? [] }
-          : { character: null, composes: carries, shape: sharedBy(carries) },
+        draws.has(part)
+          ? { character: null, composes: carries, shape: sharedBy(carries) }
+          : { character: part, composes: builds.get(part) ?? [] },
       ),
     }
   })
@@ -103,7 +106,7 @@ async function submit(parts: readonly string[]): Promise<void> {
   const id = await submitBatch(asked, reach)
   writeFileSync(runFile, submittedFile({ id, version: COMPONENT_NAME_VERSION }))
 
-  process.stdout.write(`submitted: ${asked.length} of ${asking.length} components owed, batch ${id}\n`)
+  process.stdout.write(`submitted: ${asked.length} of ${owed.length} components owed, batch ${id}\n`)
   process.stdout.write(`run pnpm corpus:name ${locale} again to collect it\n`)
 }
 
@@ -135,7 +138,7 @@ async function collect(id: string): Promise<void> {
   rmSync(runFile)
 
   process.stdout.write(`collected: ${kept.size} named, written to ${namesFile}\n`)
-  process.stdout.write(`still owed: ${asking.length - kept.size}, asked again by the next run\n`)
+  process.stdout.write(`still owed: ${owed.length - kept.size}, asked again by the next run\n`)
   report('refused', [...refused].map(([component, why]) => `${component} ${why}`))
   report('no answer', [...unusable].map(([component, why]) => `${component} ${why}`))
   process.stdout.write(spentLine(spent))

@@ -15,7 +15,8 @@ export type Walked = {
   readonly read: readonly Decomposition[]
   // Where the drawing places no part, named as character:part so a reader can find both.
   readonly unplaced: readonly string[]
-  // Components the curriculum draws instead of writing, which carry no character to be named by.
+  // Components the curriculum draws instead of writing, named by the key the report calls them since
+  // they carry no character. Owed a name like any other, so the unnamed among them are in owed too.
   readonly drawn: readonly string[]
   readonly owed: readonly string[]
 }
@@ -83,5 +84,10 @@ export function walkCurriculum(
     }
   }
 
-  return { read, unplaced, drawn, owed: unnamedComponents(read, names).filter((one) => radicals.has(one)) }
+  // A part the curriculum draws owes a name like one it writes, and carries no character to be counted
+  // by, so it is counted by the key the report calls it. Counting it anywhere but here would let the
+  // command asking for a name and the report counting what is owed answer differently.
+  const shaped = unnamedComponents(read, names).filter((one) => radicals.has(one))
+
+  return { read, unplaced, drawn, owed: [...shaped, ...drawn.filter((one) => names[one] === undefined)] }
 }
