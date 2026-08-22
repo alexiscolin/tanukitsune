@@ -84,10 +84,10 @@ export function walkCurriculum(
     }
   }
 
-  // A part the curriculum draws owes a name like one it writes, and carries no character to be counted
-  // by, so it is counted by the key the report calls it. Counting it anywhere but here would let the
-  // command asking for a name and the report counting what is owed answer differently.
+  // Both kinds counted here rather than by each command, or the one asking for a name and the one
+  // reporting what is left answer differently and each of them looks right.
   const shaped = unnamedComponents(read, names).filter((one) => radicals.has(one))
+  const unnamed = drawn.filter((one) => names[one] === undefined)
 
-  return { read, unplaced, drawn, owed: [...shaped, ...drawn.filter((one) => names[one] === undefined)] }
+  return { read, unplaced, drawn, owed: [...shaped, ...unnamed] }
 }

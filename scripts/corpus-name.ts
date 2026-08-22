@@ -50,29 +50,43 @@ const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 
 const { read, drawn, owed } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
 
-// The parts the curriculum draws rather than writes, which owe a name like any other and cannot be
-// asked for like any other: they carry no character, so they are keyed by what the report calls them.
-const draws = new Set(drawn)
+// Which kanji each part the curriculum draws builds, keyed as the report keys it since it carries no
+// character. Built where it is read, like the relation beside it, so a run that only collects a batch
+// does not walk the whole curriculum for a map it never opens.
+function drawnBuilds(): Map<string, string[]> {
+  const byId = new Map(subjects.map((subject) => [subject.id, subject]))
+  const built = new Map<string, string[]>()
 
-// Which kanji each drawn part builds, and what those kanji share in the drawing. The source's picture
-// is neither fetched nor read, so this is the whole of the evidence a name is taken from.
-const byId = new Map(subjects.map((subject) => [subject.id, subject]))
-const builtBy = new Map<string, readonly string[]>()
-for (const subject of subjects) {
-  if (subject.type !== 'kanji' || subject.characters === null || subject.hidden) continue
+  for (const subject of subjects) {
+    if (subject.type !== 'kanji' || subject.characters === null || subject.hidden) continue
 
-  for (const id of subject.componentIds) {
-    const part = byId.get(id)
-    if (part === undefined || part.characters !== null) continue
+    for (const id of subject.componentIds) {
+      const part = byId.get(id)
+      if (part === undefined || part.characters !== null) continue
 
-    builtBy.set(`${part.type}#${part.id}`, [...(builtBy.get(`${part.type}#${part.id}`) ?? []), subject.characters])
+      const key = `${part.type}#${part.id}`
+      const carries = built.get(key)
+
+      if (carries === undefined) built.set(key, [subject.characters])
+      else carries.push(subject.characters)
+    }
   }
+
+  return built
 }
 
-function sharedBy(characters: readonly string[]): readonly string[] {
-  const strokes = characters.map((one) => new Set(flatten(one, decompositions.get(one) ?? [], () => false).parts.flatMap((part) => (part.component === null ? [] : [part.component]))))
+function componentsOf(character: string): Set<string> {
+  const { parts } = flatten(character, decompositions.get(character) ?? [], () => false)
 
-  return [...(strokes[0] ?? [])].filter((one) => strokes.every((set) => set.has(one)))
+  return new Set(parts.flatMap((part) => (part.component === null ? [] : [part.component])))
+}
+
+// What every character containing the part draws in common, which stands in for the picture of the
+// part itself: docs/corpus.md states why that picture is neither fetched nor read.
+function sharedBy(characters: readonly string[]): readonly string[] {
+  const each = characters.map(componentsOf)
+
+  return [...(each[0] ?? [])].filter((one) => each.every((set) => set.has(one)))
 }
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
 const step = nextStep(saved, owed.slice(0, most), COMPONENT_NAME_VERSION)
@@ -83,25 +97,23 @@ else process.stdout.write(`${locale}: every component owed a name of its own has
 
 async function submit(parts: readonly string[]): Promise<void> {
   const builds = composedBy(read)
+  const builtBy = drawnBuilds()
+  const draws = new Set(drawn)
   // One prefix for the whole run, cached and shared by every request behind it. The names already
   // taken travel in it, which is why a name settled by this run cannot be cached into the next one.
   const prefix = componentNamePrefix(naming, Object.values(names))
 
   const asked = parts.map((part) => {
     // Which of the two a part is comes from the curriculum, never from whether a kanji was found to
-    // build it: a drawn part nothing non-withdrawn builds would otherwise be asked for as though the
-    // key the report calls it were a character to be pictured.
+    // build it: a drawn part nothing dealt builds would otherwise be asked for as though the key the
+    // report calls it were a character to be pictured.
+    if (!draws.has(part)) {
+      return { subject: part, params: componentNameRequest(prefix, { character: part, composes: builds.get(part) ?? [] }) }
+    }
+
     const carries = builtBy.get(part) ?? []
 
-    return {
-      subject: part,
-      params: componentNameRequest(
-        prefix,
-        draws.has(part)
-          ? { character: null, composes: carries, shape: sharedBy(carries) }
-          : { character: part, composes: builds.get(part) ?? [] },
-      ),
-    }
+    return { subject: part, params: componentNameRequest(prefix, { character: null, composes: carries, shape: sharedBy(carries) }) }
   })
 
   const id = await submitBatch(asked, reach)

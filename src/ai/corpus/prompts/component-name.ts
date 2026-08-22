@@ -62,7 +62,7 @@ export function componentNamePrefix(naming: Naming, taken: readonly string[]): s
     `Pick what the shape looks like, and prefer a word that suits the characters the part builds.`,
     'Never name the part after what one of those characters means. A learner meets the part as a picture',
     'and has to recognise it by that picture, and a part named after a character it builds gives that',
-    "character a story saying it is made of itself, which teaches nothing.",
+    'character a story saying it is made of itself, which teaches nothing.',
     'Where the course draws the part instead of writing it, no part is given: the characters it builds',
     'are, and the strokes they share where they share any, and the name is taken from those.',
     `Examples: ${shown}.`,

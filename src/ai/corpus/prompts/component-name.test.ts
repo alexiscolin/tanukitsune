@@ -99,26 +99,22 @@ describe('a part the curriculum draws', () => {
   })
 
   it('shows the strokes the characters it builds share', () => {
-    const [message] = drawn.messages
-
-    expect(message?.content).toContain('<shared>兪</shared>')
+    expect(JSON.stringify(drawn.messages)).toContain('<shared>兪</shared>')
   })
 
   it('carries no part, there being no character to carry', () => {
-    const [message] = drawn.messages
-
-    expect(message?.content).not.toContain('<part>')
+    expect(JSON.stringify(drawn.messages)).not.toContain('<part>')
   })
 
-  it('says the shape is the evidence, so a name is not asked of nothing', () => {
-    expect(prefix()).toContain('draws')
+  it('says the characters stand in for the part where the course draws it', () => {
+    expect(prefix()).toContain('Where the course draws the part instead of writing it, no part is given')
   })
 
   // A part named after what one of its characters means makes a story saying the thing is made of
   // itself: 段 means steps, and a part called les marches turns its mnemonic into steps and a club
   // making steps. The name has to be what the shape looks like, and the prompt has to say so.
   it('refuses a name taken from what a character it builds means', () => {
-    expect(prefix()).toContain('means')
+    expect(prefix()).toContain('Never name the part after what one of those characters means')
   })
 })
 

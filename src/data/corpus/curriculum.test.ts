@@ -66,9 +66,6 @@ describe('walkCurriculum', () => {
     expect(owed).toEqual([])
   })
 
-  // A part the curriculum draws owes a name like one it writes, and carries no character to be counted
-  // by, so it is counted by the key the report calls it. One owed set, or the command asking and the
-  // report counting would answer differently and each would look right.
   it('names a component the curriculum draws rather than writes, and owes it a name', () => {
     const { drawn, owed } = walkCurriculum([subject({ id: 9, type: 'radical' })], {}, shapeOf)
 
