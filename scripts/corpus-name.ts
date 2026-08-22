@@ -56,12 +56,13 @@ const draws = new Set(drawn)
 
 // Which kanji each drawn part builds, and what those kanji share in the drawing. The source's picture
 // is neither fetched nor read, so this is the whole of the evidence a name is taken from.
+const byId = new Map(subjects.map((subject) => [subject.id, subject]))
 const builtBy = new Map<string, readonly string[]>()
 for (const subject of subjects) {
   if (subject.type !== 'kanji' || subject.characters === null || subject.hidden) continue
 
   for (const id of subject.componentIds) {
-    const part = subjects.find((one) => one.id === id)
+    const part = byId.get(id)
     if (part === undefined || part.characters !== null) continue
 
     builtBy.set(`${part.type}#${part.id}`, [...(builtBy.get(`${part.type}#${part.id}`) ?? []), subject.characters])
