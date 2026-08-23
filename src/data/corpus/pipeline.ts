@@ -12,17 +12,20 @@ export type Step = {
   readonly batch: string | null
   // Whether the step reaches a model, which is what the run announces before it spends anything.
   readonly paid: boolean
+  // What the step reads after its own name. Three of them read that position as something other than a
+  // locale, so one shape for all seven hands a release path where a locale was meant.
+  readonly takes: 'nothing' | 'levels' | 'locale' | 'locale and most'
 }
 
 export function stepsFor(locale: string): readonly Step[] {
   return [
-    { name: 'corpus:decomposition', batch: null, paid: false },
-    { name: 'corpus:inventory', batch: null, paid: false },
-    { name: 'corpus:key-choice', batch: `corpus/${locale}/.key-choice-batch.json`, paid: true },
-    { name: 'corpus:key-translation', batch: `corpus/${locale}/.key-translation-batch.json`, paid: true },
-    { name: 'corpus:keys', batch: null, paid: false },
-    { name: 'corpus:name', batch: `corpus/${locale}/.naming-batch.json`, paid: true },
-    { name: 'corpus:report', batch: null, paid: false },
+    { name: 'corpus:decomposition', batch: null, paid: false, takes: 'nothing' },
+    { name: 'corpus:inventory', batch: null, paid: false, takes: 'levels' },
+    { name: 'corpus:key-choice', batch: `corpus/${locale}/.key-choice-batch.json`, paid: true, takes: 'locale and most' },
+    { name: 'corpus:key-translation', batch: `corpus/${locale}/.key-translation-batch.json`, paid: true, takes: 'locale and most' },
+    { name: 'corpus:keys', batch: null, paid: false, takes: 'locale' },
+    { name: 'corpus:name', batch: `corpus/${locale}/.naming-batch.json`, paid: true, takes: 'locale and most' },
+    { name: 'corpus:report', batch: null, paid: false, takes: 'locale' },
   ]
 }
 
@@ -33,4 +36,26 @@ export function resumeAt(steps: readonly Step[], waiting: (batch: string) => boo
   const first = steps.findIndex((one) => one.batch !== null && waiting(one.batch))
 
   return first === -1 ? 0 : first
+}
+
+// What follows the step's name on the command line. The bound is left out where none was given rather
+// than sent as the word Infinity, and the level ceiling is carried rather than left to the inventory
+// command's own default of ten, which would rewrite sixty levels of curriculum as ten.
+export function argumentsFor(step: Step, locale: string, most: number, levels: number): readonly string[] {
+  if (step.takes === 'nothing') return []
+  if (step.takes === 'levels') return [String(levels)]
+  if (step.takes === 'locale') return [locale]
+
+  return most === Infinity ? [locale] : [locale, String(most)]
+}
+
+// The batch a step writes down while it waits, asked of the table rather than spelled again in the
+// step itself. Spelled twice, a rename leaves the run resuming from the start and paying for a batch
+// already in flight, which is the one failure this table exists to prevent.
+export function batchFor(name: string, locale: string): string {
+  const found = stepsFor(locale).find((one) => one.name === name)?.batch
+
+  if (found === undefined || found === null) throw new Error(`${name} writes down no batch`)
+
+  return found
 }

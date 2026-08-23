@@ -19,6 +19,7 @@ import {
   readKeyChoice,
 } from '../src/ai/corpus/prompts/key-choice.ts'
 import { keyOrderFile, readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
+import { batchFor } from '../src/data/corpus/pipeline.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
@@ -27,7 +28,7 @@ import { asked, fetched, KANJIDIC, list, taughtCharacters } from './corpus-comma
 
 const { locale, most, reach } = asked(process.argv)
 const orderFile = `corpus/${locale}/key-choice.json`
-const runFile = `corpus/${locale}/.key-choice-batch.json`
+const runFile = batchFor('corpus:key-choice', locale)
 
 if (!existsSync(INVENTORY_FILE)) {
   throw new Error(`${INVENTORY_FILE} is missing. Run pnpm corpus:inventory first, since the characters weighed are the ones the curriculum deals.`)

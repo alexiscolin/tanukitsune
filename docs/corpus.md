@@ -295,9 +295,16 @@ and `pnpm corpus` runs them in the order each reads what the one before it wrote
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.
 
-It reports before it asks and asks before it spends: the free report runs first, then the steps that
-reach a model are named with the bound the run carries, and a terminal that answers nothing runs
-nothing.
+It reports before it asks and asks before it spends: the free report runs first, needing no key since
+it reaches no model, then the steps that do are named with the bound the run carries, and a terminal
+that answers nothing runs nothing. What each of them is asking for is counted by that step alone and
+said as it submits, since only the step that owes knows what it owes.
+
+A run ends where a step submits a batch, because what follows reads what that batch is about to write.
+Run it again to collect. `corpus:key-translation` and `corpus:keys` also read each other, a character
+being owed a word either because the release glosses none or because every gloss it states answers for
+somebody else, so one pass settles the first case and a later one settles the second. The command being
+re-runnable by reflex is what settles them, not a single pass through it.
 
 It reads the subject list and takes the item count from it rather than from an estimate, generates
 through the batch API, validates, writes by subject as it goes, publishes the chunks and then the
