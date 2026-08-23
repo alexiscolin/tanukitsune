@@ -13,7 +13,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 import { fetched, KANJIDIC, list, taughtCharacters } from './corpus-command.ts'
 import { chooseKeys, faultInKey, isOrderOf } from '../src/core/corpus/key.ts'
-import { readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
+import { meaningsFile, readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
 import { parseGlosses, releaseOf } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
@@ -31,6 +31,7 @@ const headerFor = (release: string, ours: readonly string[]) => ({
 const locale = process.argv[2] ?? 'fr'
 const given = process.argv[3]
 const output = `corpus/${locale}/keys.json`
+const meaningsOutput = `corpus/${locale}/meanings.json`
 
 const xml = given === undefined ? await fetched(KANJIDIC, 'KANJIDIC2') : readFileSync(given, 'utf8')
 const spoken = parseGlosses(xml, locale)
@@ -99,7 +100,26 @@ writeFileSync(
   `{\n"header":${JSON.stringify(headerFor(releaseOf(xml), ours))},\n"keys":{\n${lines}\n}\n}\n`,
 )
 
+// The key leads and every other gloss the character has follows it. A key is one word and a character
+// often means several, so keeping only the key would grade a reader wrong for a word the release
+// states. Written from the same ordered glosses the key was picked from, in the same pass, or the two
+// files would disagree about which word leads.
+const meanings = Object.fromEntries(
+  written.map((character) => {
+    const key = keyed.keys[character] as string
+    // The same rule the key passed, since a gloss this language cannot write is not a word a reader
+    // types: the release states counters and calendar signs among the meanings, and grading somebody
+    // right for "signe de la 1ere branche terrestre" is grading nothing.
+    const rest = glossesFor(character).filter((one) => one !== key && faultInKey(one, naming) === null)
+
+    return [character, [key, ...rest]]
+  }),
+)
+
+writeFileSync(meaningsOutput, meaningsFile({ header: headerFor(releaseOf(xml), ours), meanings }))
+
 process.stdout.write(`keys: ${written.length} of ${characters.length} written to ${output}\n`)
+process.stdout.write(`meanings: ${Object.values(meanings).reduce((all, one) => all + one.length, 0)} written to ${meaningsOutput}\n`)
 // The two reasons a character leaves the run without a key, apart, because they are settled by
 // different things: one waits on a gloss to be written, the other on a word to be freed.
 const unglossed = keyed.unsettled.filter((one) => glossesFor(one).length === 0)
