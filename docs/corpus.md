@@ -160,7 +160,11 @@ meanings, and grading somebody right for a calendar sign is grading nothing.
 wrote down, and one taken from a dictionary can be checked against it where one a model invented can
 only be checked by a person reading six thousand words. `corpus:vocabulary` reads JMdict, which glosses
 5446 of the 6790 words the curriculum deals; what it does not gloss here is left out rather than
-half-written, and being left out is what says the word is owed. A word written with a single kanji and
+half-written, and being left out is what says the word is owed. `corpus:word` asks the model for those,
+and for them alone: they are largely transparent compounds a release does not bother stating, 三人
+being three and person, so what travels is the characters the word is written with and the word each
+already carries. A word whose meaning does not follow from its parts comes back with nothing, which is
+an answer rather than a failure and leaves the word for a person to write. A word written with a single kanji and
 meaning what that character means is taught by the word the character already carries, or the same
 shape teaches two French words on two cards; where the two disagree the word keeps its own, 天 the
 character being heaven and 天 the word the heavens.
@@ -305,8 +309,8 @@ instrument over a sample.
 ## The command
 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
-`corpus:inventory`, `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:vocabulary`,
-`corpus:name` and `corpus:report` are its eight steps, each still runnable alone so that one of them can be read by hand,
+`corpus:inventory`, `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:name`,
+`corpus:vocabulary`, `corpus:word` and `corpus:report` are its nine steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.

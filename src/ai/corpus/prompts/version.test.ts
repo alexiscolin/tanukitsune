@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } from './component-name'
 import { KEY_CHOICE_VERSION, keyChoicePrefix, keyChoiceRequest } from './key-choice'
 import { KEY_TRANSLATION_VERSION, keyTranslationPrefix, keyTranslationRequest } from './key-translation'
+import { WORD_MEANING_VERSION, wordMeaningPrefix, wordMeaningRequest } from './word-meaning'
 
 // A version constant nobody bumps is worse than no version constant. `prompt_version` is a column on
 // every corpus row and the prompt is expected to change between the budgeted runs, so two runs sharing
@@ -25,6 +26,10 @@ const RECORDED: Record<number, string> = {
 
 const RECORDED_CHOICE: Record<number, string> = {
   1: '75ed2507db9e8e07e5b5cbd620e3964cee7da51a2652cd944837ae5a58c4505a',
+}
+
+const RECORDED_MEANING: Record<number, string> = {
+  1: '7b7ddd9604475178d2a2742efe5ce96ef988dd24932754b2b6d24196f99f7ff9',
 }
 
 const RECORDED_TRANSLATION: Record<number, string> = {
@@ -107,6 +112,33 @@ function rendered(): string {
   })
   // The model is left out: it is recorded per row as `generated_by`, so it is the one field that is
   // not part of what was asked. Everything else is, the schema and the ceiling included.
+  return createHash('sha256')
+    .update(JSON.stringify({ ...asked, model: undefined }))
+    .digest('hex')
+}
+
+describe('the word meaning prompt', () => {
+  it('has not changed without its version changing', () => {
+    const recorded = RECORDED_MEANING[WORD_MEANING_VERSION]
+
+    expect(
+      recorded,
+      `version ${WORD_MEANING_VERSION} has no recorded hash. Record ${renderedMeaning()} against it.`,
+    ).toBeDefined()
+    expect(renderedMeaning(), 'the prompt changed. Bump its version and record the new hash.').toBe(recorded)
+  })
+})
+
+function renderedMeaning(): string {
+  const asked = wordMeaningRequest(wordMeaningPrefix('French'), {
+    word: '三人',
+    parts: [
+      { character: '三', key: 'trois' },
+      { character: '人', key: 'personne' },
+    ],
+    taught: ['Three People'],
+  })
+
   return createHash('sha256')
     .update(JSON.stringify({ ...asked, model: undefined }))
     .digest('hex')

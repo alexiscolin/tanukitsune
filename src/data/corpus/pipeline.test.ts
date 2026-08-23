@@ -15,6 +15,7 @@ describe('stepsFor', () => {
     expect(at('corpus:key-translation')).toBeLessThan(at('corpus:keys'))
     expect(at('corpus:decomposition')).toBeLessThan(at('corpus:name'))
     expect(at('corpus:keys')).toBeLessThan(at('corpus:vocabulary'))
+    expect(at('corpus:vocabulary')).toBeLessThan(at('corpus:word'))
     expect(at('corpus:report')).toBe(FR.length - 1)
   })
 
@@ -23,7 +24,7 @@ describe('stepsFor', () => {
   it('says which steps pay a model', () => {
     const paid = FR.filter((one) => one.paid).map((one) => one.name)
 
-    expect(paid).toEqual(['corpus:key-choice', 'corpus:key-translation', 'corpus:name'])
+    expect(paid).toEqual(['corpus:key-choice', 'corpus:key-translation', 'corpus:name', 'corpus:word'])
   })
 
   it('keys a locale step by that locale and leaves a shared one alone', () => {
