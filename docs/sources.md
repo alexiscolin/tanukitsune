@@ -82,6 +82,12 @@ that exists: [credits](https://kanjialive.com/credits/),
 [EDRDG licence](https://www.edrdg.org/edrdg/licence.html),
 [KANJIDIC](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project).
 
+**JMdict is CC BY-SA 4.0** and states each word of the language with its senses, French among the
+languages it glosses: it covers 5446 of the 6790 words the curriculum deals, and what it does not gloss
+here is owed to a later run. Same group and same licence as KANJIDIC2, so one attribution answers for
+both: [EDRDG licence](https://www.edrdg.org/edrdg/licence.html),
+[JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project).
+
 **Lexique gives phonemic transcription, syllable structure and frequency for French**, which is what
 lets an anchor be checked on pronunciation rather than on spelling: [lexique.org](http://www.lexique.org/).
 
