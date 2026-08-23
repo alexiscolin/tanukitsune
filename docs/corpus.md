@@ -288,11 +288,16 @@ instrument over a sample.
 
 ## The command
 
-One command, the locale as a parameter, re-runnable by reflex. Seven of its steps exist today,
-`corpus:decomposition`, `corpus:inventory`, `corpus:keys`, `corpus:key-choice`,
-`corpus:key-translation`, `corpus:report` and `corpus:name`; the prose itself is the
-shape the rest of this section describes and the next thing built, so nothing here is runnable end to
-end yet.
+One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
+`corpus:inventory`, `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:name` and
+`corpus:report` are its seven steps, each still runnable alone so that one of them can be read by hand,
+and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
+the shape the rest of this section describes and the next thing built, so the command runs everything
+that exists rather than everything described.
+
+It reports before it asks and asks before it spends: the free report runs first, then the steps that
+reach a model are named with the bound the run carries, and a terminal that answers nothing runs
+nothing.
 
 It reads the subject list and takes the item count from it rather than from an estimate, generates
 through the batch API, validates, writes by subject as it goes, publishes the chunks and then the

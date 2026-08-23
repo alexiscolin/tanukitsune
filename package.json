@@ -17,6 +17,7 @@
     "arch": "depcruise src && bash scripts/check-boundaries.sh",
     "knip": "knip",
     "dupes": "jscpd src",
+    "corpus": "node --experimental-strip-types scripts/corpus.ts",
     "corpus:decomposition": "node --experimental-strip-types scripts/import-decomposition.ts",
     "corpus:inventory": "node --experimental-strip-types scripts/corpus-inventory.ts",
     "corpus:key-choice": "node --experimental-strip-types scripts/corpus-key-choice.ts",
