@@ -25,6 +25,7 @@
     "corpus:keys": "node --experimental-strip-types scripts/corpus-keys.ts",
     "corpus:name": "node --experimental-strip-types scripts/corpus-name.ts",
     "corpus:report": "node --experimental-strip-types scripts/corpus-report.ts",
+    "corpus:vocabulary": "node --experimental-strip-types scripts/corpus-vocabulary.ts",
     "check:account": "bash scripts/check-account-reach.sh",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:corpus": "bash scripts/check-corpus-probe.sh",

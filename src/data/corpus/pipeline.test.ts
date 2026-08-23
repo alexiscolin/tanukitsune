@@ -14,6 +14,7 @@ describe('stepsFor', () => {
     expect(at('corpus:key-choice')).toBeLessThan(at('corpus:keys'))
     expect(at('corpus:key-translation')).toBeLessThan(at('corpus:keys'))
     expect(at('corpus:decomposition')).toBeLessThan(at('corpus:name'))
+    expect(at('corpus:keys')).toBeLessThan(at('corpus:vocabulary'))
     expect(at('corpus:report')).toBe(FR.length - 1)
   })
 

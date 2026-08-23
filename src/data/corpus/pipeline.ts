@@ -25,6 +25,7 @@ export function stepsFor(locale: string): readonly Step[] {
     { name: 'corpus:key-translation', batch: `corpus/${locale}/.key-translation-batch.json`, paid: true, takes: 'locale and most' },
     { name: 'corpus:keys', batch: null, paid: false, takes: 'locale' },
     { name: 'corpus:name', batch: `corpus/${locale}/.naming-batch.json`, paid: true, takes: 'locale and most' },
+    { name: 'corpus:vocabulary', batch: null, paid: false, takes: 'locale' },
     { name: 'corpus:report', batch: null, paid: false, takes: 'locale' },
   ]
 }
