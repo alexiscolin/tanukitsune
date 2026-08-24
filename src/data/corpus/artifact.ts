@@ -70,6 +70,12 @@ export function readMeanings(json: string): Readonly<Record<string, readonly str
   return meaningList.parse(JSON.parse(json)).meanings
 }
 
+// What a file says about itself, read back so a run rewriting one keeps the provenance the run that
+// wrote it recorded rather than restating it.
+export function headerOf(json: string): unknown {
+  return meaningList.parse(JSON.parse(json)).header
+}
+
 export function meaningsFile(written: { header: unknown; meanings: Readonly<Record<string, readonly string[]>> }): string {
   const lines = Object.entries(written.meanings)
     .map(([character, meanings]) => `${JSON.stringify(character)}:${JSON.stringify(meanings)}`)

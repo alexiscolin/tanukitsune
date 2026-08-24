@@ -14,15 +14,14 @@ import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { createInterface } from 'node:readline/promises'
 
-import { argumentsFor, resumeAt, stepsFor } from '../src/data/corpus/pipeline.ts'
+import { askedFor } from './corpus-command.ts'
+import type { Step } from '../src/data/corpus/pipeline.ts'
+import { argumentsFor, paid, resumeAt, stepsFor } from '../src/data/corpus/pipeline.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
-const locale = process.argv[2] ?? 'fr'
-const bound = process.argv[3]
-if (bound !== undefined && (!Number.isInteger(Number(bound)) || Number(bound) < 1)) {
-  throw new Error(`most must be a whole number above zero, got ${bound}`)
-}
-const most = bound === undefined ? Infinity : Number(bound)
+// Read without the key every other command asks for, the free report running before anything is
+// confirmed and each paid step refusing on its own if the key is missing.
+const { locale, most } = askedFor(process.argv)
 
 // The ceiling the inventory already carries, since corpus:inventory falls back to ten of its own and
 // rewriting sixty levels of curriculum as ten would move every count taken against that file. Sixty
@@ -41,10 +40,11 @@ const left = steps.slice(resumeAt(steps, existsSync))
 // The free report first, so what the run is about to pay for is on screen before anything is
 // confirmed. It reaches no model and needs no key, which is why nothing here asks for one: each paid
 // step refuses on its own if the key is missing.
-run('corpus:report')
+const report = steps.find((one) => one.name === 'corpus:report') as Step
+run(report)
 
 process.stdout.write(`\n${locale}: ${left.length} steps to run, from ${left[0]?.name}, ${levels} levels\n`)
-announce(left.filter((one) => one.paid))
+announce(left.filter(paid))
 
 if (!(await confirmed())) {
   process.stdout.write('nothing run\n')
@@ -52,7 +52,7 @@ if (!(await confirmed())) {
 }
 
 for (const step of left) {
-  run(step.name)
+  run(step)
   if (step.batch === null) continue
 
   // A step that submits leaves its batch written down and ends, so the run waits and asks it to
@@ -65,16 +65,14 @@ for (const step of left) {
     }
 
     await new Promise((wake) => setTimeout(wake, WAIT))
-    run(step.name)
+    run(step)
   }
 }
 
-function run(name: string): void {
-  const step = steps.find((one) => one.name === name)
-  const args = step === undefined ? [name, locale] : [name, ...argumentsFor(step, locale, most, levels)]
-  const { status } = spawnSync('pnpm', args, { stdio: 'inherit' })
+function run(step: Step): void {
+  const { status } = spawnSync('pnpm', [step.name, ...argumentsFor(step, locale, most, levels)], { stdio: 'inherit' })
 
-  if (status !== 0) throw new Error(`${name} ended with ${status}. Nothing after it was run`)
+  if (status !== 0) throw new Error(`${step.name} ended with ${status}. Nothing after it was run`)
 }
 
 // What the run will spend, in requests rather than in money: a price written here is a price that is

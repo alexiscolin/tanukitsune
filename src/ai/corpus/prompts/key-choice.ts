@@ -56,7 +56,7 @@ export function keyChoicePrefix(language: string): string {
 }
 
 export function keyChoiceRequest(prefix: string, weighed: Weighed): MessageCreateParamsNonStreaming {
-  return corpusRequest(prefix, { format: FORMAT }, asks(weighed))
+  return corpusRequest(prefix, FORMAT, asks(weighed))
 }
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to

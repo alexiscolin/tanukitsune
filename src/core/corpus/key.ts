@@ -1,3 +1,7 @@
+// The extension on the value import is there for the reason inventory.ts states: the corpus commands
+// run this file through Node rather than a bundler, where an extensionless specifier resolves to
+// nothing.
+import { unreadable } from './name.ts'
 import type { Shape } from './name'
 
 // The word a subject is taught and graded on, one per subject and one subject per word. It is
@@ -13,14 +17,7 @@ import type { Shape } from './name'
 export type KeyFault = 'not the locale' | 'nothing to read'
 
 export function faultInKey(word: string, shape: Shape): KeyFault | null {
-  const written = word.toLowerCase().trim()
-
-  if ([...written].some((one) => one !== ' ' && !shape.letters.includes(one) && !shape.joiners.includes(one))) {
-    return 'not the locale'
-  }
-  if (![...written].some((one) => shape.letters.includes(one))) return 'nothing to read'
-
-  return null
+  return unreadable(word, shape, ' ')
 }
 
 export type Keyed = {

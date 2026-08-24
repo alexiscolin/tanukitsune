@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { Step } from './pipeline'
-import { argumentsFor, resumeAt, stepsFor } from './pipeline'
+import { argumentsFor, paid, resumeAt, stepsFor } from './pipeline'
 
 const FR = stepsFor('fr')
 const nothingRunning = () => false
@@ -22,9 +22,9 @@ describe('stepsFor', () => {
   // The estimate shown before a run is counted over these, so a step that pays and does not say so
   // is a run that spends without announcing it.
   it('says which steps pay a model', () => {
-    const paid = FR.filter((one) => one.paid).map((one) => one.name)
+    const asking = FR.filter(paid).map((one) => one.name)
 
-    expect(paid).toEqual(['corpus:key-choice', 'corpus:key-translation', 'corpus:name', 'corpus:word'])
+    expect(asking).toEqual(['corpus:key-choice', 'corpus:key-translation', 'corpus:name', 'corpus:word'])
   })
 
   it('keys a locale step by that locale and leaves a shared one alone', () => {
@@ -59,7 +59,7 @@ describe('argumentsFor', () => {
   const step = (name: string) => FR.find((one) => one.name === name) as Step
 
   // Three steps read the position after their name as something other than a locale, so one shape for
-  // all seven hands a release path where a locale was meant and dies on the first of them.
+  // all nine hands a release path where a locale was meant and dies on the first of them.
   it('gives a step what that step reads, rather than one shape for all', () => {
     expect(argumentsFor(step('corpus:decomposition'), 'fr', Infinity, 60)).toEqual([])
     expect(argumentsFor(step('corpus:inventory'), 'fr', Infinity, 60)).toEqual(['60'])

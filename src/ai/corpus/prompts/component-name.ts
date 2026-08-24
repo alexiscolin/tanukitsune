@@ -75,7 +75,7 @@ export function componentNamePrefix(naming: Naming, taken: readonly string[]): s
 }
 
 export function componentNameRequest(prefix: string, part: Part): MessageCreateParamsNonStreaming {
-  return corpusRequest(prefix, { format: FORMAT }, asks(part))
+  return corpusRequest(prefix, FORMAT, asks(part))
 }
 
 // A space is a joiner and it has no shape on a page, so it is named rather than shown in a list where

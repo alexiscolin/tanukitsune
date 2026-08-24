@@ -21,6 +21,12 @@ const REB = /<reb>(.*?)<\/reb>/g
 // what stops a locale silently reading English by falling through to the unattributed gloss.
 const SPOKEN: Readonly<Record<string, string>> = { fr: 'fre', de: 'ger', es: 'spa', nl: 'dut', ru: 'rus' }
 
+// What the release says it is. The address is one rolling file, so a run recording the URL would record
+// nothing: two runs six months apart read different data under the same name.
+export function releaseOf(xml: string): string {
+  return /<!-- JMdict created: (.*?) -->/.exec(xml)?.[1] ?? 'unstated'
+}
+
 export function parseWords(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const said = new Map<string, readonly string[]>()
   // English carries no attribute at all, the release implying it by its absence, so it is the one

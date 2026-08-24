@@ -10,24 +10,28 @@ export type Step = {
   readonly name: string
   // The batch this step writes down while it waits, or null where the step reaches no model.
   readonly batch: string | null
-  // Whether the step reaches a model, which is what the run announces before it spends anything.
-  readonly paid: boolean
   // What the step reads after its own name. Three of them read that position as something other than a
   // locale, so one shape for all seven hands a release path where a locale was meant.
   readonly takes: 'nothing' | 'levels' | 'locale' | 'locale and most'
 }
 
+// A step reaching a model is a step leaving a batch behind, so what a run announces before it spends
+// anything is read off that rather than said a second time and kept in step by hand.
+export function paid(step: Step): boolean {
+  return step.batch !== null
+}
+
 export function stepsFor(locale: string): readonly Step[] {
   return [
-    { name: 'corpus:decomposition', batch: null, paid: false, takes: 'nothing' },
-    { name: 'corpus:inventory', batch: null, paid: false, takes: 'levels' },
-    { name: 'corpus:key-choice', batch: `corpus/${locale}/.key-choice-batch.json`, paid: true, takes: 'locale and most' },
-    { name: 'corpus:key-translation', batch: `corpus/${locale}/.key-translation-batch.json`, paid: true, takes: 'locale and most' },
-    { name: 'corpus:keys', batch: null, paid: false, takes: 'locale' },
-    { name: 'corpus:name', batch: `corpus/${locale}/.naming-batch.json`, paid: true, takes: 'locale and most' },
-    { name: 'corpus:vocabulary', batch: null, paid: false, takes: 'locale' },
-    { name: 'corpus:word', batch: `corpus/${locale}/.word-batch.json`, paid: true, takes: 'locale and most' },
-    { name: 'corpus:report', batch: null, paid: false, takes: 'locale' },
+    { name: 'corpus:decomposition', batch: null, takes: 'nothing' },
+    { name: 'corpus:inventory', batch: null, takes: 'levels' },
+    { name: 'corpus:key-choice', batch: `corpus/${locale}/.key-choice-batch.json`, takes: 'locale and most' },
+    { name: 'corpus:key-translation', batch: `corpus/${locale}/.key-translation-batch.json`, takes: 'locale and most' },
+    { name: 'corpus:keys', batch: null, takes: 'locale' },
+    { name: 'corpus:name', batch: `corpus/${locale}/.naming-batch.json`, takes: 'locale and most' },
+    { name: 'corpus:vocabulary', batch: null, takes: 'locale' },
+    { name: 'corpus:word', batch: `corpus/${locale}/.word-batch.json`, takes: 'locale and most' },
+    { name: 'corpus:report', batch: null, takes: 'locale' },
   ]
 }
 

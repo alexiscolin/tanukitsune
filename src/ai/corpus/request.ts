@@ -14,7 +14,7 @@ import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resource
 // prefix expiring mid-run is written again and read by nothing.
 export function corpusRequest(
   prefix: string,
-  format: MessageCreateParamsNonStreaming['output_config'],
+  format: NonNullable<MessageCreateParamsNonStreaming['output_config']>['format'],
   asks: string,
 ): MessageCreateParamsNonStreaming {
   return {
@@ -22,7 +22,7 @@ export function corpusRequest(
     max_tokens: 4096,
     thinking: { type: 'adaptive' },
     system: [{ type: 'text', text: prefix, cache_control: { type: 'ephemeral', ttl: '1h' } }],
-    output_config: format,
+    output_config: { format },
     messages: [{ role: 'user', content: asks }],
   }
 }

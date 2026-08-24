@@ -53,19 +53,23 @@ export function faultInName(name: string, shape: Shape): Fault | null {
 
 // What a meaning has to be before it is written down. Looser than a key: a meaning is what a reader
 // types to be graded right, and a word can mean "année 2011" or "le 8" as easily as it means a noun, so
-// a figure and the punctuation around it are part of the word rather than a fault. What it cannot be is
-// unreadable, in either direction: nothing of this language in it, or something of another.
+// a figure and the punctuation around it are part of the word rather than a fault.
 export function faultInMeaning(meaning: string, shape: Shape): Fault | null {
-  const written = folded(meaning)
-  // A space separates two words rather than joining them, so it is not a joiner and is named here, the
-  // way faultInKey names it.
-  const beside = " 0123456789,.:;!?()/&%"
+  return unreadable(meaning, shape, BESIDE_A_MEANING)
+}
 
-  if ([...written].some((one) => !shape.letters.includes(one) && !shape.joiners.includes(one) && !beside.includes(one))) {
+// A space separates two words rather than joining them, so it is not a joiner and is named here.
+const BESIDE_A_MEANING = " 0123456789,.:;!?()/&%"
+
+// Whether a written word can be read here at all, which is one question asked of a key, of a meaning
+// and of a name. What separates them is what may stand beside the letters: nothing but a space for a
+// key, and a figure and its punctuation for a meaning, a word being allowed to mean "le 8".
+export function unreadable(word: string, shape: Shape, beside: string): 'not the locale' | 'nothing to read' | null {
+  const written = folded(word)
+
+  if ([...written].some((one) => !beside.includes(one) && !shape.letters.includes(one) && !shape.joiners.includes(one))) {
     return 'not the locale'
   }
-  // A meaning made of figures alone is what a release states for 百万 beside "un million", and a card
-  // showing it asks for a word it never gave.
   if (![...written].some((one) => shape.letters.includes(one))) return 'nothing to read'
 
   return null

@@ -13,6 +13,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 import { fetched, KANJIDIC, list, taughtCharacters } from './corpus-command.ts'
 import { chooseKeys, faultInKey, isOrderOf } from '../src/core/corpus/key.ts'
+import { faultInMeaning } from '../src/core/corpus/name.ts'
 import { meaningsFile, readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
 import { parseGlosses, releaseOf } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -95,10 +96,9 @@ const lines = written
 
 const ours = written.filter((character) => (spoken.get(character) ?? []).every((one) => one !== keyed.keys[character]))
 
-writeFileSync(
-  output,
-  `{\n"header":${JSON.stringify(headerFor(releaseOf(xml), ours))},\n"keys":{\n${lines}\n}\n}\n`,
-)
+const header = headerFor(releaseOf(xml), ours)
+
+writeFileSync(output, `{\n"header":${JSON.stringify(header)},\n"keys":{\n${lines}\n}\n}\n`)
 
 // The key leads and every other gloss the character has follows it. A key is one word and a character
 // often means several, so keeping only the key would grade a reader wrong for a word the release
@@ -107,16 +107,17 @@ writeFileSync(
 const meanings = Object.fromEntries(
   written.map((character) => {
     const key = keyed.keys[character] as string
-    // The same rule the key passed, since a gloss this language cannot write is not a word a reader
-    // types: the release states counters and calendar signs among the meanings, and grading somebody
-    // right for "signe de la 1ere branche terrestre" is grading nothing.
-    const rest = glossesFor(character).filter((one) => one !== key && faultInKey(one, naming) === null)
+    // The rule the gate holds this file to, so the writer and the check cannot answer differently. It is
+    // looser than the key's own: a key is one word and a meaning is what a reader types, so a figure
+    // beside the words is part of it. What it still refuses is the unreadable, which is what the
+    // release states among the meanings as a counter or a calendar sign.
+    const rest = glossesFor(character).filter((one) => one !== key && faultInMeaning(one, naming) === null)
 
     return [character, [key, ...rest]]
   }),
 )
 
-writeFileSync(meaningsOutput, meaningsFile({ header: headerFor(releaseOf(xml), ours), meanings }))
+writeFileSync(meaningsOutput, meaningsFile({ header, meanings }))
 
 process.stdout.write(`keys: ${written.length} of ${characters.length} written to ${output}\n`)
 process.stdout.write(`meanings: ${Object.values(meanings).reduce((all, one) => all + one.length, 0)} written to ${meaningsOutput}\n`)

@@ -63,7 +63,7 @@ export function wordMeaningPrefix(language: string): string {
 }
 
 export function wordMeaningRequest(prefix: string, one: Unglossed): MessageCreateParamsNonStreaming {
-  return corpusRequest(prefix, { format: FORMAT }, asks(one))
+  return corpusRequest(prefix, FORMAT, asks(one))
 }
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to

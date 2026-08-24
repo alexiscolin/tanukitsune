@@ -11,11 +11,11 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
-import { fetched, list } from './corpus-command.ts'
+import { fetched, list, taughtWords } from './corpus-command.ts'
 import { faultInMeaning } from '../src/core/corpus/name.ts'
 import { nameOf, reusesItsCharacter, shownFirst } from '../src/data/corpus/vocabulary.ts'
 import { meaningsFile, readMeanings, readNaming } from '../src/data/corpus/artifact.ts'
-import { parseWords } from '../src/data/corpus/jmdict.ts'
+import { parseWords, releaseOf } from '../src/data/corpus/jmdict.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
 // Where JMdict is served from. One rolling file rather than a versioned one, which is why what a run
@@ -35,12 +35,13 @@ const keyed = existsSync(`corpus/${locale}/meanings.json`)
   ? readMeanings(readFileSync(`corpus/${locale}/meanings.json`, 'utf8'))
   : {}
 
-const xml = await fetched(JMDICT, 'JMdict')
-const said = parseWords(xml, locale)
-
-const words = subjects.filter(
-  (one) => (one.type === 'vocabulary' || one.type === 'kana_vocabulary') && one.characters !== null && !one.hidden,
+// Read straight into what is kept rather than through a binding: the release is 112 MB and would
+// otherwise stay reachable through the whole run, for a value nothing reads after these two lines.
+const { said, release } = ((xml: string) => ({ said: parseWords(xml, locale), release: releaseOf(xml) }))(
+  await fetched(JMDICT, 'JMdict'),
 )
+
+const words = taughtWords(subjects)
 
 // What the course teaches each character as, which is what says whether a word written with one means
 // the same thing as it.
@@ -87,24 +88,23 @@ for (const word of words) {
 // A meaning already written that this run cannot produce is kept rather than dropped. corpus:word pays
 // a model for exactly those, and a re-run that reset the file would throw away what was paid for and
 // ask for it again. What the dictionary does state is written afresh, the release being the truth.
-const held = existsSync(output)
-  ? Object.entries(readMeanings(readFileSync(output, 'utf8'))).filter(([word]) => meanings[word] === undefined)
-  : []
+const written: Record<string, readonly string[]> = {}
+let held = 0
 
-writeFileSync(
-  output,
-  meaningsFile({ header: headerFor(releaseOf(xml)), meanings: { ...Object.fromEntries(held), ...meanings } }),
-)
+if (existsSync(output)) {
+  for (const [word, said] of Object.entries(readMeanings(readFileSync(output, 'utf8')))) {
+    if (meanings[word] !== undefined) continue
 
-process.stdout.write(`vocabulary: ${Object.keys(meanings).length + held.length} of ${words.length} written to ${output}, ${held.length} of them held from an earlier run\n`)
-process.stdout.write(`taught by the character they write: ${carried}, named by their own reading: ${named}\n`)
-process.stdout.write(`words the release does not gloss in ${locale}: ${list(owed.filter((one) => meanings[one] === undefined && !held.some(([word]) => word === one)))}\n`)
-
-// What the release says it is. The address is one rolling file, so a run recording the URL would record
-// nothing: two runs six months apart read different data under the same name.
-function releaseOf(release: string): string {
-  return /<!-- JMdict created: (.*?) -->/.exec(release)?.[1] ?? 'unstated'
+    written[word] = said
+    held += 1
+  }
 }
+
+writeFileSync(output, meaningsFile({ header: headerFor(release), meanings: { ...written, ...meanings } }))
+
+process.stdout.write(`vocabulary: ${Object.keys(meanings).length + held} of ${words.length} written to ${output}, ${held} of them held from an earlier run\n`)
+process.stdout.write(`taught by the character they write: ${carried}, named by their own reading: ${named}\n`)
+process.stdout.write(`words the release does not gloss in ${locale}: ${list(owed.filter((one) => written[one] === undefined))}\n`)
 
 function headerFor(release: string): Readonly<Record<string, string>> {
   return {

@@ -61,7 +61,7 @@ export function keyTranslationPrefix(language: string, taken: readonly string[])
 }
 
 export function keyTranslationRequest(prefix: string, one: Untranslated): MessageCreateParamsNonStreaming {
-  return corpusRequest(prefix, { format: FORMAT }, asks(one))
+  return corpusRequest(prefix, FORMAT, asks(one))
 }
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to

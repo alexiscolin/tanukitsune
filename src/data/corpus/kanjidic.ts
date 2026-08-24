@@ -18,10 +18,6 @@ const LISTING = /\(no\.\s*\d+\)/
 // apostrophe is a letter's neighbour in French, and stripping it turns s'appeler into sappeler.
 const QUOTES = /"/g
 
-// What the release says it is. The address it is served from is one rolling file rather than a
-// versioned one, so a run that recorded the URL would record nothing: two runs six months apart read
-// different data under the same name. The file states its own version, and that is what is written
-// beside what a run produced.
 // A parenthesis qualifies a gloss for somebody reading a dictionary and means nothing on a card, where
 // the word is the whole of what a learner types: a release states "sushi (plat)" and a reader types
 // sushi. Read by jmdict.ts too, the two releases stating their asides the same way.
@@ -29,6 +25,10 @@ export function withoutAside(gloss: string): string {
   return gloss.replace(/\s*\([^)]*\)/g, '')
 }
 
+// What the release says it is. The address it is served from is one rolling file rather than a
+// versioned one, so a run that recorded the URL would record nothing: two runs six months apart read
+// different data under the same name. The file states its own version, and that is what is written
+// beside what a run produced.
 export function releaseOf(xml: string): string {
   const version = /<database_version>(.*?)<\/database_version>/.exec(xml)?.[1]
   const created = /<date_of_creation>(.*?)<\/date_of_creation>/.exec(xml)?.[1]
