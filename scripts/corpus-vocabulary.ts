@@ -11,6 +11,8 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
+import { toRomaji } from 'wanakana'
+
 import { fetched, list } from './corpus-command.ts'
 import { meaningsFile, readMeanings } from '../src/data/corpus/artifact.ts'
 import { parseWords } from '../src/data/corpus/jmdict.ts'
@@ -55,32 +57,86 @@ const reuses = (word: { characters: string | null; meanings: readonly string[] }
   return character.some((one) => said.has(one.toLowerCase()))
 }
 
+// A word whose every meaning is its own reading romanised is a name: the course teaches 瑛斗 as Eito
+// because that is what it is called, not because 瑛 and 斗 say so. A name is the same word here, so it
+// is derived from the reading rather than translated, and rather than copied from the course. Read only
+// where the dictionary states nothing, since a borrowed word passes this test too and the release is
+// what knows that French writes it samouraï.
+const nameOf = (word: { characters: string | null; meanings: readonly string[]; readings: readonly { value: string }[] }) => {
+  const romanised = word.readings.map((one) => {
+    const said = toRomaji(one.value)
+
+    return said.charAt(0).toUpperCase() + said.slice(1)
+  })
+  const named = word.meanings.length > 0 && word.meanings.every((one) => romanised.some((said) => said.toLowerCase() === one.toLowerCase()))
+
+  return named ? romanised : null
+}
+
+// The meaning the card shows leads. The release orders its senses its own way, so 味噌 states the
+// figurative sense before the paste, and a card showing the first would ask for a word nobody is
+// taught. Where one of them is what the course teaches, that one leads and the rest follow it.
+const shown = (stated: readonly string[], taught: readonly string[]): readonly string[] => {
+  const asked = new Set(taught.map(flattened))
+  const first = stated.findIndex((one) => asked.has(flattened(one)))
+
+  return first < 1 ? stated : [stated[first] as string, ...stated.filter((_, at) => at !== first)]
+}
+
+// Compared without case or accent, since the course writes its meanings in English and a word carried
+// into French unchanged is written with the accent French gives it: karate and karaté are one word.
+function flattened(word: string): string {
+  return word
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Mn}/gu, '')
+}
+
 const meanings: Record<string, readonly string[]> = {}
 const owed: string[] = []
 let carried = 0
+let named = 0
 
 for (const word of words) {
   const form = word.characters as string
   const stated = said.get(form)
-
   if (reuses(word) && keyed[form] !== undefined) {
     meanings[form] = keyed[form]
     carried += 1
     continue
   }
-  if (stated === undefined || stated.length === 0) {
-    owed.push(form)
+  if (stated !== undefined && stated.length > 0) {
+    meanings[form] = shown(stated, word.meanings)
     continue
   }
 
-  meanings[form] = stated
+  // Last, and only where the dictionary states nothing: a word French has borrowed is written the way
+  // French writes it, 侍 being samouraï rather than Samurai, and the release is what knows that. What
+  // is left after it are the names nothing glosses.
+  const name = nameOf(word)
+
+  if (name === null) owed.push(form)
+  else {
+    meanings[form] = name
+    named += 1
+  }
 }
 
-writeFileSync(output, meaningsFile({ header: headerFor(releaseOf(xml)), meanings }))
+// A meaning already written that this run cannot produce is kept rather than dropped. corpus:word pays
+// a model for exactly those, and a re-run that reset the file would throw away what was paid for and
+// ask for it again. What the dictionary does state is written afresh, the release being the truth.
+const held = existsSync(output)
+  ? Object.entries(readMeanings(readFileSync(output, 'utf8'))).filter(([word]) => meanings[word] === undefined)
+  : []
 
-process.stdout.write(`vocabulary: ${Object.keys(meanings).length} of ${words.length} written to ${output}\n`)
-process.stdout.write(`taught by the character they write: ${carried}\n`)
-process.stdout.write(`words the release does not gloss in ${locale}, owed to a later run: ${list(owed)}\n`)
+writeFileSync(
+  output,
+  meaningsFile({ header: headerFor(releaseOf(xml)), meanings: { ...Object.fromEntries(held), ...meanings } }),
+)
+
+process.stdout.write(`vocabulary: ${Object.keys(meanings).length + held.length} of ${words.length} written to ${output}, ${held.length} of them held from an earlier run\n`)
+process.stdout.write(`taught by the character they write: ${carried}, named by their own reading: ${named}\n`)
+process.stdout.write(`words the release does not gloss in ${locale}: ${list(owed.filter((one) => meanings[one] === undefined && !held.some(([word]) => word === one)))}\n`)
 
 // What the release says it is. The address is one rolling file, so a run recording the URL would record
 // nothing: two runs six months apart read different data under the same name.

@@ -56,3 +56,24 @@ describe('parseWords', () => {
     expect(parseWords(RELEASE, 'en').get('日本')).toEqual(['Japan'])
   })
 })
+
+// A parenthesis qualifies a gloss for somebody reading a dictionary and means nothing on a card, where
+// the meaning is the whole of what a learner types. The word it qualifies is kept and the aside is not.
+describe('an aside', () => {
+  const ASIDES = `<JMdict>
+<entry><k_ele><keb>寿司</keb></k_ele><sense><gloss xml:lang="fre">sushi (plat)</gloss></sense></entry>
+<entry><k_ele><keb>下さい</keb></k_ele><sense><gloss xml:lang="fre">s'il vous plaît (donnez-moi)</gloss></sense></entry>
+<entry><k_ele><keb>々</keb></k_ele><sense><gloss xml:lang="fre">(marque de répétition)</gloss></sense></entry>
+</JMdict>`
+
+  it('keeps the word and drops what qualifies it', () => {
+    expect(parseWords(ASIDES, 'fr').get('寿司')).toEqual(['sushi'])
+    expect(parseWords(ASIDES, 'fr').get('下さい')).toEqual(["s'il vous plaît"])
+  })
+
+  // A gloss that is nothing but an aside leaves no word behind, and an empty string is not a meaning a
+  // reader can be graded on.
+  it('leaves out a gloss that is an aside and nothing else', () => {
+    expect(parseWords(ASIDES, 'fr').has('々')).toBe(false)
+  })
+})

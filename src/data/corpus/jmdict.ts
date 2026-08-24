@@ -9,6 +9,11 @@
 // The language codes are three letters here where KANJIDIC2's are two, so the locale is translated on
 // the way in rather than spelled its own way at every call site.
 
+// A parenthesis qualifies a gloss for somebody reading a dictionary and means nothing on a card, where
+// the meaning is the whole of what a learner types: the release states "sushi (plat)" and a reader
+// types sushi. The same rule kanjidic.ts states, for the same reason and against the same releases.
+const ASIDE = /\s*\([^)]*\)/g
+
 const ENTRY = /<entry>([\s\S]*?)<\/entry>/g
 const KEB = /<keb>(.*?)<\/keb>/g
 const REB = /<reb>(.*?)<\/reb>/g
@@ -27,7 +32,11 @@ export function parseWords(xml: string, locale: string): ReadonlyMap<string, rea
       : new RegExp(`<gloss xml:lang="${SPOKEN[locale] ?? locale}"[^>]*>(.*?)</gloss>`, 'g')
 
   for (const [, body = ''] of xml.matchAll(ENTRY)) {
-    const glosses = [...body.matchAll(glossed)].map(([, gloss = '']) => gloss)
+    const glosses = [...body.matchAll(glossed)]
+      .map(([, gloss = '']) => gloss.replace(ASIDE, '').trim())
+      // A gloss that is nothing but an aside leaves no word behind, and an empty string is not a
+      // meaning a reader can be graded on.
+      .filter((gloss) => gloss !== '')
     if (glosses.length === 0) continue
 
     // The written forms first, since that is how the curriculum spells a word. A word it deals in kana
