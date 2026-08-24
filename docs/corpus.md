@@ -156,6 +156,12 @@ pass, so the two files cannot disagree about which word leads. A gloss this lang
 left out by the rule the key already passed: the release states counters and calendar signs among the
 meanings, and grading somebody right for a calendar sign is grading nothing.
 
+**The meaning a card shows leads and the rest follow it.** A release orders its senses its own way, so
+味噌 states the figurative sense before the paste, and a card showing the first would ask for a word
+nobody is taught. Where one of the senses is what the course teaches, that one leads. A parenthesis is
+dropped on the way in, by the rule the keys already follow: it qualifies a gloss for somebody reading a
+dictionary and means nothing where the meaning is the whole of what a learner types.
+
 **What a word means is read from a dictionary, never asked of a model.** A meaning is a fact somebody
 wrote down, and one taken from a dictionary can be checked against it where one a model invented can
 only be checked by a person reading six thousand words. `corpus:vocabulary` reads JMdict, which glosses
@@ -164,10 +170,12 @@ half-written, and being left out is what says the word is owed. `corpus:word` as
 and for them alone: they are largely transparent compounds a release does not bother stating, 三人
 being three and person, so what travels is the characters the word is written with and the word each
 already carries. A word the curriculum deals in kana alone has no characters to read a meaning off, and
-what the course teaches it as is the whole of what travels for it. Two words stand without a
-meaning, 瑛斗 and 漣斗, both given names the course teaches as names. They came back empty rather than
-guessed at, which is the answer a name deserves: it means nobody in particular and its characters say
-nothing about who, so a meaning read off them would be invented. A word written with a single kanji and
+what the course teaches it as is the whole of what travels for it. A word whose every meaning is its
+own reading romanised is a name, 瑛斗 being taught as Eito because that is what it is called rather
+than because 瑛 and 斗 say so, and a name is the same word here: it is derived from the reading rather
+than translated. That is read last and only where the dictionary states nothing, a borrowed word
+passing the same test while the release is what knows French writes it samouraï. Every word the
+curriculum deals carries a meaning. A word written with a single kanji and
 meaning what that character means is taught by the word the character already carries, or the same
 shape teaches two French words on two cards; where the two disagree the word keeps its own, 天 the
 character being heaven and 天 the word the heavens.
@@ -334,8 +342,11 @@ through the batch API, validates, writes by subject as it goes, publishes the ch
 manifest in that order, and ends on the coverage report. A run killed halfway resumes: what is written
 is not regenerated, and the failed set goes into the next batch, which is the same mechanism.
 
-Batch submission is asynchronous, so one command does not mean one minute. The first run on a new
-language builds that language's world, stops, and waits for it to be reviewed and committed.
+Batch submission is asynchronous, so one command does not mean one minute. Four of the steps submit a
+batch and end on it, and `pnpm corpus` waits for each and asks it to collect rather than handing the
+wait back: a run each of them ends is a run somebody restarts eight times. It gives up after two hours
+on one batch, which is longer than any has taken and short enough that a batch that will never end does
+not hold the terminal overnight. Every step is still runnable alone, which is how one is read by hand.
 
 `corpus:name` is that first run, and it is the shape the rest of the command takes. It counts what the
 locale owes against the curriculum, asks for one name per component, and is re-run rather than waited

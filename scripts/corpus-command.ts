@@ -12,11 +12,27 @@ export const KANJIDIC = 'http://www.edrdg.org/kanjidic/kanjidic2.xml.gz'
 
 // A release, fetched and unpacked. The name is the source's, so a failure says which of them
 // answered rather than leaving an operator to guess from a bare status.
+//
+// Asked again where the host refuses or the read breaks off, since these releases are served by
+// volunteers and a refusal that clears in seconds would otherwise end a run that had already paid for
+// the steps behind it. A status the host actually returned is not retried: it answered, and asking
+// again gets the same answer.
 export async function fetched(source: string, named: string): Promise<string> {
-  const response = await fetch(source)
-  if (!response.ok) throw new Error(`${named} answered ${response.status}`)
+  const MOST_TRIES = 4
 
-  return gunzipSync(Buffer.from(await response.arrayBuffer())).toString('utf8')
+  for (let tried = 1; ; tried += 1) {
+    try {
+      const response = await fetch(source)
+      if (!response.ok) throw new Error(`${named} answered ${response.status}`)
+
+      return gunzipSync(Buffer.from(await response.arrayBuffer())).toString('utf8')
+    } catch (reason) {
+      if (tried >= MOST_TRIES || (reason instanceof Error && reason.message.startsWith(`${named} answered`))) throw reason
+
+      process.stdout.write(`${named} did not answer, asking again in ${tried * 5} seconds\n`)
+      await new Promise((wake) => setTimeout(wake, tried * 5000))
+    }
+  }
 }
 
 // A count, and enough of the list to act on. Twenty, because a report is read in a terminal and a

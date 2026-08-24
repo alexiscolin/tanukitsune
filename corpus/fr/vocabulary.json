@@ -1423,7 +1423,7 @@
 "半分":["moitié"],
 "分かる":["être au courant","comprendre","connaître"],
 "分ける":["diviser","partager","séparer"],
-"分":["portion","minute","section","part","degré","son lot dans la vie","comprendre","savoir","devoir","taux","chances"],
+"分":["part","portion","minute","section","degré","taux","comprendre","savoir","devoir","son lot dans la vie","chances"],
 "切れる":["être tranchant","bien couper","s'écrouler","s'épuiser","s'effondrer","éclater","être blessé","être cassé","être déconnecté","être interrompu","être rompu","couper avec","être en dehors de","expirer","manquer de","perspicace","sagace"],
 "大切":["important"],
 "切る":["égoutter","émincer","éteindre","être capable de","abattre","achever","avoir fini","couper","couper","couper en bandes","couper en morceaux","déconnecter","faire un rabais","finir","interrompre","rompre","scier","sculpter","tailler","terminer","tondre","trancher","traverser","vendre à perte"],
@@ -4552,7 +4552,7 @@
 "撤兵":["repli des troupes","repliement des troupes"],
 "措置":["mesure","pas"],
 "拠る":["dépendre de","provenir de","venir de"],
-"拠点":["position","base","point"],
+"拠点":["base","position","point"],
 "証拠":["preuve"],
 "根拠":["base","fondements"],
 "礼儀":["courtoisie","manières","politesse"],
@@ -6790,6 +6790,13 @@
 "農村":["village agricole","village rural"],
 "返済":["remboursement"],
 "日本史":["histoire du japon"],
-"履歴":["antécédents","histoire personnelle"]
+"履歴":["antécédents","histoire personnelle"],
+"世界史":["l'histoire du monde"],
+"草食":["herbivore"],
+"草原":["plaine herbeuse","pré","prairie","savanne"],
+"女史":["mme"],
+"歴然":["évident","patent"],
+"草履":["sandale de paille"],
+"史上初":["premier de l'histoire"]
 }
 }

@@ -4,10 +4,11 @@
 // alone, which is how one of them is read by hand; this runs them in the order each reads what the one
 // before it wrote, and resumes rather than restarting.
 //
-// Batch submission is asynchronous, so one command does not mean one minute. A step that submits one
-// ends the run: what follows reads what that batch is about to write, so carrying on would pay for
-// requests built against a corpus that is already moving. What decides the order, the arguments each
-// step reads and where a re-run picks up is in `src/data/corpus/pipeline.ts`, where a test reaches it.
+// Batch submission is asynchronous, so one command does not mean one minute: four of the steps submit
+// one and end, and this waits for each and asks it to collect rather than handing the wait back. What
+// follows a batch reads what that batch is about to write, so nothing after it runs until it lands.
+// What decides the order, the arguments each step reads and where a re-run picks up is in
+// `src/data/corpus/pipeline.ts`, where a test reaches it.
 
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -28,6 +29,12 @@ const most = bound === undefined ? Infinity : Number(bound)
 // where none has been read yet, the keys and the anchors being settled across all of them.
 const levels = existsSync(INVENTORY_FILE) ? readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8')).upTo : 60
 
+// A batch is minutes rather than seconds, and asking more often than this costs a request per answer
+// nobody is waiting on. Two hours before the run gives up, which is longer than any batch here has
+// taken and short enough that a batch that will never end does not hold the terminal overnight.
+const WAIT = 30_000
+const MOST_WAITS = 240
+
 const steps = stepsFor(locale)
 const left = steps.slice(resumeAt(steps, existsSync))
 
@@ -46,10 +53,19 @@ if (!(await confirmed())) {
 
 for (const step of left) {
   run(step.name)
+  if (step.batch === null) continue
 
-  if (step.batch !== null && existsSync(step.batch)) {
-    process.stdout.write(`${step.name} is waiting on a batch. Run pnpm corpus ${locale} again to collect it\n`)
-    break
+  // A step that submits leaves its batch written down and ends, so the run waits and asks it to
+  // collect rather than handing the wait back to whoever typed the command: four steps submit, and a
+  // run they each end is a run somebody restarts eight times. The batch file going is what says the
+  // step is done with it, and each of them is re-runnable by reflex, so asking again is free.
+  for (let asked = 0; existsSync(step.batch); asked += 1) {
+    if (asked >= MOST_WAITS) {
+      throw new Error(`${step.name} still holds ${step.batch} after ${(MOST_WAITS * WAIT) / 60000} minutes. Run it alone to see what it says`)
+    }
+
+    await new Promise((wake) => setTimeout(wake, WAIT))
+    run(step.name)
   }
 }
 
