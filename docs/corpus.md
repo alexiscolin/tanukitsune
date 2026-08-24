@@ -229,6 +229,18 @@ the more ordinary word does. A reading left without leaves the run with the reas
 word the rules accept exists for it, or that every one that does is already an anchor elsewhere or
 sits too near one.
 
+`pnpm corpus:lexicon` writes those candidates, one locale at a time, since no two languages are served
+by one lexicon and a locale this has no source for is refused rather than written from the nearest
+thing at hand. The file it writes is not committed, for the reason the inventory is not: it is an input
+to the allocation and nothing serves it, so seven megabytes rebuilt in seconds would sit in the history
+to save nobody anything. What travels is `anchors.json`, carrying each anchor's pronunciation as
+derived, so the check that an anchor is a real word runs where the release is.
+
+Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
+thirty-seven symbols name sounds French borrows rather than owns. The articulatory table describes
+neither, so the words carrying one are no candidates: kept, they would be measured against a reading on
+a sound nothing describes, and the measurement would answer.
+
 ## How one item is made
 
 The order matters as much as the rules.
@@ -322,8 +334,8 @@ instrument over a sample.
 ## The command
 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
-`corpus:inventory`, `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:name`,
-`corpus:vocabulary`, `corpus:word` and `corpus:report` are its nine steps, each still runnable alone so that one of them can be read by hand,
+`corpus:inventory`, `corpus:lexicon`, `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`,
+`corpus:name`, `corpus:vocabulary`, `corpus:word` and `corpus:report` are its ten steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.

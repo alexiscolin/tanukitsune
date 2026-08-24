@@ -34,6 +34,7 @@ corpus/.inventory.json
 
 # The batch a naming run left in flight. It names a job on somebody's account and the next run
 # replaces it, so it belongs to the machine that submitted rather than to the language.
+corpus/*/.lexicon.json
 corpus/*/.naming-batch.json
 corpus/*/.key-choice-batch.json
 corpus/*/.key-translation-batch.json

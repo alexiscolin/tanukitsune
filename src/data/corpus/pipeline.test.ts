@@ -32,7 +32,7 @@ describe('stepsFor', () => {
   it('writes a locale its own lexicon, without reaching a model', () => {
     const lexicon = FR.find((one) => one.name === 'corpus:lexicon') as Step
 
-    expect(lexicon?.batch).toBeNull()
+    expect(lexicon.batch).toBeNull()
     expect(argumentsFor(lexicon, 'fr', 20, 60)).toEqual(['fr'])
   })
 
@@ -68,7 +68,7 @@ describe('argumentsFor', () => {
   const step = (name: string) => FR.find((one) => one.name === name) as Step
 
   // Three steps read the position after their name as something other than a locale, so one shape for
-  // all nine hands a release path where a locale was meant and dies on the first of them.
+  // all ten hands a release path where a locale was meant and dies on the first of them.
   it('gives a step what that step reads, rather than one shape for all', () => {
     expect(argumentsFor(step('corpus:decomposition'), 'fr', Infinity, 60)).toEqual([])
     expect(argumentsFor(step('corpus:inventory'), 'fr', Infinity, 60)).toEqual(['60'])
