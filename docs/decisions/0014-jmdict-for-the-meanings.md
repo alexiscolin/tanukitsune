@@ -6,8 +6,7 @@ Accepted.
 
 ## Context
 
-A card teaches what a word means, and nothing said what the 6790 words of the curriculum mean in
-French. Three sources could answer.
+A card teaches what a word means, and nothing said what the words of the curriculum mean in French. Three sources could answer.
 
 WaniKani states a meaning for every subject it deals, in English. Its curriculum is its content and its
 inventory is not published from here, so a meaning read there cannot travel into a corpus anybody else
@@ -31,8 +30,9 @@ ordering the glosses a character already has.
 
 ## Consequences
 
-5446 of the 6790 words carry a meaning, 907 of the 1119 that levels one to ten ship. 1344 are owed, and
-they are largely transparent compounds the release does not bother stating.
+JMdict glosses about four fifths of them. What it leaves is largely transparent compounds it does not
+bother stating, and those are what `corpus:word` asks a model for, so every word of the curriculum
+carries a meaning between the two.
 
 JMdict is CC BY-SA 4.0, from the same group as KANJIDIC2 and under the same licence, so one attribution
 answers for both and the derived file committed here carries that licence. `docs/sources.md` holds the

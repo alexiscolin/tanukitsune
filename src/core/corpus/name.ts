@@ -24,7 +24,7 @@ export type Naming = Shape & {
   readonly examples: readonly { readonly character: string; readonly name: string }[]
 }
 
-export type Fault = 'no article' | 'nothing after the article' | 'not the locale' | 'too long'
+export type Fault = 'no article' | 'nothing after the article' | 'not the locale' | 'too long' | 'nothing to read'
 
 export function faultInName(name: string, shape: Shape): Fault | null {
   const written = folded(name)
@@ -47,6 +47,26 @@ export function faultInName(name: string, shape: Shape): Fault | null {
   // Counted after the article, because le and l' are the same article and only one of them brings a
   // space, so counting the whole name makes the bound mean two different things.
   if (written.slice(opener.length).split(' ').length > shape.mostWords) return 'too long'
+
+  return null
+}
+
+// What a meaning has to be before it is written down. Looser than a key: a meaning is what a reader
+// types to be graded right, and a word can mean "année 2011" or "le 8" as easily as it means a noun, so
+// a figure and the punctuation around it are part of the word rather than a fault. What it cannot be is
+// unreadable, in either direction: nothing of this language in it, or something of another.
+export function faultInMeaning(meaning: string, shape: Shape): Fault | null {
+  const written = folded(meaning)
+  // A space separates two words rather than joining them, so it is not a joiner and is named here, the
+  // way faultInKey names it.
+  const beside = " 0123456789,.:;!?()/&%"
+
+  if ([...written].some((one) => !shape.letters.includes(one) && !shape.joiners.includes(one) && !beside.includes(one))) {
+    return 'not the locale'
+  }
+  // A meaning made of figures alone is what a release states for 百万 beside "un million", and a card
+  // showing it asks for a word it never gave.
+  if (![...written].some((one) => shape.letters.includes(one))) return 'nothing to read'
 
   return null
 }

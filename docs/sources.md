@@ -83,8 +83,8 @@ that exists: [credits](https://kanjialive.com/credits/),
 [KANJIDIC](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project).
 
 **JMdict is CC BY-SA 4.0** and states each word of the language with its senses, French among the
-languages it glosses: it covers 5446 of the 6790 words the curriculum deals, and what it does not gloss
-here is owed to a later run. Same group and same licence as KANJIDIC2, so one attribution answers for
+languages it glosses: it covers about four fifths of the words the curriculum deals, and what it does
+not gloss here is owed to the run that asks a model. Same group and same licence as KANJIDIC2, so one attribution answers for
 both: [EDRDG licence](https://www.edrdg.org/edrdg/licence.html),
 [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project).
 

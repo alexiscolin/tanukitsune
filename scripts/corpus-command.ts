@@ -1,6 +1,10 @@
 // What more than one corpus command needs, and what none of them may answer its own way. The commands
 // stay separate files because each is one step of the pipeline; what they genuinely share lives here.
 
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { gunzipSync } from 'node:zlib'
 
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
@@ -19,13 +23,24 @@ export const KANJIDIC = 'http://www.edrdg.org/kanjidic/kanjidic2.xml.gz'
 // again gets the same answer.
 export async function fetched(source: string, named: string): Promise<string> {
   const MOST_TRIES = 4
+  // Held on disk for an hour, because a run waiting on a batch asks its step again every half minute
+  // and each of those asks would otherwise pull the whole release down again, from a host these files
+  // are served by volunteers from. An hour is shorter than any of them changes in and longer than a
+  // batch takes, so a run reads one release throughout and the next run reads whatever is current.
+  const held = join(tmpdir(), `tanukitsune-${createHash('sha256').update(source).digest('hex').slice(0, 16)}`)
+  const HOLDS_FOR = 3600_000
+
+  if (existsSync(held) && Date.now() - statSync(held).mtimeMs < HOLDS_FOR) return readFileSync(held, 'utf8')
 
   for (let tried = 1; ; tried += 1) {
     try {
       const response = await fetch(source)
       if (!response.ok) throw new Error(`${named} answered ${response.status}`)
 
-      return gunzipSync(Buffer.from(await response.arrayBuffer())).toString('utf8')
+      const read = gunzipSync(Buffer.from(await response.arrayBuffer())).toString('utf8')
+      writeFileSync(held, read)
+
+      return read
     } catch (reason) {
       if (tried >= MOST_TRIES || (reason instanceof Error && reason.message.startsWith(`${named} answered`))) throw reason
 

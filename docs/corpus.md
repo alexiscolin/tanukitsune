@@ -165,8 +165,9 @@ dictionary and means nothing where the meaning is the whole of what a learner ty
 **What a word means is read from a dictionary, never asked of a model.** A meaning is a fact somebody
 wrote down, and one taken from a dictionary can be checked against it where one a model invented can
 only be checked by a person reading six thousand words. `corpus:vocabulary` reads JMdict, which glosses
-5446 of the 6790 words the curriculum deals; what it does not gloss here is left out rather than
-half-written, and being left out is what says the word is owed. `corpus:word` asks the model for those,
+about four fifths of the words the curriculum deals; what it does not gloss here is left out rather
+than half-written, and being left out is what says the word is owed. `corpus:word` asks the model for
+those,
 and for them alone: they are largely transparent compounds a release does not bother stating, 三人
 being three and person, so what travels is the characters the word is written with and the word each
 already carries. A word the curriculum deals in kana alone has no characters to read a meaning off, and
@@ -174,8 +175,9 @@ what the course teaches it as is the whole of what travels for it. A word whose 
 own reading romanised is a name, 瑛斗 being taught as Eito because that is what it is called rather
 than because 瑛 and 斗 say so, and a name is the same word here: it is derived from the reading rather
 than translated. That is read last and only where the dictionary states nothing, a borrowed word
-passing the same test while the release is what knows French writes it samouraï. Every word the
-curriculum deals carries a meaning. A word written with a single kanji and
+passing the same test while the release is what knows French writes it samouraï. All 6797 words the
+curriculum deals carry a meaning, and a word left with none by every one of those is reported rather
+than written half. A word written with a single kanji and
 meaning what that character means is taught by the word the character already carries, or the same
 shape teaches two French words on two cards; where the two disagree the word keeps its own, 天 the
 character being heaven and 天 the word the heavens.

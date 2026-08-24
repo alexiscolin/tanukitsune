@@ -2,6 +2,8 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
+import { corpusRequest } from '../request'
+
 import type { Naming } from '@/core/corpus/name'
 
 // What a component is called, asked one component at a time. Nothing here is about one language: the
@@ -73,21 +75,7 @@ export function componentNamePrefix(naming: Naming, taken: readonly string[]): s
 }
 
 export function componentNameRequest(prefix: string, part: Part): MessageCreateParamsNonStreaming {
-  return {
-    model: 'claude-opus-5',
-    // The ceiling covers thinking and answer together, and this model thinks unless told not to, so a
-    // ceiling sized for a noun phrase is spent before the phrase is written and every request in the
-    // batch comes back truncated. Room for both, since an unused ceiling costs nothing.
-    max_tokens: 4096,
-    // Stated rather than left to the default, because the default differs between models in this
-    // family and the difference is the truncation above.
-    thinking: { type: 'adaptive' },
-    // An hour rather than the default five minutes, because a batch routinely runs longer than that
-    // and a prefix that expires mid-run is written again and read by nothing.
-    system: [{ type: 'text', text: prefix, cache_control: { type: 'ephemeral', ttl: '1h' } }],
-    output_config: { format: FORMAT },
-    messages: [{ role: 'user', content: asks(part) }],
-  }
+  return corpusRequest(prefix, { format: FORMAT }, asks(part))
 }
 
 // A space is a joiner and it has no shape on a page, so it is named rather than shown in a list where

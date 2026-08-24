@@ -12,9 +12,7 @@ const LITERAL = /<literal>(.*?)<\/literal>/
 // the character is in a table rather than what it means. Twenty characters carry one, and it is never
 // a word a reader can be graded on.
 const LISTING = /\(no\.\s*\d+\)/
-// A parenthesis qualifies a gloss for somebody reading a dictionary and means nothing on a card, where
-// the key is the whole of what a learner types. The word it qualifies is kept and the aside is not.
-const ASIDE = /\s*\([^)]*\)/g
+
 // The release quotes a gloss that quotes itself, and an aside taken out of the middle of one leaves
 // the quotes around what is left. A key is a word rather than punctuation. Only the double quote: the
 // apostrophe is a letter's neighbour in French, and stripping it turns s'appeler into sappeler.
@@ -24,6 +22,13 @@ const QUOTES = /"/g
 // versioned one, so a run that recorded the URL would record nothing: two runs six months apart read
 // different data under the same name. The file states its own version, and that is what is written
 // beside what a run produced.
+// A parenthesis qualifies a gloss for somebody reading a dictionary and means nothing on a card, where
+// the word is the whole of what a learner types: a release states "sushi (plat)" and a reader types
+// sushi. Read by jmdict.ts too, the two releases stating their asides the same way.
+export function withoutAside(gloss: string): string {
+  return gloss.replace(/\s*\([^)]*\)/g, '')
+}
+
 export function releaseOf(xml: string): string {
   const version = /<database_version>(.*?)<\/database_version>/.exec(xml)?.[1]
   const created = /<date_of_creation>(.*?)<\/date_of_creation>/.exec(xml)?.[1]
@@ -69,5 +74,5 @@ function isWord(gloss: string): boolean {
 }
 
 function plain(gloss: string): string {
-  return gloss.replace(ASIDE, '').replace(QUOTES, '').replace(/\s+/g, ' ').trim()
+  return withoutAside(gloss).replace(QUOTES, '').replace(/\s+/g, ' ').trim()
 }

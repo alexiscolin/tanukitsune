@@ -19,6 +19,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { asked, list } from './corpus-command.ts'
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
 import { readWordMeaning, WORD_MEANING_VERSION, wordMeaningPrefix, wordMeaningRequest } from '../src/ai/corpus/prompts/word-meaning.ts'
+import { faultInMeaning } from '../src/core/corpus/name.ts'
 import { meaningsFile, readKeys, readMeanings, readNaming } from '../src/data/corpus/artifact.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
@@ -46,11 +47,24 @@ const words = subjects.filter(
 // A word the dictionary did not state. One written with characters travels with the word each of them
 // carries; one the curriculum deals in kana alone has none, and what the course teaches it as is the
 // whole of what there is to read a meaning from.
+const unread = words.filter(
+  (one) =>
+    said[one.characters as string] === undefined &&
+    partsOf(one.characters as string).length === 0 &&
+    one.type !== 'kana_vocabulary',
+)
 const owed = words.filter(
   (one) =>
     said[one.characters as string] === undefined &&
     (partsOf(one.characters as string).length > 0 || one.type === 'kana_vocabulary'),
 )
+
+// Said before anything is submitted rather than dropped in silence: a word written with characters this
+// locale has no word for has nothing to read a meaning from, so it is never asked, and a set nobody
+// counts is a set nobody notices growing.
+if (unread.length > 0) {
+  process.stdout.write(`not asked, no character of them carries a word here: ${list(unread.map((one) => one.characters as string))}\n`)
+}
 
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
 const step = nextStep(saved, owed.slice(0, most).map((one) => one.characters as string), WORD_MEANING_VERSION)
@@ -101,7 +115,10 @@ async function collect(id: string): Promise<void> {
     add(spent, one.spent)
 
     const meaning = readWordMeaning(one.text)
+    const fault = meaning === null ? null : faultInMeaning(meaning, naming)
+
     if (meaning === null) unusable.set(word, 'nothing sent gives the word away')
+    else if (fault !== null) unusable.set(word, `answered "${meaning}", which is ${fault}`)
     else kept[word] = [meaning]
   }
 
