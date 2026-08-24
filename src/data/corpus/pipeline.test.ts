@@ -27,6 +27,15 @@ describe('stepsFor', () => {
     expect(asking).toEqual(['corpus:key-choice', 'corpus:key-translation', 'corpus:name', 'corpus:word'])
   })
 
+  // The lexicon holds the words a reading can be bound to, and every locale needs its own: no two
+  // languages are served by one source, so the step reads the locale rather than standing outside them.
+  it('writes a locale its own lexicon, without reaching a model', () => {
+    const lexicon = FR.find((one) => one.name === 'corpus:lexicon') as Step
+
+    expect(lexicon?.batch).toBeNull()
+    expect(argumentsFor(lexicon, 'fr', 20, 60)).toEqual(['fr'])
+  })
+
   it('keys a locale step by that locale and leaves a shared one alone', () => {
     expect(stepsFor('fr').find((one) => one.name === 'corpus:name')?.batch).toBe('corpus/fr/.naming-batch.json')
     expect(stepsFor('de').find((one) => one.name === 'corpus:name')?.batch).toBe('corpus/de/.naming-batch.json')
