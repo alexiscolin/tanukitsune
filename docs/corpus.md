@@ -163,8 +163,11 @@ only be checked by a person reading six thousand words. `corpus:vocabulary` read
 half-written, and being left out is what says the word is owed. `corpus:word` asks the model for those,
 and for them alone: they are largely transparent compounds a release does not bother stating, 三人
 being three and person, so what travels is the characters the word is written with and the word each
-already carries. A word whose meaning does not follow from its parts comes back with nothing, which is
-an answer rather than a failure and leaves the word for a person to write. A word written with a single kanji and
+already carries. A word the curriculum deals in kana alone has no characters to read a meaning off, and
+what the course teaches it as is the whole of what travels for it. Two words stand without a
+meaning, 瑛斗 and 漣斗, both given names the course teaches as names. They came back empty rather than
+guessed at, which is the answer a name deserves: it means nobody in particular and its characters say
+nothing about who, so a meaning read off them would be invented. A word written with a single kanji and
 meaning what that character means is taught by the word the character already carries, or the same
 shape teaches two French words on two cards; where the two disagree the word keeps its own, 天 the
 character being heaven and 天 the word the heavens.

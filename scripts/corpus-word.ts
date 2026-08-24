@@ -7,9 +7,12 @@
 // one can be read by hand before the rest is paid for. The key comes from `.env.local`, which the
 // command loads itself: the application is handed it by the framework, and a plain Node run is not.
 //
+// A word the curriculum deals in kana alone has no characters to read a meaning off, so what the
+// course teaches it as is the whole of what travels for it.
+//
 // A batch is asynchronous, so this is re-run rather than waited on, which is the mechanism corpus:name
-// describes. A word whose meaning does not follow from its parts comes back with nothing, which is an
-// answer rather than a failure: it is a word for a person to write, and it is not written here.
+// describes. A word whose meaning cannot be told comes back with nothing, which is an answer rather
+// than a failure: it is a word for a person to write, and it is not written here.
 
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 
@@ -40,17 +43,21 @@ const words = subjects.filter(
   (one) => (one.type === 'vocabulary' || one.type === 'kana_vocabulary') && one.characters !== null && !one.hidden,
 )
 
-// A word the dictionary did not state, and that the characters it is written with can be read off. One
-// carrying no character this locale has a word for is left where it is: the request would arrive with
-// nothing to read the meaning from, and the answer would be a guess this pays for.
-const owed = words.filter((one) => said[one.characters as string] === undefined && partsOf(one.characters as string).length > 0)
+// A word the dictionary did not state. One written with characters travels with the word each of them
+// carries; one the curriculum deals in kana alone has none, and what the course teaches it as is the
+// whole of what there is to read a meaning from.
+const owed = words.filter(
+  (one) =>
+    said[one.characters as string] === undefined &&
+    (partsOf(one.characters as string).length > 0 || one.type === 'kana_vocabulary'),
+)
 
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
 const step = nextStep(saved, owed.slice(0, most).map((one) => one.characters as string), WORD_MEANING_VERSION)
 
 if (step.do === 'submit') await submit(step.parts)
 else if (step.do === 'collect') await collect(step.id)
-else process.stdout.write(`${locale}: every word the dictionary left has a meaning or no parts to read it from\n`)
+else process.stdout.write(`${locale}: every word the dictionary left carries a meaning\n`)
 
 function partsOf(word: string): readonly { character: string; key: string }[] {
   return [...word].flatMap((character) => {
@@ -94,7 +101,7 @@ async function collect(id: string): Promise<void> {
     add(spent, one.spent)
 
     const meaning = readWordMeaning(one.text)
-    if (meaning === null) unusable.set(word, 'the parts do not give the word away')
+    if (meaning === null) unusable.set(word, 'nothing sent gives the word away')
     else kept[word] = [meaning]
   }
 

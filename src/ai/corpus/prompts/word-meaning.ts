@@ -13,7 +13,7 @@ import { z } from 'zod'
 //
 // Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
 // row and two runs sharing a version make the provenance false while looking satisfied.
-export const WORD_MEANING_VERSION = 1
+export const WORD_MEANING_VERSION = 2
 
 // Null where the parts do not give the word away, which is an answer and not a failure: a compound
 // whose meaning has to be known rather than read is one for a person to write.
@@ -33,8 +33,9 @@ export function readWordMeaning(text: string): string | null {
 
 export type Unglossed = {
   readonly word: string
-  // The characters the word is written with and the word each already carries here, which is the whole
-  // of what the meaning is read off.
+  // The characters the word is written with and the word each already carries here. Empty for a word
+  // the curriculum deals in kana alone, which has no character to be read off and leaves the taught
+  // meaning as the whole of what travels.
   readonly parts: readonly { readonly character: string; readonly key: string }[]
   // What the course teaches the word as. It travels as the target and never as text to reproduce, the
   // words themselves being the account's and staying out of every file this writes.
@@ -47,14 +48,15 @@ export function wordMeaningPrefix(language: string): string {
     `You give the ${language} meaning of a Japanese word, for a kanji course. A learner types that`,
     'meaning and is graded on it, so it is the plainest wording the word has and nothing more.',
     '',
-    'You are given the word, the characters it is written with and the word each of those already',
-    `carries in ${language}, and what the course teaches the word as. Carry the taught meaning into`,
-    `${language}, using the parts to settle the wording. Where the two disagree, the taught meaning is`,
-    'the one the reader answers on.',
+    'You are given the word, what the course teaches it as, and, where it is written with characters,',
+    `the word each of those already carries in ${language}. Carry the taught meaning into ${language},`,
+    'using the parts to settle the wording where there are any. Where the two disagree, the taught',
+    'meaning is the one the reader answers on. A word written in kana alone has no parts, and the',
+    'taught meaning is the whole of what there is to carry across.',
     '',
-    'Give the meaning on its own, with no article, no gloss and no parenthesis. Where the word means',
-    'something its parts do not give away, give null rather than a guess: a wrong meaning is taught to',
-    'every reader, and nothing is a word somebody writes by hand instead.',
+    'Give the meaning on its own, with no article, no gloss and no parenthesis. Where you cannot tell',
+    'what the word means, give null rather than a guess: a wrong meaning is taught to every reader, and',
+    'nothing is a word somebody writes by hand instead.',
   ].join('\n')
 }
 

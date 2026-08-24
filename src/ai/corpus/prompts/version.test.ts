@@ -30,6 +30,7 @@ const RECORDED_CHOICE: Record<number, string> = {
 
 const RECORDED_MEANING: Record<number, string> = {
   1: '7b7ddd9604475178d2a2742efe5ce96ef988dd24932754b2b6d24196f99f7ff9',
+  2: '11be8ecabeb337615567c7c48e2b58c5d1406b861e8e4a28a965405af8d78104',
 }
 
 const RECORDED_TRANSLATION: Record<number, string> = {
