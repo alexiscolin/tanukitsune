@@ -13,9 +13,9 @@ import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { collidingNames } from '../src/core/corpus/decomposition.ts'
 import type { ComponentNames } from '../src/core/corpus/decomposition.ts'
 import { faultInKey } from '../src/core/corpus/key.ts'
-import { faultInName } from '../src/core/corpus/name.ts'
+import { faultInMeaning, faultInName } from '../src/core/corpus/name.ts'
 import type { Shape } from '../src/core/corpus/name.ts'
-import { readComponentNames, readKeyOrder, readKeys, readNaming } from '../src/data/corpus/artifact.ts'
+import { readComponentNames, readKeyOrder, readKeys, readMeanings, readNaming } from '../src/data/corpus/artifact.ts'
 
 let fail = 0
 const refuse = (line: string) => {
@@ -51,6 +51,10 @@ function check(locale: string): void {
   for (const file of ['key-choice.json', 'key-translation.json']) {
     if (existsSync(at(file))) checkWords(locale, file, readKeyOrder(readFileSync(at(file), 'utf8')))
   }
+
+  for (const file of ['meanings.json', 'vocabulary.json']) {
+    if (existsSync(at(file))) checkMeanings(locale, file, readMeanings(readFileSync(at(file), 'utf8')), naming)
+  }
 }
 
 function checkKeys(locale: string, keys: Readonly<Record<string, string>>, naming: Shape): void {
@@ -65,6 +69,24 @@ function checkKeys(locale: string, keys: Readonly<Record<string, string>>, namin
     const taken = held.get(key.toLowerCase())
     if (taken !== undefined) refuse(`${locale}: ${character} and ${taken} are both keyed "${key}"`)
     held.set(key.toLowerCase(), character)
+  }
+}
+
+// Every word a subject is graded on, which is looser than a key and still has to be readable: a meaning
+// nothing of this language can be read out of is a card asking for a word it never gave.
+function checkMeanings(
+  locale: string,
+  file: string,
+  said: Readonly<Record<string, readonly string[]>>,
+  naming: Shape,
+): void {
+  for (const [subject, meanings] of Object.entries(said)) {
+    if (meanings.length === 0) refuse(`${locale}: ${file} leaves ${subject} with no meaning at all`)
+
+    for (const meaning of meanings) {
+      const fault = faultInMeaning(meaning, naming)
+      if (fault !== null) refuse(`${locale}: ${file} says ${subject} means "${meaning}", which is ${fault}`)
+    }
   }
 }
 

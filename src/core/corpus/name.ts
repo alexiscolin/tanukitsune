@@ -24,7 +24,7 @@ export type Naming = Shape & {
   readonly examples: readonly { readonly character: string; readonly name: string }[]
 }
 
-export type Fault = 'no article' | 'nothing after the article' | 'not the locale' | 'too long'
+export type Fault = 'no article' | 'nothing after the article' | 'not the locale' | 'too long' | 'nothing to read'
 
 export function faultInName(name: string, shape: Shape): Fault | null {
   const written = folded(name)
@@ -47,6 +47,30 @@ export function faultInName(name: string, shape: Shape): Fault | null {
   // Counted after the article, because le and l' are the same article and only one of them brings a
   // space, so counting the whole name makes the bound mean two different things.
   if (written.slice(opener.length).split(' ').length > shape.mostWords) return 'too long'
+
+  return null
+}
+
+// What a meaning has to be before it is written down. Looser than a key: a meaning is what a reader
+// types to be graded right, and a word can mean "année 2011" or "le 8" as easily as it means a noun, so
+// a figure and the punctuation around it are part of the word rather than a fault.
+export function faultInMeaning(meaning: string, shape: Shape): Fault | null {
+  return unreadable(meaning, shape, BESIDE_A_MEANING)
+}
+
+// A space separates two words rather than joining them, so it is not a joiner and is named here.
+const BESIDE_A_MEANING = " 0123456789,.:;!?()/&%"
+
+// Whether a written word can be read here at all, which is one question asked of a key, of a meaning
+// and of a name. What separates them is what may stand beside the letters: nothing but a space for a
+// key, and a figure and its punctuation for a meaning, a word being allowed to mean "le 8".
+export function unreadable(word: string, shape: Shape, beside: string): 'not the locale' | 'nothing to read' | null {
+  const written = folded(word)
+
+  if ([...written].some((one) => !beside.includes(one) && !shape.letters.includes(one) && !shape.joiners.includes(one))) {
+    return 'not the locale'
+  }
+  if (![...written].some((one) => shape.letters.includes(one))) return 'nothing to read'
 
   return null
 }

@@ -13,7 +13,8 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 import { fetched, KANJIDIC, list, taughtCharacters } from './corpus-command.ts'
 import { chooseKeys, faultInKey, isOrderOf } from '../src/core/corpus/key.ts'
-import { readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
+import { faultInMeaning } from '../src/core/corpus/name.ts'
+import { meaningsFile, readKeyOrder, readNaming } from '../src/data/corpus/artifact.ts'
 import { parseGlosses, releaseOf } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
@@ -31,6 +32,7 @@ const headerFor = (release: string, ours: readonly string[]) => ({
 const locale = process.argv[2] ?? 'fr'
 const given = process.argv[3]
 const output = `corpus/${locale}/keys.json`
+const meaningsOutput = `corpus/${locale}/meanings.json`
 
 const xml = given === undefined ? await fetched(KANJIDIC, 'KANJIDIC2') : readFileSync(given, 'utf8')
 const spoken = parseGlosses(xml, locale)
@@ -94,12 +96,31 @@ const lines = written
 
 const ours = written.filter((character) => (spoken.get(character) ?? []).every((one) => one !== keyed.keys[character]))
 
-writeFileSync(
-  output,
-  `{\n"header":${JSON.stringify(headerFor(releaseOf(xml), ours))},\n"keys":{\n${lines}\n}\n}\n`,
+const header = headerFor(releaseOf(xml), ours)
+
+writeFileSync(output, `{\n"header":${JSON.stringify(header)},\n"keys":{\n${lines}\n}\n}\n`)
+
+// The key leads and every other gloss the character has follows it. A key is one word and a character
+// often means several, so keeping only the key would grade a reader wrong for a word the release
+// states. Written from the same ordered glosses the key was picked from, in the same pass, or the two
+// files would disagree about which word leads.
+const meanings = Object.fromEntries(
+  written.map((character) => {
+    const key = keyed.keys[character] as string
+    // The rule the gate holds this file to, so the writer and the check cannot answer differently. It is
+    // looser than the key's own: a key is one word and a meaning is what a reader types, so a figure
+    // beside the words is part of it. What it still refuses is the unreadable, which is what the
+    // release states among the meanings as a counter or a calendar sign.
+    const rest = glossesFor(character).filter((one) => one !== key && faultInMeaning(one, naming) === null)
+
+    return [character, [key, ...rest]]
+  }),
 )
 
+writeFileSync(meaningsOutput, meaningsFile({ header, meanings }))
+
 process.stdout.write(`keys: ${written.length} of ${characters.length} written to ${output}\n`)
+process.stdout.write(`meanings: ${Object.values(meanings).reduce((all, one) => all + one.length, 0)} written to ${meaningsOutput}\n`)
 // The two reasons a character leaves the run without a key, apart, because they are settled by
 // different things: one waits on a gloss to be written, the other on a word to be freed.
 const unglossed = keyed.unsettled.filter((one) => glossesFor(one).length === 0)

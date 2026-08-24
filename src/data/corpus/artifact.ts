@@ -57,6 +57,33 @@ export function readKeys(json: string): Readonly<Record<string, string>> {
   return keyList.parse(JSON.parse(json)).keys
 }
 
+// Every word a character is graded on, the one its card shows first and the rest behind it. A key is
+// one word and a character often means several: 土 is terre and it is also sol, and a reader typing the
+// second is right. Written by corpus:keys beside the keys themselves, from the same ordered glosses, so
+// the two cannot disagree about which word leads.
+const meaningList = z.object({
+  header: z.unknown(),
+  meanings: z.record(z.string(), z.array(z.string()).nonempty()),
+})
+
+export function readMeanings(json: string): Readonly<Record<string, readonly string[]>> {
+  return meaningList.parse(JSON.parse(json)).meanings
+}
+
+// What a file says about itself, read back so a run rewriting one keeps the provenance the run that
+// wrote it recorded rather than restating it.
+export function headerOf(json: string): unknown {
+  return meaningList.parse(JSON.parse(json)).header
+}
+
+export function meaningsFile(written: { header: unknown; meanings: Readonly<Record<string, readonly string[]>> }): string {
+  const lines = Object.entries(written.meanings)
+    .map(([character, meanings]) => `${JSON.stringify(character)}:${JSON.stringify(meanings)}`)
+    .join(',\n')
+
+  return `{\n"header":${JSON.stringify(written.header)},\n"meanings":{\n${lines}\n}\n}\n`
+}
+
 // The order a run settled over each character's glosses, which is the only thing the model decides
 // about a key. Absent before the first run, and a character it does not name keeps the order the
 // dictionary states, so the file is an improvement over that order rather than a requirement for it.

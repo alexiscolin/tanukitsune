@@ -931,3 +931,35 @@
 {"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"requirement-check","file":"docs/corpus.md","line":166,"outcome":"fixed"}
 {"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","reviewer":"requirement-check","file":"docs/corpus.md","line":158,"outcome":"dismissed","reason":"the rule binds every run through the prompt, and a sweep over the names written under earlier versions is its own task rather than this slice"}
 {"date":"2026-08-22","branch":"feat/name-the-drawn-radicals","kind":"pass","base":"f7e09146fa03a1a5eb941a058ef7e7e4fb9e32e8","head":"9562feb70bbd590e5d1f76a70c4c70895c06a0fe"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"regression-check","file":".gitignore","line":35,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"security-check","file":"scripts/check-corpus.ts","line":46,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"regression-check","file":"corpus/fr/vocabulary.json","line":1494,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"performance-check","file":"scripts/corpus.ts","line":62,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"security-check","file":"scripts/corpus-key-choice.ts","line":42,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"docs-conformity","file":"docs/corpus.md","line":167,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"docs-conformity","file":"docs/decisions/0014-jmdict-for-the-meanings.md","line":34,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"docs-conformity","file":"scripts/corpus-vocabulary.ts","line":481,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"requirement-check","file":"scripts/corpus-word.ts","line":49,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"regression-check","file":"scripts/corpus-report.ts","line":31,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"architecture-check","file":"src/ai/corpus/prompts/word-meaning.ts","line":63,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"architecture-check","file":"src/data/corpus/jmdict.ts","line":15,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"architecture-check","file":"scripts/corpus-vocabulary.ts","line":385,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"requirement-check","file":"src/data/corpus/inventory.ts","line":38,"outcome":"dismissed","reason":"readings carry no locale and no artefact holds them yet, so accepting several is a slice with the schema that stores them rather than a line in this one"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"requirement-check","file":"scripts/corpus.ts","line":83,"outcome":"dismissed","reason":"the count a paid step owes is computed inside that step and corpus:report has no line for it, so carrying it into the confirmation is a change to the report rather than to the orchestrator"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"security-check","file":"scripts/corpus-vocabulary.ts","line":23,"outcome":"dismissed","reason":"the transport is the one KANJIDIC and KanjiVG already use and the host serves no https, so pinning a checksum is one decision for the three sources and an ADR of its own"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"security-check","file":"src/ai/corpus/prompts/word-meaning.ts","line":76,"outcome":"dismissed","reason":"the same unescaped interpolation stands in three prompts already, so one escape belongs where the request is built rather than in the newest of the four"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"requirement-check","file":"scripts/corpus-vocabulary.ts","line":60,"outcome":"dismissed","reason":"the reader asked for the WaniKani translation of the two names it left, and their meaning is the reading romanised, so deriving it is what answers rather than a third source of meanings"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","kind":"pass","base":"bac23d654fea51837a8a7df693d581e03867d470","head":"09ccc5152fc16e64a1bcae3fb560a7a2a0fe100d"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"src/core/corpus/name.ts","line":56,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"scripts/corpus-command.ts","line":87,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"scripts/corpus-word.ts","line":50,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"scripts/corpus-word.ts","line":127,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"scripts/corpus.ts","line":21,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"src/data/corpus/pipeline.ts","line":14,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"scripts/corpus-vocabulary.ts","line":105,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"scripts/corpus-keys.ts","line":100,"outcome":"fixed"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"src/data/corpus/vocabulary.ts","line":1,"outcome":"dismissed","reason":"moving the meaning rules from data to core is a layer decision the arch gate accepts either way, so it is the reader's call rather than a cleanup"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"src/data/corpus/artifact.ts","line":64,"outcome":"dismissed","reason":"folding meaningList and orderList into one artefact shape rewrites four readers and four writers, which is its own slice rather than a cleanup ride-along"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","reviewer":"simplify","file":"src/data/corpus/pipeline.ts","line":15,"outcome":"dismissed","reason":"having each script read its arguments through the table would bind the two, and it rewrites nine commands, so it is a slice of its own"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","kind":"pass","base":"bac23d654fea51837a8a7df693d581e03867d470","head":"5501310ae60718e235f298c4447e86b13d0d9c1e"}
+{"date":"2026-08-24","branch":"feat/one-command-for-the-corpus","kind":"pass","base":"bac23d654fea51837a8a7df693d581e03867d470","head":"d648f100c2ec8039274f304fcf890f549320fe16"}

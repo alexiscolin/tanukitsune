@@ -2,6 +2,8 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
+import { corpusRequest } from '../request'
+
 // The word a character is taught under where the release leaves it with none this corpus can use. This
 // is the one place a key is not lifted out of a dictionary, and it is still anchored to one: the
 // English meaning the release does state is carried across rather than a meaning being invented. How
@@ -59,16 +61,7 @@ export function keyTranslationPrefix(language: string, taken: readonly string[])
 }
 
 export function keyTranslationRequest(prefix: string, one: Untranslated): MessageCreateParamsNonStreaming {
-  return {
-    model: 'claude-opus-5',
-    // The ceiling covers thinking and answer together, and this model thinks unless told not to, so a
-    // ceiling sized for a word alone comes back truncated.
-    max_tokens: 4096,
-    thinking: { type: 'adaptive' },
-    system: [{ type: 'text', text: prefix, cache_control: { type: 'ephemeral', ttl: '1h' } }],
-    output_config: { format: FORMAT },
-    messages: [{ role: 'user', content: asks(one) }],
-  }
+  return corpusRequest(prefix, FORMAT, asks(one))
 }
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to

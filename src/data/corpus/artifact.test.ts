@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import { componentNamesFile, readComponentNames, readDecompositions, readNaming, readPhonology } from './artifact'
+import {
+  componentNamesFile,
+  meaningsFile,
+  readComponentNames,
+  readDecompositions,
+  readMeanings,
+  readNaming,
+  readPhonology,
+} from './artifact'
 
 const FILE = `{
 "header":{"source":"KanjiVG","licence":"CC BY-SA 4.0"},
@@ -109,5 +117,20 @@ describe('readPhonology', () => {
 
   it('refuses a file that names no such list', () => {
     expect(() => readPhonology('{}')).toThrow()
+  })
+})
+
+// A key is the one word a card shows; the others are words a reader typing them is right. Keeping only
+// the key would grade "sol" wrong for 土, which the release states beside "terre".
+describe('readMeanings', () => {
+  it('reads every meaning a character is graded on, the shown one first', () => {
+    const written = meaningsFile({ header: { of: 'test' }, meanings: { 土: ['terre', 'sol'], 川: ['rivière'] } })
+
+    expect(readMeanings(written)['土']).toEqual(['terre', 'sol'])
+    expect(readMeanings(written)['川']).toEqual(['rivière'])
+  })
+
+  it('refuses a character left with no meaning at all, which is a card that cannot be graded', () => {
+    expect(() => readMeanings(meaningsFile({ header: { of: 'test' }, meanings: { 土: [] } }))).toThrow()
   })
 })

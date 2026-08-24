@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { acceptNames, faultInName } from './name'
+import { acceptNames, faultInMeaning, faultInName } from './name'
 
 // The French shape, which is material rather than a rule: another language brings its own file and
 // this engine does not change.
@@ -157,5 +157,28 @@ describe('acceptNames, under another locale', () => {
     const { refused } = acceptNames([{ component: '口', name: 'la bouche' }], {}, GERMAN)
 
     expect(refused.get('口')).toBe('no article')
+  })
+})
+
+// A meaning is what a reader types to be graded right, and it is looser than a key: a word can mean
+// "année 2011" or "le 8" and a reader types it as written. What it cannot be is unreadable.
+describe('faultInMeaning', () => {
+  const FR = { opensWith: ['le ', 'la '], letters: 'abcdefghijklmnopqrstuvwxyzéèà', joiners: "-'", mostWords: 3 }
+
+  it('accepts a meaning carrying a figure beside its words', () => {
+    expect(faultInMeaning('année 2011', FR)).toBeNull()
+    expect(faultInMeaning('le 8', FR)).toBeNull()
+  })
+
+  // Nothing to read is nothing to type: 百万 states "1 000 000" beside "un million", and a card showing
+  // the first asks for a word it never gave.
+  it('refuses a meaning with no letter of the language in it', () => {
+    expect(faultInMeaning('1 000 000', FR)).toBe('nothing to read')
+    expect(faultInMeaning('...', FR)).toBe('nothing to read')
+  })
+
+  it('refuses a meaning written in another script, which no reader here types', () => {
+    expect(faultInMeaning('百万', FR)).toBe('not the locale')
+    expect(faultInMeaning('un millionえ', FR)).toBe('not the locale')
   })
 })

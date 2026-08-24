@@ -28,7 +28,10 @@ import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.
 
 const locale = process.argv[2] ?? 'fr'
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
-const names = readComponentNames(readFileSync(`corpus/${locale}/components.json`, 'utf8'))
+// Absent before a locale has been written at all, which is a state to report rather than to fail on:
+// the report is what says what a language still owes, and a language owing everything owes it too.
+const namesFile = `corpus/${locale}/components.json`
+const names = existsSync(namesFile) ? readComponentNames(readFileSync(namesFile, 'utf8')) : {}
 
 const shapeOf = (character: string) => decompositions.get(character) ?? []
 const isNameable = (component: string) => names[component] !== undefined

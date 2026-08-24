@@ -133,20 +133,18 @@
       "section",
       "degré",
       "taux",
-      "son lot dans la vie",
-      "devoir",
       "comprendre",
       "savoir",
+      "devoir",
+      "son lot dans la vie",
       "chances",
-      "1%",
       "bu = 1/100 de shaku = 3.03 mm"
     ],
     "正": [
       "correct",
       "juste",
       "droit",
-      "positif",
-      "10**40"
+      "positif"
     ],
     "万": [
       "10000",
@@ -1679,9 +1677,8 @@
     ],
     "両": [
       "les deux",
-      "2",
-      "ryou",
-      "compteur de wagons"
+      "compteur de wagons",
+      "ryou"
     ],
     "称": [
       "nom",
@@ -2250,10 +2247,9 @@
     "載": [
       "charger",
       "embarquer",
-      "monter dans",
       "placer",
-      "étaler",
-      "10**44"
+      "monter dans",
+      "étaler"
     ],
     "飼": [
       "élever",
@@ -4446,8 +4442,7 @@
       "proportion",
       "rapport",
       "coefficient",
-      "facteur",
-      "%"
+      "facteur"
     ],
     "述": [
       "déclarer",
@@ -4460,8 +4455,7 @@
       "signe",
       "augures",
       "symptômes",
-      "1000 milliards",
-      "10**12"
+      "1000 milliards"
     ],
     "道": [
       "route",
@@ -5940,7 +5934,6 @@
       "ramasser",
       "cueillir",
       "trouver",
-      "10",
       "aller à pied"
     ],
     "省": [
@@ -8094,8 +8087,7 @@
       "pendre",
       "installer",
       "dépendre",
-      "consulter",
-      "10%"
+      "consulter"
     ],
     "慌": [
       "déconcerté",
@@ -8869,8 +8861,7 @@
       "hautement",
       "conclusion",
       "décision",
-      "pôles électriques",
-      "10**48"
+      "pôles électriques"
     ],
     "奇": [
       "étrange",
@@ -9480,8 +9471,7 @@
     "溝": [
       "fossé",
       "rigole",
-      "égout",
-      "10**32"
+      "égout"
     ],
     "験": [
       "examen",
@@ -10557,6 +10547,10 @@
       "pâturage",
       "ébauche",
       "écrire"
+    ],
+    "孝": [
+      "piété filiale",
+      "respect des anciens"
     ]
   }
 }

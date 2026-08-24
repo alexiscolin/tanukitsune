@@ -1,6 +1,10 @@
 // What more than one corpus command needs, and what none of them may answer its own way. The commands
 // stay separate files because each is one step of the pipeline; what they genuinely share lives here.
 
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { gunzipSync } from 'node:zlib'
 
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
@@ -12,11 +16,40 @@ export const KANJIDIC = 'http://www.edrdg.org/kanjidic/kanjidic2.xml.gz'
 
 // A release, fetched and unpacked. The name is the source's, so a failure says which of them
 // answered rather than leaving an operator to guess from a bare status.
+//
+// Asked again where the host refuses or the read breaks off, since these releases are served by
+// volunteers and a refusal that clears in seconds would otherwise end a run that had already paid for
+// the steps behind it. A status the host actually returned is not retried: it answered, and asking
+// again gets the same answer.
 export async function fetched(source: string, named: string): Promise<string> {
-  const response = await fetch(source)
-  if (!response.ok) throw new Error(`${named} answered ${response.status}`)
+  const MOST_TRIES = 4
+  // Held on disk for an hour, because a run waiting on a batch asks its step again every half minute
+  // and each of those asks would otherwise pull the whole release down again, from a host these files
+  // are served by volunteers from. An hour is shorter than any of them changes in and longer than a
+  // batch takes, so a run reads one release throughout and the next run reads whatever is current.
+  const held = join(tmpdir(), `tanukitsune-${createHash('sha256').update(source).digest('hex').slice(0, 16)}`)
+  const HOLDS_FOR = 3600_000
 
-  return gunzipSync(Buffer.from(await response.arrayBuffer())).toString('utf8')
+  if (existsSync(held) && Date.now() - statSync(held).mtimeMs < HOLDS_FOR) return readFileSync(held, 'utf8')
+
+  for (let tried = 1; ; tried += 1) {
+    try {
+      const response = await fetch(source)
+      if (!response.ok) throw new Error(`${named} answered ${response.status}`)
+
+      // The bytes are written as they arrived rather than after being decoded, since encoding 112
+      // million characters back into the bytes they came from costs the run a copy of the release.
+      const read = gunzipSync(Buffer.from(await response.arrayBuffer()))
+      writeFileSync(held, read)
+
+      return read.toString('utf8')
+    } catch (reason) {
+      if (tried >= MOST_TRIES || (reason instanceof Error && reason.message.startsWith(`${named} answered`))) throw reason
+
+      process.stdout.write(`${named} did not answer, asking again in ${tried * 5} seconds\n`)
+      await new Promise((wake) => setTimeout(wake, tried * 5000))
+    }
+  }
 }
 
 // A count, and enough of the list to act on. Twenty, because a report is read in a terminal and a
@@ -32,6 +65,18 @@ export function list(entries: readonly string[]): string {
 // What every command asking a model needs before it can ask anything: the key, and the bound letting a
 // first run be read by hand before the rest is paid for. The key comes from `.env.local`, which these
 // commands load themselves, the application being handed it by the framework and a plain Node run not.
+// The locale and the bound, which every corpus command takes and one of them takes without needing a
+// key. The bound is what lets a first run be read by hand before the rest is paid for.
+export function askedFor(argv: readonly string[]): { locale: string; most: number } {
+  const bound = argv[3]
+
+  if (bound !== undefined && (!Number.isInteger(Number(bound)) || Number(bound) < 1)) {
+    throw new Error(`most must be a whole number above zero, got ${bound}`)
+  }
+
+  return { locale: argv[2] ?? 'fr', most: bound === undefined ? Infinity : Number(bound) }
+}
+
 export function asked(argv: readonly string[]): { locale: string; most: number; reach: { key: string } } {
   try {
     process.loadEnvFile('.env.local')
@@ -39,15 +84,10 @@ export function asked(argv: readonly string[]): { locale: string; most: number; 
     // Absent before the first bootstrap, which is not an error.
   }
 
-  const bound = argv[3]
-  if (bound !== undefined && (!Number.isInteger(Number(bound)) || Number(bound) < 1)) {
-    throw new Error(`most must be a whole number above zero, got ${bound}`)
-  }
-
   const key = asOptional(process.env['ANTHROPIC_API_KEY'])
   if (key === undefined) throw new Error('ANTHROPIC_API_KEY is not set')
 
-  return { locale: argv[2] ?? 'fr', most: bound === undefined ? Infinity : Number(bound), reach: { key } }
+  return { ...askedFor(argv), reach: { key } }
 }
 
 // The characters this locale teaches, in the order the reader meets them, which is what makes a
@@ -58,4 +98,13 @@ export function taughtCharacters(subjects: readonly InventorySubject[]): readonl
     .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
     .sort((one, other) => one.level - other.level || one.id - other.id)
     .map((one) => one.characters as string)
+}
+
+// The words it teaches, in the same order and for the same reason: a run bounded to twenty asks for
+// twenty in the order the reader meets them rather than in the order the file happens to hold, or two
+// runs of the same command ask for different words.
+export function taughtWords(subjects: readonly InventorySubject[]): readonly InventorySubject[] {
+  return subjects
+    .filter((one) => (one.type === 'vocabulary' || one.type === 'kana_vocabulary') && one.characters !== null && !one.hidden)
+    .sort((one, other) => one.level - other.level || one.id - other.id)
 }

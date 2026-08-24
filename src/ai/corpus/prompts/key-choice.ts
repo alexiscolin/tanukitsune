@@ -2,6 +2,8 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
+import { corpusRequest } from '../request'
+
 // The extension and the relative path are there for the reason inventory.ts states: the corpus
 // commands run this file through Node rather than a bundler, where an alias resolves to nothing. It
 // binds only a value import, a type one being erased before Node sees it.
@@ -54,17 +56,7 @@ export function keyChoicePrefix(language: string): string {
 }
 
 export function keyChoiceRequest(prefix: string, weighed: Weighed): MessageCreateParamsNonStreaming {
-  return {
-    model: 'claude-opus-5',
-    // The ceiling covers thinking and answer together, and this model thinks unless told not to, so a
-    // ceiling sized for the answer alone comes back truncated. Room for both, an unused one costing
-    // nothing.
-    max_tokens: 4096,
-    thinking: { type: 'adaptive' },
-    system: [{ type: 'text', text: prefix, cache_control: { type: 'ephemeral', ttl: '1h' } }],
-    output_config: { format: FORMAT },
-    messages: [{ role: 'user', content: asks(weighed) }],
-  }
+  return corpusRequest(prefix, FORMAT, asks(weighed))
 }
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to

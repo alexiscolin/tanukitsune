@@ -22,6 +22,7 @@ import {
 } from '../src/ai/corpus/prompts/key-translation.ts'
 import { faultInKey } from '../src/core/corpus/key.ts'
 import { keyOrderFile, readKeyOrder, readKeys, readNaming } from '../src/data/corpus/artifact.ts'
+import { batchFor } from '../src/data/corpus/pipeline.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { parseGlosses } from '../src/data/corpus/kanjidic.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
@@ -29,7 +30,7 @@ import { asked, fetched, KANJIDIC, list, taughtCharacters } from './corpus-comma
 
 const { locale, most, reach } = asked(process.argv)
 const carriedFile = `corpus/${locale}/key-translation.json`
-const runFile = `corpus/${locale}/.key-translation-batch.json`
+const runFile = batchFor('corpus:key-translation', locale)
 
 if (!existsSync(INVENTORY_FILE)) {
   throw new Error(`${INVENTORY_FILE} is missing. Run pnpm corpus:inventory first, since the characters carried are the ones the curriculum deals.`)

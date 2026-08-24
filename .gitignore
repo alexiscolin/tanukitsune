@@ -37,3 +37,4 @@ corpus/.inventory.json
 corpus/*/.naming-batch.json
 corpus/*/.key-choice-batch.json
 corpus/*/.key-translation-batch.json
+corpus/*/.word-batch.json

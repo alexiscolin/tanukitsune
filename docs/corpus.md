@@ -149,6 +149,39 @@ allowed to move under a run while the nine are not. They are the whole of the ex
 line counting names written on a shape a kanji writes reads nine, and a tenth is a new one to answer
 for.
 
+**A key is one word and a character often means several.** 土 is terre and it is also sol, terrain and
+Turquie, all of them stated by the release, and a reader typing the second is right. `corpus:keys`
+writes every one of them beside the keys themselves, from the same ordered glosses and in the same
+pass, so the two files cannot disagree about which word leads. A gloss this language cannot write is
+left out by the rule the key already passed: the release states counters and calendar signs among the
+meanings, and grading somebody right for a calendar sign is grading nothing.
+
+**The meaning a card shows leads and the rest follow it.** A release orders its senses its own way, so
+味噌 states the figurative sense before the paste, and a card showing the first would ask for a word
+nobody is taught. Where one of the senses is what the course teaches, that one leads. A parenthesis is
+dropped on the way in, by the rule the keys already follow: it qualifies a gloss for somebody reading a
+dictionary and means nothing where the meaning is the whole of what a learner types.
+
+**What a word means is read from a dictionary, never asked of a model.** A meaning is a fact somebody
+wrote down, and one taken from a dictionary can be checked against it where one a model invented can
+only be checked by a person reading six thousand words. `corpus:vocabulary` reads JMdict, which glosses
+about four fifths of the words the curriculum deals; what it does not gloss here is left out rather
+than half-written, and being left out is what says the word is owed. `corpus:word` asks the model for
+those,
+and for them alone: they are largely transparent compounds a release does not bother stating, 三人
+being three and person, so what travels is the characters the word is written with and the word each
+already carries. A word the curriculum deals in kana alone has no characters to read a meaning off, and
+what the course teaches it as is the whole of what travels for it. A word whose every meaning is its
+own reading romanised is a name, 瑛斗 being taught as Eito because that is what it is called rather
+than because 瑛 and 斗 say so, and a name is the same word here: it is derived from the reading rather
+than translated. That is read last and only where the dictionary states nothing, a borrowed word
+passing the same test while the release is what knows French writes it samouraï. All 6797 words the
+curriculum deals carry a meaning, and a word left with none by every one of those is reported rather
+than written half. A word written with a single kanji and
+meaning what that character means is taught by the word the character already carries, or the same
+shape teaches two French words on two cards; where the two disagree the word keeps its own, 天 the
+character being heaven and 天 the word the heavens.
+
 **A shape can fall between the two rules and be taught under no word at all**, being owed no name
 because a kanji writes it while that kanji was left without a key because every gloss it has was
 already spoken for. `corpus:report` counts those on their own line, and it is the one hole neither the
@@ -288,19 +321,34 @@ instrument over a sample.
 
 ## The command
 
-One command, the locale as a parameter, re-runnable by reflex. Seven of its steps exist today,
-`corpus:decomposition`, `corpus:inventory`, `corpus:keys`, `corpus:key-choice`,
-`corpus:key-translation`, `corpus:report` and `corpus:name`; the prose itself is the
-shape the rest of this section describes and the next thing built, so nothing here is runnable end to
-end yet.
+One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
+`corpus:inventory`, `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:name`,
+`corpus:vocabulary`, `corpus:word` and `corpus:report` are its nine steps, each still runnable alone so that one of them can be read by hand,
+and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
+the shape the rest of this section describes and the next thing built, so the command runs everything
+that exists rather than everything described.
+
+It reports before it asks and asks before it spends: the free report runs first, needing no key since
+it reaches no model, then the steps that do are named with the bound the run carries, and a terminal
+that answers nothing runs nothing. What each of them is asking for is counted by that step alone and
+said as it submits, since only the step that owes knows what it owes.
+
+A run ends where a step submits a batch, because what follows reads what that batch is about to write.
+Run it again to collect. `corpus:key-translation` and `corpus:keys` also read each other, a character
+being owed a word either because the release glosses none or because every gloss it states answers for
+somebody else, so one pass settles the first case and a later one settles the second. The command being
+re-runnable by reflex is what settles them, not a single pass through it.
 
 It reads the subject list and takes the item count from it rather than from an estimate, generates
 through the batch API, validates, writes by subject as it goes, publishes the chunks and then the
 manifest in that order, and ends on the coverage report. A run killed halfway resumes: what is written
 is not regenerated, and the failed set goes into the next batch, which is the same mechanism.
 
-Batch submission is asynchronous, so one command does not mean one minute. The first run on a new
-language builds that language's world, stops, and waits for it to be reviewed and committed.
+Batch submission is asynchronous, so one command does not mean one minute. Four of the steps submit a
+batch and end on it, and `pnpm corpus` waits for each and asks it to collect rather than handing the
+wait back: a run each of them ends is a run somebody restarts eight times. It gives up after two hours
+on one batch, which is longer than any has taken and short enough that a batch that will never end does
+not hold the terminal overnight. Every step is still runnable alone, which is how one is read by hand.
 
 `corpus:name` is that first run, and it is the shape the rest of the command takes. It counts what the
 locale owes against the curriculum, asks for one name per component, and is re-run rather than waited
