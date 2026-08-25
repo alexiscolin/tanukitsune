@@ -45,6 +45,14 @@ describe('restsOnItsKanji', () => {
     expect(restsOnItsKanji('出る', 'でる', TAUGHT)).toBe(false)
   })
 
+  // A word dealt in kana alone has no character to rest on, and its card runs from the sound to the
+  // meaning rather than from parts to a sound. Read as kana standing for themselves it would rest on
+  // nothing and be called known, which is the one word shape that teaches its reading unconditionally.
+  it('earns a mnemonic where the word is written in kana alone', () => {
+    expect(restsOnItsKanji('ありがとう', 'ありがとう', TAUGHT)).toBe(false)
+    expect(restsOnItsKanji('コーヒー', 'こーひー', TAUGHT)).toBe(false)
+  })
+
   it('earns a mnemonic where a voiced sound is not the voicing of the taught one', () => {
     // 火 is taught か, which voices to が. はなび carries び, a voicing of the ひ this reader has not
     // been shown, so the word teaches a reading rather than a pattern over one.

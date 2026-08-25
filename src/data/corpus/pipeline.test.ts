@@ -27,6 +27,16 @@ describe('stepsFor', () => {
     expect(asking).toEqual(['corpus:key-choice', 'corpus:key-translation', 'corpus:name', 'corpus:word'])
   })
 
+  // The readings are read out of the curriculum, so the inventory is written before them. They name no
+  // locale: a reading is the language taught rather than the language teaching it.
+  it('settles the readings after the curriculum is read, without naming a locale', () => {
+    const at = (name: string) => FR.findIndex((one) => one.name === name)
+    const readings = FR.find((one) => one.name === 'corpus:readings') as Step
+
+    expect(at('corpus:inventory')).toBeLessThan(at('corpus:readings'))
+    expect(argumentsFor(readings, 'fr', 20, 60)).toEqual([])
+  })
+
   // The lexicon holds the words a reading can be bound to, and every locale needs its own: no two
   // languages are served by one source, so the step reads the locale rather than standing outside them.
   it('writes a locale its own lexicon, without reaching a model', () => {
@@ -68,7 +78,7 @@ describe('argumentsFor', () => {
   const step = (name: string) => FR.find((one) => one.name === name) as Step
 
   // Three steps read the position after their name as something other than a locale, so one shape for
-  // all ten hands a release path where a locale was meant and dies on the first of them.
+  // all eleven hands a release path where a locale was meant and dies on the first of them.
   it('gives a step what that step reads, rather than one shape for all', () => {
     expect(argumentsFor(step('corpus:decomposition'), 'fr', Infinity, 60)).toEqual([])
     expect(argumentsFor(step('corpus:inventory'), 'fr', Infinity, 60)).toEqual(['60'])

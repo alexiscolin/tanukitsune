@@ -25,6 +25,7 @@
     "corpus:keys": "node --experimental-strip-types scripts/corpus-keys.ts",
     "corpus:lexicon": "node --experimental-strip-types scripts/corpus-lexicon.ts",
     "corpus:name": "node --experimental-strip-types scripts/corpus-name.ts",
+    "corpus:readings": "node --experimental-strip-types scripts/corpus-readings.ts",
     "corpus:report": "node --experimental-strip-types scripts/corpus-report.ts",
     "corpus:vocabulary": "node --experimental-strip-types scripts/corpus-vocabulary.ts",
     "corpus:word": "node --experimental-strip-types scripts/corpus-word.ts",

@@ -47,6 +47,10 @@ export function restsOnItsKanji(word: string, reading: string, taught: ReadonlyM
   const characters = [...word]
   const said = folded(reading)
 
+  // A word dealt in kana alone rests on no character, and read as kana standing for themselves it
+  // would rest on nothing and be called known. Its card runs from the sound to the meaning instead.
+  if (!characters.some((character) => taught.has(character))) return false
+
   // Read left to right, taking each character's forms in turn. A character can be read several ways
   // in a word, so the walk goes back where a form that fit left the rest of the reading unaccounted
   // for: taking the first form that fits and stopping would call a word new on the strength of an

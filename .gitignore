@@ -30,7 +30,12 @@ playwright-report/
 storybook-static/
 
 # Their meanings and their identifiers, fetched to prove coverage and kept off every published surface.
+# Which reading a character is taught under is theirs the same way, so it stays here too.
 corpus/.inventory.json
+corpus/.readings.json
+
+# A public dictionary, carrying nobody's data and serving nothing: an input a run rebuilds in seconds,
+# where seven megabytes would sit in the history to save nobody anything.
 corpus/*/.lexicon.json
 
 # The batch a naming run left in flight. It names a job on somebody's account and the next run
