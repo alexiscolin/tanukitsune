@@ -1,4 +1,4 @@
-import { distanceBetween } from './anchor'
+import { distanceBetween } from './anchor.ts'
 
 // Which French word stands for which reading, across the whole curriculum rather than across one
 // release. On'yomi are short and share their sounds, so a reading like こう belongs to dozens of
