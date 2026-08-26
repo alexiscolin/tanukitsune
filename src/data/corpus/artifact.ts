@@ -116,6 +116,7 @@ const phonology = z.object({
   atMostMorae: z.number().int().positive(),
   atLeastCommon: z.number().nonnegative(),
   partsOfSpeech: z.array(z.string()).min(1),
+  atMostWords: z.number().int().positive(),
   hears: z.record(z.string(), z.string()),
   writes: z.record(z.string(), z.string()),
 })
@@ -128,6 +129,7 @@ export function readPhonology(json: string): {
   readonly atMostMorae: number
   readonly atLeastCommon: number
   readonly partsOfSpeech: readonly string[]
+  readonly atMostWords: number
   readonly hears: ReadonlyMap<string, string>
   readonly writes: ReadonlyMap<string, string>
 } {

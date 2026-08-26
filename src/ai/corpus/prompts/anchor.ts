@@ -18,7 +18,7 @@ import { corpusRequest } from '../request'
 //
 // Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
 // row and two runs sharing a version make the provenance false while looking satisfied.
-export const ANCHOR_VERSION = 1
+export const ANCHOR_VERSION = 2
 
 const anchor = z.strictObject({ anchor: z.string() })
 
@@ -51,15 +51,13 @@ export function anchorPrefix(language: string, taken: readonly string[]): string
     'for a kanji course. The learner meets the word in a story and recalls the reading from it, so it',
     'has to sound like the reading and be something that can be pictured.',
     '',
-    'Rules, in order of what matters:',
-    `1. It must sound like the reading to a ${language} ear, from the first sound onwards.`,
-    `2. Every word of it must be an ordinary ${language} word. No proper name, no brand, no foreign word`,
-    `   that has not entered ${language}, nothing invented.`,
-    '3. It must be something that can be seen: a thing, a creature, an action with a picture in it.',
-    '   An abstraction cannot carry a story.',
-    '4. At most three words, and the shorter the better.',
-    '5. Plain register. Nothing that names a group of people, nothing coarse, nothing a reader would',
-    '   not want in front of a stranger.',
+    'What makes an answer usable, in order of what matters:',
+    `1. It sounds like the reading to a ${language} ear, from the first sound onwards.`,
+    `2. Every word of it is an ordinary ${language} noun a dictionary lists, in the singular.`,
+    '3. It names something that can be seen: a thing, a creature, a place. A reader builds a picture',
+    '   out of it and puts the picture in a story.',
+    '4. Three words at most, and the shorter the better.',
+    '5. It reads the way a schoolbook reads, and a stranger could look over the reader shoulder.',
     '',
     'These words already stand for another reading, and one word standing for two readings gives the',
     'reader one cue with two answers. Give a different one:',

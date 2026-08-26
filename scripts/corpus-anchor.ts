@@ -101,15 +101,18 @@ const written = [...third.unserved]
 const bound: Allocated[] = []
 
 for (const [sound, letter] of writes) {
+  // Settled readings are skipped here as they are in `wanted`. Left in, this pass binds a reading a
+  // proposal already answered, both are written, and the later key silently replaces the earlier: a
+  // word paid for and judged, replaced by the order the passes happened to run in.
   const owed = new Map(
-    [...readings].filter(([value, named]) => named.taught && phonemesOf(value)[0] === sound),
+    [...readings].filter(([value, named]) => named.taught && !settled.has(value) && phonemesOf(value)[0] === sound),
   )
   // The whole table with this sound dropped, not the drop alone: replaced, an h-initial reading is
   // compared on raw Japanese sounds from its second phoneme on, and pays again every penalty the table
   // exists to remove.
-  const asked = wantedFrom(owed, atMostMorae, new Map([...hears, [sound, '']]))
+  const owedHere = wantedFrom(owed, atMostMorae, new Map([...hears, [sound, '']]))
   const spelled = candidatesBy(lexicon, (word, text) => keeps(word) && word.frequency >= atLeastCommon && text.startsWith(letter))
-  const pass = allocate(asked, (reading) => spelled(reading).filter((word) => !spoken.has(word.text)), limits)
+  const pass = allocate(owedHere, without(spelled, spoken, free), limits)
 
   for (const one of pass.allocated) spoken.add(one.anchor)
   bound.push(...pass.allocated)
@@ -180,7 +183,7 @@ const ofCharacters = asked.filter((one) => readings.get(one.value)?.type !== nul
 const served = new Set(allocated.map((one) => one.reading))
 
 process.stdout.write(
-  `anchors: ${allocated.length} of ${wanted.length} readings bound, written to ${at('anchors.json')}, ${weak} of them on a word under ${atLeastCommon} occurrence per million\n`,
+  `anchors: ${allocated.length} of ${asked.length} readings bound, written to ${at('anchors.json')}, ${weak} of them on a word under ${atLeastCommon} occurrence per million\n`,
 )
 process.stdout.write(
   `of the ${ofCharacters.length} readings a character teaches, ${ofCharacters.filter((one) => served.has(one.value)).length} are bound\n`,

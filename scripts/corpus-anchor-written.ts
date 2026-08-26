@@ -20,7 +20,7 @@ import { toRomaji } from 'wanakana'
 
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
 import { ANCHOR_VERSION, anchorPrefix, anchorRequest, readAnchor } from '../src/ai/corpus/prompts/anchor.ts'
-import { agreesAtTheStart, distanceBetween } from '../src/core/corpus/anchor.ts'
+import { faultInAnchor } from '../src/core/corpus/anchor-answer.ts'
 import { soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
 import { keyOrderFile, readAnchors, readKeyOrder, readLexicon, readNaming, readPhonology, readReadings } from '../src/data/corpus/artifact.ts'
 import { batchFor } from '../src/data/corpus/pipeline.ts'
@@ -49,7 +49,9 @@ const lexicon = readLexicon(readFileSync(at('.lexicon.json'), 'utf8'))
 const naming = readNaming(readFileSync(at('naming.json'), 'utf8'))
 // The same ceiling and floor `corpus:anchor` holds, read from the same place rather than restated: a
 // number written twice is a number that stops matching the day one locale moves it.
-const { nearest, apart, hears, writes, atMostMorae, atLeastCommon } = readPhonology(readFileSync(at('phonology.json'), 'utf8'))
+const { nearest, apart, hears, writes, atMostMorae, atLeastCommon, partsOfSpeech, atMostWords } = readPhonology(
+  readFileSync(at('phonology.json'), 'utf8'),
+)
 const { bound, left } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
 const carried = readKeyOrder(readFileSync(carriedFile, 'utf8'))
 
@@ -62,12 +64,20 @@ const owed = [
 
 // The sounds each reading is judged on, which is what `corpus:anchor` compares against and not what the
 // kana say on their own: a locale hears some sounds as others, and writes one it does not say.
-const sounds = new Map(
-  [
-    ...wantedFrom(readings, atMostMorae, hears),
-    ...[...writes.keys()].flatMap((sound) => wantedFrom(readings, atMostMorae, new Map([...hears, [sound, '']]))),
-  ].map((one) => [one.value, one.phonemes] as const),
-)
+const sounds = new Map(wantedFrom(readings, atMostMorae, hears).map((one) => [one.value, one.phonemes] as const))
+
+// A reading opening on a sound the locale writes without saying it is compared from the sound that
+// follows, and its anchor has to carry the letter. Held to the readings that open on it, as the binding
+// command holds it: applied to every reading, it judges one on a pronunciation the binder never uses.
+const spelling = new Map<string, string>()
+for (const [sound, letter] of writes) {
+  for (const one of wantedFrom(readings, atMostMorae, new Map([...hears, [sound, '']]))) {
+    if (sounds.get(one.value)?.[0] !== sound) continue
+
+    sounds.set(one.value, one.phonemes)
+    spelling.set(one.value, letter)
+  }
+}
 
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
 const step = nextStep(saved, owed.slice(0, most), ANCHOR_VERSION)
@@ -105,13 +115,17 @@ async function collect(id: string): Promise<void> {
   const { answered, failed } = collected
   const refused = new Map(failed)
   const kept = new Map<string, readonly string[]>()
-  // Every word already standing for a reading, the phrases broken into the words they are made of: a
-  // phrase sharing a word with another anchor is two cues built on one thing.
-  const holds = new Set(
-    [...bound.values(), ...[...carried].map(([, words]) => ({ anchor: words[0] ?? '' }))].flatMap((one) =>
-      one.anchor.split(/\s+/),
-    ),
-  )
+  // Every anchor already standing for a reading, with the sounds the lexicon derives for it, since an
+  // answer is judged against them as well as against its own reading.
+  const standing = [
+    ...bound.values(),
+    ...[...carried].flatMap(([, words]) => {
+      const anchor = words[0]
+      const phonemes = anchor === undefined ? null : soundsOf(anchor, lexicon)
+
+      return anchor === undefined || phonemes === null ? [] : [{ anchor, phonemes }]
+    }),
+  ]
   const spent = noSpend()
 
   for (const [reading, one] of answered) {
@@ -123,46 +137,44 @@ async function collect(id: string): Promise<void> {
       continue
     }
 
-    // Judged here rather than written and found later. Each of these is the reason the table refused
-    // something, applied to what was proposed instead: the proposal widens the search and never the rules.
+    // Judged by the rule the table applies to the anchors it chooses itself, in the one place a test can
+    // reach it: a rule the asker states in prose and the collector applies in code drifts, and a drift
+    // nothing can reach is a drift found by paying for a batch.
     const said = sounds.get(reading)
-    const heard = soundsOf(phrase, lexicon)
     if (said === undefined) {
       refused.set(reading, `${phrase}: no reading of that name is owed one`)
       continue
     }
-    if (heard === null) {
-      refused.set(reading, `${phrase}: the lexicon holds no such word, so nothing can pronounce it`)
-      continue
-    }
-    if (phrase.split(/\s+/).length > naming.mostWords + 1) {
-      refused.set(reading, `${phrase}: more words than a cue carries`)
-      continue
-    }
-    if (!agreesAtTheStart(said, heard)) {
-      refused.set(reading, `${phrase}: does not begin on the sound the reading does`)
+
+    const words = phrase.split(/\s+/).flatMap((word) => {
+      const held = lexicon.get(word)
+
+      return held === undefined ? [] : [held]
+    })
+
+    // Everything standing except the anchor this reading already has, which is the word this run was
+    // paid to replace: the two sound like the same reading, so they are the likeliest pair in the corpus
+    // to sit under the limit, and a proposal refused for being near its own predecessor is paid for twice.
+    const replacing = bound.get(reading)
+    const fault = faultInAnchor(
+      {
+        proposal: phrase,
+        heard: soundsOf(phrase, lexicon),
+        words,
+        said,
+        spelledWith: spelling.get(reading) ?? '',
+        replacing: replacing?.frequency ?? null,
+      },
+      standing.filter((one) => one.anchor !== replacing?.anchor),
+      { nearest, apart, atMostWords, partsOfSpeech },
+    )
+
+    if (fault !== null) {
+      refused.set(reading, `${phrase}: ${fault}`)
       continue
     }
 
-    const far = distanceBetween(said, heard)
-    if (far > nearest) {
-      refused.set(reading, `${phrase}: ${far.toFixed(2)} away, past ${nearest}`)
-      continue
-    }
-
-    const already = phrase.split(/\s+/).find((word) => holds.has(word))
-    if (already !== undefined) {
-      refused.set(reading, `${phrase}: ${already} already stands for another reading`)
-      continue
-    }
-
-    const near = [...bound.values()].find((other) => distanceBetween(other.phonemes, heard) < apart)
-    if (near !== undefined) {
-      refused.set(reading, `${phrase}: sits nearer than ${apart} to ${near.anchor}`)
-      continue
-    }
-
-    for (const word of phrase.split(/\s+/)) holds.add(word)
+    standing.push({ anchor: phrase, phonemes: soundsOf(phrase, lexicon) ?? [] })
     kept.set(reading, [phrase])
   }
 
