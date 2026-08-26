@@ -30,37 +30,11 @@ export function walkCurriculum(
   const read: Decomposition[] = []
   const unplaced: string[] = []
   const drawn: string[] = []
-  // A part that is itself a subject with a key of its own needs no component name: a word made of
-  // kanji names them by what they mean. A radical sharing its shape with a kanji is that same case
-  // while the two are taught under one meaning, the key naming both cards, and naming it separately
-  // would teach one shape two French words.
-  //
-  // Where the two are taught under different meanings it is not that case at all. The radical is a card
-  // of its own, dealt a median of thirteen levels before its kanji and answered on a different word, so
-  // the kanji key would show the reader a word for something the shape does not look like. 母 is a chest
-  // of drawers seen as a shape and a mother read as a character.
-  //
-  // Withdrawn on the same grounds as the loop below: a kanji nobody can be shown teaches no key, so it
-  // names nothing.
-  const written = new Map(
-    subjects
-      .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
-      .map((one) => [one.characters, new Set(one.meanings.map((meaning) => meaning.toLowerCase()))] as const),
-  )
-
-  // Read against everything the kanji is taught under rather than the first word it states: the
-  // curriculum lists what it accepts, so the two can share a word neither states first, and 羽 states
-  // Feathers where its kanji states Feather, Feathers, Wing.
-  const shares = (one: InventorySubject) => {
-    const taught = written.get(one.characters ?? '')
-
-    return taught !== undefined && one.meanings.some((meaning) => taught.has(meaning.toLowerCase()))
-  }
-
+  const named = shapesNamedByTheirKanji(subjects)
   const radicals = new Set(
-    subjects
-      .filter((one) => one.type === 'radical' && one.characters !== null && !one.hidden && !shares(one))
-      .map((one) => one.characters),
+    subjects.flatMap((one) =>
+      one.type === 'radical' && one.characters !== null && !named.has(one.characters) ? [one.characters] : [],
+    ),
   )
 
   for (const subject of subjects) {
@@ -108,4 +82,41 @@ export function walkCurriculum(
   const unnamed = drawn.filter((one) => names[one] === undefined)
 
   return { read, unplaced, drawn, owed: [...shaped, ...unnamed] }
+}
+
+// The shapes owed no French name of their own. A part that is itself a subject with a key needs none:
+// a word made of kanji names them by what they mean. A radical sharing its shape with a kanji is that
+// same case while the two are taught under one meaning, the key naming both cards, and naming it
+// separately would teach one shape two French words. A radical the source has withdrawn is owed none
+// either, since no session deals it.
+//
+// Where the two are taught under different meanings it is not that case at all. The radical is a card
+// of its own, dealt a median of thirteen levels before its kanji and answered on a different word, so
+// the kanji key would show the reader a word for something the shape does not look like. 母 is a chest
+// of drawers seen as a shape and a mother read as a character.
+//
+// Read against everything each side is taught under rather than the first word either states: the
+// curriculum lists what it accepts, so the two can share a word neither states first, and 羽 states
+// Feathers where its kanji states Feather, Feathers, Wing.
+//
+// One function rather than one per caller: the walk decides which shapes owe a name and the report
+// counts the names sitting where nothing owes one, so two readings of this rule disagree by saying a
+// shape is owed a name the line below it says a kanji already writes.
+export function shapesNamedByTheirKanji(subjects: readonly InventorySubject[]): ReadonlySet<string> {
+  const taught = new Map(
+    subjects.flatMap((one) =>
+      one.type === 'kanji' && one.characters !== null && !one.hidden
+        ? [[one.characters, new Set(one.meanings.map((meaning) => meaning.toLowerCase()))] as const]
+        : [],
+    ),
+  )
+
+  return new Set(
+    subjects.flatMap((one) => {
+      const shares = taught.get(one.characters ?? '')
+      const both = shares !== undefined && one.meanings.some((meaning) => shares.has(meaning.toLowerCase()))
+
+      return one.type === 'radical' && one.characters !== null && (one.hidden || both) ? [one.characters] : []
+    }),
+  )
 }
