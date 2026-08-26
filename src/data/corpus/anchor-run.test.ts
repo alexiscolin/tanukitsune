@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Named } from './reading-run'
 import type { Word } from './lexique'
-import { candidatesBy, soundsOf, spread, wantedFrom } from './anchor-run'
+import { candidatesBy, roomyWords, soundsOf, spread, wantedFrom } from './anchor-run'
 
 const READINGS = new Map<string, Named>([
   ['こう', { type: 'onyomi', taught: true, by: ['工', '公'] }],
@@ -162,3 +162,24 @@ describe('spread', () => {
     expect(spread([], 5)).toEqual([])
   })
 })
+
+describe('roomyWords', () => {
+  const held = [{ reading: 'こ', anchor: 'coq', phonemes: ['k', 'ɔ', 'k'] }]
+
+  // A reading the sweep took a word from is asked again, of the words still far enough from everything
+  // kept. Filtered once against the set as it stands rather than once per reading, which is the same
+  // answer for a three hundredth of the reads.
+  it('keeps the words far enough from everything already bound', () => {
+    expect([...roomyWords(LEXICON, held, 0.2, () => true)].sort()).toEqual(['cause', 'classer', 'taupe'])
+  })
+
+  it('keeps only what the locale offers', () => {
+    expect([...roomyWords(LEXICON, held, 0.2, (word) => word.category === 'NOM')].sort()).toEqual(['cause', 'taupe'])
+  })
+
+  // A limit of nothing crowds nothing out, so every word the locale offers is still there.
+  it('keeps every word where nothing has to sit apart', () => {
+    expect([...roomyWords(LEXICON, held, 0, () => true)].sort()).toEqual(['cause', 'classer', 'coq', 'taupe'])
+  })
+})
+
