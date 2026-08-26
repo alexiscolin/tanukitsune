@@ -72,10 +72,12 @@ const limits = { nearest, apart, unrated }
 // worth less: a character's reading is taught once and reused by every word built on it, so a cue
 // spent on one word leaves every one of those cards without it. Of the 557 readings a character
 // teaches, one order binds 384 and the other 253.
-const spentAlready = new Set(proposed.flatMap((one) => one.anchor.split(/\s+/)))
+// An anchor is the thing the reader meets, so a phrase is spent whole and the words inside it are not:
+// haut nid is not nid, and what keeps two anchors from being one cue is the separation swept below.
+const spentAlready = new Set(proposed.map((one) => one.anchor))
 
 const remember = (one: Allocated) => {
-  for (const word of one.anchor.split(/\s+/)) spentAlready.add(word)
+  spentAlready.add(one.anchor)
 }
 
 for (const one of proposed) remember(one)
