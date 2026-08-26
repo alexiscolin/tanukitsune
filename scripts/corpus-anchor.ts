@@ -141,12 +141,48 @@ for (const one of [...proposed, ...first.allocated, ...second.allocated, ...thir
   kept.push(one)
 }
 
+// The readings the sweep took a word from are asked again, of the words still far enough from
+// everything kept. Left there, 330 readings lose an anchor to a rule meant only to keep two apart,
+// while the lexicon still holds a word that keeps them apart and serves them both.
+//
+// The pool is filtered once rather than per reading, which is the same answer for a three hundredth of
+// the reads, and held by how many sounds a word has: two anchors nearer than a tenth differ by less
+// than a tenth of the longer one, so a word a sound longer than another is rarely too near it. What
+// slips through is caught by the sweep above on the next run rather than by this.
+const byLength = new Map<number, Allocated[]>()
+for (const one of kept) byLength.set(one.phonemes.length, [...(byLength.get(one.phonemes.length) ?? []), one])
+
+const roomy = new Set<string>()
+for (const [text, word] of lexicon) {
+  if (word.category !== 'NOM' || !carries(text) || spentAlready.has(text)) continue
+
+  const near = [word.phonemes.length - 1, word.phonemes.length, word.phonemes.length + 1].some((length) =>
+    (byLength.get(length) ?? []).some((one) => distanceBetween(one.phonemes, word.phonemes) < apart),
+  )
+  if (!near) roomy.add(text)
+}
+
+const evicted = crowded
+  .map((one) => wanted.find((asked) => asked.value === one.reading))
+  .filter((one) => one !== undefined)
+const spare = candidatesBy(lexicon, (word, text) => word.category === 'NOM' && carries(text) && roomy.has(text))
+const again = allocate(evicted, spare, limits)
+
+for (const one of again.allocated) {
+  // Swept like the rest, since the pool was filtered against the set as it stood and two of these can
+  // still land near each other.
+  if (kept.some((other) => distanceBetween(other.phonemes, one.phonemes) < apart)) continue
+
+  remember(one)
+  kept.push(one)
+}
+
 const allocated = kept
 // One line per reading still owed. A reading refused by two passes is owed once, and one this last pass
 // served is no longer owed whatever the passes before it said of it.
 const decided = new Set(allocated.map((one) => one.reading))
 const owed = new Map(
-  [...written, ...crowded].filter((one) => !decided.has(one.reading)).map((one) => [one.reading, one]),
+  [...written, ...crowded, ...again.unserved].filter((one) => !decided.has(one.reading)).map((one) => [one.reading, one]),
 )
 const unserved = [...owed.values()]
 
