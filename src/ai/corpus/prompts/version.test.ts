@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 
 import { describe, expect, it } from 'vitest'
 
+import { ANCHOR_VERSION, anchorPrefix, anchorRequest } from './anchor'
 import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } from './component-name'
 import { KEY_CHOICE_VERSION, keyChoicePrefix, keyChoiceRequest } from './key-choice'
 import { KEY_TRANSLATION_VERSION, keyTranslationPrefix, keyTranslationRequest } from './key-translation'
@@ -37,6 +38,31 @@ const RECORDED_TRANSLATION: Record<number, string> = {
   1: '9cb0874172bf33f89dd853cd0b3a524fc36cd3c6106453d12219f83dd34a2183',
   2: '7041569055c4f0920e8a5b0e9bd5fdbd568d1ec9bc9470f4cbbe05f1c83738b8',
   3: 'fa91dbc6851e5202e5659504d54d84dc50868b57428334580f19b28c771265fd',
+}
+
+const RECORDED_ANCHOR: Record<number, string> = {
+  1: '0a0ef44f51b885156b7e5ce87eaa3531d65fdd8b0cba9b107cf3863c863fabf7',
+}
+
+describe('the anchor prompt', () => {
+  it('has not changed without its version changing', () => {
+    const recorded = RECORDED_ANCHOR[ANCHOR_VERSION]
+
+    expect(recorded, `version ${ANCHOR_VERSION} has no recorded hash. Record ${renderedAnchor()} against it.`).toBeDefined()
+    expect(renderedAnchor(), 'the prompt changed. Bump its version and record the new hash.').toBe(recorded)
+  })
+})
+
+function renderedAnchor(): string {
+  const asked = anchorRequest(anchorPrefix('French', ['scie']), {
+    reading: 'こう',
+    said: 'kou',
+    taught: ['工', '公'],
+  })
+
+  return createHash('sha256')
+    .update(JSON.stringify({ ...asked, model: undefined }))
+    .digest('hex')
 }
 
 describe('the key translation prompt', () => {

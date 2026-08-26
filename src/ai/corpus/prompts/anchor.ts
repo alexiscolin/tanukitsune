@@ -1,0 +1,86 @@
+import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
+import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
+import { z } from 'zod'
+
+import { corpusRequest } from '../request'
+
+// The word a reading is bound to where the lexicon leaves it with none worth having: either no word
+// the rules accept is still free, or the only one left is so rare that the cue would have to be learned
+// before it could help. How many readings stand there is in docs/corpus.md, which owns the count.
+//
+// What a proposal brings that the table cannot is a phrase. The table searches words one at a time and
+// a reading of four morae is rarely one French word, so the space this opens is the one thing worth
+// paying for here.
+//
+// What comes back is a word and nothing else. Whether it sounds like the reading is measured against
+// the lexicon afterwards, and whether it is free is the table's as ever. The pronunciation is not asked
+// for: it is derived, and a pronunciation nobody claimed is a pronunciation nobody can hallucinate.
+//
+// Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
+// row and two runs sharing a version make the provenance false while looking satisfied.
+export const ANCHOR_VERSION = 1
+
+const anchor = z.strictObject({ anchor: z.string() })
+
+const FORMAT = zodOutputFormat(anchor)
+
+export function readAnchor(text: string): string | null {
+  try {
+    return anchor.parse(JSON.parse(text)).anchor
+  } catch {
+    return null
+  }
+}
+
+export type Unanchored = {
+  readonly reading: string
+  // The reading written in the letters the reader's own language uses, so the sound is on the page
+  // rather than behind a script the model has to voice for itself.
+  readonly said: string
+  // What the reading is worth reaching for: the characters teaching it, so a proposal that has to
+  // choose between two near words can choose the one that will sit in those stories.
+  readonly taught: readonly string[]
+}
+
+// Everything identical across a run, rendered once and shared by every request in it. The words already
+// standing for another reading travel here, sorted rather than left in whatever order a map yielded,
+// because a byte moving invalidates the cache for every request behind it.
+export function anchorPrefix(language: string, taken: readonly string[]): string {
+  return [
+    `You give a ${language} word or short phrase that a ${language} speaker hears a Japanese reading in,`,
+    'for a kanji course. The learner meets the word in a story and recalls the reading from it, so it',
+    'has to sound like the reading and be something that can be pictured.',
+    '',
+    'Rules, in order of what matters:',
+    `1. It must sound like the reading to a ${language} ear, from the first sound onwards.`,
+    `2. Every word of it must be an ordinary ${language} word. No proper name, no brand, no foreign word`,
+    `   that has not entered ${language}, nothing invented.`,
+    '3. It must be something that can be seen: a thing, a creature, an action with a picture in it.',
+    '   An abstraction cannot carry a story.',
+    '4. At most three words, and the shorter the better.',
+    '5. Plain register. Nothing that names a group of people, nothing coarse, nothing a reader would',
+    '   not want in front of a stranger.',
+    '',
+    'These words already stand for another reading, and one word standing for two readings gives the',
+    'reader one cue with two answers. Give a different one:',
+    [...taken].sort().join(', '),
+    '',
+    'Give the word alone, with no article, no gloss and no parenthesis.',
+  ].join('\n')
+}
+
+export function anchorRequest(prefix: string, one: Unanchored): MessageCreateParamsNonStreaming {
+  return corpusRequest(prefix, FORMAT, asks(one))
+}
+
+// Every value that is not ours is delimited and labelled as something to read rather than something to
+// do. The characters come from somebody else's file.
+function asks({ reading, said, taught }: Unanchored): string {
+  const lines = [
+    `<reading>${reading}</reading>`,
+    `<sounds>${said}</sounds>`,
+    ...taught.map((one) => `<taught-by>${one}</taught-by>`),
+  ]
+
+  return `${lines.join('\n')}\n\nGive the word.`
+}
