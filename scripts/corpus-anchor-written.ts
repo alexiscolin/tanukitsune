@@ -63,7 +63,9 @@ const owed = [
 ].filter((reading) => !carried.has(reading))
 
 // The sounds each reading is judged on, which is what `corpus:anchor` compares against and not what the
-// kana say on their own: a locale hears some sounds as others, and writes one it does not say.
+// kana say on their own: a locale hears some sounds as others, and writes one it does not say. Both the
+// sounds and the letter travel to the model, an answer judged on a rule it was never told being an
+// answer refused for the asker's reason.
 const sounds = new Map(wantedFrom(readings, atMostMorae, hears).map((one) => [one.value, one.phonemes] as const))
 
 // A reading opening on a sound the locale writes without saying it is compared from the sound that
@@ -94,6 +96,8 @@ async function submit(readingsAsked: readonly string[]): Promise<void> {
     params: anchorRequest(prefix, {
       reading,
       said: toRomaji(reading),
+      heard: (sounds.get(reading) ?? []).join(' '),
+      spelled: spelling.get(reading) ?? '',
       taught: readings.get(reading)?.by ?? [],
     }),
   }))

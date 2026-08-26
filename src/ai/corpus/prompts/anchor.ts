@@ -37,6 +37,13 @@ export type Unanchored = {
   // The reading written in the letters the reader's own language uses, so the sound is on the page
   // rather than behind a script the model has to voice for itself.
   readonly said: string
+  // The sounds the run will measure the answer against, which are not always the sounds the kana say:
+  // a locale hears some of them as others, and one it does not say at all it may still write. Sent
+  // because an answer judged on a rule it was never told is an answer refused for the asker's reason.
+  readonly heard: string
+  // The letter the word has to be spelled with, where the reading begins on a sound the locale writes
+  // without saying it. Empty where it begins on one the locale says.
+  readonly spelled: string
   // What the reading is worth reaching for: the characters teaching it, so a proposal that has to
   // choose between two near words can choose the one that will sit in those stories.
   readonly taught: readonly string[]
@@ -51,13 +58,21 @@ export function anchorPrefix(language: string, taken: readonly string[]): string
     'for a kanji course. The learner meets the word in a story and recalls the reading from it, so it',
     'has to sound like the reading and be something that can be pictured.',
     '',
+    'You are given the reading, the sounds it is measured on, and sometimes a letter the word carries.',
+    'The sounds are what a speaker of this language hears in the reading, which is not always what the',
+    `kana say: where a sound does not exist in ${language}, the nearest one it does make stands in, and`,
+    'a sound the language writes without saying is left out of the sounds and named as the letter.',
+    '',
     'What makes an answer usable, in order of what matters:',
-    `1. It sounds like the reading to a ${language} ear, from the first sound onwards.`,
-    `2. Every word of it is an ordinary ${language} noun a dictionary lists, in the singular.`,
-    '3. It names something that can be seen: a thing, a creature, a place. A reader builds a picture',
+    '1. It begins on exactly the first sound given and follows it closely. The answer is measured sound',
+    '   by sound, so match the number of syllables to the number of sounds wherever you can.',
+    '2. Where a letter is given, the answer is spelled with it. The sounds already leave it out: the',
+    '   word is said without it and carries it where the reader looks.',
+    `3. Every word of it is an ordinary ${language} noun a dictionary lists, in the singular.`,
+    '4. It names something that can be seen: a thing, a creature, a place. A reader builds a picture',
     '   out of it and puts the picture in a story.',
-    '4. Three words at most, and the shorter the better.',
-    '5. It reads the way a schoolbook reads, and a stranger could look over the reader shoulder.',
+    '5. Three words at most, and the shorter the better.',
+    '6. It reads the way a schoolbook reads, and a stranger could look over the reader shoulder.',
     '',
     'These words already stand for another reading, and one word standing for two readings gives the',
     'reader one cue with two answers. Give a different one:',
@@ -73,10 +88,12 @@ export function anchorRequest(prefix: string, one: Unanchored): MessageCreatePar
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to
 // do. The characters come from somebody else's file.
-function asks({ reading, said, taught }: Unanchored): string {
+function asks({ reading, said, heard, spelled, taught }: Unanchored): string {
   const lines = [
     `<reading>${reading}</reading>`,
-    `<sounds>${said}</sounds>`,
+    `<said>${said}</said>`,
+    `<sounds>${heard}</sounds>`,
+    ...(spelled === '' ? [] : [`<spelled-with>${spelled}</spelled-with>`]),
     ...taught.map((one) => `<taught-by>${one}</taught-by>`),
   ]
 
