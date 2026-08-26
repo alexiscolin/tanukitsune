@@ -76,8 +76,10 @@ export function agreesAtTheStart(reading: readonly string[], anchor: readonly st
 
   if (readingOnset === undefined || anchorOnset === undefined) return false
   // Exact on the consonant, because the first sound is what the reader reaches for, and tolerant on
-  // the vowel, because French draws its vowels finer than Japanese does.
-  if (readingOnset !== anchorOnset) return false
+  // the vowel, because a language may draw its vowels finer than Japanese does. A reading opening on a
+  // vowel is held to the tolerance below rather than to this, or it would be held to the exact rule
+  // twice and o and ɔ would be two answers.
+  if (readingOnset !== anchorOnset && !(isVowel(readingOnset) && isVowel(anchorOnset))) return false
 
   const readingVowel = reading.find(isVowel)
   const anchorVowel = anchor.find(isVowel)
