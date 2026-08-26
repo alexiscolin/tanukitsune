@@ -4,9 +4,9 @@
 // Run with `pnpm corpus:lexicon [locale] [path]`, a plain Node run over TypeScript for the reason
 // import-decomposition.ts states. It takes the release path as an argument, or fetches the pinned one.
 //
-// The file is not committed, for the reason the inventory is not: it is an input to the run that
-// allocates anchors and nothing serves it, so seven megabytes rebuilt in seconds would sit in the history
-// forever to save nobody anything. What travels is anchors.json, which carries each anchor's derived
+// The file is not committed, and not for the reason the inventory is not: a public dictionary carries
+// no reader's data. It is an input to the run that allocates anchors and nothing serves it, so seven
+// megabytes rebuilt in seconds would sit in the history forever to save nobody anything. What travels is anchors.json, which carries each anchor's derived
 // pronunciation, so the check that an anchor is a real word runs where the release is.
 //
 // Every locale needs its own lexicon and no two languages are served by one source, so a locale this

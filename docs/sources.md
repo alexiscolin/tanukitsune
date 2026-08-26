@@ -92,7 +92,7 @@ both: [EDRDG licence](https://www.edrdg.org/edrdg/licence.html),
 French, which is what lets an anchor be checked on pronunciation rather than on spelling. How its phonemic code is read and
 which of its words are left out is in [`corpus.md`](corpus.md), under anchors:
 [lexique.org](http://www.lexique.org/),
-[the dataset and its licence](http://openlexicon.fr/datasets-info/Lexique382/README-Lexique.html).
+[openlexicon, which distributes it and states that licence](http://openlexicon.fr/datasets-info/).
 
 **Interaction is what makes an image memorable, not bizarreness.** Wollen, Weber and Lowry crossed the
 two orthogonally and only interaction raised recall: *Cognitive Psychology* 3, 518-523 (1972),

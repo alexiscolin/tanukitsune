@@ -231,9 +231,10 @@ sits too near one.
 
 `pnpm corpus:lexicon` writes those candidates, one locale at a time, since no two languages are served
 by one lexicon and a locale this has no source for is refused rather than written from the nearest
-thing at hand. The file it writes is not committed, for the reason the inventory is not: it is an input
-to the allocation and nothing serves it, so seven megabytes rebuilt in seconds would sit in the history
-to save nobody anything. What travels is `anchors.json`, carrying each anchor's pronunciation as
+thing at hand. The file it writes is not committed, and not for the reason the inventory is not: it
+carries no reader's data at all, being a public dictionary. It is an input to the allocation and
+nothing serves it, so seven megabytes rebuilt in seconds would sit in the history to save nobody
+anything. What travels is `anchors.json`, carrying each anchor's pronunciation as
 derived, so the check that an anchor is a real word runs where the release is.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
