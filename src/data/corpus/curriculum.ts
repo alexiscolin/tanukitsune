@@ -45,16 +45,21 @@ export function walkCurriculum(
   const written = new Map(
     subjects
       .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
-      .map((one) => [one.characters, one.meanings[0]?.toLowerCase()]),
+      .map((one) => [one.characters, new Set(one.meanings.map((meaning) => meaning.toLowerCase()))] as const),
   )
+
+  // Read against everything the kanji is taught under rather than the first word it states: the
+  // curriculum lists what it accepts, so the two can share a word neither states first, and 羽 states
+  // Feathers where its kanji states Feather, Feathers, Wing.
+  const shares = (one: InventorySubject) => {
+    const taught = written.get(one.characters ?? '')
+
+    return taught !== undefined && one.meanings.some((meaning) => taught.has(meaning.toLowerCase()))
+  }
+
   const radicals = new Set(
     subjects
-      .filter(
-        (one) =>
-          one.type === 'radical' &&
-          one.characters !== null &&
-          (!written.has(one.characters) || written.get(one.characters) !== one.meanings[0]?.toLowerCase()),
-      )
+      .filter((one) => one.type === 'radical' && one.characters !== null && !one.hidden && !shares(one))
       .map((one) => one.characters),
   )
 

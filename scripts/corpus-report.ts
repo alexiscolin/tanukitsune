@@ -57,7 +57,7 @@ if (drawn.length > 0) {
 if (inventory !== null) {
   const kanji = written(inventory.subjects)
 
-  report(`names ${locale} wrote on a component a kanji writes`, list(namesKanjiWrites(names, kanji)))
+  report(`names ${locale} wrote where nothing owes one`, list(namesKanjiWrites(names, kanji)))
   report(`components ${locale} teaches under no word`, list(wordlessComponents(shapesAKanjiWrites(inventory.subjects, kanji), names, keyed())))
 }
 
@@ -84,9 +84,9 @@ function againstCurriculum(read: { upTo: number; subjects: readonly InventorySub
   return walkCurriculum(read.subjects, names, shapeOf)
 }
 
-// A shape a kanji writes and teaches under the same meaning, which is the case where the key names both
-// cards. Where the two are taught under different meanings the radical is a card of its own and is owed
-// a name, so counting it here would call that name a leftover.
+// The shapes nothing owes a name: one a kanji writes and teaches under the same meaning, where the key
+// names both cards, and one the source has withdrawn, which no session deals. A name sitting on either
+// is a name that survived the rule, and this line is the only place it can be seen.
 //
 // Withdrawn kanji left out on the same terms as the walk, or the two disagree and one report says a
 // shape is owed a name while the next line says a kanji already writes it.
@@ -94,17 +94,18 @@ function written(subjects: readonly InventorySubject[]): ReadonlySet<string> {
   const taught = new Map(
     subjects.flatMap((one) =>
       one.type === 'kanji' && one.characters !== null && !one.hidden
-        ? [[one.characters, one.meanings[0]?.toLowerCase()] as const]
+        ? [[one.characters, new Set(one.meanings.map((meaning) => meaning.toLowerCase()))] as const]
         : [],
     ),
   )
 
   return new Set(
-    subjects.flatMap((one) =>
-      one.type === 'radical' && one.characters !== null && taught.get(one.characters) === one.meanings[0]?.toLowerCase()
-        ? [one.characters]
-        : [],
-    ),
+    subjects.flatMap((one) => {
+      const shares = taught.get(one.characters ?? '')
+      const both = shares !== undefined && one.meanings.some((meaning) => shares.has(meaning.toLowerCase()))
+
+      return one.type === 'radical' && one.characters !== null && (one.hidden || both) ? [one.characters] : []
+    }),
   )
 }
 
