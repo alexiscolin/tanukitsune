@@ -83,4 +83,14 @@ describe('parseLexicon', () => {
     expect(lexicon.get('a')?.frequency).toBe(6350.91)
     expect(lexicon.get('a')?.category).toBe('AUX')
   })
+
+  // Nothing in Lexique says how well a word can be seen, and that is the best-evidenced property of a
+  // keyword, so a second source rates what it rates. A word nothing rated carries no rating rather
+  // than a low one: the limits say what unrated is worth, and a zero would be a claim nobody made.
+  it('carries how well a word can be seen where something rated it', () => {
+    const lexicon = parseLexicon(RELEASE, new Map([['chose', 41.2]]))
+
+    expect(lexicon.get('chose')?.imageability).toBe(41.2)
+    expect(lexicon.get('temps')).not.toHaveProperty('imageability')
+  })
 })
