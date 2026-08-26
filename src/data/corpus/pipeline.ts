@@ -11,7 +11,7 @@ export type Step = {
   // The batch this step writes down while it waits, or null where the step reaches no model.
   readonly batch: string | null
   // What the step reads after its own name. Three of them read that position as something other than a
-  // locale, so one shape for all seven hands a release path where a locale was meant.
+  // locale, so one shape for all of them hands a release path where a locale was meant.
   readonly takes: 'nothing' | 'levels' | 'locale' | 'locale and most'
 }
 

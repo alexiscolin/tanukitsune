@@ -55,14 +55,24 @@ describe('parseLexicon', () => {
     expect(phonemes('agneau')).toEqual(['a', 'ɲ', 'o'])
   })
 
-  it('refuses a word whose sounds the rules cannot place', () => {
+  // Two of the release's thirty-seven symbols name sounds French borrows rather than owns. Whether one
+  // can be measured against a reading is the articulatory table's to say, and it says it already, so a
+  // word carrying one is stated here rather than left out: dropped, it would leave the lexicon for
+  // every reader of it, a check asking whether an anchor is a real French word included.
+  it('states a word whose sounds the language borrows', () => {
     const lexicon = parseLexicon(RELEASE)
 
-    // Two of the release's thirty-seven symbols name sounds French borrows rather than owns, and the
-    // articulatory table has no features for either. A word carrying one cannot be measured against a
-    // reading, so it is no candidate at all: kept, it would be compared on sounds nothing describes.
-    expect(lexicon.has('parking')).toBe(false)
-    expect(lexicon.has('jerez')).toBe(false)
+    expect(lexicon.get('parking')?.phonemes).toEqual(['p', 'a', 'ʁ', 'k', 'i', 'ŋ'])
+    expect(lexicon.get('jerez')?.phonemes).toEqual(['x', 'e', 'ʁ', 'ɛ', 's'])
+  })
+
+  // A symbol the code does not state is the release saying something this cannot read, which is a
+  // release that has changed under the parser rather than one word to leave out in silence.
+  it('refuses a release whose code it cannot read', () => {
+    const moved = RELEASE.replace('paRkiG', 'paRki\u00a7\u00a7')
+
+    expect(() => parseLexicon(moved)).not.toThrow()
+    expect(() => parseLexicon(RELEASE.replace('Soz', 'S\u00f8z'))).toThrow(/does not state/)
   })
 
   it('keeps one row per written form, the most common one', () => {

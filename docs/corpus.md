@@ -55,10 +55,14 @@ cannot do is material, and a locale is the folder holding it: `naming.json` says
 takes in that language, `components.json` what it calls each component, `phonology.json` the sounds it
 cannot begin a word with, `keys.json` the word each character is taught under, `key-choice.json` the
 order a run settled over a character's glosses and `key-translation.json` the words carried across
-where the release glosses none. The anchors and the cast land beside them. The first three are written
+where the release glosses none, and `.lexicon.json` the words of that language an anchor can be drawn
+from, which the repository ignores. The anchors and the cast land beside them. The first three are written
 by hand and seed the folder; the last three a command writes, and each says which file it needs when
 it is missing rather than guessing at one. A second language is those files and no code, which is the test to apply to anything
-added here: if German would need a branch, it belongs in the folder rather than in the engine.
+added here: if German would need a branch, it belongs in the folder rather than in the engine. The
+lexicon is the one exception and it is a source rather than material: another language is read from
+another release, in another format, so `corpus:lexicon` names the address of each and refuses a
+language it has none for.
 
 The decomposition is the neutral half and lives in `corpus/decomposition.json`, one line per character
 so a diff names what moved, written by `pnpm corpus:decomposition` from the pinned release and
@@ -238,9 +242,9 @@ anything. What travels is `anchors.json`, carrying each anchor's pronunciation a
 derived, so the check that an anchor is a real word runs where the release is.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
-thirty-seven symbols name sounds French borrows rather than owns. The articulatory table describes
-neither, so the words carrying one are no candidates: kept, they would be measured against a reading on
-a sound nothing describes, and the measurement would answer.
+thirty-seven symbols name sounds French borrows rather than owns. Both are carried: whether a sound can
+be measured against a reading is the articulatory table's to say, and it says it, counting one it does
+not carry as far from everything as a sound can be.
 
 ## How one item is made
 

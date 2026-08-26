@@ -11,9 +11,11 @@
 // most: `@` is the nasal of "temps" where SAMPA reads that symbol as a schwa, and the schwa is `°`.
 // Every symbol is one character, which is what lets a transcription be read one character at a time.
 //
-// Two of the release's thirty-seven are absent here. `G` is the /ŋ/ of "parking" and `x` the /x/ of a
-// handful of Spanish loans, and the articulatory table those sounds would be measured against
-// describes neither, French borrowing them rather than owning them.
+// All thirty-seven are carried, `G` and `x` included, which French borrows rather than owns. Whether a
+// sound can be measured against a reading is the articulatory table's to say and it already says it,
+// counting one it does not carry as far from everything as a sound can be. Dropped here instead, the
+// word would leave the lexicon for every reader of it, including a check asking whether an anchor is a
+// real French word, on a rule stated two layers from the table it appeals to.
 const IPA: Readonly<Record<string, string>> = {
   p: 'p', b: 'b', t: 't', d: 'd', k: 'k', g: 'g',
   f: 'f', v: 'v', s: 's', z: 'z', S: 'ʃ', Z: 'ʒ',
@@ -22,6 +24,7 @@ const IPA: Readonly<Record<string, string>> = {
   i: 'i', y: 'y', u: 'u', e: 'e', E: 'ɛ', '2': 'ø', '9': 'œ',
   o: 'o', O: 'ɔ', a: 'a', '°': 'ə',
   '5': 'ɛ̃', '1': 'œ̃', '§': 'ɔ̃', '@': 'ɑ̃',
+  G: 'ŋ', x: 'x',
 }
 
 export type Word = {
@@ -39,7 +42,10 @@ export function parseLexicon(tsv: string): ReadonlyMap<string, Word> {
 
     return found
   }
-  const [ortho, phon, cgram, frequency] = [at('ortho'), at('phon'), at('cgram'), at('freqfilms2')]
+  const ortho = at('ortho')
+  const phon = at('phon')
+  const cgram = at('cgram')
+  const frequency = at('freqfilms2')
 
   const said = new Map<string, Word>()
 
@@ -47,19 +53,24 @@ export function parseLexicon(tsv: string): ReadonlyMap<string, Word> {
     const fields = row.split('\t')
     const written = fields[ortho]
     const spoken = fields[phon]
-    if (written === undefined || written === '' || spoken === undefined || spoken === '') continue
+    if (!written || !spoken) continue
 
-    const phonemes = [...spoken].map((symbol) => IPA[symbol])
-    // A word carrying a sound the rules cannot place is no candidate at all: kept, it would be
-    // compared against a reading on a sound nothing describes, and the comparison would answer.
-    if (phonemes.some((phoneme) => phoneme === undefined)) continue
+    // A symbol the code does not state is the release saying something this cannot read, which is a
+    // release that has changed rather than a word to leave out.
+    const phonemes: string[] = []
+    for (const symbol of spoken) {
+      const sound = IPA[symbol]
+      if (sound === undefined) throw new Error(`Lexique writes ${written} with ${symbol}, which its code does not state`)
+
+      phonemes.push(sound)
+    }
 
     const common = Number(fields[frequency])
     // How common a word is decides which reading takes a contested anchor, so the rarest row of a form
     // standing for it would spend an anchor the allocation believes to be cheap.
     if (Number.isNaN(common) || common <= (said.get(written)?.frequency ?? -1)) continue
 
-    said.set(written, { phonemes: phonemes as readonly string[], frequency: common, category: fields[cgram] ?? '' })
+    said.set(written, { phonemes, frequency: common, category: fields[cgram] ?? '' })
   }
 
   return said
