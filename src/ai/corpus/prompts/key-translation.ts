@@ -2,7 +2,7 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
-import { corpusRequest } from '../request'
+import { corpusRequest } from '../request.ts'
 
 // The word a character is taught under where the release leaves it with none this corpus can use. This
 // is the one place a key is not lifted out of a dictionary, and it is still anchored to one: the

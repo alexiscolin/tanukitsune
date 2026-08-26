@@ -2,7 +2,7 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
-import { corpusRequest } from '../request'
+import { corpusRequest } from '../request.ts'
 
 import type { Naming } from '@/core/corpus/name'
 

@@ -2,7 +2,7 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
-import { corpusRequest } from '../request'
+import { corpusRequest } from '../request.ts'
 
 // The extension and the relative path are there for the reason inventory.ts states: the corpus
 // commands run this file through Node rather than a bundler, where an alias resolves to nothing. It

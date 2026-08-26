@@ -2,7 +2,7 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
-import { corpusRequest } from '../request'
+import { corpusRequest } from '../request.ts'
 
 // What a word means where the dictionary states it in no language this corpus can use. It is the one
 // place a meaning is not lifted out of a release, and it is still anchored to one: the characters the

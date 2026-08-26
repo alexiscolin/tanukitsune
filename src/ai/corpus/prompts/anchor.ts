@@ -2,7 +2,7 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources/messages'
 import { z } from 'zod'
 
-import { corpusRequest } from '../request'
+import { corpusRequest } from '../request.ts'
 
 // The word a reading is bound to where the lexicon leaves it with none worth having: either no word
 // the rules accept is still free, or the only one left is so rare that the cue would have to be learned
