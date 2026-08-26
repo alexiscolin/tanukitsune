@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { confusablePairs, notInjective } from './allocation'
+import { confusablePairs, heldApart, notInjective } from './allocation'
 
 const ALLOCATION = [
   { reading: 'こう', anchor: 'le cou', phonemes: ['k', 'u'] },
@@ -57,3 +57,32 @@ describe('confusablePairs', () => {
     expect(confusablePairs(three, 0.3)).toHaveLength(3)
   })
 })
+
+describe('heldApart', () => {
+  const anchor = (reading: string, ...phonemes: readonly string[]) => ({ reading, anchor: reading, phonemes })
+
+  // `allocate` holds two anchors apart inside one call and knows nothing of the calls before it, so a
+  // set built by several passes is held apart here instead, once, over the whole of it.
+  it('keeps an anchor and drops one landing nearer than the limit', () => {
+    const { kept, crowded } = heldApart([anchor('こ', 'k', 'o'), anchor('こう', 'k', 'o')], 0.2)
+
+    expect(kept.map((one) => one.reading)).toEqual(['こ'])
+    expect(crowded).toEqual(['こう'])
+  })
+
+  // The earlier one keeps its anchor: a reading the ordering already said was worth serving first does
+  // not lose its word to a later one.
+  it('keeps the earlier of two, whatever order they were allocated in', () => {
+    const { kept } = heldApart([anchor('ぶん', 'b', 'u'), anchor('ぶ', 'b', 'u')], 0.2)
+
+    expect(kept.map((one) => one.reading)).toEqual(['ぶん'])
+  })
+
+  it('keeps every anchor a limit of nothing accepts', () => {
+    const { kept, crowded } = heldApart([anchor('こ', 'k', 'o'), anchor('こう', 'k', 'o')], 0)
+
+    expect(kept).toHaveLength(2)
+    expect(crowded).toEqual([])
+  })
+})
+
