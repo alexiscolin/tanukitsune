@@ -110,7 +110,7 @@ describe('readNaming', () => {
 
 describe('readPhonology', () => {
   const SOUNDS =
-    '{"cannotStart":["h","ts"],"nearest":0.5,"apart":0.2,"unrated":50,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"atMostWords":3,"hears":{"ɕ":"ʃ"},"writes":{"h":"h"}}'
+    '{"cannotStart":["h","ts"],"nearest":0.5,"apart":0.2,"unrated":50,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"atMostWords":3,"hears":{"ɕ":"ʃ"},"writes":{"h":"h"},"refuses":["shit"]}'
 
   // The list is the locale's and the rule is the engine's, so a second language is a folder rather
   // than a branch in the code.
@@ -139,7 +139,7 @@ describe('readPhonology', () => {
   it('refuses a file that leaves a limit unstated', () => {
     expect(() =>
       readPhonology(
-        '{"cannotStart":[],"nearest":0.5,"apart":0.2,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"atMostWords":3,"hears":{},"writes":{}}',
+        '{"cannotStart":[],"nearest":0.5,"apart":0.2,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"atMostWords":3,"hears":{},"writes":{},"refuses":[]}',
       ),
     ).toThrow()
   })
@@ -154,6 +154,12 @@ describe('readPhonology', () => {
   // without it, and a mnemonic is read.
   it('reads what this language writes where a sound it does not say', () => {
     expect(readPhonology(SOUNDS).writes.get('h')).toBe('h')
+  })
+
+  // Neither how common a word is nor how it sounds catches these, and one of them stood for a reading
+  // a learner meets in their first week.
+  it('reads the words this language will not put on a card', () => {
+    expect(readPhonology(SOUNDS).refuses.has('shit')).toBe(true)
   })
 })
 

@@ -10,12 +10,22 @@
 
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 
+import { confusablePairs, notInjective } from '../src/core/corpus/allocation.ts'
+import type { Allocated } from '../src/core/corpus/allocation.ts'
 import { collidingNames } from '../src/core/corpus/decomposition.ts'
 import type { ComponentNames } from '../src/core/corpus/decomposition.ts'
 import { faultInKey } from '../src/core/corpus/key.ts'
 import { faultInMeaning, faultInName } from '../src/core/corpus/name.ts'
 import type { Shape } from '../src/core/corpus/name.ts'
-import { readComponentNames, readKeyOrder, readKeys, readMeanings, readNaming } from '../src/data/corpus/artifact.ts'
+import {
+  readAnchors,
+  readComponentNames,
+  readKeyOrder,
+  readKeys,
+  readMeanings,
+  readNaming,
+  readPhonology,
+} from '../src/data/corpus/artifact.ts'
 
 let fail = 0
 const refuse = (line: string) => {
@@ -54,6 +64,28 @@ function check(locale: string): void {
 
   for (const file of ['meanings.json', 'vocabulary.json']) {
     if (existsSync(at(file))) checkMeanings(locale, file, readMeanings(readFileSync(at(file), 'utf8')), naming)
+  }
+
+  if (existsSync(at('anchors.json')) && existsSync(at('phonology.json'))) {
+    const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
+    const { apart } = readPhonology(readFileSync(at('phonology.json'), 'utf8'))
+    const allocation = [...bound].map(([reading, one]) => ({ reading, anchor: one.anchor, phonemes: one.phonemes }))
+
+    checkAnchors(locale, allocation, apart)
+  }
+}
+
+// One anchor per reading and one reading per anchor, and no two anchors so near that a reader hears
+// them as the same cue. The commands hold to both while they run, and this holds the committed file to
+// them afterwards: an allocation is written by three passes reading each other, and a word freed by
+// one and taken by another is the shape that survives a run without anybody seeing it.
+function checkAnchors(locale: string, allocation: readonly Allocated[], apart: number): void {
+  for (const anchor of notInjective(allocation)) {
+    refuse(`${locale}: "${anchor}" stands for more than one reading, so one cue has two answers`)
+  }
+
+  for (const [one, other] of confusablePairs(allocation, apart)) {
+    refuse(`${locale}: the anchors for ${one} and ${other} sit nearer than ${apart}, so they are one cue`)
   }
 }
 
