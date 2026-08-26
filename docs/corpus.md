@@ -291,9 +291,9 @@ Those two keep no substitution, and their readings keep no anchor. What the ear 
 **A sound a language does not say and does write is written rather than heard.** French makes no /h/ and
 spells one on a thousand nouns, so a reading beginning on that sound is compared from the sound that
 follows and its anchor has to carry the letter: は is bound to `la hache`, which is said without an h
-and carries one where the reader looks, and a mnemonic is read. This is `cannotStart` seen from the
-other side rather than against it, that rule refusing an anchor claiming a sound French does not say,
-which `la hache` claims nowhere: its pronunciation, derived from the lexicon, begins on the vowel.
+and carries one where the reader looks, and a mnemonic is read. `cannotStart` has nothing to say
+about it: that rule refuses a pronunciation claiming a sound French does not make, and `la hache`
+claims none, its pronunciation being derived from the lexicon and beginning on the vowel.
 Those readings are served in their own pass, after every other, so they never take a word a reading
 beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
 
@@ -371,9 +371,11 @@ check that runs at generation and whose verdict travels rather than the upstream
 and compared against what the model claimed, since a mismatch is a hallucinated pronunciation and is
 measurable. The distance between anchor and reading is computed over articulatory features. The first
 mora aligns in onset and nucleus. The mora count is preserved, which is what stops ちょう collapsing
-onto ちょ. A hand-held table names the impossible onsets: French has no /h/ phoneme, so an anchor
-claiming that ho sounds like hôtel is claiming a consonant that is not pronounced, and that table is
-where judgement lives rather than in a linter.
+onto ちょ. A hand-held table names the impossible onsets, and what it judges is the pronunciation claimed for an
+anchor rather than the reading that anchor serves: French has no /h/ phoneme, so a word written down as
+opening on one is a word nobody says that way, and that table is where judgement lives rather than in a
+linter. A pronunciation derived from the lexicon cannot claim one, so what the rule reaches is a
+pronunciation somebody wrote.
 
 **Per corpus.** One anchor per reading and one reading per anchor. A cap on how many subjects share an
 anchor lemma. A minimum phonetic distance between anchors inside a homophone cluster, and a minimum

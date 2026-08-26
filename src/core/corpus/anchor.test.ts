@@ -8,7 +8,6 @@ import { phonemesOf } from './phonetics'
 const HOTEL = ['o', 't', 'ɛ', 'l']
 const COL = ['k', 'ɔ', 'l']
 const CAR = ['k', 'a', 'ʁ']
-const SUR = ['s', 'y', 'ʁ']
 
 describe('agreesAtTheStart', () => {
   // The acoustic link of the keyword method attaches at the beginning of the word. A match landing
