@@ -89,9 +89,8 @@ both: [EDRDG licence](https://www.edrdg.org/edrdg/licence.html),
 [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project).
 
 **Lexique is CC BY-SA 4.0** and gives phonemic transcription, syllable structure and frequency for
-French, which is what lets an anchor be checked on pronunciation rather than on spelling. It writes
-its own phonemic code rather than the IPA, and two of its thirty-seven symbols name sounds French
-borrows rather than owns, so the words carrying one are left out of the candidates:
+French, which is what lets an anchor be checked on pronunciation rather than on spelling. How its phonemic code is read and
+which of its words are left out is in [`corpus.md`](corpus.md), under anchors:
 [lexique.org](http://www.lexique.org/),
 [the dataset and its licence](http://openlexicon.fr/datasets-info/Lexique382/README-Lexique.html).
 
