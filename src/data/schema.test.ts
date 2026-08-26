@@ -30,14 +30,14 @@ const STAMP: AnswerStamp = {
   answeredAt: new Date('2026-08-04T10:00:00.000Z'),
 }
 
-function snake(name: string): string {
-  return name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-}
-
 // The one column the queued row cannot carry, because a device stamping its own receipt time is
 // the thing that column exists to check. Named here rather than tolerated by a looser comparison,
 // so a second column arriving without a row behind it still fails.
 const STAMPED_BY_THE_SERVER = ['received_at']
+
+function snake(name: string): string {
+  return name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+}
 
 describe('review_event', () => {
   it('holds every field the queued row carries, and only what the server stamps besides', () => {
@@ -75,8 +75,10 @@ describe('review_event', () => {
 describe('corpus_entry', () => {
   const columns = getTableColumns(corpusEntry)
 
+  // The names Postgres sees, not the names TypeScript does: a field renamed on one side and not the
+  // other leaves every query against it failing while this passes.
   it('carries what a card shows and what a check reads', () => {
-    expect(Object.keys(columns).map(snake)).toEqual(
+    expect(Object.values(columns).map((column) => column.name)).toEqual(
       expect.arrayContaining([
         'meaning',
         'nuance',
