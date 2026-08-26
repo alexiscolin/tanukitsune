@@ -49,6 +49,27 @@ describe('walkCurriculum', () => {
     expect(walkCurriculum([LEFT, RIGHT, alsoKanji, KANJI], { 亻: 'le passant' }, shapeOf).owed).toEqual([])
   })
 
+  // A radical the curriculum teaches under a meaning of its own is a card of its own, dealt a median of
+  // thirteen levels before its kanji and answered on a different word. 母 is a chest of drawers seen as
+  // a shape and a mother read as a character: named by the kanji, its card shows the reader a word for
+  // something the shape does not look like, which is what the naming rule refuses.
+  it('owes a name where the radical is taught under a meaning its kanji does not carry', () => {
+    const drawer = subject({ id: 2, type: 'radical', characters: '母', meanings: ['Drawer'] })
+    const mother = subject({ id: 5, type: 'kanji', characters: '母', meanings: ['Mother'] })
+    const built = subject({ id: 3, type: 'kanji', characters: '毎', componentIds: [1, 2] })
+
+    expect(walkCurriculum([LEFT, drawer, mother, built], { 亻: 'le passant' }, shapeOf).owed).toEqual(['母'])
+  })
+
+  // The same shape under the same word is one card said twice, and naming it again would teach that
+  // shape two French words, one on each card.
+  it('owes nothing where the radical and its kanji are taught under one meaning', () => {
+    const tree = subject({ id: 2, type: 'radical', characters: '木', meanings: ['Tree'] })
+    const asKanji = subject({ id: 5, type: 'kanji', characters: '木', meanings: ['Tree', 'Wood'] })
+
+    expect(walkCurriculum([LEFT, tree, asKanji, KANJI], { 亻: 'le passant' }, shapeOf).owed).toEqual([])
+  })
+
   // The other half of the same rule: a kanji nobody can be shown teaches no key, so it cannot be what
   // names the radical either, and the radical is owed a name of its own again.
   it('owes a name where the kanji of that shape is withdrawn', () => {
