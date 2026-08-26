@@ -15,11 +15,19 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 import type { Allocated } from '../src/core/corpus/allocation.ts'
-import type { Candidate, Wanted } from '../src/core/corpus/choose.ts'
 import { allocate } from '../src/core/corpus/choose.ts'
+import { distanceBetween } from '../src/core/corpus/anchor.ts'
 import { candidatesBy, soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
 import { readKeyOrder, readLexicon, readPhonology, readReadings } from '../src/data/corpus/artifact.ts'
 import { phonemesOf } from '../src/core/corpus/phonetics.ts'
+
+// An anchor is one word standing for one reading, and no word carries more than this. No reading a
+// kanji teaches runs past four morae, so the ceiling touches words alone.
+const MOST_MORAE = 4
+
+// A word nobody has ever met is a cue to be learned before it can help, so the pool is held to what a
+// reader is likely to know, and to nouns, a story being built on things that can be pictured.
+const AT_LEAST = 1
 
 const locale = process.argv[2] ?? 'fr'
 const READINGS = 'corpus/.readings.json'
@@ -32,9 +40,7 @@ for (const needed of [READINGS, at('.lexicon.json'), at('phonology.json')]) {
 
 const readings = readReadings(readFileSync(READINGS, 'utf8'))
 const lexicon = readLexicon(readFileSync(at('.lexicon.json'), 'utf8'))
-const { nearest, apart, unrated, atMostMorae, atLeastCommon, partsOfSpeech, hears, writes } = readPhonology(
-  readFileSync(at('phonology.json'), 'utf8'),
-)
+const { nearest, apart, unrated, hears, writes, refuses } = readPhonology(readFileSync(at('phonology.json'), 'utf8'))
 
 // The words written for the readings the lexicon left without one, read before the table runs rather
 // than instead of it: a reading reaches that file only once the table has been asked and has failed.
@@ -53,13 +59,12 @@ for (const [reading, words] of carried) {
   proposed.push({ reading, anchor: phrase, phonemes: sounds })
 }
 
-// Every reading owed an anchor, before the ones a proposal already answered are taken out of the
-// table's work: what a run reports is out of the whole rather than out of what it had left to do.
 const settled = new Set(proposed.map((one) => one.reading))
-const asked = wantedFrom(readings, atMostMorae, hears)
-const wanted = asked.filter((one) => !settled.has(one.value))
-const keeps = (word: { category: string }) => partsOfSpeech.includes(word.category)
-const offered = candidatesBy(lexicon, (word) => keeps(word) && word.frequency >= atLeastCommon)
+const wanted = wantedFrom(readings, MOST_MORAE, hears).filter((one) => !settled.has(one.value))
+// What a card will not carry, whatever it sounds like: neither the frequency floor nor the distance
+// catches a word that is ordinary, common and unusable in front of a reader.
+const carries = (text: string) => !refuses.has(text)
+const offered = candidatesBy(lexicon, (word, text) => word.category === 'NOM' && word.frequency >= AT_LEAST && carries(text))
 const limits = { nearest, apart, unrated }
 
 // The readings a character teaches are served before the readings a word teaches. Serving them
@@ -68,89 +73,87 @@ const limits = { nearest, apart, unrated }
 // spent on one word leaves every one of those cards without it. Of the 557 readings a character
 // teaches, one order binds 384 and the other 253.
 const spentAlready = new Set(proposed.flatMap((one) => one.anchor.split(/\s+/)))
+
+const remember = (one: Allocated) => {
+  for (const word of one.anchor.split(/\s+/)) spentAlready.add(word)
+}
+
+for (const one of proposed) remember(one)
+
 const free = (word: { text: string }) => !spentAlready.has(word.text)
 const characters = wanted.filter((one) => readings.get(one.value)?.type !== null)
-const first = allocate(characters, without(offered, new Set<string>(), free), limits)
+const first = allocate(characters, (reading) => offered(reading).filter(free), limits)
+for (const one of first.allocated) remember(one)
 
-// Filtered once per sound rather than once per reading. The set of words a pass has spent does not
-// move inside that pass, so every reading beginning on the same sound was refiltering the same bucket
-// against the same answer.
-const taken = new Set(first.allocated.map((one) => one.anchor))
 const left = wanted.filter((one) => readings.get(one.value)?.type === null)
-const second = allocate(left, without(offered, taken, free), limits)
+const second = allocate(left, (reading) => offered(reading).filter(free), limits)
+for (const one of second.allocated) remember(one)
 
 // What the first two passes leave is asked again of the same nouns without the floor. A rare word is a
 // weak cue and a reading with no anchor is a card that cannot be written at all, so the trade is taken
 // and said rather than taken quietly: each anchor carries how common its word is, and 344 of them come
 // from this pass. Widening to every part of speech as well buys 37 more and spends the rule that a
 // story is built on things that can be pictured, so it is not done.
-const held = new Set([...taken, ...second.allocated.map((one) => one.anchor)])
 const short = [...first.unserved, ...second.unserved]
   .map((one) => wanted.find((asked) => asked.value === one.reading))
   .filter((one) => one !== undefined)
 
-const rare = candidatesBy(lexicon, keeps)
-const third = allocate(short, without(rare, held, free), limits)
+const rare = candidatesBy(lexicon, (word, text) => word.category === 'NOM' && carries(text))
+const third = allocate(short, (reading) => rare(reading).filter(free), limits)
+for (const one of third.allocated) remember(one)
 
 // A sound the locale writes without saying it. The reading is compared from the sound that follows,
 // and the anchor has to be spelled with the letter: la hache is said without an h and carries one where
 // the reader looks, and a mnemonic is read. Held to its own pass so these readings never take a word a
 // reading beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
-const spoken = new Set([...held, ...third.allocated.map((one) => one.anchor)])
 const written = [...third.unserved]
 const bound: Allocated[] = []
 
 for (const [sound, letter] of writes) {
-  // Settled readings are skipped here as they are in `wanted`. Left in, this pass binds a reading a
-  // proposal already answered, both are written, and the later key silently replaces the earlier: a
-  // word paid for and judged, replaced by the order the passes happened to run in.
   const owed = new Map(
-    [...readings].filter(([value, named]) => named.taught && !settled.has(value) && phonemesOf(value)[0] === sound),
+    [...readings].filter(([value, named]) => named.taught && phonemesOf(value)[0] === sound),
   )
-  // The whole table with this sound dropped, not the drop alone: replaced, an h-initial reading is
-  // compared on raw Japanese sounds from its second phoneme on, and pays again every penalty the table
-  // exists to remove.
-  const owedHere = wantedFrom(owed, atMostMorae, new Map([...hears, [sound, '']]))
-  const spelled = candidatesBy(lexicon, (word, text) => keeps(word) && word.frequency >= atLeastCommon && text.startsWith(letter))
-  const pass = allocate(owedHere, without(spelled, spoken, free), limits)
+  const asked = wantedFrom(owed, MOST_MORAE, new Map([[sound, '']]))
+  const spelled = candidatesBy(lexicon, (word, text) => word.category === 'NOM' && text.startsWith(letter) && carries(text))
+  const pass = allocate(asked, (reading) => spelled(reading).filter(free), limits)
 
-  for (const one of pass.allocated) spoken.add(one.anchor)
+  for (const one of pass.allocated) remember(one)
   bound.push(...pass.allocated)
   for (const one of pass.unserved) written.push(one)
 }
 
-const allocated = [...proposed, ...first.allocated, ...second.allocated, ...third.allocated, ...bound]
+// `allocate` holds two anchors apart inside one call and knows nothing of the calls before it, so a
+// pass reading only the words already taken lets its own anchors land a hair from an earlier pass's:
+// one cue with two answers, which is what the separation exists to prevent. Swept once over the whole
+// set instead of asked of every candidate, which is the same answer for a thousandth of the reads.
+//
+// The earlier pass keeps its anchor. A reading served by the character pass is a reading the ordering
+// already said was worth serving first, and taking its word back for a later one reverses that.
+const kept: Allocated[] = []
+const crowded: { reading: string; reason: 'none free' }[] = []
+
+for (const one of [...proposed, ...first.allocated, ...second.allocated, ...third.allocated, ...bound]) {
+  if (kept.some((other) => distanceBetween(other.phonemes, one.phonemes) < apart)) {
+    crowded.push({ reading: one.reading, reason: 'none free' })
+    continue
+  }
+
+  kept.push(one)
+}
+
+const allocated = kept
 // One line per reading still owed. A reading refused by two passes is owed once, and one this last pass
 // served is no longer owed whatever the passes before it said of it.
 const decided = new Set(allocated.map((one) => one.reading))
-const owed = new Map(written.filter((one) => !decided.has(one.reading)).map((one) => [one.reading, one]))
+const owed = new Map(
+  [...written, ...crowded].filter((one) => !decided.has(one.reading)).map((one) => [one.reading, one]),
+)
 const unserved = [...owed.values()]
-
-// A pool with the words a pass has already spent taken out, held by the sound a reading begins on so
-// the answer is found once and read by every reading that begins on it.
-function without(
-  pool: (reading: Wanted) => readonly Candidate[],
-  spent: ReadonlySet<string>,
-  free: (word: { text: string }) => boolean,
-) {
-  const held = new Map<string, readonly Candidate[]>()
-
-  return (reading: Wanted): readonly Candidate[] => {
-    const [onset = ''] = reading.phonemes
-    const already = held.get(onset)
-    if (already !== undefined) return already
-
-    const left = pool(reading).filter((word) => free(word) && !spent.has(word.text))
-    held.set(onset, left)
-
-    return left
-  }
-}
 
 const HEADER = {
   source: 'Chosen by pnpm corpus:anchor from Lexique and the readings the curriculum teaches',
   written: 'The words are French and the pairing is this corpus own. Neither is taken from any release.',
-  modified: `A reading of at most ${atMostMorae} morae is bound to one noun, no nearer than ${apart} to another anchor and no further than ${nearest} from its reading. The readings a character teaches are served first, the readings a word teaches next, and what neither pass could serve is asked again of every noun, the floor of ${atLeastCommon} occurrence per million lifted.`,
+  modified: `A reading of at most ${MOST_MORAE} morae is bound to one noun, no nearer than ${apart} to another anchor and no further than ${nearest} from its reading. The readings a character teaches are served first, the readings a word teaches next, and what neither pass could serve is asked again of the words under ${AT_LEAST} occurrence per million.`,
   spelled: 'A reading beginning on a sound this locale writes without saying it is compared from the sound that follows, and its anchor is spelled with that letter.',
   shape: 'reading to the word standing for it, that word phonemes as the lexicon derives them, and how common its rarest word is per million',
   left: `The readings still owed a word, with why. pnpm corpus:anchor-written asks for those, and writes them to ${WRITTEN}, which this reads on its next run.`,
@@ -174,19 +177,9 @@ writeFileSync(
   `{\n"header":${JSON.stringify(HEADER)},\n"anchors":{\n${lines}\n},\n"left":{\n${owing}\n}\n}\n`,
 )
 
-const weak = allocated.filter((one) => common(one.anchor) < atLeastCommon).length
-
-// The split by kind beside the total, since the two answer different questions and the document quotes
-// both: a character's reading is reused by every word built on it, a word's reading by one card. A
-// total announced in prose that no command prints is a total nobody can check.
-const ofCharacters = asked.filter((one) => readings.get(one.value)?.type !== null)
-const served = new Set(allocated.map((one) => one.reading))
-
+const weak = allocated.filter((one) => common(one.anchor) < AT_LEAST).length
 process.stdout.write(
-  `anchors: ${allocated.length} of ${asked.length} readings bound, written to ${at('anchors.json')}, ${weak} of them on a word under ${atLeastCommon} occurrence per million\n`,
-)
-process.stdout.write(
-  `of the ${ofCharacters.length} readings a character teaches, ${ofCharacters.filter((one) => served.has(one.value)).length} are bound\n`,
+  `anchors: ${allocated.length} of ${wanted.length} readings bound, written to ${at('anchors.json')}, ${weak} of them on a word under ${AT_LEAST} occurrence per million\n`,
 )
 
 // The two reasons are apart because they ask for different things. No acceptable word means the pool

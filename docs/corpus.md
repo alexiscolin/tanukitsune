@@ -297,6 +297,18 @@ claims none, its pronunciation being derived from the lexicon and beginning on t
 Those readings are served in their own pass, after every other, so they never take a word a reading
 beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
 
+**Two anchors are held apart across the whole set and not only inside one pass.** `allocate` keeps two
+apart within one call and knows nothing of the calls before it, so a pass reading only the words already
+taken lets its own anchors land a hair from an earlier pass's, which is one cue with two answers. The
+set is swept once at the end instead, the earlier pass keeping its anchor: a reading the ordering
+already said was worth serving first does not lose its word to a later one. `pnpm check:corpus` holds
+the committed file to the same rule, and to one anchor per reading.
+
+**A word a card will not carry is refused whatever it sounds like.** Neither the frequency floor nor the
+distance catches a word that is ordinary, common and unusable in front of a reader: `shit` is a noun of
+the lexicon and stood for し, one of the readings a learner meets first. The list is in
+`phonology.json` and grows as a reading is read and refused, the way the component names grew.
+
 **Where the table leaves a reading with no word worth having, one is written for it.**
 `corpus:anchor-written` asks for those, and `corpus:anchor` reads what it wrote before its own passes
 rather than instead of them, so a reading reaches that file once the table has been asked and has
