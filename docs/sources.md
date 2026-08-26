@@ -88,6 +88,14 @@ not gloss here is owed to the run that asks a model. Same group and same licence
 both: [EDRDG licence](https://www.edrdg.org/edrdg/licence.html),
 [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project).
 
+**SemantiQc rates how strongly 3596 French words are seen**, which is what lets an anchor be chosen on
+what a reader can picture rather than on sound alone: the keyword method works for words that can be
+pictured and does nothing for the others. Rated from 0 to 100 by 304 speakers, and the file is read at
+generation rather than published here:
+[the norms](https://lingualab.ca/en/project/norms-familiarity-perceptual-strength/),
+[Chedid and colleagues](https://doi.org/10.3758/s13428-018-1106-8),
+[openlexicon](http://openlexicon.fr/datasets-info/).
+
 **Lexique is CC BY-SA 4.0** and gives phonemic transcription, syllable structure and frequency for
 French, which is what lets an anchor be checked on pronunciation rather than on spelling. How its phonemic code is read and
 which of its words are left out is in [`corpus.md`](corpus.md), under anchors:

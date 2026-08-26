@@ -39,13 +39,28 @@ const lexicon = readLexicon(readFileSync(at('.lexicon.json'), 'utf8'))
 const { nearest, apart, unrated } = readPhonology(readFileSync(at('phonology.json'), 'utf8'))
 
 const wanted = wantedFrom(readings, MOST_MORAE)
-const candidates = candidatesBy(lexicon, (word) => word.category === 'NOM' && word.frequency >= AT_LEAST)
-const { allocated, unserved } = allocate(wanted, candidates, { nearest, apart, unrated })
+const offered = candidatesBy(lexicon, (word) => word.category === 'NOM' && word.frequency >= AT_LEAST)
+const limits = { nearest, apart, unrated }
+
+// The readings a character teaches are served before the readings a word teaches. Serving them
+// together orders by scarcity alone, and a word's reading is scarcer than a character's while being
+// worth less: a character's reading is taught once and reused by every word built on it, so a cue
+// spent on one word leaves every one of those cards without it. Of the 557 readings a character
+// teaches, one order binds 384 and the other 253.
+const characters = wanted.filter((one) => readings.get(one.value)?.type !== null)
+const first = allocate(characters, offered, limits)
+
+const taken = new Set(first.allocated.map((one) => one.anchor))
+const left = wanted.filter((one) => readings.get(one.value)?.type === null)
+const second = allocate(left, (reading) => offered(reading).filter((word) => !taken.has(word.text)), limits)
+
+const allocated = [...first.allocated, ...second.allocated]
+const unserved = [...first.unserved, ...second.unserved]
 
 const HEADER = {
   source: 'Chosen by pnpm corpus:anchor from Lexique and the readings the curriculum teaches',
   written: 'The words are French and the pairing is this corpus own. Neither is taken from any release.',
-  modified: `A reading of at most ${MOST_MORAE} morae is bound to one noun of at least ${AT_LEAST} occurrence per million, no nearer than ${apart} to another anchor and no further than ${nearest} from its reading.`,
+  modified: `A reading of at most ${MOST_MORAE} morae is bound to one noun of at least ${AT_LEAST} occurrence per million, no nearer than ${apart} to another anchor and no further than ${nearest} from its reading. The readings a character teaches are served before the readings a word teaches.`,
   shape: 'reading to the word standing for it and that word phonemes, derived from the lexicon',
 }
 

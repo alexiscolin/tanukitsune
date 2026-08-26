@@ -257,6 +257,21 @@ nothing serves it, so seven megabytes rebuilt in seconds would sit in the histor
 anything. What travels is `anchors.json`, carrying each anchor's pronunciation as
 derived, so the check that an anchor is a real word runs where the release is.
 
+`pnpm corpus:anchor` binds them. The readings a character teaches are served before the readings a word
+teaches: served together, the order is by scarcity alone, and a word's reading is scarcer than a
+character's while being worth less, a character's being taught once and reused by every word built on
+it. Of the 557 readings a character teaches, one order binds 384 and the other 253.
+
+A reading of more than four morae is asked for no anchor at all. An anchor is one word standing for one
+reading, and distance is a fraction of the sounds compared, so a long reading takes whatever a long
+word forgives while sharing almost nothing with it. No reading a character teaches runs past four
+morae, so the ceiling touches words alone. The candidates are nouns a reader is likely to know, a story
+being built on things that can be pictured and a word nobody knows being a cue to be learned before it
+can help.
+
+Of the 2523 readings inside that ceiling, 1509 are bound and 1014 are not: 715 have no word the rules
+accept, which no reordering fixes, and 299 have words the curriculum has already spent.
+
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
 thirty-seven symbols name sounds French borrows rather than owns. Both are carried: whether a sound can
 be measured against a reading is the articulatory table's to say, and it says it, counting one it does
@@ -355,8 +370,9 @@ instrument over a sample.
 ## The command
 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
-`corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:key-choice`, `corpus:key-translation`,
-`corpus:keys`, `corpus:name`, `corpus:vocabulary`, `corpus:word` and `corpus:report` are its eleven steps, each still runnable alone so that one of them can be read by hand,
+`corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:anchor`, `corpus:key-choice`,
+`corpus:key-translation`, `corpus:keys`, `corpus:name`, `corpus:vocabulary`, `corpus:word` and
+`corpus:report` are its twelve steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.
