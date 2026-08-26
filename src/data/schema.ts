@@ -10,6 +10,10 @@ export const corpusEntry = pgTable(
     meaning: text('meaning').notNull(),
     // The English key the French one stands for, which the account grades on. Selected at generation
     // from the release's own English rather than carried from the account, whose text is theirs.
+    //
+    // Empty where the account's own word for a subject is its own invention rather than a fact about
+    // the character, which is every radical: theirs may not be published, so the French name stands for
+    // a shape rather than for a word, and there is no English key for it to stand for.
     englishKey: text('english_key'),
     nuance: text('nuance').notNull(),
     // The meaning story. It keeps the name it was committed under: renaming it to say which of the two

@@ -35,7 +35,9 @@ that breaks on the first sentence written differently.
 The table holding them carries all of it. The meaning story keeps the name `mnemonic` it was committed
 under, since renaming it to say which of the two it is would be clearer and would move a column every
 row already written is keyed on. The reading columns are empty where a subject teaches no reading,
-which is a component always and a word wherever its reading is the one its kanji already gave.
+which is a component always and a word wherever its reading is the one its kanji already gave, and the
+English key is empty where the account's word for a subject is its own invention rather than a fact
+about the character, which is every radical.
 
 ## Where the material lives
 
