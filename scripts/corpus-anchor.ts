@@ -80,8 +80,11 @@ for (const [sound, letter] of writes) {
   const owed = new Map(
     [...readings].filter(([value, named]) => named.taught && phonemesOf(value)[0] === sound),
   )
-  const asked = wantedFrom(owed, atMostMorae, new Map([[sound, '']]))
-  const spelled = candidatesBy(lexicon, (word, text) => word.category === 'NOM' && text.startsWith(letter))
+  // The whole table with this sound dropped, not the drop alone: replaced, an h-initial reading is
+  // compared on raw Japanese sounds from its second phoneme on, and pays again every penalty the table
+  // exists to remove.
+  const asked = wantedFrom(owed, atMostMorae, new Map([...hears, [sound, '']]))
+  const spelled = candidatesBy(lexicon, (word, text) => keeps(word) && text.startsWith(letter))
   const pass = allocate(asked, (reading) => spelled(reading).filter((word) => !spoken.has(word.text)), limits)
 
   for (const one of pass.allocated) spoken.add(one.anchor)

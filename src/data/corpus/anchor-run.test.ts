@@ -52,6 +52,26 @@ describe('wantedFrom', () => {
     expect(heard[0]?.phonemes).toEqual(['a', 'tɕ', 'i'])
   })
 
+  // A substitution may not bring two Japanese sounds onto one. し is /ɕi/ and ち is /tɕi/, and hearing
+  // both as the sound of chic gives them one onset, which is the position the rules treat as decisive:
+  // a reader handed that word produces one of the two and is graded on the other.
+  it('refuses a table bringing two sounds onto one', () => {
+    const merged = new Map([
+      ['ɕ', 'ʃ'],
+      ['tɕ', 'ʃ'],
+    ])
+
+    expect(() => wantedFrom(READINGS, 4, merged)).toThrow(/ʃ/)
+  })
+
+  // Nor onto a sound the language taught already makes on its own, which is the same merge seen from
+  // the other side: つ heard as /s/ is す, which needs no substitution to be /s/.
+  it('refuses a table bringing a sound onto one the reading already carries', () => {
+    expect(() => wantedFrom(new Map([['すつ', { type: null, taught: true, by: ['素通'] }]]), 4, new Map([['ts', 's']]))).toThrow(
+      /s/,
+    )
+  })
+
   it('hears a reading through the sounds the locale reaches for', () => {
     const heard = wantedFrom(new Map([['しゃ', { type: 'onyomi' as const, taught: true, by: ['車'] }]]), 4, new Map([['ɕ', 'ʃ']]))
 
