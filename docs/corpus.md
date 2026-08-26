@@ -240,9 +240,10 @@ On'yomi are short and massively homophonous, so a reading like こう is shared 
 and an anchor spent at level 3 is an anchor missing at level 40. Allocation is a calculation over
 data, so it costs no model call and it is done once for all sixty levels; only the levels being
 shipped are written. Candidates come from Lexique, which carries phonemic transcription and frequency
-for French. Readings are served scarcest first, the one with two acceptable words before the one with
-ten, since a common word spent on an easy reading leaves the scarce one with nothing and a reading with
-no anchor is a card that cannot be written. Among the words the rules accept for a reading, the nearest
+for French. Readings are served scarcest first inside each kind, the one with two acceptable words before the one
+with ten, since a common word spent on an easy reading leaves the scarce one with nothing and a reading
+with no anchor is a card that cannot be written. Scarcity orders within a kind and never across the
+two, the paragraph below saying why. Among the words the rules accept for a reading, the nearest
 in sound takes it; where two
 sit equally near, the word the reader can picture takes it; where nothing separates them there either,
 the more ordinary word does. A reading left without leaves the run with the reason, either that no
