@@ -32,9 +32,10 @@ the anchor's phonemes as derived rather than as claimed, and the components the 
 The structured fields are not decoration: a check that has to recover the anchor from prose is a check
 that breaks on the first sentence written differently.
 
-The table holding them widens when the generator lands rather than now, per
-[`specs/v0.1.md`](specs/v0.1.md): a column added before anything fills it is a shape nobody has
-tested, and the migration belongs with the code that writes the rows.
+The table holding them carries all of it. The meaning story keeps the name `mnemonic` it was committed
+under, since renaming it to say which of the two it is would be clearer and would move a column every
+row already written is keyed on. The reading columns are empty where a subject teaches no reading,
+which is a component always and a word wherever its reading is the one its kanji already gave.
 
 ## Where the material lives
 

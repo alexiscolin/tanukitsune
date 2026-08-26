@@ -96,7 +96,7 @@ describe('corpus_entry', () => {
   // column two subjects in three cannot be written under.
   it('leaves the reading columns empty where a subject teaches no reading', () => {
     for (const name of ['readingMnemonic', 'reading', 'anchor', 'anchorPhonemes'] as const) {
-      expect(columns[name]?.notNull, `${name} must be nullable`).toBe(false)
+      expect(columns[name].notNull, `${name} must be nullable`).toBe(false)
     }
   })
 
@@ -104,7 +104,7 @@ describe('corpus_entry', () => {
   // is would be clearer and would move a column every row already written is keyed on.
   it('keeps the columns it was committed under', () => {
     for (const name of ['subjectId', 'locale', 'meaning', 'nuance', 'mnemonic', 'generatedBy'] as const) {
-      expect(columns[name]?.notNull, `${name} must stay required`).toBe(true)
+      expect(columns[name].notNull, `${name} must stay required`).toBe(true)
     }
   })
 })

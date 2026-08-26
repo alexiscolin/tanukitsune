@@ -8,8 +8,24 @@ export const corpusEntry = pgTable(
     subjectId: text('subject_id').notNull(),
     locale: text('locale').notNull(),
     meaning: text('meaning').notNull(),
+    // The English key the French one stands for, which the account grades on. Selected at generation
+    // from the release's own English rather than carried from the account, whose text is theirs.
+    englishKey: text('english_key'),
     nuance: text('nuance').notNull(),
+    // The meaning story. It keeps the name it was committed under: renaming it to say which of the two
+    // it is would be clearer and would move a column every row already written is keyed on.
     mnemonic: text('mnemonic').notNull(),
+    // The reading story, and what a check reads it against. Empty where the subject teaches no reading,
+    // which is a component always and a word wherever its reading is the one its kanji already gave.
+    readingMnemonic: text('reading_mnemonic'),
+    reading: text('reading'),
+    anchor: text('anchor'),
+    // Derived from the locale's lexicon rather than from what anything claimed the word sounds like,
+    // which is the cheapest hallucination in the pipeline to catch.
+    anchorPhonemes: text('anchor_phonemes').array(),
+    // The components the story names, in the order it names them, so a check reads them rather than
+    // recovering them from a sentence.
+    parts: text('parts').array().notNull().default([]),
     // The model identifier, which the AI Act transparency article requires us to
     // carry on every generated row.
     generatedBy: text('generated_by').notNull(),
