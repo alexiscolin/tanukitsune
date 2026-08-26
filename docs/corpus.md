@@ -283,15 +283,21 @@ hesitating: /ɕ/ is the sound of chic and /ɾ/ the sound of rire. Compared on th
 readings have no candidate at all, and 378 of those are six sounds French makes under another name. The
 substitution moves the reading and never the anchor, so a word still claims only sounds its own
 language makes, which is what `impossibleOnset` refuses. What the ear reaches for is in
-`phonology.json`, one line per sound, and a language reaching for nothing states nothing: French hears
-no /h/ at all, the h of hotel being silent, so those 199 readings keep no anchor rather than a word
-that matches on paper.
+`phonology.json`, one line per sound.
 
-Of the 2523 readings inside that ceiling, 2235 are bound and 288 are not, and 504 of the 557 a
-character teaches have one. 426 of those bound sit on a word under one occurrence per million, which is
-the third pass and which the prose step is expected to refuse rather than write on. Of the 288 left,
-201 have no word the rules accept, almost all of them the /h/ readings above, and 87 have words the
-curriculum has already spent.
+**A sound a language does not say and does write is written rather than heard.** French makes no /h/ and
+spells one on a thousand nouns, so a reading beginning on that sound is compared from the sound that
+follows and its anchor has to carry the letter: は is bound to `la hache`, which is said without an h
+and carries one where the reader looks, and a mnemonic is read. This is `cannotStart` seen from the
+other side rather than against it, that rule refusing an anchor claiming a sound French does not say,
+which `la hache` claims nowhere: its pronunciation, derived from the lexicon, begins on the vowel.
+Those readings are served in their own pass, after every other, so they never take a word a reading
+beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
+
+Of the 2523 readings inside that ceiling, 2420 are bound and 103 are not, and 543 of the 557 a
+character teaches have one. 587 of those bound sit on a word under one occurrence per million, which is
+the widened pass and which the prose step is expected to refuse rather than write on. Of the 103 left,
+9 have no word the rules accept and 94 have words the curriculum has already spent.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
 thirty-seven symbols name sounds French borrows rather than owns. Both are carried: whether a sound can

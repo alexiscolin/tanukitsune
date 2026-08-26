@@ -74,7 +74,7 @@ describe('candidatesBy', () => {
   // Which sound a reading begins on is not the only thing that can be asked of a candidate: a locale
   // may have a sound it writes without saying it, and then what qualifies a word is how it is spelled.
   it('lets the locale ask about the written word as well as the spoken one', () => {
-    const written = candidatesBy(LEXICON, (word, text) => text.startsWith('c'))
+    const written = candidatesBy(LEXICON, (_word, text) => text.startsWith('c'))
     const reading = { value: 'こう', phonemes: ['k', 'o', 'o'] }
 
     expect(written(reading).map((one) => one.text).sort()).toEqual(['cause', 'classer', 'coq'])

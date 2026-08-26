@@ -25,9 +25,9 @@ import { moraeOf, phonemesOf } from '../../core/corpus/phonetics.ts'
 // readings have no candidate at all rather than a near one.
 //
 // The substitution moves the reading and never the anchor, so a word still claims only sounds its own
-// language makes, which is what `impossibleOnset` refuses. A sound the locale reaches for nothing on is
-// simply absent from the table: French hears no /h/ at all, hotel being said without one, so those
-// readings stay unanchored rather than being given a word that matches on paper.
+// language makes, which is what `impossibleOnset` refuses. A locale reaching for nothing on a sound
+// states it as nothing, and the reading then begins on what follows: what carries the lost sound is
+// then the spelling of the anchor rather than its pronunciation, which is the caller's to ask for.
 export function wantedFrom(
   readings: ReadonlyMap<string, Named>,
   atMostMorae: number,
@@ -35,20 +35,25 @@ export function wantedFrom(
 ): readonly Wanted[] {
   return [...readings]
     .filter(([value, named]) => named.taught && moraeOf(value).length <= atMostMorae)
-    .map(([value]) => ({ value, phonemes: phonemesOf(value).map((sound) => hears.get(sound) ?? sound) }))
+    .map(([value]) => ({
+      value,
+      phonemes: phonemesOf(value)
+        .map((sound) => hears.get(sound) ?? sound)
+        .filter((sound) => sound !== ''),
+    }))
 }
 
 // Which words a locale draws its anchors from is that locale's business rather than the engine's, so
 // the run is told what to keep rather than deciding it here.
 export function candidatesBy(
   lexicon: ReadonlyMap<string, Word>,
-  keeps: (word: Word) => boolean,
+  keeps: (word: Word, text: string) => boolean,
 ): (reading: Wanted) => readonly Candidate[] {
   const held = new Map<string, Candidate[]>()
 
   for (const [text, word] of lexicon) {
     const [onset] = word.phonemes
-    if (onset === undefined || !keeps(word)) continue
+    if (onset === undefined || !keeps(word, text)) continue
 
     // A word nothing rated carries no rating rather than a low one, the limits saying what unrated is
     // worth: rated zero, a word nobody was asked about would lose to every word anybody was.

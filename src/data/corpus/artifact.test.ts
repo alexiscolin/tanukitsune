@@ -110,7 +110,7 @@ describe('readNaming', () => {
 
 describe('readPhonology', () => {
   const SOUNDS =
-    '{"cannotStart":["h","ts"],"nearest":0.5,"apart":0.2,"unrated":50,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"hears":{"ɕ":"ʃ"}}'
+    '{"cannotStart":["h","ts"],"nearest":0.5,"apart":0.2,"unrated":50,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"hears":{"ɕ":"ʃ"},"writes":{"h":"h"}}'
 
   // The list is the locale's and the rule is the engine's, so a second language is a folder rather
   // than a branch in the code.
@@ -138,7 +138,9 @@ describe('readPhonology', () => {
   // the first word that starts on its sound.
   it('refuses a file that leaves a limit unstated', () => {
     expect(() =>
-      readPhonology('{"cannotStart":[],"nearest":0.5,"apart":0.2,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"hears":{}}'),
+      readPhonology(
+        '{"cannotStart":[],"nearest":0.5,"apart":0.2,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"hears":{},"writes":{}}',
+      ),
     ).toThrow()
   })
 
@@ -146,6 +148,12 @@ describe('readPhonology', () => {
   // is the locale's business: a second language substitutes other sounds, or none.
   it('reads what this language hears where a sound it does not make', () => {
     expect(readPhonology(SOUNDS).hears.get('ɕ')).toBe('ʃ')
+  })
+
+  // A sound a language writes without saying it: the anchor is spelled with the letter and said
+  // without it, and a mnemonic is read.
+  it('reads what this language writes where a sound it does not say', () => {
+    expect(readPhonology(SOUNDS).writes.get('h')).toBe('h')
   })
 })
 

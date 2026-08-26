@@ -14,10 +14,12 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
+import type { Allocated } from '../src/core/corpus/allocation.ts'
 import type { Candidate, Wanted } from '../src/core/corpus/choose.ts'
 import { allocate } from '../src/core/corpus/choose.ts'
 import { candidatesBy, wantedFrom } from '../src/data/corpus/anchor-run.ts'
 import { readLexicon, readPhonology, readReadings } from '../src/data/corpus/artifact.ts'
+import { phonemesOf } from '../src/core/corpus/phonetics.ts'
 
 const locale = process.argv[2] ?? 'fr'
 const READINGS = 'corpus/.readings.json'
@@ -29,7 +31,7 @@ for (const needed of [READINGS, at('.lexicon.json'), at('phonology.json')]) {
 
 const readings = readReadings(readFileSync(READINGS, 'utf8'))
 const lexicon = readLexicon(readFileSync(at('.lexicon.json'), 'utf8'))
-const { nearest, apart, unrated, atMostMorae, atLeastCommon, partsOfSpeech, hears } = readPhonology(
+const { nearest, apart, unrated, atMostMorae, atLeastCommon, partsOfSpeech, hears, writes } = readPhonology(
   readFileSync(at('phonology.json'), 'utf8'),
 )
 
@@ -66,8 +68,33 @@ const short = [...first.unserved, ...second.unserved]
 const rare = candidatesBy(lexicon, keeps)
 const third = allocate(short, without(rare, held), limits)
 
-const allocated = [...first.allocated, ...second.allocated, ...third.allocated]
-const unserved = third.unserved
+// A sound the locale writes without saying it. The reading is compared from the sound that follows,
+// and the anchor has to be spelled with the letter: la hache is said without an h and carries one where
+// the reader looks, and a mnemonic is read. Held to its own pass so these readings never take a word a
+// reading beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
+const spoken = new Set([...held, ...third.allocated.map((one) => one.anchor)])
+const written = [...third.unserved]
+const bound: Allocated[] = []
+
+for (const [sound, letter] of writes) {
+  const owed = new Map(
+    [...readings].filter(([value, named]) => named.taught && phonemesOf(value)[0] === sound),
+  )
+  const asked = wantedFrom(owed, atMostMorae, new Map([[sound, '']]))
+  const spelled = candidatesBy(lexicon, (word, text) => word.category === 'NOM' && text.startsWith(letter))
+  const pass = allocate(asked, (reading) => spelled(reading).filter((word) => !spoken.has(word.text)), limits)
+
+  for (const one of pass.allocated) spoken.add(one.anchor)
+  bound.push(...pass.allocated)
+  for (const one of pass.unserved) written.push(one)
+}
+
+const allocated = [...first.allocated, ...second.allocated, ...third.allocated, ...bound]
+// One line per reading still owed. A reading refused by two passes is owed once, and one this last pass
+// served is no longer owed whatever the passes before it said of it.
+const decided = new Set(allocated.map((one) => one.reading))
+const owed = new Map(written.filter((one) => !decided.has(one.reading)).map((one) => [one.reading, one]))
+const unserved = [...owed.values()]
 
 // A pool with the words a pass has already spent taken out, held by the sound a reading begins on so
 // the answer is found once and read by every reading that begins on it.
@@ -90,6 +117,7 @@ const HEADER = {
   source: 'Chosen by pnpm corpus:anchor from Lexique and the readings the curriculum teaches',
   written: 'The words are French and the pairing is this corpus own. Neither is taken from any release.',
   modified: `A reading of at most ${atMostMorae} morae is bound to one noun, no nearer than ${apart} to another anchor and no further than ${nearest} from its reading. The readings a character teaches are served first, the readings a word teaches next, and what neither pass could serve is asked again of every noun, the floor of ${atLeastCommon} occurrence per million lifted.`,
+  spelled: 'A reading beginning on a sound this locale writes without saying it is compared from the sound that follows, and its anchor is spelled with that letter.',
   shape: 'reading to the word standing for it, that word phonemes as the lexicon derives them, and how common it is per million',
 }
 
