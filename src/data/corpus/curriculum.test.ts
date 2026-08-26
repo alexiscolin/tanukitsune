@@ -70,6 +70,28 @@ describe('walkCurriculum', () => {
     expect(walkCurriculum([LEFT, tree, asKanji, KANJI], { 亻: 'le passant' }, shapeOf).owed).toEqual([])
   })
 
+  // The word they share need not be the first either side states: the curriculum lists what it accepts
+  // and not what it teaches first, so 羽 states Feathers where its kanji states Feather, Feathers, Wing.
+  // Read on the first word alone, four shapes with a key already got a second French word.
+  it('owes nothing where they share a word neither states first', () => {
+    const feathers = subject({ id: 2, type: 'radical', characters: '羽', meanings: ['Feathers'] })
+    const asKanji = subject({ id: 5, type: 'kanji', characters: '羽', meanings: ['Feather', 'Feathers', 'Wing'] })
+    const built = subject({ id: 3, type: 'kanji', characters: '習', componentIds: [1, 2] })
+
+    expect(walkCurriculum([LEFT, feathers, asKanji, built], { 亻: 'le passant' }, shapeOf).owed).toEqual([])
+  })
+
+  // A radical the source has withdrawn is dealt by no session, so a name for it is a name for a card
+  // nobody can be shown, and the reason the rule gives, that it is dealt before its kanji, is not true
+  // of a card that is dealt at all.
+  it('owes nothing for a radical the source has withdrawn', () => {
+    const gone = subject({ id: 2, type: 'radical', characters: '母', meanings: ['Drawer'], hidden: true })
+    const mother = subject({ id: 5, type: 'kanji', characters: '母', meanings: ['Mother'] })
+    const built = subject({ id: 3, type: 'kanji', characters: '毎', componentIds: [1, 2] })
+
+    expect(walkCurriculum([LEFT, gone, mother, built], { 亻: 'le passant' }, shapeOf).owed).toEqual([])
+  })
+
   // The other half of the same rule: a kanji nobody can be shown teaches no key, so it cannot be what
   // names the radical either, and the radical is owed a name of its own again.
   it('owes a name where the kanji of that shape is withdrawn', () => {
