@@ -13,11 +13,15 @@
 import type { Named } from './reading-run.ts'
 import type { Word } from './lexique.ts'
 import type { Candidate, Wanted } from '../../core/corpus/choose.ts'
-import { phonemesOf } from '../../core/corpus/phonetics.ts'
+import { moraeOf, phonemesOf } from '../../core/corpus/phonetics.ts'
 
-export function wantedFrom(readings: ReadonlyMap<string, Named>): readonly Wanted[] {
+// An anchor is one word standing for one reading, and no word carries eleven morae. Asked for one
+// anyway, a long reading takes whatever the distance forgives, that distance being a fraction of the
+// sounds compared: a long word shares a great many of them without sounding like the reading at all.
+// No reading a kanji teaches runs past four morae, so the ceiling touches words alone.
+export function wantedFrom(readings: ReadonlyMap<string, Named>, atMostMorae: number): readonly Wanted[] {
   return [...readings]
-    .filter(([, named]) => named.taught)
+    .filter(([value, named]) => named.taught && moraeOf(value).length <= atMostMorae)
     .map(([value]) => ({ value, phonemes: phonemesOf(value) }))
 }
 
@@ -33,9 +37,10 @@ export function candidatesBy(
     const [onset] = word.phonemes
     if (onset === undefined || !keeps(word)) continue
 
-    // Nothing rates a French word for how well it can be seen, the lexicon stating frequency and
-    // sounds alone, so every candidate arrives unrated and the limits say what that is worth.
-    held.set(onset, [...(held.get(onset) ?? []), { text, phonemes: word.phonemes, frequency: word.frequency }])
+    // A word nothing rated carries no rating rather than a low one, the limits saying what unrated is
+    // worth: rated zero, a word nobody was asked about would lose to every word anybody was.
+    const rating = word.imageability === undefined ? {} : { imageability: word.imageability }
+    held.set(onset, [...(held.get(onset) ?? []), { text, phonemes: word.phonemes, frequency: word.frequency, ...rating }])
   }
 
   return (reading) => held.get(reading.phonemes[0] ?? '') ?? []

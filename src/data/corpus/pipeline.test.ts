@@ -46,6 +46,16 @@ describe('stepsFor', () => {
     expect(argumentsFor(lexicon, 'fr', 20, 60)).toEqual(['fr'])
   })
 
+  // The anchors read the readings and the lexicon, and every mnemonic teaching a reading uses the word
+  // bound here, so nothing that writes prose runs before it.
+  it('binds the anchors after the readings and the lexicon, and before any prose', () => {
+    const at = (name: string) => FR.findIndex((one) => one.name === name)
+
+    expect(at('corpus:readings')).toBeLessThan(at('corpus:anchor'))
+    expect(at('corpus:lexicon')).toBeLessThan(at('corpus:anchor'))
+    expect(argumentsFor(FR.find((one) => one.name === 'corpus:anchor') as Step, 'fr', 20, 60)).toEqual(['fr'])
+  })
+
   it('keys a locale step by that locale and leaves a shared one alone', () => {
     expect(stepsFor('fr').find((one) => one.name === 'corpus:name')?.batch).toBe('corpus/fr/.naming-batch.json')
     expect(stepsFor('de').find((one) => one.name === 'corpus:name')?.batch).toBe('corpus/de/.naming-batch.json')
@@ -78,7 +88,7 @@ describe('argumentsFor', () => {
   const step = (name: string) => FR.find((one) => one.name === name) as Step
 
   // Three steps read the position after their name as something other than a locale, so one shape for
-  // all eleven hands a release path where a locale was meant and dies on the first of them.
+  // all twelve hands a release path where a locale was meant and dies on the first of them.
   it('gives a step what that step reads, rather than one shape for all', () => {
     expect(argumentsFor(step('corpus:decomposition'), 'fr', Infinity, 60)).toEqual([])
     expect(argumentsFor(step('corpus:inventory'), 'fr', Infinity, 60)).toEqual(['60'])

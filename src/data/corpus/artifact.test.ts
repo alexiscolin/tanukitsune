@@ -109,14 +109,28 @@ describe('readNaming', () => {
 })
 
 describe('readPhonology', () => {
+  const SOUNDS = '{"cannotStart":["h","ts"],"nearest":0.5,"apart":0.2,"unrated":50}'
+
   // The list is the locale's and the rule is the engine's, so a second language is a folder rather
   // than a branch in the code.
   it('reads what the language cannot begin a word with', () => {
-    expect(readPhonology('{"cannotStart":["h","ts"]}').cannotStart).toEqual(['h', 'ts'])
+    expect(readPhonology(SOUNDS).cannotStart).toEqual(['h', 'ts'])
+  })
+
+  // How far a word may sit from a reading and still be heard in it is a fact about the pair of
+  // languages, and what an unrated word is worth depends on the scale that locale's ratings use.
+  it('reads how near an anchor must sound and how far two of them must sit apart', () => {
+    expect(readPhonology(SOUNDS)).toMatchObject({ nearest: 0.5, apart: 0.2, unrated: 50 })
   })
 
   it('refuses a file that names no such list', () => {
     expect(() => readPhonology('{}')).toThrow()
+  })
+
+  // A limit missing reads as a limit of nothing, and an allocation with no ceiling gives every reading
+  // the first word that starts on its sound.
+  it('refuses a file that leaves a limit unstated', () => {
+    expect(() => readPhonology('{"cannotStart":[],"nearest":0.5,"apart":0.2}')).toThrow()
   })
 })
 

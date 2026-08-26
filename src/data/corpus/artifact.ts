@@ -2,6 +2,8 @@ import { z } from 'zod'
 
 import type { ComponentNames, Glyph } from '@/core/corpus/decomposition'
 import type { Naming } from '@/core/corpus/name'
+import type { Named } from './reading-run.ts'
+import type { Word } from './lexique.ts'
 
 // Reads back what `scripts/import-decomposition.ts` wrote. The artifact is committed, so this is the
 // only door between the corpus and a file nobody edits by hand.
@@ -103,10 +105,50 @@ export function keyOrderFile(current: string, added: ReadonlyMap<string, readonl
 // What a language cannot do with sounds. The checks that judge an anchor are the engine's and know
 // nothing about French; this is what makes them French, and what a second language replaces without
 // a line of code changing.
-const phonology = z.object({ cannotStart: z.array(z.string()) })
+// The limits sit here rather than in the engine for the same reason: how far a word may sit from a
+// reading and still be heard in it is a fact about the pair of languages, and what an unrated word is
+// worth depends on the scale that locale's ratings use.
+const phonology = z.object({
+  cannotStart: z.array(z.string()),
+  nearest: z.number().positive(),
+  apart: z.number().nonnegative(),
+  unrated: z.number().nonnegative(),
+})
 
-export function readPhonology(json: string): { readonly cannotStart: readonly string[] } {
+export function readPhonology(json: string): {
+  readonly cannotStart: readonly string[]
+  readonly nearest: number
+  readonly apart: number
+  readonly unrated: number
+} {
   return phonology.parse(JSON.parse(json))
+}
+
+// The readings the curriculum names and the words a locale can bind one to. Both are written by a
+// command and read by the next, so they are bounded here like everything else a run hands on.
+const readings = z.object({ readings: z.record(z.string(), z.tuple([z.string().nullable(), z.boolean(), z.array(z.string())])) })
+
+export function readReadings(json: string): ReadonlyMap<string, Named> {
+  const { readings: named } = readings.parse(JSON.parse(json))
+
+  return new Map(
+    Object.entries(named).map(([value, [type, taught, by]]) => [value, { type: type as Named['type'], taught, by }]),
+  )
+}
+
+const lexicon = z.object({
+  words: z.record(z.string(), z.tuple([z.array(z.string()), z.number(), z.string(), z.number().nullable()])),
+})
+
+export function readLexicon(json: string): ReadonlyMap<string, Word> {
+  const { words } = lexicon.parse(JSON.parse(json))
+
+  return new Map(
+    Object.entries(words).map(([text, [phonemes, frequency, category, seen]]) => [
+      text,
+      { phonemes, frequency, category, ...(seen === null ? {} : { imageability: seen }) },
+    ]),
+  )
 }
 
 // The shape a name takes in that language, which is the other half of the same idea: the rule judging
