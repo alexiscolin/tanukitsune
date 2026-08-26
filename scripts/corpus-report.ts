@@ -84,11 +84,27 @@ function againstCurriculum(read: { upTo: number; subjects: readonly InventorySub
   return walkCurriculum(read.subjects, names, shapeOf)
 }
 
+// A shape a kanji writes and teaches under the same meaning, which is the case where the key names both
+// cards. Where the two are taught under different meanings the radical is a card of its own and is owed
+// a name, so counting it here would call that name a leftover.
+//
 // Withdrawn kanji left out on the same terms as the walk, or the two disagree and one report says a
 // shape is owed a name while the next line says a kanji already writes it.
 function written(subjects: readonly InventorySubject[]): ReadonlySet<string> {
+  const taught = new Map(
+    subjects.flatMap((one) =>
+      one.type === 'kanji' && one.characters !== null && !one.hidden
+        ? [[one.characters, one.meanings[0]?.toLowerCase()] as const]
+        : [],
+    ),
+  )
+
   return new Set(
-    subjects.flatMap((one) => (one.type === 'kanji' && one.characters !== null && !one.hidden ? [one.characters] : [])),
+    subjects.flatMap((one) =>
+      one.type === 'radical' && one.characters !== null && taught.get(one.characters) === one.meanings[0]?.toLowerCase()
+        ? [one.characters]
+        : [],
+    ),
   )
 }
 

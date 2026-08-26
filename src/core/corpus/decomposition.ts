@@ -119,9 +119,11 @@ export function collidingNames(names: ComponentNames): readonly string[] {
   return [...collisions]
 }
 
-// Names written on a component a kanji of the same shape already writes, which the key names on both
-// cards. Nothing owes these a name any more, so the walk no longer counts them and this is what is
-// left to see them: a name that survived the rule is invisible everywhere else.
+// Names written on a component a kanji of the same shape writes and teaches under the same meaning,
+// which the key names on both cards. Nothing owes these a name any more, so the walk no longer counts
+// them and this is what is left to see them: a name that survived the rule is invisible everywhere
+// else. A shape whose kanji teaches another meaning is a card of its own and is owed a name, so it is
+// not one of these.
 export function namesKanjiWrites(names: ComponentNames, written: ReadonlySet<string>): readonly string[] {
   return Object.keys(names).filter((component) => written.has(component))
 }

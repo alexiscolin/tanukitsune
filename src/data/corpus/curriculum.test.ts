@@ -40,9 +40,9 @@ describe('walkCurriculum', () => {
     expect(walkCurriculum([LEFT, asKanji, KANJI], { 亻: 'le passant' }, shapeOf).owed).toEqual([])
   })
 
-  // A radical sharing its shape with a kanji is named by that kanji's key. Asking the model for a
-  // picture instead gives the same shape two French words, one on the radical card and one on the
-  // kanji card, which is the contradiction docs/corpus.md refuses.
+  // A radical sharing its shape with a kanji and taught under the same meaning is named by that kanji's
+  // key. Asking the model for a picture instead gives the same shape two French words, one on the
+  // radical card and one on the kanji card, which is the contradiction docs/corpus.md refuses.
   it('owes nothing for a radical a kanji of the same shape already names', () => {
     const alsoKanji = subject({ id: 5, type: 'kanji', characters: '木' })
 
