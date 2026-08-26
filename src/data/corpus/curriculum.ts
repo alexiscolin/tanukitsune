@@ -31,17 +31,30 @@ export function walkCurriculum(
   const unplaced: string[] = []
   const drawn: string[] = []
   // A part that is itself a subject with a key of its own needs no component name: a word made of
-  // kanji names them by what they mean. A radical sharing its shape with a kanji is that same case,
-  // the key naming both cards, so naming it separately would teach one shape two French words. Only a
-  // radical no kanji writes owes a name of its own.
+  // kanji names them by what they mean. A radical sharing its shape with a kanji is that same case
+  // while the two are taught under one meaning, the key naming both cards, and naming it separately
+  // would teach one shape two French words.
+  //
+  // Where the two are taught under different meanings it is not that case at all. The radical is a card
+  // of its own, dealt a median of thirteen levels before its kanji and answered on a different word, so
+  // the kanji key would show the reader a word for something the shape does not look like. 母 is a chest
+  // of drawers seen as a shape and a mother read as a character.
+  //
   // Withdrawn on the same grounds as the loop below: a kanji nobody can be shown teaches no key, so it
   // names nothing.
-  const written = new Set(
-    subjects.filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden).map((one) => one.characters),
+  const written = new Map(
+    subjects
+      .filter((one) => one.type === 'kanji' && one.characters !== null && !one.hidden)
+      .map((one) => [one.characters, one.meanings[0]?.toLowerCase()]),
   )
   const radicals = new Set(
     subjects
-      .filter((one) => one.type === 'radical' && one.characters !== null && !written.has(one.characters))
+      .filter(
+        (one) =>
+          one.type === 'radical' &&
+          one.characters !== null &&
+          (!written.has(one.characters) || written.get(one.characters) !== one.meanings[0]?.toLowerCase()),
+      )
       .map((one) => one.characters),
   )
 
