@@ -105,3 +105,15 @@ export function soundsOf(phrase: string, lexicon: ReadonlyMap<string, Word>): re
 
   return sounds
 }
+
+// The few a bounded run asks, spread across the whole of what is owed rather than taken from its head.
+// A bound exists so a first run is read by hand before the rest is paid for, and a sample of the
+// hardest corner says nothing about the rest: what is owed here is ordered by why it is owed, so its
+// head is the readings the language serves worst and its tail the ones it nearly served.
+export function spread<T>(owed: readonly T[], most: number): readonly T[] {
+  if (owed.length <= most) return [...owed]
+
+  const every = owed.length / most
+
+  return Array.from({ length: most }, (_, taken) => owed[Math.floor(taken * every)] as T)
+}

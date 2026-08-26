@@ -21,7 +21,7 @@ import { toRomaji } from 'wanakana'
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
 import { ANCHOR_VERSION, anchorPrefix, anchorRequest, readAnchor } from '../src/ai/corpus/prompts/anchor.ts'
 import { faultInAnchor } from '../src/core/corpus/anchor-answer.ts'
-import { soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
+import { soundsOf, spread, wantedFrom } from '../src/data/corpus/anchor-run.ts'
 import { keyOrderFile, readAnchors, readKeyOrder, readLexicon, readNaming, readPhonology, readReadings } from '../src/data/corpus/artifact.ts'
 import { batchFor } from '../src/data/corpus/pipeline.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
@@ -82,7 +82,7 @@ for (const [sound, letter] of writes) {
 }
 
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
-const step = nextStep(saved, owed.slice(0, most), ANCHOR_VERSION)
+const step = nextStep(saved, spread(owed, most), ANCHOR_VERSION)
 
 if (step.do === 'submit') await submit(step.parts)
 else if (step.do === 'collect') await collect(step.id)
