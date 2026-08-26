@@ -36,8 +36,16 @@ const at = (file: string) => `corpus/${locale}/${file}`
 const carriedFile = at('anchor-written.json')
 const runFile = batchFor('corpus:anchor-written', locale)
 
-for (const needed of ['corpus/.readings.json', at('.lexicon.json'), at('phonology.json'), at('anchors.json'), carriedFile]) {
-  if (!existsSync(needed)) throw new Error(`${needed} is missing. Run pnpm corpus:anchor first, which writes what this asks about`)
+for (const needed of ['corpus/.readings.json', at('.lexicon.json'), at('phonology.json'), carriedFile]) {
+  if (!existsSync(needed)) throw new Error(`${needed} is missing. Run pnpm corpus to write it`)
+}
+
+// The two read each other, as corpus:keys and corpus:key-translation do: this asks for the readings the
+// table failed on, and the table reads back what it wrote. Before the first binding there is nothing to
+// have failed, so a run here is a run with nothing owed rather than a fault.
+if (!existsSync(at('anchors.json'))) {
+  process.stdout.write(`${locale}: nothing is bound yet, so no reading is owed a word. Run pnpm corpus:anchor first\n`)
+  process.exit(0)
 }
 
 const readings = readReadings(readFileSync('corpus/.readings.json', 'utf8'))
