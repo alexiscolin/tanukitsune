@@ -18,7 +18,7 @@ import { corpusRequest } from '../request.ts'
 //
 // Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
 // row and two runs sharing a version make the provenance false while looking satisfied.
-export const ANCHOR_VERSION = 2
+export const ANCHOR_VERSION = 3
 
 const anchor = z.strictObject({ anchor: z.string() })
 
@@ -82,8 +82,13 @@ export function anchorPrefix(language: string, taken: readonly string[]): string
   ].join('\n')
 }
 
+// Four times the ceiling the other prompts take. This one asks for a search through a language rather
+// than a lookup in a file, and the model reads its way through before answering: half of one bounded
+// run came back cut off, which is a request paid for and thrown away.
+const CEILING = 16384
+
 export function anchorRequest(prefix: string, one: Unanchored): MessageCreateParamsNonStreaming {
-  return corpusRequest(prefix, FORMAT, asks(one))
+  return corpusRequest(prefix, FORMAT, asks(one), CEILING)
 }
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to
