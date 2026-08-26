@@ -1078,3 +1078,14 @@
 {"date": "2026-08-26", "branch": "pr7/a-card-carries-two-mnemonics", "kind": "pass", "base": "e7ba55f501f15b8bcab0dcf4998cac6af779ba43", "head": "0602ac3c71c699188f8e2ce59dcd6971451fd41b"}
 {"date": "2026-08-27", "branch": "pr7/a-card-carries-two-mnemonics", "kind": "pass", "base": "6addd8a4e7f149a5b76ee6d0bb530aba88fb736a", "head": "dabba12e2dec93654e0c3b87ee1a122972864f5b"}
 {"date": "2026-08-30", "branch": "pr7/a-card-carries-two-mnemonics", "kind": "pass", "base": "48e43481ff89da49f8d0cc3df8261273dd526f86", "head": "db7a86ad55281612f00ed00f830631f95a38ecdc"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "regression-check", "file": "src/data/corpus/curriculum.ts", "line": 56, "outcome": "fixed"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "regression-check", "file": "src/data/corpus/curriculum.ts", "line": 50, "outcome": "fixed"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "regression-check", "file": "scripts/corpus-report.ts", "line": 93, "outcome": "fixed"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "requirement-check", "file": "docs/corpus.md", "line": 146, "outcome": "fixed"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "requirement-check", "file": "src/data/corpus/curriculum.ts", "line": 56, "outcome": "fixed"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "requirement-check", "file": "src/data/corpus/curriculum.ts", "line": 50, "outcome": "fixed"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "requirement-check", "file": "corpus/fr/components.json", "line": 229, "outcome": "fixed"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "architecture-check", "file": "scripts/corpus-report.ts", "line": 93, "outcome": "fixed"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "security-check", "file": "docs/corpus.md", "line": 154, "outcome": "fixed"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "reviewer": "security-check", "file": "src/data/corpus/curriculum.ts", "line": 54, "outcome": "dismissed", "reason": "the reader never meets the upstream wording, a radical card showing the French name this rule decides, so a key equal to an upstream radical meaning is a coincidence with no card behind it. What is left is three shapes whose two English words are one word in two forms, and folding an English plural into a rule that knows no language is the reader call raised in the report"}
+{"date": "2026-08-27", "branch": "pr8/name-a-shape-its-kanji-does-not-name", "kind": "pass", "base": "cbd5260c3b956e6201b274ecb800551cc3e32979", "head": "f39788dd332a57fda10159ee8caceb5355e2a832"}
