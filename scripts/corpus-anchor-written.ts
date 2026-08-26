@@ -27,10 +27,6 @@ import { batchFor } from '../src/data/corpus/pipeline.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
 import { asked, list } from './corpus-command.ts'
 
-// The same ceiling and floor `corpus:anchor` holds, since this run judges what that one will read back.
-const MOST_MORAE = 4
-const AT_LEAST = 1
-
 const { locale, most, reach } = asked(process.argv)
 const at = (file: string) => `corpus/${locale}/${file}`
 const carriedFile = at('anchor-written.json')
@@ -51,7 +47,9 @@ if (!existsSync(at('anchors.json'))) {
 const readings = readReadings(readFileSync('corpus/.readings.json', 'utf8'))
 const lexicon = readLexicon(readFileSync(at('.lexicon.json'), 'utf8'))
 const naming = readNaming(readFileSync(at('naming.json'), 'utf8'))
-const { nearest, apart, hears, writes } = readPhonology(readFileSync(at('phonology.json'), 'utf8'))
+// The same ceiling and floor `corpus:anchor` holds, read from the same place rather than restated: a
+// number written twice is a number that stops matching the day one locale moves it.
+const { nearest, apart, hears, writes, atMostMorae, atLeastCommon } = readPhonology(readFileSync(at('phonology.json'), 'utf8'))
 const { bound, left } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
 const carried = readKeyOrder(readFileSync(carriedFile, 'utf8'))
 
@@ -59,15 +57,15 @@ const carried = readKeyOrder(readFileSync(carriedFile, 'utf8'))
 // rare that the reader would meet a cue they have to learn first. The two are one problem seen twice.
 const owed = [
   ...left.keys(),
-  ...[...bound].filter(([, one]) => one.frequency < AT_LEAST).map(([reading]) => reading),
+  ...[...bound].filter(([, one]) => one.frequency < atLeastCommon).map(([reading]) => reading),
 ].filter((reading) => !carried.has(reading))
 
 // The sounds each reading is judged on, which is what `corpus:anchor` compares against and not what the
 // kana say on their own: a locale hears some sounds as others, and writes one it does not say.
 const sounds = new Map(
   [
-    ...wantedFrom(readings, MOST_MORAE, hears),
-    ...[...writes.keys()].flatMap((sound) => wantedFrom(readings, MOST_MORAE, new Map([[sound, '']]))),
+    ...wantedFrom(readings, atMostMorae, hears),
+    ...[...writes.keys()].flatMap((sound) => wantedFrom(readings, atMostMorae, new Map([...hears, [sound, '']]))),
   ].map((one) => [one.value, one.phonemes] as const),
 )
 
