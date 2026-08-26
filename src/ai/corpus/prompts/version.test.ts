@@ -42,7 +42,6 @@ const RECORDED_TRANSLATION: Record<number, string> = {
 
 const RECORDED_ANCHOR: Record<number, string> = {
   1: '0a0ef44f51b885156b7e5ce87eaa3531d65fdd8b0cba9b107cf3863c863fabf7',
-  2: '880c5064c9988f5c4f8a28760a54148a8ae771b7b52bee6911d0e5238de5faf4',
   3: 'ba10f95192927087a6361532ca6f22575a968e545caf6501deef0dd17e35443e',
 }
 

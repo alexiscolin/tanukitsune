@@ -15,9 +15,10 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 import type { Allocated } from '../src/core/corpus/allocation.ts'
+import { heldApart } from '../src/core/corpus/allocation.ts'
+import type { Candidate, Wanted } from '../src/core/corpus/choose.ts'
 import { allocate } from '../src/core/corpus/choose.ts'
-import { distanceBetween } from '../src/core/corpus/anchor.ts'
-import { candidatesBy, soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
+import { candidatesBy, roomyWords, soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
 import { readKeyOrder, readLexicon, readPhonology, readReadings } from '../src/data/corpus/artifact.ts'
 import { phonemesOf } from '../src/core/corpus/phonetics.ts'
 
@@ -82,11 +83,11 @@ for (const one of proposed) remember(one)
 
 const free = (word: { text: string }) => !spentAlready.has(word.text)
 const characters = wanted.filter((one) => readings.get(one.value)?.type !== null)
-const first = allocate(characters, (reading) => offered(reading).filter(free), limits)
+const first = allocate(characters, without(offered, free), limits)
 for (const one of first.allocated) remember(one)
 
 const left = wanted.filter((one) => readings.get(one.value)?.type === null)
-const second = allocate(left, (reading) => offered(reading).filter(free), limits)
+const second = allocate(left, without(offered, free), limits)
 for (const one of second.allocated) remember(one)
 
 // What the first two passes leave is asked again of the same nouns without the floor. A rare word is a
@@ -99,7 +100,7 @@ const short = [...first.unserved, ...second.unserved]
   .filter((one) => one !== undefined)
 
 const rare = candidatesBy(lexicon, (word, text) => keeps(word) && carries(text))
-const third = allocate(short, (reading) => rare(reading).filter(free), limits)
+const third = allocate(short, without(rare, free), limits)
 for (const one of third.allocated) remember(one)
 
 // A sound the locale writes without saying it. The reading is compared from the sound that follows,
@@ -108,6 +109,10 @@ for (const one of third.allocated) remember(one)
 // reading beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
 const written = [...third.unserved]
 const bound: Allocated[] = []
+// What each written pass heard a reading as, and the letter it held its anchor to, so the recovery
+// below asks again on the same terms rather than on the ones the table's own list carries.
+const spelledAs = new Map<string, Wanted>()
+const spelledWith = new Map<string, string>()
 
 for (const [sound, letter] of writes) {
   // Settled readings are skipped here as they are in `wanted`. Left in, this pass binds a reading a
@@ -122,81 +127,94 @@ for (const [sound, letter] of writes) {
     lexicon,
     (word, text) => keeps(word) && word.frequency >= atLeastCommon && text.startsWith(letter) && carries(text),
   )
-  const pass = allocate(owedHere, (reading) => spelled(reading).filter(free), limits)
+  const pass = allocate(owedHere, without(spelled, free), limits)
+
+  for (const one of owedHere) {
+    spelledAs.set(one.value, one)
+    spelledWith.set(one.value, letter)
+  }
 
   for (const one of pass.allocated) remember(one)
   bound.push(...pass.allocated)
   for (const one of pass.unserved) written.push(one)
 }
 
-// `allocate` holds two anchors apart inside one call and knows nothing of the calls before it, so a
-// pass reading only the words already taken lets its own anchors land a hair from an earlier pass's:
-// one cue with two answers, which is what the separation exists to prevent. Swept once over the whole
-// set instead of asked of every candidate, which is the same answer for a thousandth of the reads.
-//
-// The earlier pass keeps its anchor. A reading served by the character pass is a reading the ordering
-// already said was worth serving first, and taking its word back for a later one reverses that.
-const kept: Allocated[] = []
-const crowded: { reading: string; reason: 'none free' }[] = []
+// `allocate` holds two anchors apart inside one call and knows nothing of the calls before it, so the
+// set the passes built is held apart once over the whole of it. What that crowds out is asked again, of
+// the words still far enough from everything kept: left there, a reading loses an anchor to a rule
+// meant only to keep two apart while the lexicon still holds a word that keeps them apart and serves
+// them both.
+const built = [...proposed, ...first.allocated, ...second.allocated, ...third.allocated, ...bound]
+const heardAnchor = new Map(built.map((one) => [one.reading, one.anchor] as const))
 
-for (const one of [...proposed, ...first.allocated, ...second.allocated, ...third.allocated, ...bound]) {
-  if (kept.some((other) => distanceBetween(other.phonemes, one.phonemes) < apart)) {
-    crowded.push({ reading: one.reading, reason: 'none free' })
-    continue
-  }
+const { kept, crowded } = heldApart(
+  built,
+  apart,
+)
 
-  kept.push(one)
-}
+// Every reading the sweep took a word from, the ones a proposal answered included: those are the half
+// somebody paid for, and looking a crowded reading up in the table's own work alone leaves them out.
+// Every reading the sweep took a word from, the ones a proposal answered included: those are the half
+// somebody paid for. Each is asked again on the sounds the pass that served it used, not on the ones
+// the table's own list carries: a reading the written pass served has its first sound dropped, and
+// looked up undropped it is handed a pool no French word can be in.
+const heard = new Map([...asked.map((one) => [one.value, one] as const), ...spelledAs])
+const evicted = crowded.map((reading) => heard.get(reading)).filter((one) => one !== undefined)
+// A word the sweep freed is free again: kept in `spentAlready`, the recovery is refused the very words
+// the eviction released and reserved for nobody.
+for (const one of crowded) for (const word of (heardAnchor.get(one) ?? '').split(/\s+/)) spentAlready.delete(word)
 
-// The readings the sweep took a word from are asked again, of the words still far enough from
-// everything kept. Left there, 330 readings lose an anchor to a rule meant only to keep two apart,
-// while the lexicon still holds a word that keeps them apart and serves them both.
-//
-// The pool is filtered once rather than per reading, which is the same answer for a three hundredth of
-// the reads, and held by how many sounds a word has: two anchors nearer than a tenth differ by less
-// than a tenth of the longer one, so a word a sound longer than another is rarely too near it. What
-// slips through is caught by the sweep above on the next run rather than by this.
-const byLength = new Map<number, Allocated[]>()
-for (const one of kept) byLength.set(one.phonemes.length, [...(byLength.get(one.phonemes.length) ?? []), one])
+const roomy = roomyWords(lexicon, kept, apart, (word, text) => keeps(word) && carries(text) && !spentAlready.has(text))
+// The letter a written sound needs travels with the reading, as it does in the pass that owns it: a
+// locale whose unsaid sound its own lexicon carries would otherwise be given an anchor missing it.
+const spare = (reading: Wanted) =>
+  candidatesBy(lexicon, (word, text) => {
+    const letter = spelledWith.get(reading.value)
 
-const roomy = new Set<string>()
-for (const [text, word] of lexicon) {
-  if (!keeps(word) || !carries(text) || spentAlready.has(text)) continue
-
-  const near = [word.phonemes.length - 1, word.phonemes.length, word.phonemes.length + 1].some((length) =>
-    (byLength.get(length) ?? []).some((one) => distanceBetween(one.phonemes, word.phonemes) < apart),
-  )
-  if (!near) roomy.add(text)
-}
-
-const evicted = crowded
-  .map((one) => wanted.find((asked) => asked.value === one.reading))
-  .filter((one) => one !== undefined)
-const spare = candidatesBy(lexicon, (word, text) => keeps(word) && carries(text) && roomy.has(text))
+    return keeps(word) && roomy.has(text) && (letter === undefined || text.startsWith(letter))
+  })(reading)
 const again = allocate(evicted, spare, limits)
 
-for (const one of again.allocated) {
-  // Swept like the rest, since the pool was filtered against the set as it stood and two of these can
-  // still land near each other.
-  if (kept.some((other) => distanceBetween(other.phonemes, one.phonemes) < apart)) continue
+// Swept like the rest, the pool having been filtered against the set as it stood and two of these
+// still being able to land near each other.
+const { kept: settledSet } = heldApart([...kept, ...again.allocated], apart)
 
-  remember(one)
-  kept.push(one)
-}
-
-const allocated = kept
+const allocated = settledSet
 // One line per reading still owed. A reading refused by two passes is owed once, and one this last pass
 // served is no longer owed whatever the passes before it said of it.
 const decided = new Set(allocated.map((one) => one.reading))
+// A reading the sweep crowded out and the recovery could not serve is owed one because its word was
+// taken, which is the reason `allocate` names when the words exist and the curriculum has spent them.
 const owed = new Map(
-  [...written, ...crowded, ...again.unserved].filter((one) => !decided.has(one.reading)).map((one) => [one.reading, one]),
+  [...written, ...again.unserved, ...crowded.map((reading) => ({ reading, reason: 'none free' as const }))]
+    .filter((one) => !decided.has(one.reading))
+    .map((one) => [one.reading, one] as const),
 )
 const unserved = [...owed.values()]
+
+// A pool with the words a pass has already spent taken out, held by the sound a reading begins on so
+// the answer is found once and read by every reading that begins on it. `allocate` asks once per
+// reading, and dozens of them share one onset, so the same bucket is otherwise filtered dozens of times
+// against the same answer.
+function without(pool: (reading: Wanted) => readonly Candidate[], free: (word: Candidate) => boolean) {
+  const held = new Map<string, readonly Candidate[]>()
+
+  return (reading: Wanted): readonly Candidate[] => {
+    const [onset = ''] = reading.phonemes
+    const already = held.get(onset)
+    if (already !== undefined) return already
+
+    const left = pool(reading).filter(free)
+    held.set(onset, left)
+
+    return left
+  }
+}
 
 const HEADER = {
   source: 'Chosen by pnpm corpus:anchor from Lexique and the readings the curriculum teaches',
   written: 'The words are French and the pairing is this corpus own. Neither is taken from any release.',
-  modified: `A reading of at most ${atMostMorae} morae is bound to one noun, no nearer than ${apart} to another anchor and no further than ${nearest} from its reading. The readings a character teaches are served first, the readings a word teaches next, and what neither pass could serve is asked again of the words under ${atLeastCommon} occurrence per million.`,
+  modified: `A reading of at most ${atMostMorae} morae is bound to one noun, no nearer than ${apart} to another anchor and no further than ${nearest} from its reading. The readings a character teaches are served first, the readings a word teaches next, and what neither pass could serve is asked again of every noun, the floor of ${atLeastCommon} occurrence per million lifted.`,
   spelled: 'A reading beginning on a sound this locale writes without saying it is compared from the sound that follows, and its anchor is spelled with that letter.',
   shape: 'reading to the word standing for it, that word phonemes as the lexicon derives them, and how common its rarest word is per million',
   left: `The readings still owed a word, with why. pnpm corpus:anchor-written asks for those, and writes them to ${WRITTEN}, which this reads on its next run.`,

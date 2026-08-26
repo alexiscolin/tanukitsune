@@ -42,13 +42,33 @@ JSON
 cat >"$root/xx/key-choice.json" <<'JSON'
 { "order": { "G": ["mot", "mot"], "H": [] } }
 JSON
+# One word standing for two readings, and two anchors a reader hears as one: the whole-set rules the
+# allocation holds while it runs, which nothing held the committed file to until this read it.
+cat >"$root/xx/phonology.json" <<'JSON'
+{
+  "cannotStart": [], "nearest": 0.5, "apart": 0.2, "unrated": 50,
+  "atMostMorae": 4, "atLeastCommon": 1, "partsOfSpeech": ["NOM"], "atMostWords": 3,
+  "hears": {}, "writes": {}, "refuses": []
+}
+JSON
+cat >"$root/xx/anchors.json" <<'JSON'
+{
+  "anchors": {
+    "\u3053": ["le coq", ["k", "o", "k"], 8],
+    "\u3053\u3046": ["le coq", ["k", "o", "k"], 8],
+    "\u3055": ["la scie", ["s", "i"], 9],
+    "\u3057": ["le site", ["s", "i", "t"], 9]
+  },
+  "left": {}
+}
+JSON
 
 refused=$(check "$root" 2>&1)
 if [ -z "$refused" ]; then
   report 'the check accepted a locale written to be refused'
 fi
 
-for expected in 'not the locale' 'both keyed' 'no article' 'names more than one component' 'states a word twice' 'holds nothing for'; do
+for expected in 'not the locale' 'both keyed' 'no article' 'names more than one component' 'states a word twice' 'holds nothing for' 'stands for more than one reading' 'sit nearer than'; do
   case "$refused" in
     *"$expected"*) ;;
     *) report "the check did not name: $expected" ;;

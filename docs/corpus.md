@@ -240,9 +240,10 @@ On'yomi are short and massively homophonous, so a reading like こう is shared 
 and an anchor spent at level 3 is an anchor missing at level 40. Allocation is a calculation over
 data, so it costs no model call and it is done once for all sixty levels; only the levels being
 shipped are written. Candidates come from Lexique, which carries phonemic transcription and frequency
-for French. Readings are served scarcest first, the one with two acceptable words before the one with
-ten, since a common word spent on an easy reading leaves the scarce one with nothing and a reading with
-no anchor is a card that cannot be written. Among the words the rules accept for a reading, the nearest
+for French. Readings are served scarcest first inside each kind, the one with two acceptable words before the one
+with ten, since a common word spent on an easy reading leaves the scarce one with nothing and a reading with
+no anchor is a card that cannot be written. Scarcity orders within a kind and never across the two, the
+paragraph below saying why. Among the words the rules accept for a reading, the nearest
 in sound takes it; where two
 sit equally near, the word the reader can picture takes it; where nothing separates them there either,
 the more ordinary word does. A reading left without leaves the run with the reason, either that no
@@ -281,7 +282,10 @@ makes sounds French does not, and for most of them a French listener reaches for
 hesitating: /ɕ/ is the sound of chic and /ɾ/ the sound of rire. Compared on the symbol alone, 577
 readings have no candidate at all, and 378 of those are six sounds French makes under another name. The
 substitution moves the reading and never the anchor, so a word still claims only sounds its own
-language makes, which is what `impossibleOnset` refuses. What the ear reaches for is in
+language makes. It brings one sound onto another and never two onto one, nor onto a sound a reading
+already carries: hearing ち as the sound of chic would give it し's onset and hearing つ as /s/ would
+give it す's, and a reader handed the word would produce one of the two and be graded on the other.
+Those two keep no substitution, and their readings keep no anchor. What the ear reaches for is in
 `phonology.json`, one line per sound.
 
 **A sound a language does not say and does write is written rather than heard.** French makes no /h/ and
@@ -310,10 +314,14 @@ kept: left there, it loses an anchor to a rule meant only to keep two apart whil
 holds a word that keeps them apart and serves them both. The pool is filtered once against the set as
 it stands rather than per reading, which is the same answer for a three hundredth of the reads.
 
-Of the 2523 readings inside that ceiling, 2393 are bound and 130 are not, and 535 of the 557 a
-character teaches have one. 644 of those bound sit on a word under one occurrence per million, which is
-the widened pass and which the prose step is expected to refuse rather than write on. Of the 130 left,
-62 have no word the rules accept and 68 have words the curriculum has already spent.
+Of the 2559 readings inside that ceiling, 2207 are bound and 352 are not, and 488 of the 557 a
+character teaches have one. 485 of those bound sit on a word under one occurrence per million, which is
+the widened pass and which the prose step is expected to refuse rather than write on. Of the 352 left,
+154 have no word the rules accept and 198 have words the curriculum has already spent. Every one of
+those counts is a line the run prints.
+
+The readings a run could not bind travel in `anchors.json` beside the anchors, under `left`, each with
+why: a list only a terminal saw is a list the next command cannot act on.
 
 **Where the table leaves a reading with no word worth having, one is written for it.**
 `corpus:anchor-written` asks for those, and `corpus:anchor` reads what it wrote before its own passes
@@ -398,9 +406,11 @@ check that runs at generation and whose verdict travels rather than the upstream
 and compared against what the model claimed, since a mismatch is a hallucinated pronunciation and is
 measurable. The distance between anchor and reading is computed over articulatory features. The first
 mora aligns in onset and nucleus. The mora count is preserved, which is what stops ちょう collapsing
-onto ちょ. A hand-held table names the impossible onsets: French has no /h/ phoneme, so an anchor
-claiming that ho sounds like hôtel is claiming a consonant that is not pronounced, and that table is
-where judgement lives rather than in a linter.
+onto ちょ. A hand-held table names the impossible onsets, and what it judges is the pronunciation claimed for an
+anchor rather than the reading that anchor serves: French has no /h/ phoneme, so a word written down as
+opening on one is a word nobody says that way, and that table is where judgement lives rather than in a
+linter. A pronunciation derived from the lexicon cannot claim one, so what the rule reaches is a
+pronunciation somebody wrote.
 
 **Per corpus.** One anchor per reading and one reading per anchor. A cap on how many subjects share an
 anchor lemma. A minimum phonetic distance between anchors inside a homophone cluster, and a minimum

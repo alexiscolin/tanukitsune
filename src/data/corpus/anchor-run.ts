@@ -13,6 +13,8 @@
 import type { Named } from './reading-run.ts'
 import type { Word } from './lexique.ts'
 import type { Candidate, Wanted } from '../../core/corpus/choose.ts'
+import type { Allocated } from '../../core/corpus/allocation.ts'
+import { distanceBetween } from '../../core/corpus/anchor.ts'
 import { moraeOf, phonemesOf } from '../../core/corpus/phonetics.ts'
 
 // An anchor is one word standing for one reading, and no word carries eleven morae. Asked for one
@@ -107,6 +109,9 @@ export function soundsOf(phrase: string, lexicon: ReadonlyMap<string, Word>): re
 }
 
 // The few a bounded run asks, spread across the whole of what is owed rather than taken from its head.
+// The four paid steps beside this one take the head and are right to: what they owe shrinks as they
+// succeed, so their head advances of itself. What is owed here does not, a reading refused staying
+// owed, so its head is the same question every run.
 // A bound exists so a first run is read by hand before the rest is paid for, and a sample of the
 // hardest corner says nothing about the rest: what is owed here is ordered by why it is owed, so its
 // head is the readings the language serves worst and its tail the ones it nearly served.
@@ -116,4 +121,34 @@ export function spread<T>(owed: readonly T[], most: number): readonly T[] {
   const every = owed.length / most
 
   return Array.from({ length: most }, (_, taken) => owed[Math.floor(taken * every)] as T)
+}
+
+// The words still far enough from everything already bound, filtered once against the set as it stands
+// rather than once per reading: every reading beginning on one sound would otherwise ask the same
+// question of the same bucket, which is the same answer for a three hundredth of the reads.
+//
+// Held by how many sounds a word has, since two anchors nearer than the limit differ by less than that
+// fraction of the longer one, so a word two sounds longer than another is rarely near it. What slips
+// through is caught by the sweep, which is the authority.
+export function roomyWords(
+  lexicon: ReadonlyMap<string, Word>,
+  held: readonly Allocated[],
+  apart: number,
+  keeps: (word: Word, text: string) => boolean,
+): ReadonlySet<string> {
+  const byLength = new Map<number, Allocated[]>()
+  for (const one of held) byLength.set(one.phonemes.length, [...(byLength.get(one.phonemes.length) ?? []), one])
+
+  const roomy = new Set<string>()
+
+  for (const [text, word] of lexicon) {
+    if (!keeps(word, text)) continue
+
+    const near = [word.phonemes.length - 1, word.phonemes.length, word.phonemes.length + 1].some((length) =>
+      (byLength.get(length) ?? []).some((one) => distanceBetween(one.phonemes, word.phonemes) < apart),
+    )
+    if (!near) roomy.add(text)
+  }
+
+  return roomy
 }

@@ -46,7 +46,6 @@ describe('faultInAnchor', () => {
     )
   })
 
-  // Half the sounds of the longer of the two, which is a word sharing its opening and nothing after it.
   it('refuses a word further from the reading than a reader can hear it in', () => {
     // Three quarters of the sounds of the longer of the two: a word sharing its opening and nothing after.
     const far = answer({ proposal: 'chiroptère', heard: ['ʃ', 'i', 'ʁ', 'ɔ', 'p', 't', 'ɛ', 'ʁ'], said: ['ʃ', 'i'] })
