@@ -24,7 +24,13 @@ describe('stepsFor', () => {
   it('says which steps pay a model', () => {
     const asking = FR.filter(paid).map((one) => one.name)
 
-    expect(asking).toEqual(['corpus:key-choice', 'corpus:key-translation', 'corpus:name', 'corpus:word'])
+    expect(asking).toEqual([
+      'corpus:anchor-written',
+      'corpus:key-choice',
+      'corpus:key-translation',
+      'corpus:name',
+      'corpus:word',
+    ])
   })
 
   // The readings are read out of the curriculum, so the inventory is written before them. They name no
@@ -44,6 +50,15 @@ describe('stepsFor', () => {
 
     expect(lexicon.batch).toBeNull()
     expect(argumentsFor(lexicon, 'fr', 20, 60)).toEqual(['fr'])
+  })
+
+  // A reading reaches the run that writes a word for it once the table has been asked and has failed,
+  // and the table reads back what that run wrote, so the two are ordered by which one the other reads.
+  it('asks for a word before binding, since the binding reads what was written', () => {
+    const at = (name: string) => FR.findIndex((one) => one.name === name)
+
+    expect(at('corpus:lexicon')).toBeLessThan(at('corpus:anchor-written'))
+    expect(at('corpus:anchor-written')).toBeLessThan(at('corpus:anchor'))
   })
 
   // The anchors read the readings and the lexicon, and every mnemonic teaching a reading uses the word
@@ -88,7 +103,7 @@ describe('argumentsFor', () => {
   const step = (name: string) => FR.find((one) => one.name === name) as Step
 
   // Three steps read the position after their name as something other than a locale, so one shape for
-  // all twelve hands a release path where a locale was meant and dies on the first of them.
+  // all thirteen hands a release path where a locale was meant and dies on the first of them.
   it('gives a step what that step reads, rather than one shape for all', () => {
     expect(argumentsFor(step('corpus:decomposition'), 'fr', Infinity, 60)).toEqual([])
     expect(argumentsFor(step('corpus:inventory'), 'fr', Infinity, 60)).toEqual(['60'])

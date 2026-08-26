@@ -148,6 +148,30 @@ export function readReadings(json: string): ReadonlyMap<string, Named> {
   )
 }
 
+// The anchors a run bound and the readings it could not, read by the run that asks for the words still
+// owed. Both sit in one file because a list only a terminal saw is a list the next command cannot act on.
+const anchors = z.object({
+  anchors: z.record(z.string(), z.tuple([z.string(), z.array(z.string()), z.number()])),
+  left: z.record(z.string(), z.string()),
+})
+
+export function readAnchors(json: string): {
+  readonly bound: ReadonlyMap<string, { readonly anchor: string; readonly phonemes: readonly string[]; readonly frequency: number }>
+  readonly left: ReadonlyMap<string, string>
+} {
+  const read = anchors.parse(JSON.parse(json))
+
+  return {
+    bound: new Map(
+      Object.entries(read.anchors).map(([reading, [anchor, phonemes, frequency]]) => [
+        reading,
+        { anchor, phonemes, frequency },
+      ]),
+    ),
+    left: new Map(Object.entries(read.left)),
+  }
+}
+
 const lexicon = z.object({
   words: z.record(z.string(), z.tuple([z.array(z.string()), z.number(), z.string(), z.number().nullable()])),
 })

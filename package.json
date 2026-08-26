@@ -19,6 +19,7 @@
     "dupes": "jscpd src",
     "corpus": "node --experimental-strip-types scripts/corpus.ts",
     "corpus:anchor": "node --experimental-strip-types scripts/corpus-anchor.ts",
+    "corpus:anchor-written": "node --experimental-strip-types scripts/corpus-anchor-written.ts",
     "corpus:decomposition": "node --experimental-strip-types scripts/import-decomposition.ts",
     "corpus:inventory": "node --experimental-strip-types scripts/corpus-inventory.ts",
     "corpus:key-choice": "node --experimental-strip-types scripts/corpus-key-choice.ts",
