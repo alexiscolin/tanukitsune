@@ -84,7 +84,7 @@ for (const [sound, letter] of writes) {
   // compared on raw Japanese sounds from its second phoneme on, and pays again every penalty the table
   // exists to remove.
   const asked = wantedFrom(owed, atMostMorae, new Map([...hears, [sound, '']]))
-  const spelled = candidatesBy(lexicon, (word, text) => keeps(word) && text.startsWith(letter))
+  const spelled = candidatesBy(lexicon, (word, text) => keeps(word) && word.frequency >= atLeastCommon && text.startsWith(letter))
   const pass = allocate(asked, (reading) => spelled(reading).filter((word) => !spoken.has(word.text)), limits)
 
   for (const one of pass.allocated) spoken.add(one.anchor)
@@ -133,8 +133,18 @@ const lines = allocated
 writeFileSync(at('anchors.json'), `{\n"header":${JSON.stringify(HEADER)},\n"anchors":{\n${lines}\n}\n}\n`)
 
 const weak = allocated.filter((one) => (lexicon.get(one.anchor)?.frequency ?? 0) < atLeastCommon).length
+
+// The split by kind beside the total, since the two answer different questions and the document quotes
+// both: a character's reading is reused by every word built on it, a word's reading by one card. A
+// total announced in prose that no command prints is a total nobody can check.
+const ofCharacters = wanted.filter((one) => readings.get(one.value)?.type !== null)
+const served = new Set(allocated.map((one) => one.reading))
+
 process.stdout.write(
   `anchors: ${allocated.length} of ${wanted.length} readings bound, written to ${at('anchors.json')}, ${weak} of them on a word under ${atLeastCommon} occurrence per million\n`,
+)
+process.stdout.write(
+  `of the ${ofCharacters.length} readings a character teaches, ${ofCharacters.filter((one) => served.has(one.value)).length} are bound\n`,
 )
 
 // The two reasons are apart because they ask for different things. No acceptable word means the pool

@@ -3,7 +3,7 @@
     "what": "What French can and cannot do with sounds, read by the checks that judge an anchor. The rules live in the engine; this file is what makes them French.",
     "cannotStart": "French has no /h/ phoneme at all, so hôtel is said without one; it has no /ɸ/, and no native onset for the two affricates. An anchor claiming one of these matches only on paper.",
     "anchors": "What an anchor of this language may be. How far a word may sit from a reading and still be heard in it, how far two anchors must sit from each other, what an unrated word is worth against a rated one, how many morae a reading may run to before no one word carries it, how common a word must be before a reader is likely to know it, and which parts of speech a story can be built on. The unrated value is the middle of the scale the ratings use, which runs from 0 to 100 here: nothing rated the word, and that is evidence neither way.",
-    "hears": "What a French ear reaches for on hearing a Japanese sound French does not make. Compared on the symbol alone, most of these readings have no candidate at all, and French makes six of the sounds under another name. The substitution moves the reading and never the anchor, so a word still claims only sounds French makes.",
+    "hears": "What a French ear reaches for on hearing a Japanese sound French does not make. A substitution brings one sound onto another and never two onto one, nor onto a sound a reading already carries: hearing chi as the sound of chic would give it shi's onset, and hearing tsu as /s/ would give it su's, and a reader handed the word would produce one of the two and be graded on the other. So those two keep no substitution and their readings keep no anchor.",
     "writes": "A sound French does not say and does write. A reading beginning on one is compared from the sound that follows it, and its anchor has to be spelled with the letter stated here: la hache is said without an h and carries one where the reader looks, and a mnemonic is read. This is what cannotStart refuses seen from the other side, that rule refusing an anchor claiming a sound French does not say, which la hache claims nowhere: its pronunciation, derived from the lexicon, begins on the vowel."
   },
   "cannotStart": [
@@ -22,10 +22,8 @@
   ],
   "hears": {
     "ɕ": "ʃ",
-    "tɕ": "ʃ",
     "dʑ": "ʒ",
     "ɸ": "f",
-    "ts": "s",
     "ɾ": "ʁ"
   },
   "writes": {

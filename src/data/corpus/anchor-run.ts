@@ -33,6 +33,9 @@ export function wantedFrom(
   atMostMorae: number,
   hears: ReadonlyMap<string, string> = new Map(),
 ): readonly Wanted[] {
+  const carried = new Set([...readings].flatMap(([value]) => phonemesOf(value)))
+  refuseAMerge(hears, carried)
+
   return [...readings]
     .filter(([value, named]) => named.taught && moraeOf(value).length <= atMostMorae)
     .map(([value]) => ({
@@ -41,6 +44,25 @@ export function wantedFrom(
         .map((sound) => hears.get(sound) ?? sound)
         .filter((sound) => sound !== ''),
     }))
+}
+
+// A substitution may bring one sound onto another and never two onto one, and never onto a sound the
+// language taught already makes: the onset is where the rules are exact, so two readings sharing one
+// give the reader a single cue with two answers, and neither of them is wrong to write. Hearing shi
+// and chi both as the sound of chic is the first, and hearing tsu as /s/ is the second, su being /s/
+// already.
+function refuseAMerge(hears: ReadonlyMap<string, string>, carried: ReadonlySet<string>): void {
+  const onto = new Map<string, string>()
+
+  for (const [sound, heard] of hears) {
+    if (heard === '') continue
+
+    const already = onto.get(heard)
+    if (already !== undefined) throw new Error(`${already} and ${sound} are both heard as ${heard}, which is one cue for two`)
+    if (carried.has(heard)) throw new Error(`${sound} is heard as ${heard}, which a reading already carries: one cue for two`)
+
+    onto.set(heard, sound)
+  }
 }
 
 // Which words a locale draws its anchors from is that locale's business rather than the engine's, so

@@ -279,10 +279,13 @@ can be pictured, so it is not done.
 
 **A reading is heard through the ears of the language it is taught in before it is compared.** Japanese
 makes sounds French does not, and for most of them a French listener reaches for a neighbour without
-hesitating: /ɕ/ is the sound of chic and /ɾ/ the sound of rire. Compared on the symbol alone, 577
-readings have no candidate at all, and 378 of those are six sounds French makes under another name. The
+hesitating: /ɕ/ is the sound of chic and /ɾ/ the sound of rire. Compared on the symbol alone, a reading on
+one of those sounds has no candidate at all. The
 substitution moves the reading and never the anchor, so a word still claims only sounds its own
-language makes, which is what `impossibleOnset` refuses. What the ear reaches for is in
+language makes. It brings one sound onto another and never two onto one, nor onto a sound a reading
+already carries: hearing ち as the sound of chic would give it し's onset and hearing つ as /s/ would
+give it す's, and a reader handed the word would produce one of the two and be graded on the other.
+Those two keep no substitution, and their readings keep no anchor. What the ear reaches for is in
 `phonology.json`, one line per sound.
 
 **A sound a language does not say and does write is written rather than heard.** French makes no /h/ and
@@ -294,10 +297,10 @@ which `la hache` claims nowhere: its pronunciation, derived from the lexicon, be
 Those readings are served in their own pass, after every other, so they never take a word a reading
 beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
 
-Of the 2523 readings inside that ceiling, 2420 are bound and 103 are not, and 543 of the 557 a
-character teaches have one. 587 of those bound sit on a word under one occurrence per million, which is
-the widened pass and which the prose step is expected to refuse rather than write on. Of the 103 left,
-9 have no word the rules accept and 94 have words the curriculum has already spent.
+Of the 2559 readings inside that ceiling, 2208 are bound and 351 are not, and 492 of the 557 a
+character teaches have one. 392 of those bound sit on a word under one occurrence per million. Of the
+351 left, 160 have no word the rules accept and 191 have words the curriculum has already spent. Every
+one of those counts is a line the run prints.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
 thirty-seven symbols name sounds French borrows rather than owns. Both are carried: whether a sound can
