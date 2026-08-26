@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Named } from './reading-run'
 import type { Word } from './lexique'
-import { candidatesBy, soundsOf, wantedFrom } from './anchor-run'
+import { candidatesBy, soundsOf, spread, wantedFrom } from './anchor-run'
 
 const READINGS = new Map<string, Named>([
   ['こう', { type: 'onyomi', taught: true, by: ['工', '公'] }],
@@ -141,5 +141,24 @@ describe('soundsOf', () => {
 
   it('reads a phrase the way it is written, spacing and case aside', () => {
     expect(soundsOf('  Coq   Taupe ', LEXICON)).toEqual(['k', 'ɔ', 'k', 't', 'o', 'p'])
+  })
+})
+
+describe('spread', () => {
+  // A bounded run exists so a first one is read by hand before the rest is paid for, and it can only
+  // do that if the few it asks stand for the many it does not. Taking the head of a list that does not
+  // shrink asks the same questions every run: three runs of ten asked nine of the same readings and
+  // kept one answer, all of them from the corner of the set where the language offers least.
+  it('spans the whole of what is owed rather than its head', () => {
+    expect(spread(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'], 4)).toEqual(['a', 'c', 'e', 'g'])
+  })
+
+  it('asks for everything where the bound reaches everything', () => {
+    expect(spread(['a', 'b', 'c'], 10)).toEqual(['a', 'b', 'c'])
+    expect(spread(['a', 'b', 'c'], Infinity)).toEqual(['a', 'b', 'c'])
+  })
+
+  it('asks for nothing where nothing is owed', () => {
+    expect(spread([], 5)).toEqual([])
   })
 })
