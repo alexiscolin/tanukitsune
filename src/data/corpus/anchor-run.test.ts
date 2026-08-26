@@ -43,6 +43,15 @@ describe('wantedFrom', () => {
   // The substitution moves the reading and never the anchor, so a word still claims only sounds its
   // own language makes: what French reaches for when it hears nothing at all, as with /h/, is absent
   // from the table and those readings stay unanchored.
+  // A locale may reach for nothing at all on a sound, which is not the same as reaching for a
+  // neighbour: the reading then begins on what follows, and what carries the lost sound is the
+  // spelling of the word rather than its pronunciation.
+  it('drops a sound the locale reaches for nothing on', () => {
+    const heard = wantedFrom(new Map([['はち', { type: 'kunyomi' as const, taught: true, by: ['八'] }]]), 4, new Map([['h', '']]))
+
+    expect(heard[0]?.phonemes).toEqual(['a', 'tɕ', 'i'])
+  })
+
   it('hears a reading through the sounds the locale reaches for', () => {
     const heard = wantedFrom(new Map([['しゃ', { type: 'onyomi' as const, taught: true, by: ['車'] }]]), 4, new Map([['ɕ', 'ʃ']]))
 
@@ -62,6 +71,15 @@ describe('candidatesBy', () => {
 
   // Which words a locale draws anchors from is that locale's business rather than the engine's, and a
   // story is built on what a reader can picture, so the run is told what to keep rather than deciding.
+  // Which sound a reading begins on is not the only thing that can be asked of a candidate: a locale
+  // may have a sound it writes without saying it, and then what qualifies a word is how it is spelled.
+  it('lets the locale ask about the written word as well as the spoken one', () => {
+    const written = candidatesBy(LEXICON, (word, text) => text.startsWith('c'))
+    const reading = { value: 'こう', phonemes: ['k', 'o', 'o'] }
+
+    expect(written(reading).map((one) => one.text).sort()).toEqual(['cause', 'classer', 'coq'])
+  })
+
   it('keeps only the words the locale offers', () => {
     const nouns = candidatesBy(LEXICON, (word) => word.category === 'NOM')
     const reading = { value: 'こう', phonemes: ['k', 'o', 'o'] }
