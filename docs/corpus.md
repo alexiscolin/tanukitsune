@@ -143,21 +143,27 @@ and it runs no further than a clause can carry. What opens one, what letters it 
 it may run are the language's own material, in `corpus/fr/naming.json`, since a second language brings
 different answers and no code.
 
-**A component sharing its shape with a kanji is named by that kanji's key**, and only a component no
-kanji writes is named on its own. One shape teaches one French word, so a component named apart from
-the kanji it doubles would put a second word on the same drawing, one on each card, and a story naming
-the part would contradict the card teaching the character. Which components those are is a table
+**A component sharing its shape with a kanji is named by that kanji's key while the two are taught
+under one meaning**, and is named on its own otherwise. One shape teaches one French word, so a
+component named apart from a kanji teaching the same thing would put a second word on the same drawing,
+one on each card, and a story naming the part would contradict the card teaching the character. Where
+the curriculum teaches the two under different meanings there is no such clash and the key is the wrong
+word: the radical is a card of its own, dealt a median of thirteen levels before its kanji, so the key
+would show the reader a word for something the shape does not look like. The two are read against
+everything each side is taught under rather than the first word either states, the curriculum listing
+what it accepts. A radical the source has withdrawn is dealt to nobody and owes no card, and its shape
+still owes a name wherever it builds a kanji that is dealt. Which components those are is a table
 decision and never a model one: the model is not asked, so no answer of its has to be caught. What is
 left for a model is what `corpus:report` counts as unnamed and `corpus:name` asks for, which is nothing
 today: every component the curriculum deals carries a word, its own or its kanji's.
 
-**Nine shapes are named apart from their kanji, because that kanji's key cannot be pictured**: 一 le
-sol, 十 la croix, 又 la main droite, 乙 le cygne, 氏 la bannière, 非 les persiennes, 示 l'offrande, 各 la
-halte and 也 le serpent. Each stands against a key that is a number, a pronoun, an adverb or a verb,
-and the keys themselves are in `corpus/fr/keys.json` rather than repeated here, a selection being
-allowed to move under a run while the nine are not. They are the whole of the exception, so the report
-line counting names written on a shape a kanji writes reads nine, and a tenth is a new one to answer
-for.
+**A key that cannot be pictured is never the name of a shape**, and the rule above already keeps it
+off one: a key that is a number, a pronoun, an adverb or a verb belongs to a kanji the curriculum
+teaches under a word its radical is not taught under, so the shape is named on its own. 一 is le sol as
+a shape and one as a character, 又 la main droite and again, 示 l'offrande and show. The names are in
+`corpus/fr/components.json` and the keys in `corpus/fr/keys.json` rather than repeated here, a
+selection being allowed to move under a run. The report line counting names written where nothing owes
+one reads none, and a name appearing there is one to answer for.
 
 **A key is one word and a character often means several.** 土 is terre and it is also sol, terrain and
 Turquie, all of them stated by the release, and a reader typing the second is right. `corpus:keys`
@@ -193,7 +199,7 @@ shape teaches two French words on two cards; where the two disagree the word kee
 character being heaven and 天 the word the heavens.
 
 **A shape can fall between the two rules and be taught under no word at all**, being owed no name
-because a kanji writes it while that kanji was left without a key because every gloss it has was
+because a kanji names it while that kanji was left without a key because every gloss it has was
 already spoken for. `corpus:report` counts those on their own line, and it is the one hole neither the
 owed count nor the collision check can see. None stands there, every character the curriculum deals
 having a word since a word is written for whoever the release leaves without one.

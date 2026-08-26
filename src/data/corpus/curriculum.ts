@@ -33,7 +33,9 @@ export function walkCurriculum(
   const named = shapesNamedByTheirKanji(subjects)
   const radicals = new Set(
     subjects.flatMap((one) =>
-      one.type === 'radical' && one.characters !== null && !named.has(one.characters) ? [one.characters] : [],
+      one.type === 'radical' && one.characters !== null && !one.hidden && !named.has(one.characters)
+        ? [one.characters]
+        : [],
     ),
   )
 
@@ -84,11 +86,14 @@ export function walkCurriculum(
   return { read, unplaced, drawn, owed: [...shaped, ...unnamed] }
 }
 
-// The shapes owed no French name of their own. A part that is itself a subject with a key needs none:
-// a word made of kanji names them by what they mean. A radical sharing its shape with a kanji is that
-// same case while the two are taught under one meaning, the key naming both cards, and naming it
-// separately would teach one shape two French words. A radical the source has withdrawn is owed none
-// either, since no session deals it.
+// The shapes a kanji already names. A part that is itself a subject with a key needs no name of its
+// own: a word made of kanji names them by what they mean. A radical sharing its shape with a kanji is
+// that same case while the two are taught under one meaning, the key naming both cards, and naming it
+// separately would teach one shape two French words.
+//
+// Whether the source has withdrawn the radical is a separate question and is not answered here: a
+// withdrawn radical is dealt to nobody, so the walk owes no card for it, and its shape can still build
+// a kanji that is dealt, which owes the part a name all the same.
 //
 // Where the two are taught under different meanings it is not that case at all. The radical is a card
 // of its own, dealt a median of thirteen levels before its kanji and answered on a different word, so
@@ -116,7 +121,7 @@ export function shapesNamedByTheirKanji(subjects: readonly InventorySubject[]): 
       const shares = taught.get(one.characters ?? '')
       const both = shares !== undefined && one.meanings.some((meaning) => shares.has(meaning.toLowerCase()))
 
-      return one.type === 'radical' && one.characters !== null && (one.hidden || both) ? [one.characters] : []
+      return one.type === 'radical' && one.characters !== null && both ? [one.characters] : []
     }),
   )
 }
