@@ -37,7 +37,10 @@ under, since renaming it to say which of the two it is would be clearer and woul
 row already written is keyed on. The reading columns are empty where a subject teaches no reading,
 which is a component always and a word wherever its reading is the one its kanji already gave, and the
 English key is empty where the account's word for a subject is its own invention rather than a fact
-about the character, which is every radical.
+about the character, which is every radical. That key is the release's English and never the account's,
+which stays in the uncommitted inventory as it always has. The parts a card carries are our French names
+for them and never the identifiers the curriculum uses, per
+[ADR 0013](decisions/0013-the-curriculum-decides-the-parts.md).
 
 ## Where the material lives
 

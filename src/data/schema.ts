@@ -8,8 +8,9 @@ export const corpusEntry = pgTable(
     subjectId: text('subject_id').notNull(),
     locale: text('locale').notNull(),
     meaning: text('meaning').notNull(),
-    // The English key the French one stands for, which the account grades on. Selected at generation
-    // from the release's own English rather than carried from the account, whose text is theirs.
+    // The English key the French one stands for. It is the release's own English, selected at
+    // generation, and never the account's: theirs is theirs, so it stays in the uncommitted inventory
+    // and what travels of the check against it is the verdict rather than the text.
     //
     // Empty where the account's own word for a subject is its own invention rather than a fact about
     // the character, which is every radical: theirs may not be published, so the French name stands for
@@ -29,6 +30,11 @@ export const corpusEntry = pgTable(
     anchorPhonemes: text('anchor_phonemes').array(),
     // The components the story names, in the order it names them, so a check reads them rather than
     // recovering them from a sentence.
+    //
+    // Our French names for them and never their identifiers: which parts a character is made of is the
+    // upstream curriculum's, read at generation from the uncommitted inventory, and
+    // docs/decisions/0013-the-curriculum-decides-the-parts.md keeps it off every published surface. A
+    // list of their component ids on a table served to every reader is that decomposition, published.
     parts: text('parts').array().notNull().default([]),
     // The model identifier, which the AI Act transparency article requires us to
     // carry on every generated row.

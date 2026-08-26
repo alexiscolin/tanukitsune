@@ -97,7 +97,7 @@ describe('corpus_entry', () => {
   // where its reading is not the one its kanji already taught. A column that cannot be null there is a
   // column two subjects in three cannot be written under.
   it('leaves the reading columns empty where a subject teaches no reading', () => {
-    for (const name of ['readingMnemonic', 'reading', 'anchor', 'anchorPhonemes'] as const) {
+    for (const name of ['readingMnemonic', 'reading', 'anchor', 'anchorPhonemes', 'englishKey'] as const) {
       expect(columns[name].notNull, `${name} must be nullable`).toBe(false)
     }
   })
