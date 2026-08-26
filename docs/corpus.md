@@ -269,8 +269,18 @@ morae, so the ceiling touches words alone. The candidates are nouns a reader is 
 being built on things that can be pictured and a word nobody knows being a cue to be learned before it
 can help.
 
-Of the 2523 readings inside that ceiling, 1509 are bound and 1014 are not: 715 have no word the rules
-accept, which no reordering fixes, and 299 have words the curriculum has already spent.
+What neither pass could serve is asked again of the same nouns without the frequency floor. A rare word
+is a weak cue and a reading with no anchor is a card that cannot be written at all, so the trade is
+taken and said rather than taken quietly: every anchor carries how common its word is, so a check can
+hold the set to a floor without the lexicon, which stays on the machine that generated it. Widening to
+every part of speech as well buys 37 readings and spends the rule that a story is built on things that
+can be pictured, so it is not done.
+
+Of the 2523 readings inside that ceiling, 1853 are bound and 670 are not. 324 of those bound sit on a
+word under one occurrence per million, which is the third pass and which the prose step is expected to
+refuse rather than write on. Of the 670 left, 580 have no word the rules accept, which no reordering
+fixes and which is a fact about the pair of languages rather than a setting, and 90 have words the
+curriculum has already spent.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
 thirty-seven symbols name sounds French borrows rather than owns. Both are carried: whether a sound can
