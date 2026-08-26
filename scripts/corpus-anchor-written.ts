@@ -119,11 +119,7 @@ async function collect(id: string): Promise<void> {
   const { answered, failed } = collected
   const refused = new Map(failed)
   const kept = new Map<string, readonly string[]>()
-<<<<<<< HEAD
   // Every anchor already standing for a reading, with the sounds the lexicon derives for it, since an
-=======
-  // Every anchor already standing for a reading, with the sounds the lexicon derived for it, since an
->>>>>>> 435463c (refactor(corpus): judge a written anchor where a test can reach the judging)
   // answer is judged against them as well as against its own reading.
   const standing = [
     ...bound.values(),
@@ -146,19 +142,14 @@ async function collect(id: string): Promise<void> {
     }
 
     // Judged by the rule the table applies to the anchors it chooses itself, in the one place a test can
-<<<<<<< HEAD
     // reach it: a rule the asker states in prose and the collector applies in code drifts, and a drift
     // nothing can reach is a drift found by paying for a batch.
-=======
-    // reach it: a rule the asker states in prose and the collector applies in code drifts otherwise.
->>>>>>> 435463c (refactor(corpus): judge a written anchor where a test can reach the judging)
     const said = sounds.get(reading)
     if (said === undefined) {
       refused.set(reading, `${phrase}: no reading of that name is owed one`)
       continue
     }
 
-<<<<<<< HEAD
     const words = phrase.split(/\s+/).flatMap((word) => {
       const held = lexicon.get(word)
 
@@ -182,13 +173,6 @@ async function collect(id: string): Promise<void> {
       { nearest, apart, atMostWords, partsOfSpeech },
     )
 
-=======
-    const fault = faultInAnchor({ proposal: phrase, heard: soundsOf(phrase, lexicon), said }, standing, {
-      nearest,
-      apart,
-      mostWords: naming.mostWords + 1,
-    })
->>>>>>> 435463c (refactor(corpus): judge a written anchor where a test can reach the judging)
     if (fault !== null) {
       refused.set(reading, `${phrase}: ${fault}`)
       continue
