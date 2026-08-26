@@ -109,7 +109,7 @@ describe('readNaming', () => {
 })
 
 describe('readPhonology', () => {
-  const SOUNDS = '{"cannotStart":["h","ts"],"nearest":0.5,"apart":0.2,"unrated":50}'
+  const SOUNDS = '{"cannotStart":["h","ts"],"nearest":0.5,"apart":0.2,"unrated":50,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"]}'
 
   // The list is the locale's and the rule is the engine's, so a second language is a folder rather
   // than a branch in the code.
@@ -123,6 +123,12 @@ describe('readPhonology', () => {
     expect(readPhonology(SOUNDS)).toMatchObject({ nearest: 0.5, apart: 0.2, unrated: 50 })
   })
 
+  // What a word has to be before it can stand for a reading is this language's business too: how long
+  // a reading may run before no one word carries it, how common the word must be, and what it may be.
+  it('reads what a word of this language must be to stand for a reading', () => {
+    expect(readPhonology(SOUNDS)).toMatchObject({ atMostMorae: 4, atLeastCommon: 1, partsOfSpeech: ['NOM'] })
+  })
+
   it('refuses a file that names no such list', () => {
     expect(() => readPhonology('{}')).toThrow()
   })
@@ -130,7 +136,7 @@ describe('readPhonology', () => {
   // A limit missing reads as a limit of nothing, and an allocation with no ceiling gives every reading
   // the first word that starts on its sound.
   it('refuses a file that leaves a limit unstated', () => {
-    expect(() => readPhonology('{"cannotStart":[],"nearest":0.5,"apart":0.2}')).toThrow()
+    expect(() => readPhonology('{"cannotStart":[],"nearest":0.5,"apart":0.2,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"]}')).toThrow()
   })
 })
 

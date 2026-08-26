@@ -2,7 +2,7 @@
   "header": {
     "what": "What French can and cannot do with sounds, read by the checks that judge an anchor. The rules live in the engine; this file is what makes them French.",
     "cannotStart": "French has no /h/ phoneme at all, so hôtel is said without one; it has no /ɸ/, and no native onset for the two affricates. An anchor claiming one of these matches only on paper.",
-    "anchors": "How far a word may sit from a reading and still be heard in it, how far two anchors must sit from each other, and what an unrated word is worth against a rated one. The last is the middle of the scale the ratings use, which runs from 0 to 100 here: nothing rated the word, and that is evidence neither way."
+    "anchors": "What an anchor of this language may be. How far a word may sit from a reading and still be heard in it, how far two anchors must sit from each other, what an unrated word is worth against a rated one, how many morae a reading may run to before no one word carries it, how common a word must be before a reader is likely to know it, and which parts of speech a story can be built on. The last is the middle of the scale the ratings use, which runs from 0 to 100 here: nothing rated the word, and that is evidence neither way."
   },
   "cannotStart": [
     "h",
@@ -12,5 +12,10 @@
   ],
   "nearest": 0.5,
   "apart": 0.2,
-  "unrated": 50
+  "unrated": 50,
+  "atMostMorae": 4,
+  "atLeastCommon": 1,
+  "partsOfSpeech": [
+    "NOM"
+  ]
 }

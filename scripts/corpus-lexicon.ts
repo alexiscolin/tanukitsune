@@ -1,8 +1,9 @@
 // Turns the Lexique release into the words a locale can bind a reading to, written to
 // corpus/<locale>/.lexicon.json.
 //
-// Run with `pnpm corpus:lexicon [locale] [path]`, a plain Node run over TypeScript for the reason
-// import-decomposition.ts states. It takes the release path as an argument, or fetches the pinned one.
+// Run with `pnpm corpus:lexicon [locale] [release] [norms]`, a plain Node run over TypeScript for the
+// reason import-decomposition.ts states. It takes each release as a path, or fetches the pinned one, so
+// a run given both reaches no network at all.
 //
 // The file is not committed, and not for the reason the inventory is not: a public dictionary carries
 // no reader's data. It is an input to the run that allocates anchors and nothing serves it, so seven
@@ -49,8 +50,19 @@ if (source === undefined) {
 }
 
 const tsv = given === undefined ? await fetched(source, `Lexique ${RELEASE}`) : readFileSync(given, 'utf8')
-const norms = RATINGS[locale]
-const rated = norms === undefined ? new Map<string, number>() : parseImagery(await fetched(norms, 'SemantiQc'))
+
+// A run handed a release path reaches no network, which is what makes it runnable where there is none
+// and what the three scripts beside this one already promise. So a rating fetched anyway would take
+// that back: given one release by hand and not the other, the words arrive unrated and the run says so.
+const norms = process.argv[4]
+const source_ = RATINGS[locale]
+const rated =
+  norms !== undefined
+    ? parseImagery(readFileSync(norms, 'utf8'))
+    : given !== undefined || source_ === undefined
+      ? new Map<string, number>()
+      : parseImagery(await fetched(source_, 'SemantiQc'))
+
 const words = parseLexicon(tsv, rated)
 
 const output = `corpus/${locale}/.lexicon.json`
@@ -65,3 +77,6 @@ writeFileSync(output, `{\n"header":${JSON.stringify(HEADER)},\n"words":{\n${line
 
 const seen = [...words.values()].filter((word) => word.imageability !== undefined).length
 process.stdout.write(`lexicon: ${words.size} words written to ${output}, ${seen} of them rated for how well they are seen\n`)
+if (seen === 0) {
+  process.stdout.write(`no ratings were read, so every word is unrated and the limits say what that is worth\n`)
+}

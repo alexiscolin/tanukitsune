@@ -113,6 +113,9 @@ const phonology = z.object({
   nearest: z.number().positive(),
   apart: z.number().nonnegative(),
   unrated: z.number().nonnegative(),
+  atMostMorae: z.number().int().positive(),
+  atLeastCommon: z.number().nonnegative(),
+  partsOfSpeech: z.array(z.string()).min(1),
 })
 
 export function readPhonology(json: string): {
@@ -120,6 +123,9 @@ export function readPhonology(json: string): {
   readonly nearest: number
   readonly apart: number
   readonly unrated: number
+  readonly atMostMorae: number
+  readonly atLeastCommon: number
+  readonly partsOfSpeech: readonly string[]
 } {
   return phonology.parse(JSON.parse(json))
 }
