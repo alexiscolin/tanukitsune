@@ -10,20 +10,22 @@
 // whoever reads the run rather than a reason to refuse a card.
 //
 // The file is not committed, for the reason the inventory it reads is not: which reading is taught is
-// the upstream curriculum's choice, of the same family as the decomposition already kept out of the
-// repository. What travels is anchors.json, which is ours.
+// the upstream curriculum's choice, of the same family as the parts it names, which
+// docs/decisions/0013-the-curriculum-decides-the-parts.md keeps on the machine that read them. What
+// travels is anchors.json, which is ours.
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
-import { fetched, KANJIDIC } from './corpus-command.ts'
+import { fetched, KANJIDIC, list } from './corpus-command.ts'
 import { parseReadings } from '../src/data/corpus/kanjidic.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
-import { readingsOf, unconfirmed } from '../src/data/corpus/reading-run.ts'
+import { readingsOf, unconfirmed, wordsResting } from '../src/data/corpus/reading-run.ts'
 
 const HEADER = {
   source: 'The curriculum the account deals, read into corpus/.inventory.json, verified against KANJIDIC2',
   modified: 'One entry per distinct reading, carrying whether a card teaches it or the account only accepts it.',
-  shape: 'reading to its type, whether a card teaches it, and the subjects naming it',
+  shape: 'reading to its type, whether a card teaches it, and the characters naming it',
+  disputed: 'The readings the release states otherwise, which the curriculum still teaches: it verifies rather than states.',
 }
 
 const OUTPUT = 'corpus/.readings.json'
@@ -39,18 +41,32 @@ const xml = given === undefined ? await fetched(KANJIDIC, 'KANJIDIC2') : readFil
 const named = readingsOf(subjects)
 const taught = [...named].filter(([, one]) => one.taught)
 
+// Each of these is a reading the reader is graded on that the release states otherwise. Written beside
+// the readings rather than printed alone: a line only a terminal saw is a line the next run cannot act
+// on, and a run nobody watched loses it.
+const disputed = unconfirmed(subjects, parseReadings(xml))
+
 const lines = [...named]
   .map(([value, one]) => `${JSON.stringify(value)}:${JSON.stringify([one.type, one.taught, one.by])}`)
   .join(',\n')
+const said = disputed
+  .map((one) => `${JSON.stringify(one.character)}:${JSON.stringify([one.type, one.value])}`)
+  .join(',\n')
 
-writeFileSync(OUTPUT, `{\n"header":${JSON.stringify(HEADER)},\n"readings":{\n${lines}\n}\n}\n`)
+writeFileSync(
+  OUTPUT,
+  `{\n"header":${JSON.stringify(HEADER)},\n"readings":{\n${lines}\n},\n"disputed":{\n${said}\n}\n}\n`,
+)
+
+// The word split beside the reading count, since the two answer different questions and the documents
+// quote both: how many sounds are owed an anchor, and how many cards have to teach one.
+const { dealt, resting } = wordsResting(subjects)
 
 process.stdout.write(`readings: ${named.size} named, ${taught.length} taught by a card, written to ${OUTPUT}\n`)
+process.stdout.write(`words: ${dealt} dealt, ${resting} resting on what their characters taught and ${dealt - resting} teaching a reading\n`)
 
-// Each of these is a reading the reader is graded on that the release states otherwise, so it is named
-// in full rather than counted: three lines are read, a number is not.
-const disputed = unconfirmed(subjects, parseReadings(xml))
 if (disputed.length > 0) {
-  const said = disputed.map((one) => `${one.character} ${one.type} ${one.value}`).join(', ')
-  process.stdout.write(`readings KANJIDIC2 states otherwise: ${disputed.length}: ${said}\n`)
+  process.stdout.write(
+    `readings KANJIDIC2 states otherwise: ${list(disputed.map((one) => `${one.character} ${one.type} ${one.value}`))}\n`,
+  )
 }

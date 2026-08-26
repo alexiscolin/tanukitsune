@@ -6,6 +6,8 @@
 // machine-generated file at a pinned release, and the shape taken from it is two fields deep. The
 // licence and the attribution it obliges are in docs/sources.md.
 
+import { hiragana } from '../../core/corpus/phonetics.ts'
+
 const ENTRY = /<character>([\s\S]*?)<\/character>/g
 const LITERAL = /<literal>(.*?)<\/literal>/
 // The release states the Kangxi listing among the meanings, "radical hameçon (no. 5)", which says what
@@ -48,12 +50,6 @@ export type Reading = {
 const ON = /<reading r_type="ja_on">(.*?)<\/reading>/g
 const KUN = /<reading r_type="ja_kun">(.*?)<\/reading>/g
 const NANORI = /<nanori>(.*?)<\/nanori>/g
-
-// The release writes an on'yomi in katakana and everything else in hiragana, and a curriculum states
-// them all in hiragana.
-function hiragana(text: string): string {
-  return text.replace(/[\u30a1-\u30f6]/g, (kana) => String.fromCodePoint((kana.codePointAt(0) as number) - 0x60))
-}
 
 export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const glossed = new Map<string, readonly string[]>()

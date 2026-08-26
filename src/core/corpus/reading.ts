@@ -1,3 +1,5 @@
+import { hiragana } from './phonetics.ts'
+
 // Whether a word teaches a reading or rests on one the reader has already met.
 //
 // A card carries a reading mnemonic only where its reading is not the one its characters already
@@ -5,11 +7,12 @@
 // character under, not that character's whole set: a second reading of it is as new to the reader as
 // any other sound, and the curriculum accepts several while teaching one.
 //
-// Two changes are patterns a reader meets as patterns rather than as readings, and a word showing one
+// Three changes are patterns a reader meets as patterns rather than as readings, and a word showing one
 // still rests on what it was taught. A reading loses its last mora to a held consonant where the next
-// one begins with a stop, and a reading voices where it follows another. Both are stated as the forms
-// a taught reading may take, since a word is read left to right and a form that fits is a form the
-// reader can hear.
+// one begins with a stop, a reading voices where it follows another, and one opening on は hardens
+// instead where a held consonant precedes it, which is 一杯 read いっぱい. All three are stated as the
+// forms a taught reading may take, since a word is read left to right and a form that fits is a form
+// the reader can hear.
 
 // Voicing pairs the language allows, which stop short of the whole syllabary: な and ま voice to
 // nothing, and は has two, one voiced and one not.
@@ -25,12 +28,6 @@ const HARDENED: Readonly<Record<string, string>> = { は: 'ぱ', ひ: 'ぴ', ふ
 // The morae a reading may end on before a held consonant takes their place.
 const HELD = 'つくちき'
 
-// Katakana read as the hiragana the reading is written in. A word carries the two scripts and its
-// reading is stated in one, so a comparison that does not fold them refuses every borrowed word.
-function folded(text: string): string {
-  return text.replace(/[ァ-ヶ]/g, (kana) => String.fromCodePoint((kana.codePointAt(0) as number) - 0x60))
-}
-
 function formsOf(reading: string): readonly string[] {
   const forms = new Set([reading])
   const [first = '', ...rest] = [...reading]
@@ -45,7 +42,7 @@ function formsOf(reading: string): readonly string[] {
 
 export function restsOnItsKanji(word: string, reading: string, taught: ReadonlyMap<string, string>): boolean {
   const characters = [...word]
-  const said = folded(reading)
+  const said = hiragana(reading)
 
   // A word dealt in kana alone rests on no character, and read as kana standing for themselves it
   // would rest on nothing and be called known. Its card runs from the sound to the meaning instead.
@@ -60,7 +57,7 @@ export function restsOnItsKanji(word: string, reading: string, taught: ReadonlyM
 
     const character = characters[index] as string
     const written = taught.get(character)
-    const forms = written === undefined ? [folded(character)] : formsOf(written)
+    const forms = written === undefined ? [hiragana(character)] : formsOf(written)
 
     return forms.some((form) => said.startsWith(form, at) && from(index + 1, at + form.length))
   }

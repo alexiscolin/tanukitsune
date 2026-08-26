@@ -223,11 +223,13 @@ for that character in the release and to be of the type claimed. What it states 
 the run and kept, since the curriculum is what the reader is graded against.
 
 A word is bound to a reading of its own only where its reading is not the one its characters already
-taught. A reading that loses its last mora to a held consonant, or that voices after another, is a
-pattern the reader meets as a pattern, so a word showing one still rests on what it was taught; a
+taught. A reading that loses its last mora to a held consonant, that voices after another, or that
+hardens where a held consonant precedes it, which is 一杯 read いっぱい, is a pattern the reader meets
+as a pattern, so a word showing one still rests on what it was taught; a
 second reading of a character is neither, and is as new as any other sound. A word dealt in kana alone
-rests on nothing and runs from the sound to the meaning instead. Of the 6765 words the curriculum
-deals, 4104 rest and the rest teach.
+rests on nothing and runs from the sound to the meaning instead, and states no reading at all, the word
+being its own. Of the 6797 words the curriculum deals, 4086 rest and 2711 teach, which the run says as
+it writes them.
 
 **Anchors.** Each reading is bound to one French sound anchor, and every mnemonic teaching that
 reading uses it. WaniKani holds the same policy and rewrites the whole affected set when an anchor

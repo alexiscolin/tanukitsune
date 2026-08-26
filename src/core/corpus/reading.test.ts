@@ -33,6 +33,12 @@ describe('restsOnItsKanji', () => {
     expect(restsOnItsKanji('手紙', 'てがみ', TAUGHT)).toBe(true)
   })
 
+  // The other half of that pattern: a reading opening on は hardens rather than voices where a held
+  // consonant precedes it, and a reader meets the two together or neither.
+  it('rests where a reading opening on は hardens after a held consonant', () => {
+    expect(restsOnItsKanji('一杯', 'いっぱい', new Map([...TAUGHT, ['杯', 'はい']]))).toBe(true)
+  })
+
   it('rests where kana the word carries stand for themselves', () => {
     expect(restsOnItsKanji('丸い', 'まるい', TAUGHT)).toBe(true)
     // The reading is written in one kana and the word in the other, so the two are compared in one.

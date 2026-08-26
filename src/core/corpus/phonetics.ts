@@ -129,3 +129,13 @@ function soundsOf(mora: string): readonly string[] {
 
   return [...onset, vowel]
 }
+
+// Katakana read as the hiragana a reading is written in. A word carries the two scripts and its reading
+// is stated in one, so a comparison that does not fold them refuses every borrowed word.
+//
+// Written here rather than taken from `toHiragana`, which also reads the long mark as the vowel it
+// lengthens and turns コーヒー into こうひい: what a curriculum states is コーヒー, and a fold that
+// rewrites it compares a reading against a reading nobody teaches.
+export function hiragana(text: string): string {
+  return text.replace(/[\u30a1-\u30f6]/g, (kana) => String.fromCodePoint((kana.codePointAt(0) as number) - 0x60))
+}

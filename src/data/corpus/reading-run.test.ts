@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { InventorySubject } from './inventory'
-import { readingsOf, unconfirmed } from './reading-run'
+import { readingsOf, unconfirmed, wordsResting } from './reading-run'
 
 const subject = (one: Partial<InventorySubject> & Pick<InventorySubject, 'id' | 'type' | 'characters'>): InventorySubject => ({
   level: 1,
@@ -32,7 +32,9 @@ const CURRICULUM = [
   }),
   subject({ id: 3, type: 'vocabulary', characters: '一人', readings: [{ value: 'ひとり', type: null, primary: true }] }),
   subject({ id: 4, type: 'vocabulary', characters: '一', readings: [{ value: 'いち', type: null, primary: true }] }),
-  subject({ id: 5, type: 'kana_vocabulary', characters: 'ありがとう', readings: [{ value: 'ありがとう', type: null, primary: true }] }),
+  // A word written in kana alone states no reading, the word being its own: the curriculum leaves the
+  // list empty rather than repeating the characters into it.
+  subject({ id: 5, type: 'kana_vocabulary', characters: 'ありがとう' }),
 ]
 
 describe('readingsOf', () => {
@@ -71,5 +73,19 @@ describe('unconfirmed', () => {
 
   it('says nothing about a character the release does not state at all, which is not a reading being wrong', () => {
     expect(unconfirmed(CURRICULUM, new Map())).toEqual([])
+  })
+})
+
+describe('wordsResting', () => {
+  // A total announced in prose that no command prints is a total nobody can check against the
+  // curriculum it claims to describe.
+  it('counts the words dealt and how many rest on what their characters taught', () => {
+    expect(wordsResting(CURRICULUM)).toEqual({ dealt: 3, resting: 1 })
+  })
+
+  it('counts no word the source has withdrawn, which no session deals', () => {
+    const gone = CURRICULUM.map((one) => (one.type === 'vocabulary' ? { ...one, hidden: true } : one))
+
+    expect(wordsResting(gone).dealt).toBe(1)
   })
 })
