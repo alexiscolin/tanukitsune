@@ -109,7 +109,8 @@ describe('readNaming', () => {
 })
 
 describe('readPhonology', () => {
-  const SOUNDS = '{"cannotStart":["h","ts"],"nearest":0.5,"apart":0.2,"unrated":50,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"]}'
+  const SOUNDS =
+    '{"cannotStart":["h","ts"],"nearest":0.5,"apart":0.2,"unrated":50,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"hears":{"ɕ":"ʃ"}}'
 
   // The list is the locale's and the rule is the engine's, so a second language is a folder rather
   // than a branch in the code.
@@ -136,7 +137,15 @@ describe('readPhonology', () => {
   // A limit missing reads as a limit of nothing, and an allocation with no ceiling gives every reading
   // the first word that starts on its sound.
   it('refuses a file that leaves a limit unstated', () => {
-    expect(() => readPhonology('{"cannotStart":[],"nearest":0.5,"apart":0.2,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"]}')).toThrow()
+    expect(() =>
+      readPhonology('{"cannotStart":[],"nearest":0.5,"apart":0.2,"atMostMorae":4,"atLeastCommon":1,"partsOfSpeech":["NOM"],"hears":{}}'),
+    ).toThrow()
+  })
+
+  // A reading is heard through the ears of the language it is taught in, and what that ear reaches for
+  // is the locale's business: a second language substitutes other sounds, or none.
+  it('reads what this language hears where a sound it does not make', () => {
+    expect(readPhonology(SOUNDS).hears.get('ɕ')).toBe('ʃ')
   })
 })
 

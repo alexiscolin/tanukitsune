@@ -2,7 +2,8 @@
   "header": {
     "what": "What French can and cannot do with sounds, read by the checks that judge an anchor. The rules live in the engine; this file is what makes them French.",
     "cannotStart": "French has no /h/ phoneme at all, so hôtel is said without one; it has no /ɸ/, and no native onset for the two affricates. An anchor claiming one of these matches only on paper.",
-    "anchors": "What an anchor of this language may be. How far a word may sit from a reading and still be heard in it, how far two anchors must sit from each other, what an unrated word is worth against a rated one, how many morae a reading may run to before no one word carries it, how common a word must be before a reader is likely to know it, and which parts of speech a story can be built on. The last is the middle of the scale the ratings use, which runs from 0 to 100 here: nothing rated the word, and that is evidence neither way."
+    "anchors": "What an anchor of this language may be. How far a word may sit from a reading and still be heard in it, how far two anchors must sit from each other, what an unrated word is worth against a rated one, how many morae a reading may run to before no one word carries it, how common a word must be before a reader is likely to know it, and which parts of speech a story can be built on. The unrated value is the middle of the scale the ratings use, which runs from 0 to 100 here: nothing rated the word, and that is evidence neither way.",
+    "hears": "What a French ear reaches for on hearing a Japanese sound French does not make. Compared on the symbol alone, most of these readings have no candidate at all, and French makes six of the sounds under another name. The substitution moves the reading and never the anchor, so a word still claims only sounds French makes. /h/ is absent on purpose: French reaches for nothing on hearing it, the h of hotel being silent."
   },
   "cannotStart": [
     "h",
@@ -17,5 +18,13 @@
   "atLeastCommon": 1,
   "partsOfSpeech": [
     "NOM"
-  ]
+  ],
+  "hears": {
+    "ɕ": "ʃ",
+    "tɕ": "ʃ",
+    "dʑ": "ʒ",
+    "ɸ": "f",
+    "ts": "s",
+    "ɾ": "ʁ"
+  }
 }

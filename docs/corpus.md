@@ -277,10 +277,20 @@ hold the set to a floor without the lexicon, which stays on the machine that gen
 every part of speech as well buys 37 readings and spends the rule that a story is built on things that
 can be pictured, so it is not done.
 
-Of the 2523 readings inside that ceiling, 1853 are bound and 670 are not. 324 of those bound sit on a
-word under one occurrence per million, which is the third pass and which the prose step is expected to
-refuse rather than write on. Of the 670 left, 580 have no word the rules accept, which no reordering
-fixes and which is a fact about the pair of languages rather than a setting, and 90 have words the
+**A reading is heard through the ears of the language it is taught in before it is compared.** Japanese
+makes sounds French does not, and for most of them a French listener reaches for a neighbour without
+hesitating: /ɕ/ is the sound of chic and /ɾ/ the sound of rire. Compared on the symbol alone, 577
+readings have no candidate at all, and 378 of those are six sounds French makes under another name. The
+substitution moves the reading and never the anchor, so a word still claims only sounds its own
+language makes, which is what `impossibleOnset` refuses. What the ear reaches for is in
+`phonology.json`, one line per sound, and a language reaching for nothing states nothing: French hears
+no /h/ at all, the h of hotel being silent, so those 199 readings keep no anchor rather than a word
+that matches on paper.
+
+Of the 2523 readings inside that ceiling, 2235 are bound and 288 are not, and 504 of the 557 a
+character teaches have one. 426 of those bound sit on a word under one occurrence per million, which is
+the third pass and which the prose step is expected to refuse rather than write on. Of the 288 left,
+201 have no word the rules accept, almost all of them the /h/ readings above, and 87 have words the
 curriculum has already spent.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its

@@ -19,10 +19,23 @@ import { moraeOf, phonemesOf } from '../../core/corpus/phonetics.ts'
 // anyway, a long reading takes whatever the distance forgives, that distance being a fraction of the
 // sounds compared: a long word shares a great many of them without sounding like the reading at all.
 // No reading a kanji teaches runs past four morae, so the ceiling touches words alone.
-export function wantedFrom(readings: ReadonlyMap<string, Named>, atMostMorae: number): readonly Wanted[] {
+// A reading is heard through the ears of the language it is taught in before it is compared. Japanese
+// makes sounds French does not, and for most of them a French listener reaches for a neighbour without
+// hesitating: /ɕ/ is the sound of chic, /ɾ/ the sound of rire. Compared on the symbol alone those
+// readings have no candidate at all rather than a near one.
+//
+// The substitution moves the reading and never the anchor, so a word still claims only sounds its own
+// language makes, which is what `impossibleOnset` refuses. A sound the locale reaches for nothing on is
+// simply absent from the table: French hears no /h/ at all, hotel being said without one, so those
+// readings stay unanchored rather than being given a word that matches on paper.
+export function wantedFrom(
+  readings: ReadonlyMap<string, Named>,
+  atMostMorae: number,
+  hears: ReadonlyMap<string, string> = new Map(),
+): readonly Wanted[] {
   return [...readings]
     .filter(([value, named]) => named.taught && moraeOf(value).length <= atMostMorae)
-    .map(([value]) => ({ value, phonemes: phonemesOf(value) }))
+    .map(([value]) => ({ value, phonemes: phonemesOf(value).map((sound) => hears.get(sound) ?? sound) }))
 }
 
 // Which words a locale draws its anchors from is that locale's business rather than the engine's, so

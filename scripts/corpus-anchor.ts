@@ -29,9 +29,11 @@ for (const needed of [READINGS, at('.lexicon.json'), at('phonology.json')]) {
 
 const readings = readReadings(readFileSync(READINGS, 'utf8'))
 const lexicon = readLexicon(readFileSync(at('.lexicon.json'), 'utf8'))
-const { nearest, apart, unrated, atMostMorae, atLeastCommon, partsOfSpeech } = readPhonology(readFileSync(at('phonology.json'), 'utf8'))
+const { nearest, apart, unrated, atMostMorae, atLeastCommon, partsOfSpeech, hears } = readPhonology(
+  readFileSync(at('phonology.json'), 'utf8'),
+)
 
-const wanted = wantedFrom(readings, atMostMorae)
+const wanted = wantedFrom(readings, atMostMorae, hears)
 const keeps = (word: { category: string }) => partsOfSpeech.includes(word.category)
 const offered = candidatesBy(lexicon, (word) => keeps(word) && word.frequency >= atLeastCommon)
 const limits = { nearest, apart, unrated }
