@@ -43,7 +43,20 @@ export async function fetched(source: string, named: string): Promise<string> {
       // Whether a release is packed is the release's business rather than each caller's: three of them
       // are served gzipped and Lexique is served as it is, and a caller saying which would be a caller
       // that says it wrong the day a host changes what it serves.
-      const read = sent[0] === 0x1f && sent[1] === 0x8b ? gunzipSync(sent) : sent
+      //
+      // A release whose address says it is packed and whose bytes are not is refused rather than taken
+      // verbatim. Unpacking used to be the only thing standing between a status 200 and the cache, so a
+      // portal page or an empty body threw where it now would be written down as the release and served
+      // from the cache for an hour: the commands reading it write no keys and no meanings and overwrite
+      // the committed files with the nothing they found.
+      //
+      // Both are asked again rather than ending the run, since neither is the host answering: the check
+      // above refuses a status the host returned, and these two are what arrives instead of a release.
+      const packed = sent[0] === 0x1f && sent[1] === 0x8b
+      if (sent.length === 0) throw new Error(`${named} sent an empty body`)
+      if (source.endsWith('.gz') && !packed) throw new Error(`${named} is served packed and answered with something else`)
+
+      const read = packed ? gunzipSync(sent) : sent
       writeFileSync(held, read)
 
       return read.toString('utf8')
