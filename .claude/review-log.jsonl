@@ -997,3 +997,4 @@
 {"date": "2026-08-26", "branch": "pr2/every-reading-the-curriculum-teaches", "reviewer": "change-walkthrough", "file": "scripts/corpus-readings.ts", "line": 123, "outcome": "fixed"}
 {"date": "2026-08-26", "branch": "pr2/every-reading-the-curriculum-teaches", "reviewer": "requirement-check", "file": ".gitignore", "line": 37, "outcome": "dismissed", "reason": "the comment for the lexicon entry arrived with the rebase of this branch onto the one that adds it, and it says what that entry is for: reverting it would put the file back under the comment about a reader's own data"}
 {"date": "2026-08-26", "branch": "pr2/every-reading-the-curriculum-teaches", "kind": "pass", "base": "5c2de26e319a63ee1815149675c5010b9fb1c377", "head": "a2e8c1042f1f32749d75f9166ef04eb208f6835b"}
+{"date": "2026-08-27", "branch": "pr2/every-reading-the-curriculum-teaches", "kind": "pass", "base": "9adba863f9ae66e7a552bffa91a0980e482d0005", "head": "2de74dd7c773974137f6ffcee2556e7a19f25372"}
