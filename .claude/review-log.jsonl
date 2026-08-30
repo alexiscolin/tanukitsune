@@ -1077,3 +1077,4 @@
 {"date": "2026-08-26", "branch": "pr7/a-card-carries-two-mnemonics", "reviewer": "requirement-check", "file": "drizzle/0003_chief_shadowcat.sql", "line": 1, "outcome": "dismissed", "reason": "the spec said the table widens when the generator lands and nothing writes these columns yet, which is the reader's call rather than mine: the shape is stated and tested where it can be, and it is named to them"}
 {"date": "2026-08-26", "branch": "pr7/a-card-carries-two-mnemonics", "kind": "pass", "base": "e7ba55f501f15b8bcab0dcf4998cac6af779ba43", "head": "0602ac3c71c699188f8e2ce59dcd6971451fd41b"}
 {"date": "2026-08-27", "branch": "pr7/a-card-carries-two-mnemonics", "kind": "pass", "base": "6addd8a4e7f149a5b76ee6d0bb530aba88fb736a", "head": "dabba12e2dec93654e0c3b87ee1a122972864f5b"}
+{"date": "2026-08-30", "branch": "pr7/a-card-carries-two-mnemonics", "kind": "pass", "base": "48e43481ff89da49f8d0cc3df8261273dd526f86", "head": "db7a86ad55281612f00ed00f830631f95a38ecdc"}
