@@ -41,8 +41,8 @@ const RECORDED_TRANSLATION: Record<number, string> = {
 }
 
 const RECORDED_ANCHOR: Record<number, string> = {
-  2: '223c721c3c731ec0bdc83d1d45fe11bb7473eecb1f16e7e6835ffbc984ee3b97',
   1: '0a0ef44f51b885156b7e5ce87eaa3531d65fdd8b0cba9b107cf3863c863fabf7',
+  3: 'ba10f95192927087a6361532ca6f22575a968e545caf6501deef0dd17e35443e',
 }
 
 describe('the anchor prompt', () => {
@@ -58,6 +58,8 @@ function renderedAnchor(): string {
   const asked = anchorRequest(anchorPrefix('French', ['scie']), {
     reading: 'こう',
     said: 'kou',
+    heard: 'k o o',
+    spelled: '',
     taught: ['工', '公'],
   })
 

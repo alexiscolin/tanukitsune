@@ -5,5 +5,39 @@
     "source": "The words are French and the pairing is this corpus own. What each one sounds like is derived from Lexique word by word, never taken from what was claimed for it.",
     "shape": "reading to the one word or phrase standing for it, in a list of one, which is the shape this corpus carries a settled choice in"
   },
-  "order": {}
+  "order": {
+    "ひゃく": [
+      "yack houx"
+    ],
+    "いたい": [
+      "italique"
+    ],
+    "ぬすむ": [
+      "nous sous moue"
+    ],
+    "しきさい": [
+      "chique saï"
+    ],
+    "ひとすじ": [
+      "hit au sushi"
+    ],
+    "とばす": [
+      "tôt bas sou"
+    ],
+    "やさしい": [
+      "yack sachet"
+    ],
+    "ほしい": [
+      "haut chichi"
+    ],
+    "ねどこ": [
+      "nez de coq"
+    ],
+    "うてん": [
+      "hutte énorme"
+    ],
+    "そふぼ": [
+      "sauf houblon"
+    ]
+  }
 }

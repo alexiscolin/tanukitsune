@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Named } from './reading-run'
 import type { Word } from './lexique'
-import { candidatesBy, soundsOf, wantedFrom } from './anchor-run'
+import { candidatesBy, roomyWords, soundsOf, spread, wantedFrom } from './anchor-run'
 
 const READINGS = new Map<string, Named>([
   ['こう', { type: 'onyomi', taught: true, by: ['工', '公'] }],
@@ -143,3 +143,43 @@ describe('soundsOf', () => {
     expect(soundsOf('  Coq   Taupe ', LEXICON)).toEqual(['k', 'ɔ', 'k', 't', 'o', 'p'])
   })
 })
+
+describe('spread', () => {
+  // A bounded run exists so a first one is read by hand before the rest is paid for, and it can only
+  // do that if the few it asks stand for the many it does not. Taking the head of a list that does not
+  // shrink asks the same questions every run: three runs of ten asked nine of the same readings and
+  // kept one answer, all of them from the corner of the set where the language offers least.
+  it('spans the whole of what is owed rather than its head', () => {
+    expect(spread(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'], 4)).toEqual(['a', 'c', 'e', 'g'])
+  })
+
+  it('asks for everything where the bound reaches everything', () => {
+    expect(spread(['a', 'b', 'c'], 10)).toEqual(['a', 'b', 'c'])
+    expect(spread(['a', 'b', 'c'], Infinity)).toEqual(['a', 'b', 'c'])
+  })
+
+  it('asks for nothing where nothing is owed', () => {
+    expect(spread([], 5)).toEqual([])
+  })
+})
+
+describe('roomyWords', () => {
+  const held = [{ reading: 'こ', anchor: 'coq', phonemes: ['k', 'ɔ', 'k'] }]
+
+  // A reading the sweep took a word from is asked again, of the words still far enough from everything
+  // kept. Filtered once against the set as it stands rather than once per reading, which is the same
+  // answer for a three hundredth of the reads.
+  it('keeps the words far enough from everything already bound', () => {
+    expect([...roomyWords(LEXICON, held, 0.2, () => true)].sort()).toEqual(['cause', 'classer', 'taupe'])
+  })
+
+  it('keeps only what the locale offers', () => {
+    expect([...roomyWords(LEXICON, held, 0.2, (word) => word.category === 'NOM')].sort()).toEqual(['cause', 'taupe'])
+  })
+
+  // A limit of nothing crowds nothing out, so every word the locale offers is still there.
+  it('keeps every word where nothing has to sit apart', () => {
+    expect([...roomyWords(LEXICON, held, 0, () => true)].sort()).toEqual(['cause', 'classer', 'coq', 'taupe'])
+  })
+})
+

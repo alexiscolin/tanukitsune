@@ -119,6 +119,7 @@ const phonology = z.object({
   atMostWords: z.number().int().positive(),
   hears: z.record(z.string(), z.string()),
   writes: z.record(z.string(), z.string()),
+  refuses: z.array(z.string()),
 })
 
 export function readPhonology(json: string): {
@@ -132,10 +133,16 @@ export function readPhonology(json: string): {
   readonly atMostWords: number
   readonly hears: ReadonlyMap<string, string>
   readonly writes: ReadonlyMap<string, string>
+  readonly refuses: ReadonlySet<string>
 } {
-  const { hears, writes, ...rest } = phonology.parse(JSON.parse(json))
+  const { hears, writes, refuses, ...rest } = phonology.parse(JSON.parse(json))
 
-  return { ...rest, hears: new Map(Object.entries(hears)), writes: new Map(Object.entries(writes)) }
+  return {
+    ...rest,
+    hears: new Map(Object.entries(hears)),
+    writes: new Map(Object.entries(writes)),
+    refuses: new Set(refuses),
+  }
 }
 
 // The readings the curriculum names and the words a locale can bind one to. Both are written by a

@@ -23,6 +23,21 @@ describe('agreesAtTheStart', () => {
   it('fails when the first vowel differs', () => {
     expect(agreesAtTheStart(phonemesOf('こう'), CAR)).toBe(false)
   })
+
+  // A reading that begins on a vowel is held to the same tolerance as one whose vowel sits behind a
+  // consonant. Exact on the first sound whatever it is, o and ɔ are two answers where French hears one
+  // distinction it draws finer than Japanese does, and every reading of the あ, い, う, え and お rows
+  // is refused a word it is heard in.
+  it('is tolerant on a vowel that opens the reading, as on one that follows a consonant', () => {
+    expect(agreesAtTheStart(['o', 'o'], ['ɔ', 'b', 'ʁ', 'o'])).toBe(true)
+    expect(agreesAtTheStart(['a', 'ʃ'], ['a', 'ʁ', 'b', 'ʁ'])).toBe(true)
+  })
+
+  // Tolerant is not open: two vowels a whole quality apart are two sounds, and the reader reaches for
+  // the first one they hear.
+  it('still refuses a vowel too far from the one the reading opens on', () => {
+    expect(agreesAtTheStart(['i', 'ta'], ['u', 'l'])).toBe(false)
+  })
 })
 
 describe('impossibleOnset', () => {

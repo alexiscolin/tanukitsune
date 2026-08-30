@@ -241,9 +241,9 @@ and an anchor spent at level 3 is an anchor missing at level 40. Allocation is a
 data, so it costs no model call and it is done once for all sixty levels; only the levels being
 shipped are written. Candidates come from Lexique, which carries phonemic transcription and frequency
 for French. Readings are served scarcest first inside each kind, the one with two acceptable words before the one
-with ten, since a common word spent on an easy reading leaves the scarce one with nothing and a reading
-with no anchor is a card that cannot be written. Scarcity orders within a kind and never across the
-two, the paragraph below saying why. Among the words the rules accept for a reading, the nearest
+with ten, since a common word spent on an easy reading leaves the scarce one with nothing and a reading with
+no anchor is a card that cannot be written. Scarcity orders within a kind and never across the two, the
+paragraph below saying why. Among the words the rules accept for a reading, the nearest
 in sound takes it; where two
 sit equally near, the word the reader can picture takes it; where nothing separates them there either,
 the more ordinary word does. A reading left without leaves the run with the reason, either that no
@@ -279,8 +279,8 @@ can be pictured, so it is not done.
 
 **A reading is heard through the ears of the language it is taught in before it is compared.** Japanese
 makes sounds French does not, and for most of them a French listener reaches for a neighbour without
-hesitating: /ɕ/ is the sound of chic and /ɾ/ the sound of rire. Compared on the symbol alone, a reading on
-one of those sounds has no candidate at all. The
+hesitating: /ɕ/ is the sound of chic and /ɾ/ the sound of rire. Compared on the symbol alone, 577
+readings have no candidate at all, and 378 of those are six sounds French makes under another name. The
 substitution moves the reading and never the anchor, so a word still claims only sounds its own
 language makes. It brings one sound onto another and never two onto one, nor onto a sound a reading
 already carries: hearing ち as the sound of chic would give it し's onset and hearing つ as /s/ would
@@ -291,33 +291,51 @@ Those two keep no substitution, and their readings keep no anchor. What the ear 
 **A sound a language does not say and does write is written rather than heard.** French makes no /h/ and
 spells one on a thousand nouns, so a reading beginning on that sound is compared from the sound that
 follows and its anchor has to carry the letter: は is bound to `la hache`, which is said without an h
-and carries one where the reader looks, and a mnemonic is read. `cannotStart` has nothing to say
-about it: that rule refuses a pronunciation claiming a sound French does not make, and `la hache`
-claims none, its pronunciation being derived from the lexicon and beginning on the vowel.
+and carries one where the reader looks, and a mnemonic is read. This is `cannotStart` seen from the
+other side rather than against it, that rule refusing an anchor claiming a sound French does not say,
+which `la hache` claims nowhere: its pronunciation, derived from the lexicon, begins on the vowel.
 Those readings are served in their own pass, after every other, so they never take a word a reading
 beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
+
+**Two anchors are held apart across the whole set and not only inside one pass.** `allocate` keeps two
+apart within one call and knows nothing of the calls before it, so a pass reading only the words already
+taken lets its own anchors land a hair from an earlier pass's, which is one cue with two answers. The
+set is swept once at the end instead, the earlier pass keeping its anchor: a reading the ordering
+already said was worth serving first does not lose its word to a later one. `pnpm check:corpus` holds
+the committed file to the same rule, and to one anchor per reading.
+
+**A word a card will not carry is refused whatever it sounds like.** Neither the frequency floor nor the
+distance catches a word that is ordinary, common and unusable in front of a reader: `shit` is a noun of
+the lexicon and stood for し, one of the readings a learner meets first. The list is in
+`phonology.json` and grows as a reading is read and refused, the way the component names grew.
+
+A reading the sweep takes a word from is asked again, of the words still far enough from everything
+kept: left there, it loses an anchor to a rule meant only to keep two apart while the lexicon still
+holds a word that keeps them apart and serves them both. The pool is filtered once against the set as
+it stands rather than per reading, which is the same answer for a three hundredth of the reads.
+
+Of the 2559 readings inside that ceiling, 2207 are bound and 352 are not, and 488 of the 557 a
+character teaches have one. 485 of those bound sit on a word under one occurrence per million, which is
+the widened pass and which the prose step is expected to refuse rather than write on. Of the 352 left,
+154 have no word the rules accept and 198 have words the curriculum has already spent. Every one of
+those counts is a line the run prints.
+
+The readings a run could not bind travel in `anchors.json` beside the anchors, under `left`, each with
+why: a list only a terminal saw is a list the next command cannot act on.
 
 **Where the table leaves a reading with no word worth having, one is written for it.**
 `corpus:anchor-written` asks for those, and `corpus:anchor` reads what it wrote before its own passes
 rather than instead of them, so a reading reaches that file once the table has been asked and has
 failed. Two cases arrive there and they are one problem seen twice: no word the rules accept is still
-free, and the only word left is so rare that the cue would have to be learned before it could help. The
-two commands read each other the way `corpus:keys` and `corpus:key-translation` do, and being
-re-runnable by reflex is what settles them.
+free, and the only word left is so rare that the cue would have to be learned before it could help,
+which is 644 of the readings bound above. The two commands read each other the way `corpus:keys` and
+`corpus:key-translation` do, and being re-runnable by reflex is what settles them.
 
 What a proposal brings that the table cannot is a phrase: the table searches the lexicon one word at a
 time, and a reading of four morae is rarely one French word. What it may not bring is a pronunciation.
 Every word of what comes back is looked up in the lexicon and the sounds derived, so a word the lexicon
 does not hold is refused rather than trusted, and every rule the table applies is applied again to what
 was proposed. The proposal widens the search and never the rules.
-
-The readings a run could not bind travel in `anchors.json` beside the anchors, under `left`, each with
-why: a list only a terminal saw is a list the next command cannot act on.
-
-Of the 2559 readings inside that ceiling, 2208 are bound and 351 are not, and 492 of the 557 a
-character teaches have one. 392 of those bound sit on a word under one occurrence per million. Of the
-351 left, 160 have no word the rules accept and 191 have words the curriculum has already spent. Every
-one of those counts is a line the run prints.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
 thirty-seven symbols name sounds French borrows rather than owns. Both are carried: whether a sound can

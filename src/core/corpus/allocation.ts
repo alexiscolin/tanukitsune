@@ -48,3 +48,30 @@ export function confusablePairs(
 
   return pairs
 }
+
+// A set built by several passes, held apart once over the whole of it. `allocate` keeps two anchors
+// apart inside one call and knows nothing of the calls before it, so a pass reading only the words
+// already taken lets its own anchors land a hair from an earlier pass's, which is one cue with two
+// answers.
+//
+// The earlier one keeps its anchor: a reading the ordering already said was worth serving first does
+// not lose its word to a later one. What is crowded out is named rather than dropped, so the run can
+// ask again for it.
+export function heldApart(
+  allocation: readonly Allocated[],
+  apart: number,
+): { readonly kept: readonly Allocated[]; readonly crowded: readonly string[] } {
+  const kept: Allocated[] = []
+  const crowded: string[] = []
+
+  for (const one of allocation) {
+    if (kept.some((other) => distanceBetween(other.phonemes, one.phonemes) < apart)) {
+      crowded.push(one.reading)
+      continue
+    }
+
+    kept.push(one)
+  }
+
+  return { kept, crowded }
+}

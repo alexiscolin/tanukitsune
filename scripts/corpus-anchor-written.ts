@@ -21,7 +21,7 @@ import { toRomaji } from 'wanakana'
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
 import { ANCHOR_VERSION, anchorPrefix, anchorRequest, readAnchor } from '../src/ai/corpus/prompts/anchor.ts'
 import { faultInAnchor } from '../src/core/corpus/anchor-answer.ts'
-import { soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
+import { soundsOf, spread, wantedFrom } from '../src/data/corpus/anchor-run.ts'
 import { keyOrderFile, readAnchors, readKeyOrder, readLexicon, readNaming, readPhonology, readReadings } from '../src/data/corpus/artifact.ts'
 import { batchFor } from '../src/data/corpus/pipeline.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
@@ -63,7 +63,9 @@ const owed = [
 ].filter((reading) => !carried.has(reading))
 
 // The sounds each reading is judged on, which is what `corpus:anchor` compares against and not what the
-// kana say on their own: a locale hears some sounds as others, and writes one it does not say.
+// kana say on their own: a locale hears some sounds as others, and writes one it does not say. Both the
+// sounds and the letter travel to the model, an answer judged on a rule it was never told being an
+// answer refused for the asker's reason.
 const sounds = new Map(wantedFrom(readings, atMostMorae, hears).map((one) => [one.value, one.phonemes] as const))
 
 // A reading opening on a sound the locale writes without saying it is compared from the sound that
@@ -80,7 +82,7 @@ for (const [sound, letter] of writes) {
 }
 
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
-const step = nextStep(saved, owed.slice(0, most), ANCHOR_VERSION)
+const step = nextStep(saved, spread(owed, most), ANCHOR_VERSION)
 
 if (step.do === 'submit') await submit(step.parts)
 else if (step.do === 'collect') await collect(step.id)
@@ -94,6 +96,8 @@ async function submit(readingsAsked: readonly string[]): Promise<void> {
     params: anchorRequest(prefix, {
       reading,
       said: toRomaji(reading),
+      heard: (sounds.get(reading) ?? []).join(' '),
+      spelled: spelling.get(reading) ?? '',
       taught: readings.get(reading)?.by ?? [],
     }),
   }))
@@ -132,7 +136,7 @@ async function collect(id: string): Promise<void> {
     add(spent, one.spent)
 
     const phrase = readAnchor(one.text)?.trim().toLowerCase()
-    if (phrase === undefined || phrase === '') {
+    if (phrase === undefined) {
       refused.set(reading, 'unreadable')
       continue
     }

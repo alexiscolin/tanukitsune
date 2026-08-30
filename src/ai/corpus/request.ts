@@ -10,16 +10,22 @@ import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resource
 // nothing. Thinking is stated rather than left to the default, because the default differs between
 // models in this family and the difference is that truncation.
 //
+// A prompt asking a question that is a search rather than a lookup says so and raises it: half of one
+// bounded run of the anchor prompt came back cut off at four thousand, the model having read its way
+// through a language before answering. It is stated by the prompt that needs it rather than raised for
+// all, since a ceiling is part of what a request was made under and moving it moves every version.
+//
 // An hour of cache rather than the default five minutes: a batch routinely runs longer than that, and a
 // prefix expiring mid-run is written again and read by nothing.
 export function corpusRequest(
   prefix: string,
   format: NonNullable<MessageCreateParamsNonStreaming['output_config']>['format'],
   asks: string,
+  ceiling = 4096,
 ): MessageCreateParamsNonStreaming {
   return {
     model: 'claude-opus-5',
-    max_tokens: 4096,
+    max_tokens: ceiling,
     thinking: { type: 'adaptive' },
     system: [{ type: 'text', text: prefix, cache_control: { type: 'ephemeral', ttl: '1h' } }],
     output_config: { format },
