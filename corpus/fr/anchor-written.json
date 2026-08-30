@@ -1,0 +1,9 @@
+{
+  "header": {
+    "what": "The French word or short phrase a reading is bound to where the lexicon leaves it with none worth having: either no word the rules accept is still free, or the only one left is so rare that the cue would have to be learned before it could help.",
+    "how": "Written by pnpm corpus:anchor-written, read by pnpm corpus:anchor before its own passes rather than instead of them, so a reading reaches this file once the table has been asked and has failed.",
+    "source": "The words are French and the pairing is this corpus own. What each one sounds like is derived from Lexique word by word, never taken from what was claimed for it.",
+    "shape": "reading to the one word or phrase standing for it, in a list of one, which is the shape this corpus carries a settled choice in"
+  },
+  "order": {}
+}

@@ -297,6 +297,23 @@ claims none, its pronunciation being derived from the lexicon and beginning on t
 Those readings are served in their own pass, after every other, so they never take a word a reading
 beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
 
+**Where the table leaves a reading with no word worth having, one is written for it.**
+`corpus:anchor-written` asks for those, and `corpus:anchor` reads what it wrote before its own passes
+rather than instead of them, so a reading reaches that file once the table has been asked and has
+failed. Two cases arrive there and they are one problem seen twice: no word the rules accept is still
+free, and the only word left is so rare that the cue would have to be learned before it could help. The
+two commands read each other the way `corpus:keys` and `corpus:key-translation` do, and being
+re-runnable by reflex is what settles them.
+
+What a proposal brings that the table cannot is a phrase: the table searches the lexicon one word at a
+time, and a reading of four morae is rarely one French word. What it may not bring is a pronunciation.
+Every word of what comes back is looked up in the lexicon and the sounds derived, so a word the lexicon
+does not hold is refused rather than trusted, and every rule the table applies is applied again to what
+was proposed. The proposal widens the search and never the rules.
+
+The readings a run could not bind travel in `anchors.json` beside the anchors, under `left`, each with
+why: a list only a terminal saw is a list the next command cannot act on.
+
 Of the 2559 readings inside that ceiling, 2208 are bound and 351 are not, and 492 of the 557 a
 character teaches have one. 392 of those bound sit on a word under one occurrence per million. Of the
 351 left, 160 have no word the rules accept and 191 have words the curriculum has already spent. Every
@@ -402,9 +419,9 @@ instrument over a sample.
 ## The command
 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
-`corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:anchor`, `corpus:key-choice`,
-`corpus:key-translation`, `corpus:keys`, `corpus:name`, `corpus:vocabulary`, `corpus:word` and
-`corpus:report` are its twelve steps, each still runnable alone so that one of them can be read by hand,
+`corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:anchor-written`, `corpus:anchor`,
+`corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:name`, `corpus:vocabulary`,
+`corpus:word` and `corpus:report` are its thirteen steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.

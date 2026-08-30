@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Named } from './reading-run'
 import type { Word } from './lexique'
-import { candidatesBy, wantedFrom } from './anchor-run'
+import { candidatesBy, soundsOf, wantedFrom } from './anchor-run'
 
 const READINGS = new Map<string, Named>([
   ['こう', { type: 'onyomi', taught: true, by: ['工', '公'] }],
@@ -122,5 +122,24 @@ describe('candidatesBy', () => {
     const candidates = candidatesBy(LEXICON, () => true)
 
     expect(candidates({ value: 'こう', phonemes: ['k', 'o', 'o'] })[0]).not.toHaveProperty('imageability')
+  })
+})
+
+describe('soundsOf', () => {
+  // An anchor may be more than one word: a reading of four morae is rarely one French word and often a
+  // short phrase, and the table can only search words it holds one at a time. What a phrase sounds like
+  // is still derived rather than claimed, word by word out of the lexicon.
+  it('derives what a phrase sounds like from the words it is made of', () => {
+    expect(soundsOf('coq taupe', LEXICON)).toEqual(['k', 'ɔ', 'k', 't', 'o', 'p'])
+  })
+
+  it('derives nothing where a word of it is not in the lexicon', () => {
+    // A word the lexicon does not hold is a word nothing can pronounce for us, and an anchor whose
+    // sounds are taken on trust is the hallucinated pronunciation this whole layer exists to refuse.
+    expect(soundsOf('coq licorne', LEXICON)).toBeNull()
+  })
+
+  it('reads a phrase the way it is written, spacing and case aside', () => {
+    expect(soundsOf('  Coq   Taupe ', LEXICON)).toEqual(['k', 'ɔ', 'k', 't', 'o', 'p'])
   })
 })

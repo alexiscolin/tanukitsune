@@ -27,6 +27,7 @@ export function stepsFor(locale: string): readonly Step[] {
     { name: 'corpus:inventory', batch: null, takes: 'levels' },
     { name: 'corpus:readings', batch: null, takes: 'nothing' },
     { name: 'corpus:lexicon', batch: null, takes: 'locale' },
+    { name: 'corpus:anchor-written', batch: `corpus/${locale}/.anchor-batch.json`, takes: 'locale and most' },
     { name: 'corpus:anchor', batch: null, takes: 'locale' },
     { name: 'corpus:key-choice', batch: `corpus/${locale}/.key-choice-batch.json`, takes: 'locale and most' },
     { name: 'corpus:key-translation', batch: `corpus/${locale}/.key-translation-batch.json`, takes: 'locale and most' },

@@ -85,3 +85,23 @@ export function candidatesBy(
 
   return (reading) => held.get(reading.phonemes[0] ?? '') ?? []
 }
+
+// What a phrase sounds like, word by word out of the lexicon. A reading of four morae is rarely one
+// French word and often a short phrase, and the table searches words one at a time, so a phrase is
+// something only a proposal can bring. Its sounds are still derived and never claimed: an anchor whose
+// pronunciation is taken on trust is the failure the whole layer exists to catch.
+//
+// Nothing where a word of it is unknown, which is a different answer from an empty one: a word the
+// lexicon does not hold is a word nothing here can pronounce.
+export function soundsOf(phrase: string, lexicon: ReadonlyMap<string, Word>): readonly string[] | null {
+  const sounds: string[] = []
+
+  for (const word of phrase.trim().toLowerCase().split(/\s+/)) {
+    const said = lexicon.get(word)
+    if (said === undefined) return null
+
+    sounds.push(...said.phonemes)
+  }
+
+  return sounds
+}
