@@ -1025,3 +1025,4 @@
 {"date": "2026-08-26", "branch": "pr4/heard-through-french-ears", "reviewer": "architecture-check", "file": "scripts/corpus-anchor.ts", "line": 79, "outcome": "dismissed", "reason": "the pass composition belongs where a test reaches it and is still growing one branch later, so it moves in the branch that finishes it"}
 {"date": "2026-08-26", "branch": "pr4/heard-through-french-ears", "kind": "pass", "base": "927d93d4efe1b8d8b67b0bb6e13b9cea0ba0ff18", "head": "c96edf938f2d9a62c1fe1e01e06d331b743f5c3c"}
 {"date": "2026-08-27", "branch": "pr4/heard-through-french-ears", "kind": "pass", "base": "7611bb5f3c422c28bcbbe271b3cab3800d436d6a", "head": "793d9591f26cf751f06673461d35885ff88f944c"}
+{"date": "2026-08-30", "branch": "pr4/heard-through-french-ears", "kind": "pass", "base": "4b9222a35d4b2a9dba0c910762db9c619c55b4c0", "head": "2d79e9e06f9fb116f3982543944163b6967f09d8"}
