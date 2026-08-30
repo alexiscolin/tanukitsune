@@ -22,7 +22,7 @@ import {
 import type { Decomposition } from '../src/core/corpus/decomposition.ts'
 import { list } from './corpus-command.ts'
 import { readComponentNames, readDecompositions, readKeys } from '../src/data/corpus/artifact.ts'
-import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
+import { shapesNamedByTheirKanji, walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 
@@ -55,9 +55,9 @@ if (drawn.length > 0) {
 
 // Only where the curriculum is present, since which shapes a kanji writes is what it says.
 if (inventory !== null) {
-  const kanji = written(inventory.subjects)
+  const kanji = shapesNamedByTheirKanji(inventory.subjects)
 
-  report(`names ${locale} wrote on a component a kanji writes`, list(namesKanjiWrites(names, kanji)))
+  report(`names ${locale} wrote where nothing owes one`, list(namesKanjiWrites(names, kanji)))
   report(`components ${locale} teaches under no word`, list(wordlessComponents(shapesAKanjiWrites(inventory.subjects, kanji), names, keyed())))
 }
 
@@ -82,14 +82,6 @@ function againstCurriculum(read: { upTo: number; subjects: readonly InventorySub
   process.stdout.write(`inventory: ${read.subjects.length} subjects to level ${read.upTo}\n`)
 
   return walkCurriculum(read.subjects, names, shapeOf)
-}
-
-// Withdrawn kanji left out on the same terms as the walk, or the two disagree and one report says a
-// shape is owed a name while the next line says a kanji already writes it.
-function written(subjects: readonly InventorySubject[]): ReadonlySet<string> {
-  return new Set(
-    subjects.flatMap((one) => (one.type === 'kanji' && one.characters !== null && !one.hidden ? [one.characters] : [])),
-  )
 }
 
 // Against the whole decomposition, which is every character the drawing carries rather than the ones
