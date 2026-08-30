@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { parseGlosses, releaseOf } from './kanjidic'
+import { parseGlosses, parseReadings, releaseOf } from './kanjidic'
 
 // Two entries as the release states them: a meaning carries its language on an attribute, and
 // everything around them is reading data the corpus does not take.
@@ -30,6 +30,19 @@ const XML = `<kanjidic2>
 <character><literal>々</literal><reading_meaning><rmgroup>
 <reading r_type="ja_on">ノマ</reading>
 </rmgroup></reading_meaning></character>
+<character><literal>人</literal><reading_meaning><rmgroup>
+<reading r_type="pinyin">ren2</reading>
+<reading r_type="ja_on">ジン</reading>
+<reading r_type="ja_on">ニン</reading>
+<reading r_type="ja_kun">ひと</reading>
+<reading r_type="ja_kun">-り</reading>
+<meaning m_lang="fr">personne</meaning>
+</rmgroup><nanori>ひこ</nanori></reading_meaning></character>
+<character><literal>考</literal><reading_meaning><rmgroup>
+<reading r_type="ja_on">コウ</reading>
+<reading r_type="ja_kun">かんが.える</reading>
+<meaning m_lang="fr">réfléchir</meaning>
+</rmgroup><nanori>たか</nanori></reading_meaning></character>
 </kanjidic2>`
 
 describe('parseGlosses', () => {
@@ -101,5 +114,33 @@ describe('releaseOf', () => {
 
   it('says so where the release states none', () => {
     expect(releaseOf('<kanjidic2></kanjidic2>')).toBe('unstated')
+  })
+})
+
+describe('parseReadings', () => {
+  it('names a reading the way the curriculum names it, so the two can be compared without a translation', () => {
+    expect(parseReadings(XML).get('人')).toEqual([
+      { value: 'じん', type: 'onyomi' },
+      { value: 'にん', type: 'onyomi' },
+      { value: 'ひと', type: 'kunyomi' },
+      { value: 'り', type: 'kunyomi' },
+      { value: 'ひこ', type: 'nanori' },
+    ])
+  })
+
+  // The release writes an on'yomi in one kana and a kun'yomi in the other, marks the okurigana of a
+  // kun with a dot and a suffix with a leading hyphen. A curriculum states neither mark, so a reading
+  // compared as the release writes it would be missing from a release that states it.
+  it('carries both what a kun reading is without its okurigana and what it is with them', () => {
+    expect(parseReadings(XML).get('考')).toEqual([
+      { value: 'こう', type: 'onyomi' },
+      { value: 'かんがえる', type: 'kunyomi' },
+      { value: 'かんが', type: 'kunyomi' },
+      { value: 'たか', type: 'nanori' },
+    ])
+  })
+
+  it('states nothing for a character the release reads in no Japanese at all', () => {
+    expect(parseReadings(XML).get('低')).toEqual([])
   })
 })

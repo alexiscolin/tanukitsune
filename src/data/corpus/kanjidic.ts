@@ -6,6 +6,8 @@
 // machine-generated file at a pinned release, and the shape taken from it is two fields deep. The
 // licence and the attribution it obliges are in docs/sources.md.
 
+import { hiragana } from '../../core/corpus/phonetics.ts'
+
 const ENTRY = /<character>([\s\S]*?)<\/character>/g
 const LITERAL = /<literal>(.*?)<\/literal>/
 // The release states the Kangxi listing among the meanings, "radical hameçon (no. 5)", which says what
@@ -37,6 +39,17 @@ export function releaseOf(xml: string): string {
 
   return `${version}, created ${created}`
 }
+
+// The three the curriculum tells apart. A reading of one type standing for another teaches a sound the
+// character does not carry there, which is the failure the check against this release exists to catch.
+export type Reading = {
+  readonly value: string
+  readonly type: 'onyomi' | 'kunyomi' | 'nanori'
+}
+
+const ON = /<reading r_type="ja_on">(.*?)<\/reading>/g
+const KUN = /<reading r_type="ja_kun">(.*?)<\/reading>/g
+const NANORI = /<nanori>(.*?)<\/nanori>/g
 
 export function parseGlosses(xml: string, locale: string): ReadonlyMap<string, readonly string[]> {
   const glossed = new Map<string, readonly string[]>()
@@ -75,4 +88,37 @@ function isWord(gloss: string): boolean {
 
 function plain(gloss: string): string {
   return withoutAside(gloss).replace(QUOTES, '').replace(/\s+/g, ' ').trim()
+}
+
+// The Japanese readings the release states for a character, named the way a curriculum names them so
+// the two can be compared without a translation at every call site. On'yomi are written in katakana
+// here and in hiragana there, a kun marks its okurigana with a dot and a suffix reading with a leading
+// hyphen, and a nanori sits outside the group the others share.
+//
+// A kun is carried twice, once whole and once without its okurigana, because a curriculum teaches
+// either and neither form can be derived from the other after the mark is gone.
+export function parseReadings(xml: string): ReadonlyMap<string, readonly Reading[]> {
+  const said = new Map<string, readonly Reading[]>()
+
+  for (const [, body = ''] of xml.matchAll(ENTRY)) {
+    const character = LITERAL.exec(body)?.[1]
+    if (character === undefined) continue
+
+    const readings: Reading[] = []
+    for (const [, value = ''] of body.matchAll(ON)) readings.push({ value: hiragana(value), type: 'onyomi' })
+
+    for (const [, written = ''] of body.matchAll(KUN)) {
+      const value = written.replace(/^-|-$/g, '')
+      readings.push({ value: value.replace('.', ''), type: 'kunyomi' })
+
+      const [stem = ''] = value.split('.')
+      if (stem !== value.replace('.', '')) readings.push({ value: stem, type: 'kunyomi' })
+    }
+
+    for (const [, value = ''] of body.matchAll(NANORI)) readings.push({ value, type: 'nanori' })
+
+    said.set(character, readings)
+  }
+
+  return said
 }

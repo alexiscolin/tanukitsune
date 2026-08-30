@@ -215,6 +215,22 @@ part sits, since the curriculum does not say and a part placed in the wrong half
 describes a different character. Where the curriculum decomposes nothing, the depth rule below takes
 over: it keeps a part the locale can name and opens one it cannot, down to what the reader can picture.
 
+**Which reading a card teaches comes from the curriculum**, on the same reasoning
+[ADR 0013](decisions/0013-the-curriculum-decides-the-parts.md) applies to the parts: a release lists
+every reading a character has and says nothing about which one the reader is shown. `pnpm corpus:readings`
+settles them in one pass, and KANJIDIC2 verifies rather than states, the reading taught having to exist
+for that character in the release and to be of the type claimed. What it states otherwise is named in
+the run and kept, since the curriculum is what the reader is graded against.
+
+A word is bound to a reading of its own only where its reading is not the one its characters already
+taught. A reading that loses its last mora to a held consonant, that voices after another, or that
+hardens where a held consonant precedes it, which is 一杯 read いっぱい, is a pattern the reader meets
+as a pattern, so a word showing one still rests on what it was taught; a
+second reading of a character is neither, and is as new as any other sound. A word dealt in kana alone
+rests on nothing and runs from the sound to the meaning instead, and states no reading at all, the word
+being its own. Of the 6797 words the curriculum deals, 4086 rest and 2711 teach, which the run says as
+it writes them.
+
 **Anchors.** Each reading is bound to one French sound anchor, and every mnemonic teaching that
 reading uses it. WaniKani holds the same policy and rewrites the whole affected set when an anchor
 changes, which is the cost of not deciding early.
@@ -339,8 +355,8 @@ instrument over a sample.
 ## The command
 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
-`corpus:inventory`, `corpus:lexicon`, `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`,
-`corpus:name`, `corpus:vocabulary`, `corpus:word` and `corpus:report` are its ten steps, each still runnable alone so that one of them can be read by hand,
+`corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:key-choice`, `corpus:key-translation`,
+`corpus:keys`, `corpus:name`, `corpus:vocabulary`, `corpus:word` and `corpus:report` are its eleven steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.
