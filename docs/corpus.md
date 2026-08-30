@@ -240,9 +240,10 @@ On'yomi are short and massively homophonous, so a reading like こう is shared 
 and an anchor spent at level 3 is an anchor missing at level 40. Allocation is a calculation over
 data, so it costs no model call and it is done once for all sixty levels; only the levels being
 shipped are written. Candidates come from Lexique, which carries phonemic transcription and frequency
-for French. Readings are served scarcest first, the one with two acceptable words before the one with
-ten, since a common word spent on an easy reading leaves the scarce one with nothing and a reading with
-no anchor is a card that cannot be written. Among the words the rules accept for a reading, the nearest
+for French. Readings are served scarcest first inside each kind, the one with two acceptable words before the one
+with ten, since a common word spent on an easy reading leaves the scarce one with nothing and a reading
+with no anchor is a card that cannot be written. Scarcity orders within a kind and never across the
+two, the paragraph below saying why. Among the words the rules accept for a reading, the nearest
 in sound takes it; where two
 sit equally near, the word the reader can picture takes it; where nothing separates them there either,
 the more ordinary word does. A reading left without leaves the run with the reason, either that no
@@ -256,6 +257,31 @@ carries no reader's data at all, being a public dictionary. It is an input to th
 nothing serves it, so seven megabytes rebuilt in seconds would sit in the history to save nobody
 anything. What travels is `anchors.json`, carrying each anchor's pronunciation as
 derived, so the check that an anchor is a real word runs where the release is.
+
+`pnpm corpus:anchor` binds them. The readings a character teaches are served before the readings a word
+teaches: served together, the order is by scarcity alone, and a word's reading is scarcer than a
+character's while being worth less, a character's being taught once and reused by every word built on
+it. Of the 557 readings a character teaches, one order binds 384 and the other 253.
+
+A reading of more than four morae is asked for no anchor at all. An anchor is one word standing for one
+reading, and distance is a fraction of the sounds compared, so a long reading takes whatever a long
+word forgives while sharing almost nothing with it. No reading a character teaches runs past four
+morae, so the ceiling touches words alone. The candidates are nouns a reader is likely to know, a story
+being built on things that can be pictured and a word nobody knows being a cue to be learned before it
+can help.
+
+What neither pass could serve is asked again of the same nouns without the frequency floor. A rare word
+is a weak cue and a reading with no anchor is a card that cannot be written at all, so the trade is
+taken and said rather than taken quietly: every anchor carries how common its word is, so a check can
+hold the set to a floor without the lexicon, which stays on the machine that generated it. Widening to
+every part of speech as well buys 37 readings and spends the rule that a story is built on things that
+can be pictured, so it is not done.
+
+Of the 2523 readings inside that ceiling, 1853 are bound and 670 are not. 324 of those bound sit on a
+word under one occurrence per million, which is the third pass and which the prose step is expected to
+refuse rather than write on. Of the 670 left, 580 have no word the rules accept, which no reordering
+fixes and which is a fact about the pair of languages rather than a setting, and 90 have words the
+curriculum has already spent.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
 thirty-seven symbols name sounds French borrows rather than owns. Both are carried: whether a sound can
@@ -355,8 +381,9 @@ instrument over a sample.
 ## The command
 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
-`corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:key-choice`, `corpus:key-translation`,
-`corpus:keys`, `corpus:name`, `corpus:vocabulary`, `corpus:word` and `corpus:report` are its eleven steps, each still runnable alone so that one of them can be read by hand,
+`corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:anchor`, `corpus:key-choice`,
+`corpus:key-translation`, `corpus:keys`, `corpus:name`, `corpus:vocabulary`, `corpus:word` and
+`corpus:report` are its twelve steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.

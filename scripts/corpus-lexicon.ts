@@ -1,8 +1,9 @@
 // Turns the Lexique release into the words a locale can bind a reading to, written to
 // corpus/<locale>/.lexicon.json.
 //
-// Run with `pnpm corpus:lexicon [locale] [path]`, a plain Node run over TypeScript for the reason
-// import-decomposition.ts states. It takes the release path as an argument, or fetches the pinned one.
+// Run with `pnpm corpus:lexicon [locale] [release] [norms]`, a plain Node run over TypeScript for the
+// reason import-decomposition.ts states. It takes each release as a path, or fetches the pinned one, so
+// a run given both reaches no network at all.
 //
 // The file is not committed, and not for the reason the inventory is not: a public dictionary carries
 // no reader's data. It is an input to the run that allocates anchors and nothing serves it, so seven
@@ -16,19 +17,28 @@ import { readFileSync, writeFileSync } from 'node:fs'
 
 import { fetched } from './corpus-command.ts'
 import { parseLexicon } from '../src/data/corpus/lexique.ts'
+import { parseImagery } from '../src/data/corpus/semantiqc.ts'
 
 const RELEASE = 'Lexique383'
 const SOURCES: Readonly<Record<string, string>> = {
   fr: `http://www.lexique.org/databases/${RELEASE}/${RELEASE}.tsv`,
 }
 
+// How well a word can be seen, which Lexique states nowhere and which decides an anchor wherever two
+// words sound equally near. A locale with no such norms is not refused: its words arrive unrated and
+// the limits say what that is worth.
+const RATINGS: Readonly<Record<string, string>> = {
+  fr: 'https://lingualab.ca/dataset/SemantiQc_visual.tsv',
+}
+
 const HEADER = {
   source: 'Lexique 3 (http://www.lexique.org/), Boris New and Christophe Pallier',
   licence: 'CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)',
   release: RELEASE,
+  rated: 'SemantiQc (https://lingualab.ca/en/project/norms-familiarity-perceptual-strength/), visual perceptual strength, Chedid and colleagues',
   modified:
-    'One row per written form, the most common where the release states several. The phonemic code is written as the IPA, and a form carrying a sound the articulatory table does not describe is left out. Four of the release\'s thirty-five columns are carried.',
-  shape: 'written form to its phonemes, how common it is in film subtitles per million, and its part of speech',
+    'One row per written form, the most common where the release states several. The phonemic code is written as the IPA, and a form carrying a sound the articulatory table does not describe is left out. Four of the release\'s thirty-five columns are carried, plus how well the word can be seen where the norms rate it.',
+  shape: 'written form to its phonemes, how common it is in film subtitles per million, its part of speech, and how well it can be seen where that is rated',
 }
 
 const locale = process.argv[2] ?? 'fr'
@@ -40,13 +50,33 @@ if (source === undefined) {
 }
 
 const tsv = given === undefined ? await fetched(source, `Lexique ${RELEASE}`) : readFileSync(given, 'utf8')
-const words = parseLexicon(tsv)
+
+// A run handed a release path reaches no network, which is what makes it runnable where there is none
+// and what the three scripts beside this one already promise. So a rating fetched anyway would take
+// that back: given one release by hand and not the other, the words arrive unrated and the run says so.
+const norms = process.argv[4]
+const source_ = RATINGS[locale]
+const rated =
+  norms !== undefined
+    ? parseImagery(readFileSync(norms, 'utf8'))
+    : given !== undefined || source_ === undefined
+      ? new Map<string, number>()
+      : parseImagery(await fetched(source_, 'SemantiQc'))
+
+const words = parseLexicon(tsv, rated)
 
 const output = `corpus/${locale}/.lexicon.json`
 const lines = [...words]
-  .map(([written, word]) => `${JSON.stringify(written)}:${JSON.stringify([word.phonemes, word.frequency, word.category])}`)
+  .map(
+    ([written, word]) =>
+      `${JSON.stringify(written)}:${JSON.stringify([word.phonemes, word.frequency, word.category, word.imageability ?? null])}`,
+  )
   .join(',\n')
 
 writeFileSync(output, `{\n"header":${JSON.stringify(HEADER)},\n"words":{\n${lines}\n}\n}\n`)
 
-process.stdout.write(`lexicon: ${words.size} words written to ${output}\n`)
+const seen = [...words.values()].filter((word) => word.imageability !== undefined).length
+process.stdout.write(`lexicon: ${words.size} words written to ${output}, ${seen} of them rated for how well they are seen\n`)
+if (seen === 0) {
+  process.stdout.write(`no ratings were read, so every word is unrated and the limits say what that is worth\n`)
+}

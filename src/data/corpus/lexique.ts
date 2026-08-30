@@ -31,9 +31,13 @@ export type Word = {
   readonly phonemes: readonly string[]
   readonly frequency: number
   readonly category: string
+  // How strongly the word is seen, on the scale the rating source uses, from a source Lexique is not:
+  // it states sounds and frequency and nothing about what a word calls to mind. Absent where nothing
+  // rated the word, which is not the same as rated low.
+  readonly imageability?: number
 }
 
-export function parseLexicon(tsv: string): ReadonlyMap<string, Word> {
+export function parseLexicon(tsv: string, rated: ReadonlyMap<string, number> = new Map()): ReadonlyMap<string, Word> {
   const [header, ...rows] = tsv.split('\n')
   const columns = (header ?? '').split('\t')
   const at = (name: string) => {
@@ -70,7 +74,13 @@ export function parseLexicon(tsv: string): ReadonlyMap<string, Word> {
     // standing for it would spend an anchor the allocation believes to be cheap.
     if (Number.isNaN(common) || common <= (said.get(written)?.frequency ?? -1)) continue
 
-    said.set(written, { phonemes, frequency: common, category: fields[cgram] ?? '' })
+    const seen = rated.get(written)
+    said.set(written, {
+      phonemes,
+      frequency: common,
+      category: fields[cgram] ?? '',
+      ...(seen === undefined ? {} : { imageability: seen }),
+    })
   }
 
   return said

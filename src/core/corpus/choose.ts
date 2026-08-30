@@ -1,4 +1,4 @@
-import { agreesAtTheStart, distanceBetween } from './anchor'
+import { agreesAtTheStart, distanceBetween } from './anchor.ts'
 import type { Allocated } from './allocation'
 
 // Which word stands for which reading, decided over the whole curriculum before a word of prose
