@@ -1044,3 +1044,4 @@
 {"date": "2026-08-26", "branch": "pr5/a-word-where-the-lexicon-has-none", "reviewer": "security-check", "file": "scripts/corpus-anchor-written.ts", "line": 178, "outcome": "dismissed", "reason": "a refused answer is echoed to a terminal unfiltered, which dresses up a run report and reaches no file: bounding it costs the operator the answer they need to judge the refusal"}
 {"date": "2026-08-26", "branch": "pr5/a-word-where-the-lexicon-has-none", "kind": "pass", "base": "269c65898a715571b7ef3b1eeb1864b9e2a7050c", "head": "6ec7820de7e0f88b4c7a669c3511232ba5e256c4"}
 {"date": "2026-08-27", "branch": "pr5/a-word-where-the-lexicon-has-none", "kind": "pass", "base": "42eba25af7a70a07339590cb17eda81d8a35cfbf", "head": "681f25788f57cd4e5460f5d0dc0512fa209654a9"}
+{"date": "2026-08-30", "branch": "pr5/a-word-where-the-lexicon-has-none", "kind": "pass", "base": "d9b0708b82a947073e3ddc7084b2ffea340a50a2", "head": "68e9fad17b7413a60130bd0b84a642c322781a80"}
