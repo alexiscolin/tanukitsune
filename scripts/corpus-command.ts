@@ -39,7 +39,24 @@ export async function fetched(source: string, named: string): Promise<string> {
 
       // The bytes are written as they arrived rather than after being decoded, since encoding 112
       // million characters back into the bytes they came from costs the run a copy of the release.
-      const read = gunzipSync(Buffer.from(await response.arrayBuffer()))
+      const sent = Buffer.from(await response.arrayBuffer())
+      // Whether a release is packed is the release's business rather than each caller's: three of them
+      // are served gzipped and Lexique is served as it is, and a caller saying which would be a caller
+      // that says it wrong the day a host changes what it serves.
+      //
+      // A body that is not a release must not reach the cache, which serves it for an hour: the commands
+      // reading it find no glosses and rewrite the committed keys, meanings and vocabulary with the
+      // nothing they found, and asking again gets the same nothing. So an address saying it is packed is
+      // held to it, and an empty body is refused whatever the address says.
+      //
+      // Both are asked again rather than ending the run, since neither is the host answering: the check
+      // above refuses a status the host returned, and these two are what arrives instead of a release.
+      if (sent.length === 0) throw new Error(`${named} sent an empty body`)
+
+      const packed = sent[0] === 0x1f && sent[1] === 0x8b
+      if (source.endsWith('.gz') && !packed) throw new Error(`${named} is served packed and answered with something else`)
+
+      const read = packed ? gunzipSync(sent) : sent
       writeFileSync(held, read)
 
       return read.toString('utf8')

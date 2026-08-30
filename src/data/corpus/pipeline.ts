@@ -11,7 +11,7 @@ export type Step = {
   // The batch this step writes down while it waits, or null where the step reaches no model.
   readonly batch: string | null
   // What the step reads after its own name. Three of them read that position as something other than a
-  // locale, so one shape for all seven hands a release path where a locale was meant.
+  // locale, so one shape for all of them hands a release path where a locale was meant.
   readonly takes: 'nothing' | 'levels' | 'locale' | 'locale and most'
 }
 
@@ -25,6 +25,7 @@ export function stepsFor(locale: string): readonly Step[] {
   return [
     { name: 'corpus:decomposition', batch: null, takes: 'nothing' },
     { name: 'corpus:inventory', batch: null, takes: 'levels' },
+    { name: 'corpus:lexicon', batch: null, takes: 'locale' },
     { name: 'corpus:key-choice', batch: `corpus/${locale}/.key-choice-batch.json`, takes: 'locale and most' },
     { name: 'corpus:key-translation', batch: `corpus/${locale}/.key-translation-batch.json`, takes: 'locale and most' },
     { name: 'corpus:keys', batch: null, takes: 'locale' },

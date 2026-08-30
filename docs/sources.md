@@ -88,8 +88,11 @@ not gloss here is owed to the run that asks a model. Same group and same licence
 both: [EDRDG licence](https://www.edrdg.org/edrdg/licence.html),
 [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project).
 
-**Lexique gives phonemic transcription, syllable structure and frequency for French**, which is what
-lets an anchor be checked on pronunciation rather than on spelling: [lexique.org](http://www.lexique.org/).
+**Lexique is CC BY-SA 4.0** and gives phonemic transcription, syllable structure and frequency for
+French, which is what lets an anchor be checked on pronunciation rather than on spelling. How its phonemic code is read and
+which of its words are left out is in [`corpus.md`](corpus.md), under anchors:
+[lexique.org](http://www.lexique.org/),
+[openlexicon, which distributes it and states that licence](http://openlexicon.fr/datasets-info/).
 
 **Interaction is what makes an image memorable, not bizarreness.** Wollen, Weber and Lowry crossed the
 two orthogonally and only interaction raised recall: *Cognitive Psychology* 3, 518-523 (1972),
