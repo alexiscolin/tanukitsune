@@ -19,23 +19,63 @@ import { moraeOf, phonemesOf } from '../../core/corpus/phonetics.ts'
 // anyway, a long reading takes whatever the distance forgives, that distance being a fraction of the
 // sounds compared: a long word shares a great many of them without sounding like the reading at all.
 // No reading a kanji teaches runs past four morae, so the ceiling touches words alone.
-export function wantedFrom(readings: ReadonlyMap<string, Named>, atMostMorae: number): readonly Wanted[] {
+// A reading is heard through the ears of the language it is taught in before it is compared. Japanese
+// makes sounds French does not, and for most of them a French listener reaches for a neighbour without
+// hesitating: /ɕ/ is the sound of chic, /ɾ/ the sound of rire. Compared on the symbol alone those
+// readings have no candidate at all rather than a near one.
+//
+// The substitution moves the reading and never the anchor, so a word still claims only sounds its own
+// language makes, which is what `impossibleOnset` refuses. A locale reaching for nothing on a sound
+// states it as nothing, and the reading then begins on what follows: what carries the lost sound is
+// then the spelling of the anchor rather than its pronunciation, which is the caller's to ask for.
+export function wantedFrom(
+  readings: ReadonlyMap<string, Named>,
+  atMostMorae: number,
+  hears: ReadonlyMap<string, string> = new Map(),
+): readonly Wanted[] {
+  const carried = new Set([...readings].flatMap(([value]) => phonemesOf(value)))
+  refuseAMerge(hears, carried)
+
   return [...readings]
     .filter(([value, named]) => named.taught && moraeOf(value).length <= atMostMorae)
-    .map(([value]) => ({ value, phonemes: phonemesOf(value) }))
+    .map(([value]) => ({
+      value,
+      phonemes: phonemesOf(value)
+        .map((sound) => hears.get(sound) ?? sound)
+        .filter((sound) => sound !== ''),
+    }))
+}
+
+// A substitution may bring one sound onto another and never two onto one, and never onto a sound the
+// language taught already makes: the onset is where the rules are exact, so two readings sharing one
+// give the reader a single cue with two answers, and neither of them is wrong to write. Hearing shi
+// and chi both as the sound of chic is the first, and hearing tsu as /s/ is the second, su being /s/
+// already.
+function refuseAMerge(hears: ReadonlyMap<string, string>, carried: ReadonlySet<string>): void {
+  const onto = new Map<string, string>()
+
+  for (const [sound, heard] of hears) {
+    if (heard === '') continue
+
+    const already = onto.get(heard)
+    if (already !== undefined) throw new Error(`${already} and ${sound} are both heard as ${heard}, which is one cue for two`)
+    if (carried.has(heard)) throw new Error(`${sound} is heard as ${heard}, which a reading already carries: one cue for two`)
+
+    onto.set(heard, sound)
+  }
 }
 
 // Which words a locale draws its anchors from is that locale's business rather than the engine's, so
 // the run is told what to keep rather than deciding it here.
 export function candidatesBy(
   lexicon: ReadonlyMap<string, Word>,
-  keeps: (word: Word) => boolean,
+  keeps: (word: Word, text: string) => boolean,
 ): (reading: Wanted) => readonly Candidate[] {
   const held = new Map<string, Candidate[]>()
 
   for (const [text, word] of lexicon) {
     const [onset] = word.phonemes
-    if (onset === undefined || !keeps(word)) continue
+    if (onset === undefined || !keeps(word, text)) continue
 
     // A word nothing rated carries no rating rather than a low one, the limits saying what unrated is
     // worth: rated zero, a word nobody was asked about would lose to every word anybody was.

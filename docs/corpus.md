@@ -277,11 +277,30 @@ hold the set to a floor without the lexicon, which stays on the machine that gen
 every part of speech as well buys 37 readings and spends the rule that a story is built on things that
 can be pictured, so it is not done.
 
-Of the 2523 readings inside that ceiling, 1853 are bound and 670 are not. 324 of those bound sit on a
-word under one occurrence per million, which is the third pass and which the prose step is expected to
-refuse rather than write on. Of the 670 left, 580 have no word the rules accept, which no reordering
-fixes and which is a fact about the pair of languages rather than a setting, and 90 have words the
-curriculum has already spent.
+**A reading is heard through the ears of the language it is taught in before it is compared.** Japanese
+makes sounds French does not, and for most of them a French listener reaches for a neighbour without
+hesitating: /ɕ/ is the sound of chic and /ɾ/ the sound of rire. Compared on the symbol alone, a reading on
+one of those sounds has no candidate at all. The
+substitution moves the reading and never the anchor, so a word still claims only sounds its own
+language makes. It brings one sound onto another and never two onto one, nor onto a sound a reading
+already carries: hearing ち as the sound of chic would give it し's onset and hearing つ as /s/ would
+give it す's, and a reader handed the word would produce one of the two and be graded on the other.
+Those two keep no substitution, and their readings keep no anchor. What the ear reaches for is in
+`phonology.json`, one line per sound.
+
+**A sound a language does not say and does write is written rather than heard.** French makes no /h/ and
+spells one on a thousand nouns, so a reading beginning on that sound is compared from the sound that
+follows and its anchor has to carry the letter: は is bound to `la hache`, which is said without an h
+and carries one where the reader looks, and a mnemonic is read. `cannotStart` has nothing to say
+about it: that rule refuses a pronunciation claiming a sound French does not make, and `la hache`
+claims none, its pronunciation being derived from the lexicon and beginning on the vowel.
+Those readings are served in their own pass, after every other, so they never take a word a reading
+beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
+
+Of the 2559 readings inside that ceiling, 2208 are bound and 351 are not, and 492 of the 557 a
+character teaches have one. 392 of those bound sit on a word under one occurrence per million. Of the
+351 left, 160 have no word the rules accept and 191 have words the curriculum has already spent. Every
+one of those counts is a line the run prints.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
 thirty-seven symbols name sounds French borrows rather than owns. Both are carried: whether a sound can
@@ -352,9 +371,11 @@ check that runs at generation and whose verdict travels rather than the upstream
 and compared against what the model claimed, since a mismatch is a hallucinated pronunciation and is
 measurable. The distance between anchor and reading is computed over articulatory features. The first
 mora aligns in onset and nucleus. The mora count is preserved, which is what stops ちょう collapsing
-onto ちょ. A hand-held table names the impossible onsets: French has no /h/ phoneme, so an anchor
-claiming that ho sounds like hôtel is claiming a consonant that is not pronounced, and that table is
-where judgement lives rather than in a linter.
+onto ちょ. A hand-held table names the impossible onsets, and what it judges is the pronunciation claimed for an
+anchor rather than the reading that anchor serves: French has no /h/ phoneme, so a word written down as
+opening on one is a word nobody says that way, and that table is where judgement lives rather than in a
+linter. A pronunciation derived from the lexicon cannot claim one, so what the rule reaches is a
+pronunciation somebody wrote.
 
 **Per corpus.** One anchor per reading and one reading per anchor. A cap on how many subjects share an
 anchor lemma. A minimum phonetic distance between anchors inside a homophone cluster, and a minimum

@@ -89,18 +89,16 @@ export function agreesAtTheStart(reading: readonly string[], anchor: readonly st
 
 // What a language cannot begin a word with is a fact about that language, so it arrives from the
 // locale's own material rather than from here: this file knows how sounds compare, not which ones
-// French happens to lack. An anchor claiming a sound its language does not make is the failure that
-// catches everyone, hôtel being said without any h at all, so the match exists only on paper.
-export function impossibleOnset(
-  reading: readonly string[],
-  anchor: readonly string[],
-  cannotStart: readonly string[],
-): string | null {
-  const [onset] = reading
+// French happens to lack.
+//
+// What it judges is a pronunciation claimed for an anchor, not the reading that anchor serves. A word
+// said to open on a sound its own language cannot make is a word nobody says that way, and hôtel
+// claiming to sound like ho is the failure that catches everyone. A pronunciation derived from that
+// language's lexicon cannot do it, so what this reaches is a pronunciation somebody wrote down.
+export function impossibleOnset(claimed: readonly string[], cannotStart: readonly string[]): string | null {
+  const [onset] = claimed
 
-  if (onset === undefined || !cannotStart.includes(onset)) return null
-
-  return anchor[0] === onset ? null : onset
+  return onset !== undefined && cannotStart.includes(onset) ? onset : null
 }
 
 // Edit distance over sounds, where replacing one sound by another costs what they differ by rather

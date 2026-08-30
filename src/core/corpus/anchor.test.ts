@@ -8,7 +8,6 @@ import { phonemesOf } from './phonetics'
 const HOTEL = ['o', 't', 'ɛ', 'l']
 const COL = ['k', 'ɔ', 'l']
 const CAR = ['k', 'a', 'ʁ']
-const SUR = ['s', 'y', 'ʁ']
 
 describe('agreesAtTheStart', () => {
   // The acoustic link of the keyword method attaches at the beginning of the word. A match landing
@@ -31,24 +30,29 @@ describe('impossibleOnset', () => {
   // reads the same for German the day German arrives. These are French's.
   const FRENCH = ['h', 'ɸ', 'ts', 'tɕ']
 
-  // The failure this whole file exists for: French has no /h/, so hôtel is said without one and an
-  // anchor claiming it sounds like は is claiming a sound its own language cannot make.
-  it('names the sound the language cannot make when an anchor claims it', () => {
-    expect(impossibleOnset(phonemesOf('は'), HOTEL, FRENCH)).toBe('h')
+  // The failure this whole file exists for, and it is a claim rather than a pairing: a pronunciation
+  // written down beside an anchor, saying the word opens on a sound its language cannot make. French
+  // has no /h/, so a word said to open on one is a word nobody can say that way.
+  it('names the sound the language cannot make when a pronunciation claims it', () => {
+    expect(impossibleOnset(['h', 'o', 't', 'ɛ', 'l'], FRENCH)).toBe('h')
   })
 
   it('names it for the affricate French has no onset for', () => {
-    expect(impossibleOnset(phonemesOf('つ'), SUR, FRENCH)).toBe('ts')
+    expect(impossibleOnset(['ts', 'y', 'ʁ'], FRENCH)).toBe('ts')
   })
 
-  it('says nothing when the anchor really carries the sound', () => {
-    expect(impossibleOnset(phonemesOf('か'), CAR, FRENCH)).toBe(null)
+  // A pronunciation derived from the language's own lexicon opens on a sound that language makes, by
+  // construction. hôtel is said without its h and la hache without its own, so neither claims one: what
+  // the rule refuses is the claim, not the reading the word was chosen for.
+  it('says nothing about a pronunciation the language can say', () => {
+    expect(impossibleOnset(HOTEL, FRENCH)).toBe(null)
+    expect(impossibleOnset(CAR, FRENCH)).toBe(null)
   })
 
   // A language that can begin with it has nothing to answer for, which is what makes the rule the
   // engine's and the list the locale's.
   it('says nothing when the language can begin with that sound', () => {
-    expect(impossibleOnset(phonemesOf('は'), HOTEL, [])).toBe(null)
+    expect(impossibleOnset(['h', 'o'], [])).toBe(null)
   })
 })
 
