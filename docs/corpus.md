@@ -160,7 +160,9 @@ today: every component the curriculum deals carries a word, its own or its kanji
 **A key names its shape whatever kind of word it is.** 入 is entrer as a character and as a shape, 大
 is grand and 止 is arrêter, and a verb or an adjective names a shape as well as a noun does: the
 curriculum this course is built on teaches 300 of its 331 shared shapes under one word and names only
-31 apart, and its own names for those 300 are verbs and adjectives too. What decides is the meaning
+31 apart, and its own names for those 300 are verbs and adjectives too. Those three figures are read
+from the release rather than listed here, being a list of 331 characters: a run recomputes them from
+the inventory the same way it recomputes which shapes owe a name. What decides is the meaning
 the two are taught under and nothing about the word's kind. 一 is le sol as a shape and un as a
 character because the curriculum teaches them apart, not because a number cannot be pictured. The
 names are in `corpus/fr/components.json` and the keys in `corpus/fr/keys.json` rather than repeated
