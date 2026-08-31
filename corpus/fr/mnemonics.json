@@ -1,0 +1,5 @@
+{
+"header":{"what":"The two stories a card shows: one encoding what the character means, one encoding how it is read. A meaning story names the parts of the character in the order the drawing places them and ends on the key; a reading story continues that same scene, opens on the word the reading is bound to and arrives at the reading.","empty":"An empty string is a story nobody has written yet, which is what the report counts. A character absent from this file owes both.","judged":"Every story here is held to src/core/corpus/story.ts by corpus:report, the same rules a bought story will be held to."},
+"stories":{
+}
+}

@@ -60,8 +60,8 @@ sounds they compare against is the IPA, which every language draws from and none
 cannot do is material, and a locale is the folder holding it: `naming.json` says what shape a name
 takes in that language, `components.json` what it calls each component, `phonology.json` the sounds it
 cannot begin a word with, `keys.json` the word each character is taught under, `key-choice.json` the
-order a run settled over a character's glosses and `key-translation.json` the words carried across
-where the release glosses none, and `.lexicon.json` the words of that language an anchor can be drawn
+order a run settled over a character's glosses, `key-translation.json` the words carried across
+where the release glosses none and `mnemonics.json` the two stories each card shows, and `.lexicon.json` the words of that language an anchor can be drawn
 from, which the repository ignores. The anchors and the cast land beside them. The first three are written
 by hand and seed the folder; the last three a command writes, and each says which file it needs when
 it is missing rather than guessing at one. A second language is those files and no code, which is the test to apply to anything
@@ -414,8 +414,8 @@ the advice WaniKani gives its own readers.
 Three families, run in cost order, and this section describes the whole set rather than what runs
 today: the rules that judge a sound anchor, an allocation, a meaning story against the parts
 it names and where it ends, and a reading story against the scene that meaning story built are
-written and tested, and the command that puts them in front of a generated
-card arrives with the generator.
+written and tested, and `corpus:report` already puts them in front of every story a
+locale has written, the command that asks a model for one arriving later.
 
 Deterministic first, because it costs nothing and catches the two
 failures that actually harm a learner: a wrong reading taught, and a sound association that does not
@@ -459,6 +459,12 @@ generator, since a model rates its own family's output higher. And no gate until
 been compared to the reader's own labels, so the reading arrives with the labelling that makes that
 comparison possible. Until then, what absorbs a mediocre first run is the budget of three, a coarser
 instrument over a sample.
+
+**A story written by hand is judged by exactly what a bought one will be.** The two stories a card
+shows live in `corpus/<locale>/mnemonics.json`, an empty string being a story nobody has written yet,
+and `corpus:report` holds every one of them to the rules above and counts what is still owed. There is
+no second standard for a story somebody typed: the generator arrives to fill that file, not to be
+judged differently from it.
 
 ## The command
 

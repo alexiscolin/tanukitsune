@@ -2,6 +2,8 @@ import { z } from 'zod'
 
 import type { ComponentNames, Glyph } from '@/core/corpus/decomposition'
 import type { Naming } from '@/core/corpus/name'
+import type { Telling } from '@/core/corpus/story'
+import type { Told } from './story-run.ts'
 import type { Named } from './reading-run.ts'
 import type { Word } from './lexique.ts'
 
@@ -213,4 +215,23 @@ const naming = z.object({
 
 export function readNaming(json: string): Naming {
   return naming.parse(JSON.parse(json))
+}
+
+const telling = naming.extend({ inflects: z.array(z.string().min(1)) })
+
+// The same file read for a different question. `readNaming` answers what a name may be, this answers
+// how a name is found inside a sentence, and a rule about prose has no business carrying the bound on
+// how many words a name runs to.
+export function readTelling(json: string): Telling {
+  const { opensWith, letters, inflects } = telling.parse(JSON.parse(json))
+
+  return { opensWith, letters, inflects }
+}
+
+const storyList = z.object({
+  stories: z.record(z.string(), z.object({ meaning: z.string(), reading: z.string() })),
+})
+
+export function readStories(json: string): ReadonlyMap<string, Told> {
+  return new Map(Object.entries(storyList.parse(JSON.parse(json)).stories))
 }
