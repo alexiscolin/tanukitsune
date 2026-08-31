@@ -111,6 +111,7 @@ export function keyOrderFile(current: string, added: ReadonlyMap<string, readonl
 // reading and still be heard in it is a fact about the pair of languages, and what an unrated word is
 // worth depends on the scale that locale's ratings use.
 const phonology = z.object({
+  sameSound: z.number().positive(),
   cannotStart: z.array(z.string()),
   nearest: z.number().positive(),
   apart: z.number().nonnegative(),
@@ -128,6 +129,7 @@ export function readPhonology(json: string): {
   readonly cannotStart: readonly string[]
   readonly nearest: number
   readonly apart: number
+  readonly sameSound: number
   readonly unrated: number
   readonly atMostMorae: number
   readonly atLeastCommon: number

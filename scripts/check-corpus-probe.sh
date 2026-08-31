@@ -46,7 +46,7 @@ JSON
 # allocation holds while it runs, which nothing held the committed file to until this read it.
 cat >"$root/xx/phonology.json" <<'JSON'
 {
-  "cannotStart": [], "nearest": 0.5, "apart": 0.2, "unrated": 50,
+  "cannotStart": [], "nearest": 0.5, "apart": 0.2, "sameSound": 0.25, "unrated": 50,
   "atMostMorae": 4, "atLeastCommon": 1, "partsOfSpeech": ["NOM"], "atMostWords": 3,
   "hears": {}, "writes": {}, "refuses": []
 }
