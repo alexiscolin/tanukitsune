@@ -34,7 +34,7 @@ describe('wantedFrom', () => {
   // The reading's sounds are derived from its kana here, never written beside it: a reading and a
   // pronunciation kept side by side are two things to keep in step, and one of them will be wrong.
   it('derives the sounds of a reading rather than carrying them', () => {
-    expect(wantedFrom(READINGS, 4)[0]).toEqual({ value: 'こう', phonemes: ['k', 'o', 'o'] })
+    expect(wantedFrom(READINGS, 4)[0]).toEqual({ value: 'こう', phonemes: ['k', 'o', 'o'], serves: 2 })
   })
 
   // A reading is heard through the ears of the language being taught in before it is compared. し is

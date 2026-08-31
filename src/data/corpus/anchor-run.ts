@@ -40,11 +40,13 @@ export function wantedFrom(
 
   return [...readings]
     .filter(([value, named]) => named.taught && moraeOf(value).length <= atMostMorae)
-    .map(([value]) => ({
+    .map(([value, named]) => ({
       value,
       phonemes: phonemesOf(value)
         .map((sound) => hears.get(sound) ?? sound)
         .filter((sound) => sound !== ''),
+      // The shapes naming this reading, which is how many cards the word bought for it will be met on.
+      serves: named.by.length,
     }))
 }
 

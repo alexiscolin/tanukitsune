@@ -126,16 +126,17 @@ describe('allocate, weighing what a reading is worth', () => {
     expect(allocated).toEqual([{ reading: 'こ', anchor: 'le cou', phonemes: ['k', 'u'] }])
   })
 
-  // Scarcity still leads: a reading with one word left and a single card behind it is served before a
-  // reading with ten words and fifty, or the scarce one is left with nothing at all.
-  it('still serves the reading the rules leave shortest of words', () => {
+  // What is counted is words per card, not words. A reading with four words and fifty cards behind it
+  // is served before one with a single word and a single card: it is the shorter of the two on what
+  // matters, and leaving it out strands fifty cards where the other strands one.
+  it('counts the words a reading has against the cards it carries', () => {
     const scarce = carried('く', 1, 'k', 'u')
     const rich = carried('こ', 50, 'k', 'o')
     const words = (one: Wanted) => (one.value === 'く' ? [COU] : [COU, COUP, SEL, CAMION])
 
-    const { allocated } = allocate([rich, scarce], words, { ...LIMITS, apart: 0 })
+    const { allocated } = allocate([scarce, rich], words, { ...LIMITS, apart: 0 })
 
-    expect(allocated[0]).toEqual({ reading: 'く', anchor: 'le cou', phonemes: ['k', 'u'] })
+    expect(allocated[0]).toEqual({ reading: 'こ', anchor: 'le cou', phonemes: ['k', 'u'] })
   })
 
   // A caller that says nothing about cards gets the order it had.
