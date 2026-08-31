@@ -460,6 +460,12 @@ been compared to the reader's own labels, so the reading arrives with the labell
 comparison possible. Until then, what absorbs a mediocre first run is the budget of three, a coarser
 instrument over a sample.
 
+**A story written by hand is judged by exactly what a bought one will be.** The two stories a card
+shows live in `corpus/<locale>/mnemonics.json`, an empty string being a story nobody has written yet,
+and `corpus:report` holds every one of them to the rules above and counts what is still owed. There is
+no second standard for a story somebody typed: the generator arrives to fill that file, not to be
+judged differently from it.
+
 ## The command
 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,

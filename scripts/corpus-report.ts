@@ -21,7 +21,16 @@ import {
 } from '../src/core/corpus/decomposition.ts'
 import type { Decomposition } from '../src/core/corpus/decomposition.ts'
 import { list } from './corpus-command.ts'
-import { readComponentNames, readDecompositions, readKeys } from '../src/data/corpus/artifact.ts'
+import {
+  readAnchors,
+  readComponentNames,
+  readDecompositions,
+  readKeys,
+  readStories,
+  readTelling,
+} from '../src/data/corpus/artifact.ts'
+import { faultsInStories } from '../src/data/corpus/story-run.ts'
+import type { Card, Told } from '../src/data/corpus/story-run.ts'
 import { shapesNamedByTheirKanji, walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -53,6 +62,10 @@ if (drawn.length > 0) {
   report('components the curriculum draws rather than writes', list(drawn))
 }
 
+// Only where the curriculum is present: a story is judged against the card it sits on, and the
+// curriculum is what says a card exists at all.
+if (inventory !== null) reportStories(inventory.subjects)
+
 // Only where the curriculum is present, since which shapes a kanji writes is what it says.
 if (inventory !== null) {
   const kanji = shapesNamedByTheirKanji(inventory.subjects)
@@ -69,6 +82,13 @@ function shapesAKanjiWrites(subjects: readonly InventorySubject[], kanji: Readon
       ? [one.characters]
       : [],
   )
+}
+
+// The keys themselves, absent before a run has written any.
+function keysWritten(): Readonly<Record<string, string>> {
+  const file = `corpus/${locale}/keys.json`
+
+  return existsSync(file) ? readKeys(readFileSync(file, 'utf8')) : {}
 }
 
 // Absent before the keys are written, which is a locale owing every one of them rather than a fault.
@@ -98,4 +118,52 @@ function characterOf(decomposition: Decomposition): string {
 
 function report(label: string, value: string): void {
   process.stdout.write(`${label}: ${value}\n`)
+}
+
+// What a card teaches, in the words the reader meets, for every kanji the curriculum deals. A story is
+// judged against this and against nothing else, so the assembling is here where the files are and the
+// rules stay where they can be tested.
+function reportStories(subjects: readonly InventorySubject[]): void {
+  const file = `corpus/${locale}/mnemonics.json`
+  const keys = keysWritten()
+  const bound = anchored()
+  const cards = new Map<string, Card>()
+
+  for (const one of subjects) {
+    if (one.type !== 'kanji' || one.characters === null || one.hidden) continue
+
+    const key = keys[one.characters]
+    if (key === undefined) continue
+
+    const taught = one.readings.find((reading) => reading.primary)?.value ?? null
+
+    cards.set(one.characters, {
+      parts: flatten(one.characters, shapeOf(one.characters), isNameable).parts.flatMap((part) =>
+        part.component === null ? [] : [names[part.component] ?? keys[part.component] ?? part.component],
+      ),
+      key,
+      anchor: taught === null ? null : (bound.get(taught) ?? null),
+      reading: taught,
+    })
+  }
+
+  const written: ReadonlyMap<string, Told> = existsSync(file)
+    ? readStories(readFileSync(file, 'utf8'))
+    : new Map()
+  const telling = readTelling(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
+  const has = (story: string) => story.trim() !== ''
+
+  report(`cards ${locale} owes a story`, String(cards.size))
+  report('meaning stories written', String([...written.values()].filter((one) => has(one.meaning)).length))
+  report('reading stories written', String([...written.values()].filter((one) => has(one.reading)).length))
+  report('stories at fault', list(faultsInStories(written, cards, telling)))
+}
+
+// What each reading is bound to, absent until a run has bound anything.
+function anchored(): ReadonlyMap<string, string> {
+  const file = `corpus/${locale}/anchors.json`
+
+  if (!existsSync(file)) return new Map()
+
+  return new Map([...readAnchors(readFileSync(file, 'utf8')).bound].map(([reading, one]) => [reading, one.anchor]))
 }
