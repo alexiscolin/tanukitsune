@@ -1,23 +1,23 @@
 {
 "header":{"what": "The two stories a card shows: one encoding what the character means, one encoding how it is read. A meaning story names the parts of the character in the order the drawing places them and ends on the key; a reading story continues that same scene, opens on the word the reading is bound to and arrives at the reading.", "empty": "An empty string is a story nobody has written yet, which is what the report counts. A character absent from this file owes both.", "judged": "Every story here is held to src/core/corpus/story.ts by corpus:report, the same rules a bought story will be held to."},
 "stories":{
-"一":{"meaning":"le sol se décolle d'un coup et vous claque au visage, tout plat et glacé: un.","reading":"l'issue vous recrache dehors avec le sol collé au dos, et ce mot vous reste en bouche, issue: いち."},
+"一":{"meaning":"le sol se décolle d'un coup et vous claque au visage, tout plat et glacé: un.","reading":"l'idée vous vient au moment où le sol vous claque au visage, et il n'en reste qu'une, idée: いち."},
 "二":{"meaning":"deux barres tombent du plafond et vous coincent le nez entre elles: deux.","reading":"le nid glisse entre les deux barres et vous écrase un œuf tiède sur le front; vous ne dites qu'un mot, nid: に."},
-"九":{"meaning":"le dernier chiffre de la file se recroqueville et vous mord le doigt: neuf.","reading":"vous frottez le doigt mordu contre le cou du voisin, neuf fois, et le cou grince son nom: く."},
-"七":{"meaning":"la faux se retourne toute seule et vous taille les cheveux en sept touffes.","reading":"la chimie fume sur les sept touffes coupées, et le mot vous pique le nez avant l'odeur, chimie: しち."},
-"人":{"meaning":"deux échasses marchent sans rien dessus et vous écrasent le pied: une personne.","reading":"le nim se penche sur la personne écrasée, qui se relève et vous jette son nom à la figure, nim: にん."},
+"九":{"meaning":"le dernier chiffre de la file se recroqueville et vous mord le doigt: neuf.","reading":"le cours vous fait plier neuf fois de suite avant la sonnerie, cours: く."},
+"七":{"meaning":"la faux se retourne toute seule et vous taille les cheveux en sept touffes.","reading":"le chili brûle les sept touffes coupées et vous monte au nez, chili: しち."},
+"人":{"meaning":"deux échasses marchent sans rien dessus et vous écrasent le pied: une personne.","reading":"nice écrase la personne sous son soleil, et c'est le nom de la ville qui reste, nice: にん."},
 "入":{"meaning":"la fente s'ouvre en biais, vous attrape par les pieds et vous fait entrer.","reading":"la nounou vous fait entrer en répétant son propre nom jusqu'à ce qu'il colle, nounou: にゅう."},
 "八":{"meaning":"l'éventail s'ouvre d'un coup et vous compte huit gifles, quatre par moitié.","reading":""},
 "力":{"meaning":"le muscle se noue si fort que le manche fume: la force.","reading":"le repos tombe sur le muscle dénoué et emporte la force avec lui, repos: りょく."},
-"十":{"meaning":"la croix vous tombe dessus au dixième pas et vous écrase les orteils: dix.","reading":"le jour se lève sur la croix qui vous écrase les orteils, et c'est le jour que vous maudissez: じゅう."},
+"十":{"meaning":"la croix vous tombe dessus au dixième pas et vous écrase les orteils: dix.","reading":"le joujou tombe de la croix et vous écrase les orteils, joujou: じゅう."},
 "三":{"meaning":"on vous empile trois galettes brûlantes sur le crâne, pas une de plus: trois.","reading":"la salle aux trois chaises renvoie son nom en écho quand vous jurez, salle: さん."},
 "上":{"meaning":"la canne plantée dans le sol pousse d'un coup et vous soulève tout en haut.","reading":"la jauge monte le long de la canne jusqu'en haut, et l'aiguille tape sur le mot jauge: じょう."},
-"下":{"meaning":"le sol s'affaisse sur la canne et vous entraîne tout en bas.","reading":"le k s'enfonce sous le sol, tout en bas, et il ne reste que cette lettre à lire: か."},
+"下":{"meaning":"le sol s'affaisse sur la canne et vous entraîne tout en bas.","reading":"le cas est simple: tout glisse sous le sol et finit tout en bas, cas: か."},
 "口":{"meaning":"le carré vide claque comme un piège et vous happe le doigt: une bouche.","reading":"le coco éclate dans la bouche et vous en recrachez le nom, coco: こう."},
-"大":{"meaning":"quelqu'un s'étire jusqu'à faire craquer ses os, juste pour se faire plus grand.","reading":"le taré s'étire encore, se croit plus grand, et c'est lui que vous montrez du doigt, taré: たい."},
+"大":{"meaning":"quelqu'un s'étire jusqu'à faire craquer ses os, juste pour se faire plus grand.","reading":"le tapis se déroule sous celui qui s'étire et le fait paraître deux fois plus grand, tapis: たい."},
 "女":{"meaning":"elle s'assoit en se pliant en trois, croise tout ce qu'elle peut et ne bouge plus: une femme.","reading":"le jeu s'arrête net quand la femme retourne le plateau, et c'est le jeu qui donne le son: じょ."},
 "山":{"meaning":"trois pics crèvent la terre l'un après l'autre et vous poussent sous les pieds: une montagne.","reading":"la salle où l'on a rangé la montagne vous renvoie son nom dans le dos, salle: さん."},
-"川":{"meaning":"l'eau descend en trois veines glacées et vous passe entre les orteils: une rivière.","reading":"la casa a les pieds dans la rivière et l'eau lui monte aux fenêtres, casa: かわ."},
+"川":{"meaning":"l'eau descend en trois veines glacées et vous passe entre les orteils: une rivière.","reading":"le cahier tombe dans la rivière et l'encre part en trois veines, cahier: かわ."},
 "工":{"meaning":"on serre deux dalles avec un montant, ça grince, et toute la construction tient là-dessus.","reading":"le coco tombe sur la construction et la fait plier, et le nom tombe avec, coco: こう."}
 }
 }

@@ -321,6 +321,16 @@ which `la hache` claims nowhere: its pronunciation, derived from the lexicon, be
 Those readings are served in their own pass, after every other, so they never take a word a reading
 beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
 
+**A word is spent where it buys most cards.** A reading is met on every character that teaches it, so
+four words for a reading fifty characters carry is shorter than one word for a reading one character
+carries. The table serves the reading with fewest words per card first, and the difference is 59
+cards: counted outright, 214 are left with no reading a story can be built on, counted per card, 155.
+
+**A word a card will not carry is refused before it is measured.** A word of one letter is the letter
+itself, spelled rather than pictured, and k and q are in every lexicon. A word already naming a shape
+is refused for a different reason: one word answers one question here, so rideau cannot be the shape
+垂 on one card and the sound りく on the next. Refusing both moves 47 anchors and costs three readings.
+
 **Two anchors are held apart across the whole set and not only inside one pass.** `allocate` keeps two
 apart within one call and knows nothing of the calls before it, so a pass reading only the words already
 taken lets its own anchors land a hair from an earlier pass's, which is one cue with two answers. The
