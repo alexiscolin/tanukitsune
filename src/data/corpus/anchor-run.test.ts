@@ -186,7 +186,7 @@ describe('roomyWords', () => {
 
 const pair = (text: string, phonemes: readonly string[], frequency = 10): [string, Word] => [
   text,
-  { phonemes, frequency, category: 'NOM', imageability: null },
+  { phonemes, frequency, category: 'NOM', imageability: undefined },
 ]
 
 // Enough of a lexicon to build かわ out of two words, which no single French word says.
@@ -202,7 +202,7 @@ describe('phrasesBy', () => {
   // French has no word saying kawa, and two of them say it exactly: this is what the paid step was
   // writing by hand.
   it('builds a phrase whose sounds say the whole reading', () => {
-    const phrases = phrasesBy(PAIRABLE, () => true, 0.25)([{ value: 'かわ', phonemes: ['k', 'a', 'w', 'a'] }][0])
+    const phrases = phrasesBy(PAIRABLE, () => true, 0.25)({ value: 'かわ', phonemes: ['k', 'a', 'w', 'a'] })
 
     expect(phrases.map((one) => one.text)).toContain('cas oie')
   })
@@ -210,23 +210,26 @@ describe('phrasesBy', () => {
   // The first word says the head of the reading exactly, sound for sound, or the phrase says something
   // else: a head that merely resembles it leaves the reader hearing a different word.
   it('refuses a head that does not say its share of the reading', () => {
-    const phrases = phrasesBy(PAIRABLE, () => true, 0.25)([{ value: 'かわ', phonemes: ['k', 'a', 'w', 'a'] }][0])
+    const phrases = phrasesBy(PAIRABLE, () => true, 0.25)({ value: 'かわ', phonemes: ['k', 'a', 'w', 'a'] })
 
     expect(phrases.map((one) => one.text)).not.toContain('cahier oie')
   })
 
   it('keeps only what the locale keeps', () => {
-    const phrases = phrasesBy(PAIRABLE, (_, text) => text !== 'oie', 0.25)([
-      { value: 'かわ', phonemes: ['k', 'a', 'w', 'a'] },
-    ][0])
+    const phrases = phrasesBy(PAIRABLE, (_, text) => text !== 'oie', 0.25)({ value: 'かわ', phonemes: ['k', 'a', 'w', 'a'] })
 
     expect(phrases).toEqual([])
   })
 
   // The phrase carries the sounds of both words, so what judges it afterwards judges the whole thing.
   it('carries the sounds of the whole phrase', () => {
-    const phrases = phrasesBy(PAIRABLE, () => true, 0.25)([{ value: 'にん', phonemes: ['n', 'i', 'n'] }][0])
+    const phrases = phrasesBy(PAIRABLE, () => true, 0.25)({ value: 'にん', phonemes: ['n', 'i', 'n'] })
 
-    expect(phrases[0]).toEqual({ text: 'nid nage', phonemes: ['n', 'i', 'n', 'a', 'ʒ'], frequency: 8, imageability: null })
+    expect(phrases).toContainEqual({
+      text: 'nid nage',
+      phonemes: ['n', 'i', 'n', 'a', 'ʒ'],
+      frequency: 8,
+      imageability: undefined,
+    })
   })
 })

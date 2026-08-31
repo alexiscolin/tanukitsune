@@ -14,7 +14,7 @@ import type { Named } from './reading-run.ts'
 import type { Word } from './lexique.ts'
 import type { Candidate, Wanted } from '../../core/corpus/choose.ts'
 import type { Allocated } from '../../core/corpus/allocation.ts'
-import { distanceBetween } from '../../core/corpus/anchor.ts'
+import { carriesTheReading, distanceBetween } from '../../core/corpus/anchor.ts'
 import { moraeOf, phonemesOf } from '../../core/corpus/phonetics.ts'
 
 // An anchor is one word standing for one reading, and no word carries eleven morae. Asked for one
@@ -151,4 +151,78 @@ export function roomyWords(
   }
 
   return roomy
+}
+
+// Phrases the lexicon can build for a reading no single word says. French has no word saying kawa and
+// two of them say it exactly, cas oie, which is what the paid step was writing by hand and what the
+// table can find for itself.
+//
+// The head says its share of the reading sound for sound and nothing more, so the phrase says the
+// reading rather than something near it, and the tail says the rest and may run on: a reader hears the
+// opening and the rest is the word carrying it.
+export function phrasesBy(
+  lexicon: ReadonlyMap<string, Word>,
+  keeps: (word: Word, text: string) => boolean,
+  tolerance: number,
+): (reading: Wanted) => readonly Candidate[] {
+  // Indexed once by how many sounds a word has, since a head is looked for by its length: without it
+  // every reading walks the whole lexicon as many times as it has sounds.
+  const byLength = new Map<number, { text: string; word: Word }[]>()
+
+  for (const [text, word] of lexicon) {
+    if (!keeps(word, text)) continue
+
+    const length = word.phonemes.length
+    byLength.set(length, [...(byLength.get(length) ?? []), { text, word }])
+  }
+
+  // Tails indexed by the sound they open on, for the reason heads are indexed by length: the lexicon
+  // holds a hundred thousand words. Exact on that sound rather than near, the junction being where the
+  // reader hears the seam between the two words.
+  const byOnset = new Map<string, { text: string; word: Word }[]>()
+
+  for (const [text, word] of lexicon) {
+    if (!keeps(word, text)) continue
+
+    const onset = word.phonemes[0]
+    if (onset === undefined) continue
+
+    byOnset.set(onset, [...(byOnset.get(onset) ?? []), { text, word }])
+  }
+
+  // The most a reading is offered. A common reading builds hundreds of phrases and only the head of
+  // that list can ever be taken, so the rest is memory and sorting for nothing.
+  const most = 200
+
+  return (reading) => {
+    const built: Candidate[] = []
+
+    for (let cut = 1; cut < reading.phonemes.length; cut += 1) {
+      const wants = reading.phonemes.slice(0, cut)
+      const rest = reading.phonemes.slice(cut)
+
+      for (const head of byLength.get(cut) ?? []) {
+        if (!carriesTheReading(wants, head.word.phonemes, tolerance)) continue
+
+        const opens = rest[0]
+        if (opens === undefined) continue
+
+        for (const tail of byOnset.get(opens) ?? []) {
+          // A word said twice is one word said twice, not a phrase, and nid nid is nothing a story can
+          // put on stage.
+          if (tail.text === head.text) continue
+          if (!carriesTheReading(rest, tail.word.phonemes, tolerance)) continue
+
+          built.push({
+            text: `${head.text} ${tail.text}`,
+            phonemes: [...head.word.phonemes, ...tail.word.phonemes],
+            frequency: Math.min(head.word.frequency, tail.word.frequency),
+            imageability: tail.word.imageability,
+          })
+        }
+      }
+    }
+
+    return [...built].sort((one, other) => other.frequency - one.frequency).slice(0, most)
+  }
 }
