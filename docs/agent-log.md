@@ -144,3 +144,25 @@ moment that cost nothing.
 **The first push made the method real.** Until it, every gate claim rested on a workflow file nobody
 had executed. The first run passed, and its end-to-end job ran against a server Postgres, which turned
 the database decision from an argument into an observation.
+
+## 2026-08-31
+
+**A promise nobody had measured, held for months.** The naming section stated that a key which cannot
+be pictured is never the name of a shape, and that the meaning rule already kept it off one. Neither
+half was true: 126 shapes are named today by a key that is a verb, an adjective, a number or a
+pronoun, and no code anywhere enforced the rule the document described. It surfaced only because two
+shapes tripped a review, and the two turned out to be members of a family nobody had counted.
+
+**Three ways to repair the keys, all measured and all rejected.** Preferring a shorter gloss would
+have replaced grain de riz with Amérique and pâté de maison with exactitude. Preferring a gloss that
+is a thing would have replaced les deux with compteur de wagons and jeune homme with tu. Preferring a
+single word would have broken the first two on top of that. Each criterion improves one card and
+degrades several, because the key is already the best gloss the release gives, and a key serves the
+card before it serves a story. The document now states the truth and lists the thirteen keys that are
+a clause rather than a thing, unrepaired on purpose.
+
+**The fix that was written first and thrown away.** Folding one word written in two forms, so Products
+and Product read alike, was committed with tests and then deleted: removing the three names it freed
+would have left 垂 with pendre and 番 with numéro dans une série as their only French word, in stories
+that name them as parts of 睡, 郵 and fourteen others. The rule was right and its consequence was
+worse than what it fixed.

@@ -157,13 +157,25 @@ decision and never a model one: the model is not asked, so no answer of its has 
 left for a model is what `corpus:report` counts as unnamed and `corpus:name` asks for, which is nothing
 today: every component the curriculum deals carries a word, its own or its kanji's.
 
-**A key that cannot be pictured is never the name of a shape**, and the rule above already keeps it
-off one: a key that is a number, a pronoun, an adverb or a verb belongs to a kanji the curriculum
-teaches under a word its radical is not taught under, so the shape is named on its own. 一 is le sol as
-a shape and one as a character, 又 la main droite and again, 示 l'offrande and show. The names are in
-`corpus/fr/components.json` and the keys in `corpus/fr/keys.json` rather than repeated here, a
-selection being allowed to move under a run. The report line counting names written where nothing owes
-one reads none, and a name appearing there is one to answer for.
+**A key names its shape whatever kind of word it is.** 入 is entrer as a character and as a shape, 大
+is grand and 止 is arrêter, and a verb or an adjective names a shape as well as a noun does: the
+curriculum this course is built on teaches 300 of its 331 shared shapes under one word and names only
+31 apart, and its own names for those 300 are verbs and adjectives too. Those three figures are read
+from the release rather than listed here, being a list of 331 characters: a run recomputes them from
+the inventory the same way it recomputes which shapes owe a name. What decides is the meaning
+the two are taught under and nothing about the word's kind. 一 is le sol as a shape and un as a
+character because the curriculum teaches them apart, not because a number cannot be pictured. The
+names are in `corpus/fr/components.json` and the keys in `corpus/fr/keys.json` rather than repeated
+here, a selection being allowed to move under a run. The report line counting names written where
+nothing owes one reads none, and a name appearing there is one to answer for.
+
+**Thirteen keys are not a thing a story can name**: 片 simple face, 少 un peu, 吉 bonne chance, 争 se
+disputer, 充 être plein, 然 si c'est comme ça, 両 les deux, 召 faire venir à soi, 予 à l'avance, 君
+jeune homme, 旧 ancien temps, 更 se faire tard and 喜 se réjouir. Each is the best word the release
+gives that character, and every other gloss it has is a worse answer for the card, so moving the key
+would grade a reader wrong to make a story easier. Nothing owes those shapes a name today and the
+report counts none: what they need is decided when a story has to name one of them, which is the
+first moment anybody can say what the picture is.
 
 **A key is one word and a character often means several.** 土 is terre and it is also sol, terrain and
 Turquie, all of them stated by the release, and a reader typing the second is right. `corpus:keys`
