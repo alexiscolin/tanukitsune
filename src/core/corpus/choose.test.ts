@@ -105,3 +105,43 @@ describe('allocate, on how well a word can be pictured', () => {
     expect(allocated[0]?.anchor).toBe('le sac')
   })
 })
+
+// A reading is a card in every character that teaches it, so a word spent on a reading fifty
+// characters carry buys fifty cards and the same word spent on a reading one character carries buys
+// one. The order weighs both: how few words the rules leave a reading, and how much the reading is
+// worth serving.
+describe('allocate, weighing what a reading is worth', () => {
+  const carried = (value: string, serves: number, ...phonemes: readonly string[]): Wanted => ({
+    value,
+    phonemes,
+    serves,
+  })
+
+  it('serves the reading more cards carry when both are equally short of words', () => {
+    const many = carried('こ', 50, 'k', 'o')
+    const one = carried('く', 1, 'k', 'u')
+
+    const { allocated } = allocate([one, many], () => [COU], { ...LIMITS, apart: 0 })
+
+    expect(allocated).toEqual([{ reading: 'こ', anchor: 'le cou', phonemes: ['k', 'u'] }])
+  })
+
+  // Scarcity still leads: a reading with one word left and a single card behind it is served before a
+  // reading with ten words and fifty, or the scarce one is left with nothing at all.
+  it('still serves the reading the rules leave shortest of words', () => {
+    const scarce = carried('く', 1, 'k', 'u')
+    const rich = carried('こ', 50, 'k', 'o')
+    const words = (one: Wanted) => (one.value === 'く' ? [COU] : [COU, COUP, SEL, CAMION])
+
+    const { allocated } = allocate([rich, scarce], words, { ...LIMITS, apart: 0 })
+
+    expect(allocated[0]).toEqual({ reading: 'く', anchor: 'le cou', phonemes: ['k', 'u'] })
+  })
+
+  // A caller that says nothing about cards gets the order it had.
+  it('weighs a reading that says nothing as one card', () => {
+    const { allocated } = allocate([KO, KU], () => [COU], { ...LIMITS, apart: 0 })
+
+    expect(allocated).toHaveLength(1)
+  })
+})
