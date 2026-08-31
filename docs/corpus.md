@@ -328,6 +328,18 @@ kanji are left with no reading a story can be built on, counted per card, 194. W
 cards teaching the reading and not the characters naming it, 口 naming く and teaching こう, which the
 curriculum answers and the readings file does not.
 
+**An anchor says the reading rather than resembling it.** A distance is an average over the whole word,
+so a long word dilutes a consonant it does not have and issue comes out near いち on the strength of one
+vowel. What the keyword method asks is that the word say the reading, sound for sound, from its first
+sound, whatever it says afterwards, and how near two sounds may be and still count as one is the
+locale's own material. A word that says the reading is taken before one that merely reaches it.
+
+**Where no word says a reading, two of them do.** French has no word saying kawa and cas oie says it
+exactly, which is what the paid step was writing by hand and what the table can find for itself: the
+first word says its share sound for sound and the second says the rest and may run on. Phrases are
+offered beside words in every pass, and they take the table from 136 anchors that say their reading to
+250, and from 2204 readings bound to 2231.
+
 **A word a card will not carry is refused before it is measured.** A word of one letter is the letter
 itself, spelled rather than pictured, and k and q are in every lexicon. A word already naming a shape
 is refused for a different reason: one word answers one question here, so rideau cannot be the shape
@@ -352,10 +364,10 @@ kept: left there, it loses an anchor to a rule meant only to keep two apart whil
 holds a word that keeps them apart and serves them both. The pool is filtered once against the set as
 it stands rather than per reading, which is the same answer for a three hundredth of the reads.
 
-Of the 2559 readings inside that ceiling, 2204 are bound and 355 are not, and 491 of the 557 a
-character teaches have one. 483 of those bound sit on a word under one occurrence per million, which is
+Of the 2559 readings inside that ceiling, 2231 are bound and 328 are not, and 493 of the 557 a
+character teaches have one. 462 of those bound sit on a word under one occurrence per million, which is
 the widened pass and which the prose step is expected to refuse rather than write on. Of the 352 left,
-155 have no word the rules accept and 200 have words the curriculum has already spent. Every one of
+207 have no word the rules accept and 121 have words the curriculum has already spent. Every one of
 those counts is a line the run prints.
 
 The readings a run could not bind travel in `anchors.json` beside the anchors, under `left`, each with
