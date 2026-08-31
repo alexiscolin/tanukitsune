@@ -139,10 +139,11 @@ describe('allocate, weighing what a reading is worth', () => {
     expect(allocated[0]).toEqual({ reading: 'こ', anchor: 'le cou', phonemes: ['k', 'u'] })
   })
 
-  // A caller that says nothing about cards gets the order it had.
+  // A caller that says nothing about cards gets the order it had, which is the order they arrived in
+  // where the rules leave both equally short.
   it('weighs a reading that says nothing as one card', () => {
-    const { allocated } = allocate([KO, KU], () => [COU], { ...LIMITS, apart: 0 })
+    const { allocated } = allocate([KU, KO], () => [COU], { ...LIMITS, apart: 0 })
 
-    expect(allocated).toHaveLength(1)
+    expect(allocated).toEqual([{ reading: 'く', anchor: 'le cou', phonemes: ['k', 'u'] }])
   })
 })
