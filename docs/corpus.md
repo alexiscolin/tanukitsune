@@ -412,8 +412,10 @@ the advice WaniKani gives its own readers.
 ## What is checked
 
 Three families, run in cost order, and this section describes the whole set rather than what runs
-today: the rules that judge a sound anchor and an allocation are written and tested, and the command
-that puts them in front of a generated card arrives with the generator.
+today: the rules that judge a sound anchor, an allocation, a meaning story against the parts
+it names and where it ends, and a reading story against the scene that meaning story built are
+written and tested, and the command that puts them in front of a generated
+card arrives with the generator.
 
 Deterministic first, because it costs nothing and catches the two
 failures that actually harm a learner: a wrong reading taught, and a sound association that does not
