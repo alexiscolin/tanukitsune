@@ -321,15 +321,19 @@ which `la hache` claims nowhere: its pronunciation, derived from the lexicon, be
 Those readings are served in their own pass, after every other, so they never take a word a reading
 beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
 
-**A word is spent where it buys most cards.** A reading is met on every character that teaches it, so
-four words for a reading fifty characters carry is shorter than one word for a reading one character
-carries. The table serves the reading with fewest words per card first, and the difference is 59
-cards: counted outright, 214 are left with no reading a story can be built on, counted per card, 155.
+**A word is spent where it buys most cards.** A card shows the reading it teaches, so four words for a
+reading fifty cards teach is shorter than one word for a reading one card teaches. The table serves
+the reading with fewest words per card first, and the difference is 20 cards: counted outright, 214
+kanji are left with no reading a story can be built on, counted per card, 194. What is counted is the
+cards teaching the reading and not the characters naming it, 口 naming く and teaching こう, which the
+curriculum answers and the readings file does not.
 
 **A word a card will not carry is refused before it is measured.** A word of one letter is the letter
 itself, spelled rather than pictured, and k and q are in every lexicon. A word already naming a shape
 is refused for a different reason: one word answers one question here, so rideau cannot be the shape
 垂 on one card and the sound りく on the next. Refusing both moves 47 anchors and costs three readings.
+A key is not refused the same way, though 235 anchors carry one: the words are 2101 and taking them
+out of the pool leaves 24 more cards with no reading at all, which is the worse of the two.
 
 **Two anchors are held apart across the whole set and not only inside one pass.** `allocate` keeps two
 apart within one call and knows nothing of the calls before it, so a pass reading only the words already
@@ -348,10 +352,10 @@ kept: left there, it loses an anchor to a rule meant only to keep two apart whil
 holds a word that keeps them apart and serves them both. The pool is filtered once against the set as
 it stands rather than per reading, which is the same answer for a three hundredth of the reads.
 
-Of the 2559 readings inside that ceiling, 2207 are bound and 352 are not, and 488 of the 557 a
-character teaches have one. 485 of those bound sit on a word under one occurrence per million, which is
+Of the 2559 readings inside that ceiling, 2204 are bound and 355 are not, and 491 of the 557 a
+character teaches have one. 483 of those bound sit on a word under one occurrence per million, which is
 the widened pass and which the prose step is expected to refuse rather than write on. Of the 352 left,
-154 have no word the rules accept and 198 have words the curriculum has already spent. Every one of
+155 have no word the rules accept and 200 have words the curriculum has already spent. Every one of
 those counts is a line the run prints.
 
 The readings a run could not bind travel in `anchors.json` beside the anchors, under `left`, each with
