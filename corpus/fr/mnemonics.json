@@ -1,5 +1,23 @@
 {
-"header":{"what":"The two stories a card shows: one encoding what the character means, one encoding how it is read. A meaning story names the parts of the character in the order the drawing places them and ends on the key; a reading story continues that same scene, opens on the word the reading is bound to and arrives at the reading.","empty":"An empty string is a story nobody has written yet, which is what the report counts. A character absent from this file owes both.","judged":"Every story here is held to src/core/corpus/story.ts by corpus:report, the same rules a bought story will be held to."},
+"header":{"what": "The two stories a card shows: one encoding what the character means, one encoding how it is read. A meaning story names the parts of the character in the order the drawing places them and ends on the key; a reading story continues that same scene, opens on the word the reading is bound to and arrives at the reading.", "empty": "An empty string is a story nobody has written yet, which is what the report counts. A character absent from this file owes both.", "judged": "Every story here is held to src/core/corpus/story.ts by corpus:report, the same rules a bought story will be held to."},
 "stories":{
+"一":{"meaning":"le sol se fend et il n'en reste qu'un seul trait: un.","reading":"l'issue du champ est barrée par le sol, qui se relève en criant いち."},
+"二":{"meaning":"on empile un trait sur un trait et le compte s'arrête à deux.","reading":"le nid tient sur deux brindilles, pas une de plus: に."},
+"九":{"meaning":"le trait se replie en crochet et le compte s'arrête juste avant dix: neuf.","reading":"le cou du héron se plie neuf fois avant de lâcher un く."},
+"七":{"meaning":"un trait barré d'un crochet, comme une faux levée: sept.","reading":"la chimie du sept est simple: on chauffe, ça siffle しち."},
+"人":{"meaning":"deux jambes qui marchent sans rien au-dessus: une personne.","reading":"le nim pousse là où passe une personne, et ses feuilles font にん."},
+"入":{"meaning":"le toit s'ouvre d'un côté et laisse entrer.","reading":"la nounou pousse la porte pour faire entrer les petits, en chantant にゅう."},
+"八":{"meaning":"deux jambes qui s'écartent en comptant jusqu'à huit.","reading":""},
+"力":{"meaning":"un bras plié qui pousse la charrue: la force.","reading":"le repos vient après la force, et le bras retombe en soufflant りょく."},
+"十":{"meaning":"la croix du carrefour compte ses branches et arrive à dix.","reading":"le jour se lève sur la croix du carrefour et sonne dix coups: じゅう."},
+"三":{"meaning":"on empile un trait, puis un autre, puis un dernier: trois.","reading":"la salle ne compte que trois chaises, et le dernier venu soupire さん."},
+"上":{"meaning":"un trait qui dépasse la ligne et pointe vers le haut.","reading":"la jauge monte jusqu'en haut et le flotteur claque じょう."},
+"下":{"meaning":"un trait qui plonge sous la ligne et montre le bas.","reading":"le k du mot descend sous la ligne, tout en bas, et se lit か."},
+"口":{"meaning":"un carré ouvert sur le monde: une bouche.","reading":"le coco se casse contre une bouche trop pressée: こう."},
+"大":{"meaning":"quelqu'un qui écarte bras et jambes pour se faire grand.","reading":"le taré écarte les bras pour se faire grand et hurle たい."},
+"女":{"meaning":"des jambes croisées et des épaules qui tournent: une femme.","reading":"le jeu s'arrête quand la femme retourne le plateau: じょ."},
+"山":{"meaning":"trois pics qui sortent de terre: une montagne.","reading":"la salle est si haute qu'on y range une montagne, et l'écho répond さん."},
+"川":{"meaning":"trois traits qui coulent côte à côte: une rivière.","reading":"la casa a les pieds dans la rivière et le courant chantonne かわ."},
+"工":{"meaning":"deux poutres et un montant, l'outil de toute construction.","reading":"le coco du chantier tient debout tant que dure la construction: こう."}
 }
 }
