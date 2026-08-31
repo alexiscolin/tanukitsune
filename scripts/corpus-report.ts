@@ -64,7 +64,7 @@ if (drawn.length > 0) {
 
 // Only where the curriculum is present: a story is judged against the card it sits on, and the
 // curriculum is what says a card exists at all.
-if (inventory !== null) reportStories(inventory.subjects)
+if (inventory !== null) reportStories(inventory.subjects, read)
 
 // Only where the curriculum is present, since which shapes a kanji writes is what it says.
 if (inventory !== null) {
@@ -123,10 +123,15 @@ function report(label: string, value: string): void {
 // What a card teaches, in the words the reader meets, for every kanji the curriculum deals. A story is
 // judged against this and against nothing else, so the assembling is here where the files are and the
 // rules stay where they can be tested.
-function reportStories(subjects: readonly InventorySubject[]): void {
+function reportStories(subjects: readonly InventorySubject[], walked: readonly Decomposition[]): void {
   const file = `corpus/${locale}/mnemonics.json`
+  const naming = `corpus/${locale}/naming.json`
+
+  if (!existsSync(naming)) return
+
   const keys = keysWritten()
   const bound = anchored()
+  const drawn = new Map(walked.map((one) => [one.character, one.parts]))
   const cards = new Map<string, Card>()
 
   for (const one of subjects) {
@@ -138,9 +143,14 @@ function reportStories(subjects: readonly InventorySubject[]): void {
     const taught = one.readings.find((reading) => reading.primary)?.value ?? null
 
     cards.set(one.characters, {
-      parts: flatten(one.characters, shapeOf(one.characters), isNameable).parts.flatMap((part) =>
-        part.component === null ? [] : [names[part.component] ?? keys[part.component] ?? part.component],
-      ),
+      // The parts the curriculum deals rather than the ones the drawing opens, per ADR 0013: a story
+      // built on the drawing names things the reader has never been shown, and 語 is dire, cinq and
+      // bouche where the drawing gives bouche, deux, deux and bouche.
+      parts: (drawn.get(one.characters) ?? []).flatMap((part) => {
+        const word = part.component === null ? undefined : (names[part.component] ?? keys[part.component])
+
+        return word === undefined ? [] : [word]
+      }),
       key,
       anchor: taught === null ? null : (bound.get(taught) ?? null),
       reading: taught,
@@ -150,10 +160,10 @@ function reportStories(subjects: readonly InventorySubject[]): void {
   const written: ReadonlyMap<string, Told> = existsSync(file)
     ? readStories(readFileSync(file, 'utf8'))
     : new Map()
-  const telling = readTelling(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
+  const telling = readTelling(readFileSync(naming, 'utf8'))
   const has = (story: string) => story.trim() !== ''
 
-  report(`cards ${locale} owes a story`, String(cards.size))
+  report(`kanji cards ${locale} owes a story`, String(cards.size))
   report('meaning stories written', String([...written.values()].filter((one) => has(one.meaning)).length))
   report('reading stories written', String([...written.values()].filter((one) => has(one.reading)).length))
   report('stories at fault', list(faultsInStories(written, cards, telling)))
