@@ -1133,3 +1133,4 @@
 {"date": "2026-08-31", "branch": "feat/the-first-eighteen-stories", "kind": "pass", "base": "c925821b8487194db20708f839e0e520cb40359d", "head": "7091f635434a0bcca458ce9b30cc345a9a0a5746"}
 {"date": "2026-08-31", "branch": "feat/the-first-eighteen-stories", "reviewer": "requirement-check", "file": "corpus/fr/mnemonics.json", "line": 4, "summary": "The kana sat at the end of each reading story as an onomatopoeia, so the anchor word carried nothing and the reader had a noise to remember rather than a word.", "outcome": "fixed"}
 {"date": "2026-08-31", "branch": "feat/the-first-eighteen-stories", "kind": "pass", "base": "c925821b8487194db20708f839e0e520cb40359d", "head": "d9be4f45acb5a3f4724ad16e9ece01d7d176490c"}
+{"date": "2026-08-31", "branch": "feat/spend-a-word-where-it-serves-most", "kind": "pass", "base": "caa79b023f880fc1e368b8d1e2b5246264386779", "head": "9eca1ce58f5a2ab0dab231122300b5923052629e"}
