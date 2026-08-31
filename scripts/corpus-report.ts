@@ -146,10 +146,13 @@ function reportStories(subjects: readonly InventorySubject[], walked: readonly D
       // The parts the curriculum deals rather than the ones the drawing opens, per ADR 0013: a story
       // built on the drawing names things the reader has never been shown, and 語 is dire, cinq and
       // bouche where the drawing gives bouche, deux, deux and bouche.
+      // A part carrying the word the story must end on is that word said twice, which is what a kanji
+      // standing as its own radical gives: 二 is dealt the shape 二, and its story would name deux on
+      // the way to deux. 一 keeps le sol, because the shape and the character are taught apart.
       parts: (drawn.get(one.characters) ?? []).flatMap((part) => {
         const word = part.component === null ? undefined : (names[part.component] ?? keys[part.component])
 
-        return word === undefined ? [] : [word]
+        return word === undefined || word === key ? [] : [word]
       }),
       key,
       anchor: taught === null ? null : (bound.get(taught) ?? null),
