@@ -19,7 +19,7 @@ import { heldApart } from '../src/core/corpus/allocation.ts'
 import type { Candidate, Wanted } from '../src/core/corpus/choose.ts'
 import { allocate } from '../src/core/corpus/choose.ts'
 import { candidatesBy, roomyWords, soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
-import { readKeyOrder, readLexicon, readPhonology, readReadings } from '../src/data/corpus/artifact.ts'
+import { readComponentNames, readKeyOrder, readLexicon, readNaming, readPhonology, readReadings } from '../src/data/corpus/artifact.ts'
 import { phonemesOf } from '../src/core/corpus/phonetics.ts'
 
 const locale = process.argv[2] ?? 'fr'
@@ -61,7 +61,23 @@ const asked = wantedFrom(readings, atMostMorae, hears)
 const wanted = asked.filter((one) => !settled.has(one.value))
 // What a card will not carry, whatever it sounds like: neither the frequency floor nor the distance
 // catches a word that is ordinary, common and unusable in front of a reader.
-const carries = (text: string) => !refuses.has(text)
+// A word of one letter is the letter itself, which a reader spells rather than pictures: k and q are
+// in every lexicon and neither is a thing a story can put on stage.
+//
+// A word already naming a shape is refused too. One word answers one question here: rideau names the
+// shape 垂 on one card, and an anchor spending it on りく would make the reader meet it as a sound on
+// the next.
+const { opensWith } = readNaming(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
+const named = new Set(
+  Object.values(readComponentNames(readFileSync(`corpus/${locale}/components.json`, 'utf8'))).map((name) => {
+    const opener = opensWith.find((one) => name.startsWith(one))
+
+    return opener === undefined ? name : name.slice(opener.length)
+  }),
+)
+
+const carries = (text: string) =>
+  !refuses.has(text) && text.replace(/\s/g, '').length > 1 && !text.split(/\s+/).some((word) => named.has(word))
 const keeps = (word: { category: string }) => partsOfSpeech.includes(word.category)
 const offered = candidatesBy(lexicon, (word, text) => keeps(word) && word.frequency >= atLeastCommon && carries(text))
 const limits = { nearest, apart, unrated }
