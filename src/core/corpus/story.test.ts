@@ -7,6 +7,7 @@ import type { Story } from './story'
 const story = (one: Partial<Story> & Pick<Story, 'text'>): Story => ({
   parts: ['le passant', "l'arbre"],
   key: 'repos',
+  opensWith: ['le ', 'la ', 'les ', "l'"],
   ...one,
 })
 
