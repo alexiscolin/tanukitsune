@@ -3,9 +3,13 @@ import { describe, expect, it } from 'vitest'
 import { faultInReadingStory, faultInStory } from './story'
 import type { ReadingStory, Story, Telling } from './story'
 
-// What French says about its own names: what one opens on, what its letters are, and how much prose may
-// add to one before it is a different word.
-const TELLING: Telling = { opensWith: ['le ', 'la ', 'les ', "l'"], letters: 'abcdefghijklmnopqrstuvwxyzàâäçéèêëîïòôöùûüÿœæ', inflectsBy: 2 }
+// What French says about its own names: what one opens on, what its letters are, and what prose may add
+// to the end of one and still be saying it.
+const TELLING: Telling = {
+  opensWith: ['le ', 'la ', 'les ', "l'"],
+  letters: 'abcdefghijklmnopqrstuvwxyzàâäçéèêëîïòôöùûüÿœæ',
+  inflects: ['s', 'x'],
+}
 
 // 休 as the reader meets it: a passer-by beside a tree, and the character means rest.
 const story = (one: Partial<Story> & Pick<Story, 'text'>): Story => ({
