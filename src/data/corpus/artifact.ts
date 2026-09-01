@@ -231,9 +231,12 @@ export function readTelling(json: string): Telling {
 }
 
 const storyList = z.object({
-  stories: z.record(z.string(), z.object({ meaning: z.string(), reading: z.string() })),
+  stories: z.record(
+    z.string(),
+    z.object({ meaning: z.string(), nuance: z.string(), reading: z.string() }),
+  ),
 })
 
-export function readStories(json: string): ReadonlyMap<string, Told> {
+export function readStories(json: string): ReadonlyMap<string, Told & { readonly nuance: string }> {
   return new Map(Object.entries(storyList.parse(JSON.parse(json)).stories))
 }
