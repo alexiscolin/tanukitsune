@@ -7,17 +7,22 @@
 
 import type { PgDatabase, PgQueryResultHKT } from 'drizzle-orm/pg-core'
 
-import { env } from './env'
-import { LOCAL_DATA_DIR } from './local-data-dir'
-import * as schema from './schema'
+import * as schema from './schema.ts'
 
 export type Database = PgDatabase<PgQueryResultHKT, typeof schema>
 
-export async function connect(): Promise<Database> {
-  if (env.DATABASE_URL !== undefined) {
+// Where to connect, handed in rather than read here: `env.ts` is server-only and a corpus command is
+// not a server, so the two callers read their own environment and this decides nothing but the driver.
+export type Opening = {
+  readonly url: string | undefined
+  readonly directory: string
+}
+
+export async function connect({ url, directory }: Opening): Promise<Database> {
+  if (url !== undefined) {
     const [{ Pool }, { drizzle }] = await Promise.all([import('pg'), import('drizzle-orm/node-postgres')])
     const pool = new Pool({
-      connectionString: env.DATABASE_URL,
+      connectionString: url,
       // Every serverless instance opens its own pool, so the ceiling is per
       // instance rather than per application. Small, and closed quickly.
       max: 3,
@@ -35,5 +40,5 @@ export async function connect(): Promise<Database> {
 
   // Configurable because this driver is one process over one directory, and the end-to-end suite
   // runs two servers. docs/verification.md carries the whole of it.
-  return drizzle(new PGlite(env.TANUKITSUNE_LOCAL_DATABASE ?? LOCAL_DATA_DIR), { schema })
+  return drizzle(new PGlite(directory), { schema })
 }

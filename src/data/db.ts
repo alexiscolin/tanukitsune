@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm'
 
 import { connect } from './connect'
 import { env } from './env'
+import { LOCAL_DATA_DIR } from './local-data-dir'
 import type { Database } from './connect'
 
 // A server Postgres when the environment names one, the local file-backed
@@ -17,7 +18,7 @@ let connection: Promise<Database> | undefined
 export function db(): Promise<Database> {
   // A failed connection is not memoised. Caching the rejected promise would turn
   // one transient outage into a permanently broken process.
-  connection ??= connect().catch((reason: unknown) => {
+  connection ??= connect({ url: env.DATABASE_URL, directory: env.TANUKITSUNE_LOCAL_DATABASE ?? LOCAL_DATA_DIR }).catch((reason: unknown) => {
     connection = undefined
     throw reason
   })
