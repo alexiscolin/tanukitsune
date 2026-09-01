@@ -404,10 +404,12 @@ link precise.
 both answers. The anchor sits at the front, where the acoustic link of the keyword method attaches,
 and the mnemonic runs from the anchor to the reading, the direction in which the item is asked.
 
-**Tone.** Funny rather than strange, one interaction rather than a firework, plain register. Humour is
-what mediates the delayed benefit; bizarreness is not, and it is capped rather than encouraged. The
-reasoning is in [`sources.md`](sources.md) under the corpus, and it is a deliberate divergence from
-the advice WaniKani gives its own readers.
+**Tone.** One interaction, made strange enough that the reader notices it, with a sense inside it: what
+is felt, smelled or heard is recalled where what is merely seen is not. The bound on strangeness is the
+rule above rather than taste, since a part carrying neither a component nor the key clouds the link
+instead of fixing it, and a firework of three ideas is what clouds it fastest. Plain register still: a
+story is strange in what happens, not in the words it is told in. The reasoning is in
+[`sources.md`](sources.md) under the corpus.
 
 ## What is checked
 
