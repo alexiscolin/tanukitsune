@@ -1,13 +1,10 @@
 import 'server-only'
 
 import { sql } from 'drizzle-orm'
-import type { PgDatabase, PgQueryResultHKT } from 'drizzle-orm/pg-core'
 
+import { connect } from './connect'
 import { env } from './env'
-import { LOCAL_DATA_DIR } from './local-data-dir'
-import * as schema from './schema'
-
-type Database = PgDatabase<PgQueryResultHKT, typeof schema>
+import type { Database } from './connect'
 
 // A server Postgres when the environment names one, the local file-backed
 // database otherwise, which is what lets a fresh clone run with nothing
@@ -25,32 +22,6 @@ export function db(): Promise<Database> {
     throw reason
   })
   return connection
-}
-
-async function connect(): Promise<Database> {
-  if (env.DATABASE_URL !== undefined) {
-    const [{ Pool }, { drizzle }] = await Promise.all([
-      import('pg'),
-      import('drizzle-orm/node-postgres'),
-    ])
-    const pool = new Pool({
-      connectionString: env.DATABASE_URL,
-      // Every serverless instance opens its own pool, so the ceiling is per
-      // instance rather than per application. Small, and closed quickly.
-      max: 3,
-      idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 5_000,
-    })
-    return drizzle(pool, { schema })
-  }
-
-  const [{ PGlite }, { drizzle }] = await Promise.all([
-    import('@electric-sql/pglite'),
-    import('drizzle-orm/pglite'),
-  ])
-  // Configurable because this driver is one process over one directory, and the end-to-end suite
-  // runs two servers. docs/verification.md carries the whole of it.
-  return drizzle(new PGlite(env.TANUKITSUNE_LOCAL_DATABASE ?? LOCAL_DATA_DIR), { schema })
 }
 
 // Which database answered, not only whether one did. A deployment that lost its
