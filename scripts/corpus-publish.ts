@@ -17,8 +17,7 @@ import { connect } from '../src/data/connect.ts'
 import { LOCAL_DATA_DIR } from '../src/data/local-data-dir.ts'
 import { corpusEntry } from '../src/data/schema.ts'
 import { readAnchors, readComponentNames, readDecompositions, readKeys, readStories } from '../src/data/corpus/artifact.ts'
-import { rowsToPublish } from '../src/data/corpus/publish.ts'
-import type { Publishable } from '../src/data/corpus/publish.ts'
+import { cardsFrom, rowsToPublish } from '../src/data/corpus/publish.ts'
 import type { Told } from '../src/data/corpus/story-run.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -44,34 +43,15 @@ const written: ReadonlyMap<string, Told & { readonly nuance: string }> = existsS
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
 
 const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
-const drawn = new Map(read.map((one) => [one.character, one.parts]))
 
-const cards = new Map<string, Publishable>()
+const cards = cardsFrom(subjects, read, { names, keys, bound })
 
-for (const subject of subjects) {
-  if (subject.type !== 'kanji' || subject.characters === null || subject.hidden) continue
-
-  const key = keys[subject.characters]
-  if (key === undefined) continue
-
-  const taught = subject.readings.find((reading) => reading.primary)?.value ?? null
-  const anchor = taught === null ? undefined : bound.get(taught)
-
-  cards.set(subject.characters, {
-    subjectId: String(subject.id),
-    key,
-    // A radical's French name stands for a drawing rather than for a word, so it stands for no English
-    // one either. A kanji key does, and the release is where it comes from.
-    englishKey: null,
-    parts: (drawn.get(subject.characters) ?? []).flatMap((part) => {
-      const word = part.component === null ? undefined : (names[part.component] ?? keys[part.component])
-
-      return word === undefined || word === key ? [] : [word]
-    }),
-    reading: anchor === undefined ? null : taught,
-    anchor: anchor?.anchor ?? null,
-    anchorPhonemes: anchor?.phonemes ?? null,
-  })
+// Refused over a dirty tree rather than stamped with a commit that does not contain the text being
+// written: the column exists so an answer can be traced to the files that graded it, and a sha naming
+// files somebody has since edited traces to the wrong ones.
+if (execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '') {
+  process.stdout.write('the tree carries changes, so no commit describes what would be published\n')
+  process.exit(1)
 }
 
 const version = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
@@ -86,8 +66,11 @@ const short = [...written].flatMap(([character, told]) =>
   cards.has(character) && (told.meaning.trim() === '' || told.nuance.trim() === '') ? [character] : [],
 )
 
+const owing = `written but not ready, missing a story or a nuance: ${list(short)}\n`
+
 if (rows.length === 0) {
   process.stdout.write(`nothing ready to publish for ${locale}\n`)
+  process.stdout.write(owing)
   process.exit(0)
 }
 
@@ -119,7 +102,7 @@ await database
   })
 
 process.stdout.write(`published: ${rows.length} of the ${cards.size} cards ${locale} owes, at ${version.slice(0, 8)}\n`)
-process.stdout.write(`written but not ready, missing a story or a nuance: ${list(short)}\n`)
+process.stdout.write(owing)
 
 // The file-backed driver holds the process open, so a command that has written everything it came to
 // write says so rather than hanging on a connection nobody is waiting for.

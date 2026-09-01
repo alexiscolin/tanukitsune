@@ -4,6 +4,8 @@
 // A column a row must carry is a column a reader is shown, so a card missing one is left out rather
 // than written half. The report is what says a card is owed something; this writes what is ready.
 
+import type { ComponentNames, Decomposition } from '../../core/corpus/decomposition.ts'
+import type { InventorySubject } from './inventory.ts'
 import type { Told } from './story-run.ts'
 
 // What a card is, in the words the reader meets, plus the identifier the table is keyed by. The
@@ -82,4 +84,54 @@ export function rowsToPublish(
   }
 
   return rows
+}
+
+// What every kanji card is made of, assembled once. The report judges a story against this and
+// publishing writes it, and two copies of the assembly is a story judged against one list and graded
+// against another.
+// What the locale wrote, which is everything the assembly reads besides the curriculum itself.
+export type Written = {
+  readonly names: ComponentNames
+  readonly keys: Readonly<Record<string, string>>
+  readonly bound: ReadonlyMap<string, { readonly anchor: string; readonly phonemes: readonly string[] }>
+}
+
+export function cardsFrom(
+  subjects: readonly InventorySubject[],
+  walked: readonly Decomposition[],
+  { names, keys, bound }: Written,
+): ReadonlyMap<string, Publishable> {
+  const drawn = new Map(walked.map((one) => [one.character, one.parts]))
+  const cards = new Map<string, Publishable>()
+
+  for (const subject of subjects) {
+    if (subject.type !== 'kanji' || subject.characters === null || subject.hidden) continue
+
+    const key = keys[subject.characters]
+    if (key === undefined) continue
+
+    const taught = subject.readings.find((reading) => reading.primary)?.value ?? null
+    const anchor = taught === null ? undefined : bound.get(taught)
+
+    cards.set(subject.characters, {
+      subjectId: String(subject.id),
+      key,
+      // Nothing writes an English key yet: the release states one and no step of the run carries it
+      // across, so every row asserts the empty value the schema reserves for a shape whose French name
+      // stands for a drawing. It is a hole rather than a decision, and the report is where it is named.
+      englishKey: null,
+      // The parts the curriculum deals rather than the ones the drawing opens, per ADR 0013, and a part
+      // carrying the word the story must end on is that word said twice.
+      parts: (drawn.get(subject.characters) ?? []).flatMap((part) => {
+        const word = part.component === null ? undefined : (names[part.component] ?? keys[part.component])
+
+        return word === undefined || word === key ? [] : [word]
+      }),
+      reading: anchor === undefined ? null : taught,
+      anchor: anchor?.anchor ?? null,
+      anchorPhonemes: anchor?.phonemes ?? null,
+    })
+  }
+
+  return cards
 }

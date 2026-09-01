@@ -30,7 +30,8 @@ import {
   readTelling,
 } from '../src/data/corpus/artifact.ts'
 import { faultsInStories } from '../src/data/corpus/story-run.ts'
-import type { Card, Told } from '../src/data/corpus/story-run.ts'
+import type { Told } from '../src/data/corpus/story-run.ts'
+import { cardsFrom } from '../src/data/corpus/publish.ts'
 import { shapesNamedByTheirKanji, walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -131,34 +132,7 @@ function reportStories(subjects: readonly InventorySubject[], walked: readonly D
 
   const keys = keysWritten()
   const bound = anchored()
-  const drawn = new Map(walked.map((one) => [one.character, one.parts]))
-  const cards = new Map<string, Card>()
-
-  for (const one of subjects) {
-    if (one.type !== 'kanji' || one.characters === null || one.hidden) continue
-
-    const key = keys[one.characters]
-    if (key === undefined) continue
-
-    const taught = one.readings.find((reading) => reading.primary)?.value ?? null
-
-    cards.set(one.characters, {
-      // The parts the curriculum deals rather than the ones the drawing opens, per ADR 0013: a story
-      // built on the drawing names things the reader has never been shown, and 語 is dire, cinq and
-      // bouche where the drawing gives bouche, deux, deux and bouche.
-      // A part carrying the word the story must end on is that word said twice, which is what a kanji
-      // standing as its own radical gives: 二 is dealt the shape 二, and its story would name deux on
-      // the way to deux. 一 keeps le sol, because the shape and the character are taught apart.
-      parts: (drawn.get(one.characters) ?? []).flatMap((part) => {
-        const word = part.component === null ? undefined : (names[part.component] ?? keys[part.component])
-
-        return word === undefined || word === key ? [] : [word]
-      }),
-      key,
-      anchor: taught === null ? null : (bound.get(taught) ?? null),
-      reading: taught,
-    })
-  }
+  const cards = cardsFrom(subjects, walked, { names, keys, bound })
 
   const written: ReadonlyMap<string, Told> = existsSync(file)
     ? readStories(readFileSync(file, 'utf8'))
@@ -173,10 +147,8 @@ function reportStories(subjects: readonly InventorySubject[], walked: readonly D
 }
 
 // What each reading is bound to, absent until a run has bound anything.
-function anchored(): ReadonlyMap<string, string> {
+function anchored(): ReadonlyMap<string, { readonly anchor: string; readonly phonemes: readonly string[] }> {
   const file = `corpus/${locale}/anchors.json`
 
-  if (!existsSync(file)) return new Map()
-
-  return new Map([...readAnchors(readFileSync(file, 'utf8')).bound].map(([reading, one]) => [reading, one.anchor]))
+  return existsSync(file) ? readAnchors(readFileSync(file, 'utf8')).bound : new Map()
 }
