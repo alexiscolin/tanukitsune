@@ -1,4 +1,4 @@
-import { agreesAtTheStart, distanceBetween } from './anchor.ts'
+import { agreesAtTheStart, carriesTheReading, distanceBetween } from './anchor.ts'
 import type { Allocated } from './allocation'
 
 // Which word stands for which reading, decided over the whole curriculum before a word of prose
@@ -34,6 +34,9 @@ export type Limits = {
   // middle of that scale, because nothing rated the word and that is not evidence either way, and it
   // is material rather than engine: a locale rating from 0 to 100 sets a different number here.
   readonly unrated: number
+  // How near two sounds may be and still count as the same one, when a word is asked to say the
+  // reading rather than resemble it.
+  readonly sameSound: number
 }
 
 // Why a reading went without, since a reading named alone leaves the reader nothing to rule on. No
@@ -98,10 +101,17 @@ function ranked(reading: Wanted, candidates: readonly Candidate[], limits: Limit
   // an anchor written rather than chosen, and it belongs to the per-item checks.
   return candidates
     .filter((candidate) => agreesAtTheStart(reading.phonemes, candidate.phonemes))
-    .map((candidate) => ({ candidate, heard: distanceBetween(reading.phonemes, candidate.phonemes) }))
+    .map((candidate) => ({
+      candidate,
+      heard: distanceBetween(reading.phonemes, candidate.phonemes),
+      // Whether the word says the reading rather than resembling it, which is what the keyword method
+      // asks for and what a distance cannot answer: issue comes out near いち on one vowel.
+      says: carriesTheReading(reading.phonemes, candidate.phonemes, limits.sameSound),
+    }))
     .filter((one) => one.heard <= limits.nearest)
     .sort(
       (one, other) =>
+        Number(other.says) - Number(one.says) ||
         one.heard - other.heard ||
         (other.candidate.imageability ?? limits.unrated) - (one.candidate.imageability ?? limits.unrated) ||
         other.candidate.frequency - one.candidate.frequency,

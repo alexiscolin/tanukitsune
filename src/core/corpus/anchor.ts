@@ -161,3 +161,25 @@ function between(left: string, right: string): number {
 
   return differing.length / first.features.length
 }
+
+// Whether a word says the reading, sound for sound, from its first sound, whatever it says afterwards.
+// This is what the keyword method asks for and what a distance cannot answer: a distance is an average
+// over the whole word, so a long word dilutes a consonant it does not have, and issue comes out near
+// いち on the strength of one vowel.
+//
+// The tolerance is per sound rather than over the word, and it is the locale's: a language draws
+// distinctions the language being taught does not, and the reader hears through its own ears. Two
+// sounds a quality apart are two sounds however short the word is.
+export function carriesTheReading(
+  reading: readonly string[],
+  said: readonly string[],
+  tolerance: number,
+): boolean {
+  if (said.length < reading.length) return false
+
+  return reading.every((sound, at) => {
+    const heard = said[at]
+
+    return heard !== undefined && (sound === heard || distanceBetween([sound], [heard]) <= tolerance)
+  })
+}

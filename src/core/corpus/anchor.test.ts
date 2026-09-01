@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { agreesAtTheStart, distanceBetween, impossibleOnset } from './anchor'
+import { agreesAtTheStart, carriesTheReading, distanceBetween, impossibleOnset } from './anchor'
 import { phonemesOf } from './phonetics'
 
 // French as a lexicon gives it, never as spelling gives it: hôtel starts on a vowel, and that is the
@@ -98,5 +98,30 @@ describe('distanceBetween', () => {
   it('charges the same for a longer anchor as for a longer reading', () => {
     expect(distanceBetween(['a'], ['b', 'k', 'd'])).toBe(1)
     expect(distanceBetween(['b', 'k', 'd'], ['a'])).toBe(1)
+  })
+})
+
+describe('carriesTheReading', () => {
+  // What the keyword method asks for: the word says the reading, even if it says more afterwards.
+  // itchy carries ichi; issue shares its first vowel with it and nothing else.
+  it('holds where the word says the reading and keeps going', () => {
+    expect(carriesTheReading(phonemesOf('かわ'), ['k', 'a', 'w', 'a'], 0.25)).toBe(true)
+    expect(carriesTheReading(['n', 'i', 'n'], ['n', 'i', 'n', 'a', 'ʒ'], 0.25)).toBe(true)
+  })
+
+  it('fails where the word drops a sound the reading makes', () => {
+    expect(carriesTheReading(['i', 'tɕ', 'i'], ['i', 's', 'y'], 0.25)).toBe(false)
+  })
+
+  // A word shorter than the reading cannot say all of it, whatever it shares.
+  it('fails where the word runs out before the reading does', () => {
+    expect(carriesTheReading(['k', 'a', 'w', 'a'], ['k', 'a'], 0.25)).toBe(false)
+  })
+
+  // Tolerant on a sound the language draws finer than the one being taught, and only that far: the
+  // bound is the locale's, as every bound here is.
+  it('allows a sound the language hears as the one next to it', () => {
+    expect(carriesTheReading(['k', 'o'], ['k', 'ɔ'], 0.25)).toBe(true)
+    expect(carriesTheReading(['k', 'o'], ['k', 'a'], 0.25)).toBe(false)
   })
 })

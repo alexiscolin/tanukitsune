@@ -17,6 +17,7 @@
   "apart": 0.1,
   "unrated": 50,
   "atMostMorae": 4,
+  "sameSound": 0.25,
   "atLeastCommon": 1,
   "partsOfSpeech": [
     "NOM"
@@ -32,6 +33,10 @@
   },
   "atMostWords": 3,
   "refuses": [
+    "néné",
+    "nénés",
+    "taré",
+    "tarés",
     "shit",
     "hippies",
     "hippie",

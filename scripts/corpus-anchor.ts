@@ -17,8 +17,9 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import type { Allocated } from '../src/core/corpus/allocation.ts'
 import { heldApart } from '../src/core/corpus/allocation.ts'
 import type { Candidate, Wanted } from '../src/core/corpus/choose.ts'
+import type { Word } from '../src/data/corpus/lexique.ts'
 import { allocate } from '../src/core/corpus/choose.ts'
-import { candidatesBy, roomyWords, soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
+import { candidatesBy, phrasesBy, roomyWords, soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
 import {
   readComponentNames,
   readKeyOrder,
@@ -41,7 +42,8 @@ for (const needed of [READINGS, at('.lexicon.json'), at('phonology.json')]) {
 
 const readings = readReadings(readFileSync(READINGS, 'utf8'))
 const lexicon = readLexicon(readFileSync(at('.lexicon.json'), 'utf8'))
-const { nearest, apart, unrated, hears, writes, refuses, atMostMorae, atLeastCommon, partsOfSpeech } = readPhonology(
+const { nearest, apart, sameSound, unrated, hears, writes, refuses, atMostMorae, atLeastCommon, partsOfSpeech } =
+  readPhonology(
   readFileSync(at('phonology.json'), 'utf8'),
 )
 
@@ -102,8 +104,14 @@ const named = new Set(
 const carries = (text: string) =>
   !refuses.has(text) && text.replace(/\s/g, '').length > 1 && !text.split(/\s+/).some((word) => named.has(word))
 const keeps = (word: { category: string }) => partsOfSpeech.includes(word.category)
-const offered = candidatesBy(lexicon, (word, text) => keeps(word) && word.frequency >= atLeastCommon && carries(text))
-const limits = { nearest, apart, unrated }
+const allows = (word: Word, text: string) => keeps(word) && word.frequency >= atLeastCommon && carries(text)
+const words = candidatesBy(lexicon, allows)
+const said = phrasesBy(lexicon, allows, sameSound)
+// A phrase is offered beside a word, and `ranked` puts what says the reading first: French has no word
+// saying kawa and cas oie says it exactly, so the seam is worth crossing where a single word only
+// resembles the reading.
+const offered = (reading: Wanted) => [...words(reading), ...said(reading)]
+const limits = { nearest, apart, unrated, sameSound }
 
 // The readings a character teaches are served before the readings a word teaches. Serving them
 // together orders by scarcity alone, and a word's reading is scarcer than a character's while being
@@ -142,11 +150,26 @@ const rare = candidatesBy(lexicon, (word, text) => keeps(word) && carries(text))
 const third = allocate(short, without(rare, free), limits)
 for (const one of third.allocated) remember(one)
 
+// A reading no single word says. French has no word saying kawa and two of them say it exactly, cas
+// oie, which is what the paid step was writing by hand. Asked only of what the three passes above left,
+// since a word that says the whole reading on its own is better than a seam a reader has to cross.
+const unsaid = [...third.unserved]
+  .map((one) => wanted.find((asked) => asked.value === one.reading))
+  .filter((one) => one !== undefined)
+
+const phrases = phrasesBy(
+  lexicon,
+  (word, text) => keeps(word) && word.frequency >= atLeastCommon && carries(text),
+  sameSound,
+)
+const fourth = allocate(unsaid, without(phrases, free), limits)
+for (const one of fourth.allocated) remember(one)
+
 // A sound the locale writes without saying it. The reading is compared from the sound that follows,
 // and the anchor has to be spelled with the letter: la hache is said without an h and carries one where
 // the reader looks, and a mnemonic is read. Held to its own pass so these readings never take a word a
 // reading beginning on the bare vowel needs, the two being one sound apart and told apart in writing.
-const written = [...third.unserved]
+const written = [...fourth.unserved]
 const bound: Allocated[] = []
 // What each written pass heard a reading as, and the letter it held its anchor to, so the recovery
 // below asks again on the same terms rather than on the ones the table's own list carries.
@@ -183,7 +206,14 @@ for (const [sound, letter] of writes) {
 // the words still far enough from everything kept: left there, a reading loses an anchor to a rule
 // meant only to keep two apart while the lexicon still holds a word that keeps them apart and serves
 // them both.
-const built = [...proposed, ...first.allocated, ...second.allocated, ...third.allocated, ...bound]
+const built = [
+  ...proposed,
+  ...first.allocated,
+  ...second.allocated,
+  ...third.allocated,
+  ...fourth.allocated,
+  ...bound,
+]
 const heardAnchor = new Map(built.map((one) => [one.reading, one.anchor] as const))
 
 const { kept, crowded } = heldApart(
