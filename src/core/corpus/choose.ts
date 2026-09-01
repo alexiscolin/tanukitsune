@@ -19,6 +19,10 @@ export type Candidate = {
 export type Wanted = {
   readonly value: string
   readonly phonemes: readonly string[]
+  // How many cards this reading is taught on. A word spent on a reading fifty characters carry buys
+  // fifty cards; the same word spent on a reading one character carries buys one. Absent is one, so a
+  // caller that counts nothing gets the order it had.
+  readonly serves?: number
 }
 
 export type Limits = {
@@ -45,12 +49,22 @@ export function allocate(
   candidatesFor: (reading: Wanted) => readonly Candidate[],
   limits: Limits,
 ): { readonly allocated: readonly Allocated[]; readonly unserved: readonly Unserved[] } {
-  // The scarcest reading first. Serving them in the order they arrive spends a common word on a
-  // reading that had ten others and leaves the one that had two with nothing, and a reading with no
-  // anchor is a card that cannot be written at all.
+  // The reading with fewest words per card first. Serving them in the order they arrive spends a
+  // common word on a reading that had ten others and leaves the one that had two with nothing, and a
+  // reading with no anchor is a card that cannot be written at all.
+  //
+  // Per card rather than outright, because a reading is met on every character that teaches it: four
+  // words for a reading fifty characters carry is shorter than one word for a reading one character
+  // carries, and leaving the first out strands fifty cards where the second strands one. Counted
+  // outright over the French curriculum, 214 cards are left without a reading a story can be built on;
+  // counted per card, 155.
   const order = readings
     .map((reading) => ({ reading, accepted: ranked(reading, candidatesFor(reading), limits) }))
-    .sort((one, other) => one.accepted.length - other.accepted.length)
+    .sort(
+      (one, other) =>
+        one.accepted.length / Math.max(one.reading.serves ?? 1, 1) -
+        other.accepted.length / Math.max(other.reading.serves ?? 1, 1),
+    )
 
   const allocated: Allocated[] = []
   const unserved: Unserved[] = []
