@@ -1143,3 +1143,4 @@
 {"date": "2026-08-31", "branch": "feat/spend-a-word-where-it-serves-most", "reviewer": "requirement-check", "file": "src/core/corpus/choose.test.ts", "line": 143, "summary": "A test asserts a length already asserted on the same inputs and pins no ordering.", "outcome": "fixed"}
 {"date": "2026-08-31", "branch": "feat/spend-a-word-where-it-serves-most", "kind": "pass", "base": "caa79b023f880fc1e368b8d1e2b5246264386779", "head": "18f9abe5eb2f7af7ecb88d9e275295712eaf5cdf"}
 {"date": "2026-08-31", "branch": "feat/spend-a-word-where-it-serves-most", "kind": "pass", "base": "caa79b023f880fc1e368b8d1e2b5246264386779", "head": "292653baa956c1b74405d56baee21a0671b16a9e"}
+{"date": "2026-09-01", "branch": "feat/spend-a-word-where-it-serves-most", "kind": "pass", "base": "b4b0a80c49a8269bcf779d5a126d92f901397996", "head": "cc7a0c17caf72735ef48dd0216b295179d134673"}
