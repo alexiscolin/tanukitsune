@@ -494,6 +494,21 @@ and `corpus:report` holds every one of them to the rules above and counts what i
 no second standard for a story somebody typed: the generator arrives to fill that file, not to be
 judged differently from it.
 
+**A nuance says what the key does not carry**, in one clause, and names the French word the key must
+not be taken for: neuf is a number here and never new, personne is a human being and never nobody. It
+sits beside the story in `mnemonics.json` and it is a column of its own, since a card shows it.
+
+**Publishing is a step like the others.** `corpus:publish` writes the cards that are ready into
+`corpus_entry` and leaves the rest for the report to name: a card missing a story or a nuance is left
+out rather than written with an empty column. It runs last, after the report, so the hole is seen
+before the table is written.
+
+Two things a row records about its own making are decided rather than guessed. `generated_by` says
+which model wrote the text, or that none did: the transparency article applies to synthetic text, and
+a story somebody typed is not that, so a hand-written row says so instead of naming a model.
+`corpus_version` is the commit the repository stood on, so a reader's answer can be traced to the exact
+files that graded it.
+
 ## The command
 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,

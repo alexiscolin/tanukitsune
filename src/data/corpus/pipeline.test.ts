@@ -16,7 +16,10 @@ describe('stepsFor', () => {
     expect(at('corpus:decomposition')).toBeLessThan(at('corpus:name'))
     expect(at('corpus:keys')).toBeLessThan(at('corpus:vocabulary'))
     expect(at('corpus:vocabulary')).toBeLessThan(at('corpus:word'))
-    expect(at('corpus:report')).toBe(FR.length - 1)
+    // The report says what a locale still owes and publishing writes what is ready, so the reader sees
+    // the hole before the table is written rather than after.
+    expect(at('corpus:report')).toBe(at('corpus:publish') - 1)
+    expect(at('corpus:publish')).toBe(FR.length - 1)
   })
 
   // The estimate shown before a run is counted over these, so a step that pays and does not say so

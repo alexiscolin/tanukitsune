@@ -36,6 +36,7 @@ export function stepsFor(locale: string): readonly Step[] {
     { name: 'corpus:vocabulary', batch: null, takes: 'locale' },
     { name: 'corpus:word', batch: `corpus/${locale}/.word-batch.json`, takes: 'locale and most' },
     { name: 'corpus:report', batch: null, takes: 'locale' },
+  { name: 'corpus:publish', batch: null, takes: 'locale' },
   ]
 }
 
