@@ -33,6 +33,12 @@
   },
   "atMostWords": 3,
   "refuses": [
+    "connard",
+    "connasse",
+    "connasses",
+    "conne",
+    "connes",
+    "connards",
     "néné",
     "nénés",
     "taré",
