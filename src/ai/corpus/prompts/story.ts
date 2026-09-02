@@ -20,9 +20,9 @@ const story = z.strictObject({ meaning: z.string(), nuance: z.string(), reading:
 
 const FORMAT = zodOutputFormat(story)
 
-export type Told = { readonly meaning: string; readonly nuance: string; readonly reading: string }
+export type Answer = { readonly meaning: string; readonly nuance: string; readonly reading: string }
 
-export function readStory(text: string): Told | null {
+export function readStory(text: string): Answer | null {
   try {
     return story.parse(JSON.parse(text))
   } catch {

@@ -6,20 +6,16 @@
 
 import type { ComponentNames, Decomposition } from '../../core/corpus/decomposition.ts'
 import type { InventorySubject } from './inventory.ts'
-import type { Told } from './story-run.ts'
+import type { Card, Told } from './story-run.ts'
 
 // What a card is, in the words the reader meets, plus the identifier the table is keyed by. The
 // reading columns are null together: a component teaches no reading, and a word whose reading is the
 // one its kanji already gave teaches none either.
-export type Publishable = {
+export type Publishable = Card & {
   readonly subjectId: string
-  readonly key: string
   // The release's own English, never the account's, and empty for a shape whose French name stands
   // for a drawing rather than for a word.
   readonly englishKey: string | null
-  readonly parts: readonly string[]
-  readonly reading: string | null
-  readonly anchor: string | null
   readonly anchorPhonemes: readonly string[] | null
 }
 
@@ -52,7 +48,7 @@ export type Row = {
 
 export function rowsToPublish(
   cards: ReadonlyMap<string, Publishable>,
-  written: ReadonlyMap<string, Told & { readonly nuance: string }>,
+  written: ReadonlyMap<string, Told>,
   stamp: Stamp,
 ): readonly Row[] {
   const rows: Row[] = []

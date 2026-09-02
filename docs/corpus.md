@@ -488,8 +488,8 @@ been compared to the reader's own labels, so the reading arrives with the labell
 comparison possible. Until then, what absorbs a mediocre first run is the budget of three, a coarser
 instrument over a sample.
 
-**A story written by hand is judged by exactly what a bought one will be.** The two stories a card
-shows live in `corpus/<locale>/mnemonics.json`, an empty string being a story nobody has written yet,
+**A story written by hand is judged by exactly what a bought one will be.** The three texts a card
+shows live in `corpus/<locale>/mnemonics.json`, an empty string being a text nobody has written yet,
 and `corpus:report` holds every one of them to the rules above and counts what is still owed. There is
 no second standard for a story somebody typed: the generator arrives to fill that file, not to be
 judged differently from it.
@@ -550,7 +550,7 @@ through the batch API, validates, writes by subject as it goes, publishes the ch
 manifest in that order, and ends on the coverage report. A run killed halfway resumes: what is written
 is not regenerated, and the failed set goes into the next batch, which is the same mechanism.
 
-Batch submission is asynchronous, so one command does not mean one minute. Four of the steps submit a
+Batch submission is asynchronous, so one command does not mean one minute. Six of the steps submit a
 batch and end on it, and `pnpm corpus` waits for each and asks it to collect rather than handing the
 wait back: a run each of them ends is a run somebody restarts eight times. It gives up after two hours
 on one batch, which is longer than any has taken and short enough that a batch that will never end does

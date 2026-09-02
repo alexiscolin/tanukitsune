@@ -18,6 +18,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
 import { STORY_VERSION, readStory, storyPrefix, storyRequest } from '../src/ai/corpus/prompts/story.ts'
 import { faultInReadingStory, faultInStory } from '../src/core/corpus/story.ts'
+import type { Told } from '../src/data/corpus/story-run.ts'
 import {
   readAnchors,
   readComponentNames,
@@ -128,7 +129,7 @@ async function collect(id: string): Promise<void> {
 
   const { answered, failed } = collected
   const refused = new Map(failed)
-  const kept = new Map<string, { readonly meaning: string; readonly nuance: string; readonly reading: string }>()
+  const kept = new Map<string, Told>()
   const spent = noSpend()
 
   for (const [character, one] of answered) {

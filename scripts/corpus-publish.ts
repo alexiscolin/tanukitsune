@@ -15,6 +15,7 @@ import { existsSync, readFileSync } from 'node:fs'
 
 import { connect } from '../src/data/connect.ts'
 import { LOCAL_DATA_DIR } from '../src/data/local-data-dir.ts'
+import { asOptional } from '../src/data/optional-text.ts'
 import { corpusEntry } from '../src/data/schema.ts'
 import { readAnchors, readComponentNames, readDecompositions, readKeys, readStories } from '../src/data/corpus/artifact.ts'
 import { cardsFrom, rowsToPublish } from '../src/data/corpus/publish.ts'
@@ -22,6 +23,14 @@ import type { Told } from '../src/data/corpus/story-run.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { list } from './corpus-command.ts'
+
+// bootstrap writes .env.local and next loads that, so a command outside the application reads it
+// itself or it opens a different database than the one the reader is looking at.
+try {
+  process.loadEnvFile('.env.local')
+} catch {
+  // Absent before the first bootstrap, which is not an error.
+}
 
 const locale = process.argv[2] ?? 'fr'
 const at = (file: string) => `corpus/${locale}/${file}`
@@ -37,7 +46,7 @@ const keys = existsSync(at('keys.json')) ? readKeys(readFileSync(at('keys.json')
 const bound: ReadonlyMap<string, { anchor: string; phonemes: readonly string[] }> = existsSync(at('anchors.json'))
   ? readAnchors(readFileSync(at('anchors.json'), 'utf8')).bound
   : new Map()
-const written: ReadonlyMap<string, Told & { readonly nuance: string }> = existsSync(at('mnemonics.json'))
+const written: ReadonlyMap<string, Told> = existsSync(at('mnemonics.json'))
   ? readStories(readFileSync(at('mnemonics.json'), 'utf8'))
   : new Map()
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
@@ -75,8 +84,8 @@ if (rows.length === 0) {
 }
 
 const database = await connect({
-  url: process.env.DATABASE_URL,
-  directory: process.env.TANUKITSUNE_LOCAL_DATABASE ?? LOCAL_DATA_DIR,
+  url: asOptional(process.env['DATABASE_URL']),
+  directory: asOptional(process.env['TANUKITSUNE_LOCAL_DATABASE']) ?? LOCAL_DATA_DIR,
 })
 
 // Written again rather than skipped, so a story corrected in the folder reaches the table on the next

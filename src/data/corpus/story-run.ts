@@ -19,10 +19,13 @@ export type Card = {
   readonly reading: string | null
 }
 
-// The two stories written for one character. An empty string is a story not written rather than an
-// empty one: nothing is owed until the generator runs.
+// The three texts written for one character: the story that walks its parts to what it means, the
+// clause saying what the key does and does not cover, and the story that walks its scene to the
+// reading. An empty string is a text not written rather than an empty one: nothing is owed until the
+// generator runs.
 export type Told = {
   readonly meaning: string
+  readonly nuance: string
   readonly reading: string
 }
 

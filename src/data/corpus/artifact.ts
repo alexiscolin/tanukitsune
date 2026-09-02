@@ -237,19 +237,36 @@ const storyList = z.object({
   ),
 })
 
-export function readStories(json: string): ReadonlyMap<string, Told & { readonly nuance: string }> {
+export function readStories(json: string): ReadonlyMap<string, Told> {
   return new Map(Object.entries(storyList.parse(JSON.parse(json)).stories))
 }
 
 // The file rewritten with what a run added, keeping what it already held and its header. Written the
 // way componentNamesFile is: a run adds and never takes away, so a story somebody corrected by hand
 // survives a run that had nothing new to say about it.
+// One character's three texts after a run answered it: a text the file already carried stays, since a
+// card is asked again for the one that was empty and the answer carries all three.
+function kept(held: Told | undefined, told: Told): Told {
+  const older = (one: string | undefined, two: string) => ((one ?? '').trim() === '' ? two : (one as string))
+
+  return {
+    meaning: older(held?.meaning, told.meaning),
+    nuance: older(held?.nuance, told.nuance),
+    reading: older(held?.reading, told.reading),
+  }
+}
+
 export function storiesFile(
   current: string,
-  added: ReadonlyMap<string, { readonly meaning: string; readonly nuance: string; readonly reading: string }>,
+  added: ReadonlyMap<string, Told>,
 ): string {
   const held = storyList.parse(JSON.parse(current)).stories
-  const stories = { ...held, ...Object.fromEntries(added) }
+  const stories = { ...held }
+
+  for (const [character, told] of added) {
+    stories[character] = kept(held[character], told)
+  }
+
   const lines = Object.entries(stories)
     .map(([character, told]) => `${JSON.stringify(character)}:${JSON.stringify(told)}`)
     .join(',\n')
