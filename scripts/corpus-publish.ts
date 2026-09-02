@@ -17,8 +17,16 @@ import { connect } from '../src/data/connect.ts'
 import { LOCAL_DATA_DIR } from '../src/data/local-data-dir.ts'
 import { asOptional } from '../src/data/optional-text.ts'
 import { corpusEntry } from '../src/data/schema.ts'
-import { readAnchors, readComponentNames, readDecompositions, readKeys, readStories } from '../src/data/corpus/artifact.ts'
+import {
+  readAnchors,
+  readComponentNames,
+  readDecompositions,
+  readKeys,
+  readStories,
+  readTelling,
+} from '../src/data/corpus/artifact.ts'
 import { cardsFrom, readyToPublish, rowsToPublish } from '../src/data/corpus/publish.ts'
+import { faultInTold } from '../src/data/corpus/story-run.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { list, loadLocalEnv } from './corpus-command.ts'
@@ -44,7 +52,14 @@ if (execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() 
 
 // A run missing one of these publishes a card with a hole in it, and the table says published either
 // way. Refused rather than defaulted, as the sibling refuses.
-for (const needed of ['corpus/decomposition.json', at('components.json'), at('keys.json'), at('anchors.json'), at('mnemonics.json')]) {
+for (const needed of [
+  'corpus/decomposition.json',
+  at('components.json'),
+  at('keys.json'),
+  at('anchors.json'),
+  at('naming.json'),
+  at('mnemonics.json'),
+]) {
   if (!existsSync(needed)) throw new Error(`${needed} is missing. Run pnpm corpus to write it`)
 }
 
@@ -52,12 +67,30 @@ const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 const names = readComponentNames(readFileSync(at('components.json'), 'utf8'))
 const keys = readKeys(readFileSync(at('keys.json'), 'utf8'))
 const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
-const written = readStories(readFileSync(at('mnemonics.json'), 'utf8'))
+const telling = readTelling(readFileSync(at('naming.json'), 'utf8'))
+const held = readStories(readFileSync(at('mnemonics.json'), 'utf8'))
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
 
 const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
 
 const cards = cardsFrom(subjects, read, { names, keys, bound })
+
+// A story at fault is left where it is rather than written: the report is what names it, and a table
+// carrying a story the report refuses grades a reader against text nobody accepted.
+const wrong: string[] = []
+const written = new Map(
+  [...held].filter(([character, told]) => {
+    const card = cards.get(character)
+
+    if (card === undefined) return true
+    if (faultInTold(told, card, telling) === null) return true
+
+    wrong.push(character)
+
+    return false
+  }),
+)
+
 const version = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
 const rows = rowsToPublish(cards, written, {
   locale,
@@ -70,7 +103,7 @@ const short = [...written].flatMap(([character, told]) =>
   cards.has(character) && !readyToPublish(told) ? [character] : [],
 )
 
-const owing = `written but not ready, missing a story or a nuance: ${list(short)}\n`
+const owing = `written but not ready, missing a story or a nuance: ${list(short)}\nheld back, at fault against the rules: ${list(wrong)}\n`
 
 if (rows.length === 0) {
   process.stdout.write(`nothing ready to publish for ${locale}\n`)

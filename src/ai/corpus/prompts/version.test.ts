@@ -37,6 +37,7 @@ const RECORDED_MEANING: Record<number, string> = {
 
 const RECORDED_STORY: Record<number, string> = {
   1: '7f2df4e9e256d04e28f72ee8e781e9274f8091041c22f68a62d463d4e3d65fb4',
+  2: '986b7d0ca3110179dabcde92e43255f343665bc25e5f828361680e909b186a68',
 }
 
 const RECORDED_TRANSLATION: Record<number, string> = {
@@ -195,6 +196,7 @@ function renderedStory(): string {
     parts: ['le passant', "l'arbre"],
     reading: 'キュウ',
     anchor: 'le képi',
+    told: "le passant s'adosse à l'arbre et trouve enfin le repos",
   })
 
   return createHash('sha256')

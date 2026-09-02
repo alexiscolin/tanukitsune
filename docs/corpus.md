@@ -503,7 +503,9 @@ own examples travelling with the ask. What comes back is held to the rules above
 a part it was not given, told out of the order the drawing places them, or ending anywhere but on the
 meaning is refused and asked again by the next run. A card whose reading no word is bound to is asked
 without one, and asked again for that half once a word is bound: 328 readings are still waiting for
-one, so a card written before its word existed is the ordinary case.
+one, so a card written before its word existed is the ordinary case. A card asked again keeps the texts
+it already carried and is sent the meaning story it tells, since a reading story continuing a scene the
+card does not tell is two scenes to remember rather than one.
 
 Bounded like the other paid steps, so a first batch is read by hand before the rest is paid for, and
 resumed rather than waited on: a batch is asynchronous and the run says which of submitting or
@@ -515,8 +517,9 @@ sits beside the story in `mnemonics.json` and it is a column of its own, since a
 
 **Publishing is a step like the others.** `corpus:publish` writes the cards that are ready into
 `corpus_entry` and names what it left out: a card missing a story or a nuance is skipped rather than
-written with an empty column, and the run says which. It runs last, after the report, so the hole is seen
-before the table is written.
+written with an empty column, a card whose story the rules refuse is held back, and the run says which
+of the two each one is. It runs last, after the report, so the hole is seen before the table is
+written.
 
 Two things a row records about its own making are decided rather than guessed. `generated_by` says
 which model wrote the text, or that none did: the transparency article applies to synthetic text, and

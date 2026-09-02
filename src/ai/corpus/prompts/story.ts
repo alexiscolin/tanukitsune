@@ -14,7 +14,7 @@ import { corpusRequest } from '../request.ts'
 //
 // Bumped whenever what the model is sent changes, because `prompt_version` is a column on every corpus
 // row and two runs sharing a version make the provenance false while looking satisfied.
-export const STORY_VERSION = 1
+export const STORY_VERSION = 2
 
 const story = z.strictObject({ meaning: z.string(), nuance: z.string(), reading: z.string() })
 
@@ -41,6 +41,10 @@ export type Unwritten = {
   // the reading story is then not asked for: a story resting on no word rests on nothing.
   readonly reading: string
   readonly anchor: string
+  // The meaning story the card already carries, empty where it carries none. A card is asked again for
+  // the text that was empty and keeps the ones it had, so a reading story written against a scene the
+  // card does not tell is two scenes to remember rather than one.
+  readonly told: string
 }
 
 // Everything identical across a run, rendered once and shared by every request in it.
@@ -73,6 +77,9 @@ export function storyPrefix(language: string): string {
     '4. Written to be read aloud: no parenthesis, no gloss, no note to the reader.',
     '',
     'Where no reading and no word are given, leave the reading story empty and write the other two.',
+    '',
+    'Where a meaning story is given, that is the scene: continue it rather than inventing another, and',
+    'give it back unchanged as the meaning story.',
   ].join('\n')
 }
 
@@ -86,13 +93,14 @@ export function storyRequest(prefix: string, one: Unwritten): MessageCreateParam
 
 // Every value that is not ours is delimited and labelled as something to read rather than something to
 // do. The character comes from somebody else's file.
-function asks({ character, key, parts, reading, anchor }: Unwritten): string {
+function asks({ character, key, parts, reading, anchor, told }: Unwritten): string {
   const lines = [
     `<character>${character}</character>`,
     `<meaning>${key}</meaning>`,
     ...parts.map((one) => `<part>${one}</part>`),
     ...(reading === '' ? [] : [`<reading>${reading}</reading>`]),
     ...(anchor === '' ? [] : [`<bound-to>${anchor}</bound-to>`]),
+    ...(told === '' ? [] : [`<meaning-story>${told}</meaning-story>`]),
   ]
 
   return `${lines.join('\n')}\n\nWrite the stories.`

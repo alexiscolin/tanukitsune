@@ -69,7 +69,8 @@ const written = readStories(heldStories)
 const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
 const cards = cardsFrom(subjects, read, { names, keys, bound })
 
-// A card is owed a run where it carries no meaning story, and also where it carries no reading story
+// A card is owed a run where it carries no meaning story and where it carries no nuance, and also
+// where it carries no reading story
 // while a word is now bound to its reading: 328 readings are still unbound, so a card asked before its
 // word existed is the ordinary case rather than an edge, and one asked once and never again is a card
 // left half written for good.
@@ -82,6 +83,7 @@ const owed = taughtCharacters(subjects).filter((character) => {
 
   if (card === undefined) return false
   if ((told?.meaning ?? '').trim() === '') return true
+  if ((told?.nuance ?? '').trim() === '') return true
 
   return card.reading !== null && card.anchor !== null && (told?.reading ?? '').trim() === ''
 })
@@ -109,6 +111,7 @@ async function submit(charactersAsked: readonly string[]): Promise<void> {
           parts: card.parts,
           reading: card.reading ?? '',
           anchor: card.anchor ?? '',
+          told: written.get(character)?.meaning ?? '',
         }),
       },
     ]
