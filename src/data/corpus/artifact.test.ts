@@ -4,6 +4,8 @@ import {
   componentNamesFile,
   meaningsFile,
   readComponentNames,
+  readStories,
+  storiesFile,
   readDecompositions,
   readMeanings,
   readNaming,
@@ -175,5 +177,31 @@ describe('readMeanings', () => {
 
   it('refuses a character left with no meaning at all, which is a card that cannot be graded', () => {
     expect(() => readMeanings(meaningsFile({ header: { of: 'test' }, meanings: { 土: [] } }))).toThrow()
+  })
+})
+
+describe('storiesFile', () => {
+  // A card is asked again when one of its three texts is empty, and the answer carries all three. The
+  // two the run was not owed were already written, sometimes by hand, and a run that overwrites them
+  // takes away rather than adds.
+  const written = '{\n"header":{"source":"KANJIDIC2"},\n"stories":{\n"八":{"meaning":"deux traits: huit.","nuance":"le nombre, jamais la forme.","reading":""}\n}\n}\n'
+
+  it('keeps a text the file already carried when a run answers it again', () => {
+    const after = storiesFile(
+      written,
+      new Map([['八', { meaning: 'autre chose', nuance: 'autre chose', reading: 'le haquet dit huit, haquet: はち.' }]]),
+    )
+
+    expect(readStories(after).get('八')).toEqual({
+      meaning: 'deux traits: huit.',
+      nuance: 'le nombre, jamais la forme.',
+      reading: 'le haquet dit huit, haquet: はち.',
+    })
+  })
+
+  it('writes a character the file did not carry', () => {
+    const after = storiesFile(written, new Map([['丁', { meaning: 'un clou: bloc.', nuance: 'le quartier.', reading: '' }]]))
+
+    expect(readStories(after).get('丁')?.meaning).toBe('un clou: bloc.')
   })
 })
