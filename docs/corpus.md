@@ -494,11 +494,16 @@ and `corpus:report` holds every one of them to the rules above and counts what i
 no second standard for a story somebody typed: the generator arrives to fill that file, not to be
 judged differently from it.
 
-**`corpus:story` asks for the three texts a card shows** and writes what survives into
-`mnemonics.json`. What comes back is held to the rules above before anything is written: a story naming
+**`corpus:story` asks for the three texts a kanji card shows** and writes what survives into
+`mnemonics.json`. The curriculum owes 23590 of them across its 9389 subjects and this asks for the 2101
+kanji: a component carries a name and a meaning, a word composes its meaning from the characters it is
+written with, and both wait for a step of their own. Three rules stated above wait with them: writing
+by reading cluster so sibling anchors are visible at once, overgenerating and ranking, and the locale's
+own examples travelling with the ask. What comes back is held to the rules above before anything is written: a story naming
 a part it was not given, told out of the order the drawing places them, or ending anywhere but on the
 meaning is refused and asked again by the next run. A card whose reading no word is bound to is asked
-without one, and the story it can carry is the other one.
+without one, and asked again for that half once a word is bound: 328 readings are still waiting for
+one, so a card written before its word existed is the ordinary case.
 
 Bounded like the other paid steps, so a first batch is read by hand before the rest is paid for, and
 resumed rather than waited on: a batch is asynchronous and the run says which of submitting or

@@ -1,5 +1,7 @@
-// The two stories and the nuance a card shows, written to corpus/<locale>/mnemonics.json. There are
-// 23590 of them across the curriculum and 53 written by hand, which is the whole reason this exists.
+// The two stories and the nuance a kanji card shows, written to corpus/<locale>/mnemonics.json. The
+// curriculum owes 23590 such texts and 53 were written by hand, which is the whole reason this exists.
+// It asks for the kanji, which is 2101 cards of the 9389: a component carries a name and a meaning and
+// a word composes its meaning from the characters it is written with, and neither is asked here.
 //
 // Run with `pnpm corpus:story [locale] [most]`, where `most` bounds a run so a first one can be read by
 // hand before the rest is paid for. The key comes from `.env.local`, which the command loads itself:
@@ -31,23 +33,32 @@ import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { batchFor } from '../src/data/corpus/pipeline.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
-import { spread } from '../src/data/corpus/anchor-run.ts'
-import { asked, list } from './corpus-command.ts'
+import { asked, list, taughtCharacters } from './corpus-command.ts'
 
 const { locale, most, reach } = asked(process.argv)
 const at = (file: string) => `corpus/${locale}/${file}`
 const toldFile = at('mnemonics.json')
 const runFile = batchFor('corpus:story', locale)
 
-for (const needed of [INVENTORY_FILE, 'corpus/decomposition.json', at('keys.json'), at('naming.json'), toldFile]) {
+// The anchors and the names decide what a card is, so a run without them buys stories over a partial
+// character and there is no taking that back. Refused rather than defaulted, as the sibling refuses.
+for (const needed of [
+  INVENTORY_FILE,
+  'corpus/decomposition.json',
+  at('keys.json'),
+  at('naming.json'),
+  at('components.json'),
+  at('anchors.json'),
+  toldFile,
+]) {
   if (!existsSync(needed)) throw new Error(`${needed} is missing. Run pnpm corpus to write it`)
 }
 
 const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
-const names = existsSync(at('components.json')) ? readComponentNames(readFileSync(at('components.json'), 'utf8')) : {}
+const names = readComponentNames(readFileSync(at('components.json'), 'utf8'))
 const keys = readKeys(readFileSync(at('keys.json'), 'utf8'))
-const bound = existsSync(at('anchors.json')) ? readAnchors(readFileSync(at('anchors.json'), 'utf8')).bound : new Map()
+const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
 const naming = readNaming(readFileSync(at('naming.json'), 'utf8'))
 const telling = readTelling(readFileSync(at('naming.json'), 'utf8'))
 const written = readStories(readFileSync(toldFile, 'utf8'))
@@ -55,13 +66,25 @@ const written = readStories(readFileSync(toldFile, 'utf8'))
 const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
 const cards = cardsFrom(subjects, read, { names, keys, bound })
 
-// A card is owed a run where it carries no meaning story, the meaning being the one text every card
-// shows. A card whose reading is not bound is still asked for, and asked without a reading: the story
-// it can carry is the other one.
-const owed = [...cards.keys()].filter((character) => (written.get(character)?.meaning ?? '').trim() === '')
+// A card is owed a run where it carries no meaning story, and also where it carries no reading story
+// while a word is now bound to its reading: 328 readings are still unbound, so a card asked before its
+// word existed is the ordinary case rather than an edge, and one asked once and never again is a card
+// left half written for good.
+//
+// In the order the reader meets them, so a bounded first run is the cards a reader meets first rather
+// than a scatter across sixty levels.
+const owed = taughtCharacters(subjects).filter((character) => {
+  const card = cards.get(character)
+  const told = written.get(character)
+
+  if (card === undefined) return false
+  if ((told?.meaning ?? '').trim() === '') return true
+
+  return card.reading !== null && card.anchor !== null && (told?.reading ?? '').trim() === ''
+})
 
 const saved = existsSync(runFile) ? readSubmitted(readFileSync(runFile, 'utf8')) : null
-const step = nextStep(saved, spread(owed, most), STORY_VERSION)
+const step = nextStep(saved, owed.slice(0, most), STORY_VERSION)
 
 if (step.do === 'submit') await submit(step.parts)
 else if (step.do === 'collect') await collect(step.id)

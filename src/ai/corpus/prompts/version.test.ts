@@ -36,7 +36,7 @@ const RECORDED_MEANING: Record<number, string> = {
 }
 
 const RECORDED_STORY: Record<number, string> = {
-  1: 'de78da97a4a3a80c3acd2cfd3af2f7fc6c7a0e8635d4bfb74514ed25bab38452',
+  1: '7f2df4e9e256d04e28f72ee8e781e9274f8091041c22f68a62d463d4e3d65fb4',
 }
 
 const RECORDED_TRANSLATION: Record<number, string> = {
