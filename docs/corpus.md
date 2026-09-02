@@ -494,6 +494,16 @@ and `corpus:report` holds every one of them to the rules above and counts what i
 no second standard for a story somebody typed: the generator arrives to fill that file, not to be
 judged differently from it.
 
+**`corpus:story` asks for the three texts a card shows** and writes what survives into
+`mnemonics.json`. What comes back is held to the rules above before anything is written: a story naming
+a part it was not given, told out of the order the drawing places them, or ending anywhere but on the
+meaning is refused and asked again by the next run. A card whose reading no word is bound to is asked
+without one, and the story it can carry is the other one.
+
+Bounded like the other paid steps, so a first batch is read by hand before the rest is paid for, and
+resumed rather than waited on: a batch is asynchronous and the run says which of submitting or
+collecting it did.
+
 **A nuance says what the key does not carry**, in one clause, and names the French word the key must
 not be taken for: neuf is a number here and never new, personne is a human being and never nobody. It
 sits beside the story in `mnemonics.json` and it is a column of its own, since a card shows it.
@@ -514,7 +524,7 @@ files that graded it.
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
 `corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:anchor-written`, `corpus:anchor`,
 `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:name`, `corpus:vocabulary`,
-`corpus:word`, `corpus:report` and `corpus:publish` are its fourteen steps, each still runnable alone so that one of them can be read by hand,
+`corpus:word`, `corpus:story`, `corpus:report` and `corpus:publish` are its fifteen steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.

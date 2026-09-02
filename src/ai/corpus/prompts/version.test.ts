@@ -6,6 +6,7 @@ import { ANCHOR_VERSION, anchorPrefix, anchorRequest } from './anchor'
 import { COMPONENT_NAME_VERSION, componentNamePrefix, componentNameRequest } from './component-name'
 import { KEY_CHOICE_VERSION, keyChoicePrefix, keyChoiceRequest } from './key-choice'
 import { KEY_TRANSLATION_VERSION, keyTranslationPrefix, keyTranslationRequest } from './key-translation'
+import { STORY_VERSION, storyPrefix, storyRequest } from './story'
 import { WORD_MEANING_VERSION, wordMeaningPrefix, wordMeaningRequest } from './word-meaning'
 
 // A version constant nobody bumps is worse than no version constant. `prompt_version` is a column on
@@ -32,6 +33,10 @@ const RECORDED_CHOICE: Record<number, string> = {
 const RECORDED_MEANING: Record<number, string> = {
   1: '7b7ddd9604475178d2a2742efe5ce96ef988dd24932754b2b6d24196f99f7ff9',
   2: '11be8ecabeb337615567c7c48e2b58c5d1406b861e8e4a28a965405af8d78104',
+}
+
+const RECORDED_STORY: Record<number, string> = {
+  1: 'de78da97a4a3a80c3acd2cfd3af2f7fc6c7a0e8635d4bfb74514ed25bab38452',
 }
 
 const RECORDED_TRANSLATION: Record<number, string> = {
@@ -167,6 +172,29 @@ function renderedMeaning(): string {
       { character: '人', key: 'personne' },
     ],
     taught: ['Three People'],
+  })
+
+  return createHash('sha256')
+    .update(JSON.stringify({ ...asked, model: undefined }))
+    .digest('hex')
+}
+
+describe('the story prompt', () => {
+  it('has not changed without its version changing', () => {
+    const recorded = RECORDED_STORY[STORY_VERSION]
+
+    expect(recorded, `version ${STORY_VERSION} has no recorded hash. Record ${renderedStory()} against it.`).toBeDefined()
+    expect(renderedStory(), 'the prompt changed. Bump its version and record the new hash.').toBe(recorded)
+  })
+})
+
+function renderedStory(): string {
+  const asked = storyRequest(storyPrefix('French'), {
+    character: '休',
+    key: 'repos',
+    parts: ['le passant', "l'arbre"],
+    reading: 'キュウ',
+    anchor: 'le képi',
   })
 
   return createHash('sha256')

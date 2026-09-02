@@ -240,3 +240,19 @@ const storyList = z.object({
 export function readStories(json: string): ReadonlyMap<string, Told & { readonly nuance: string }> {
   return new Map(Object.entries(storyList.parse(JSON.parse(json)).stories))
 }
+
+// The file rewritten with what a run added, keeping what it already held and its header. Written the
+// way componentNamesFile is: a run adds and never takes away, so a story somebody corrected by hand
+// survives a run that had nothing new to say about it.
+export function storiesFile(
+  current: string,
+  added: ReadonlyMap<string, { readonly meaning: string; readonly nuance: string; readonly reading: string }>,
+): string {
+  const held = storyList.parse(JSON.parse(current)).stories
+  const stories = { ...held, ...Object.fromEntries(added) }
+  const lines = Object.entries(stories)
+    .map(([character, told]) => `${JSON.stringify(character)}:${JSON.stringify(told)}`)
+    .join(',\n')
+
+  return `{\n"header":${JSON.stringify(anyFile.parse(JSON.parse(current)).header)},\n"stories":{\n${lines}\n}\n}\n`
+}
