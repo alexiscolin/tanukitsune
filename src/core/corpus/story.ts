@@ -73,6 +73,14 @@ function saidAt(name: string, told: string, telling: Telling, taken: readonly nu
   return -1
 }
 
+// A name without the article it was written with, which is what was actually found in the text: the
+// claim it stakes covers those letters and not the article's, or the word after it is claimed too.
+function bareLength(name: string, telling: Telling): number {
+  const opener = telling.opensWith.find((one) => name.startsWith(one))
+
+  return opener === undefined ? name.length : name.length - opener.length
+}
+
 // Every name of a story, placed in the text, longest first so a phrase claims its own words before the
 // shorter name written inside it is looked for.
 function placed(names: readonly string[], told: string, telling: Telling): ReadonlyMap<string, number> {
@@ -82,7 +90,7 @@ function placed(names: readonly string[], told: string, telling: Telling): Reado
   for (const name of [...names].sort((one, two) => two.length - one.length)) {
     const at = saidAt(name, told, telling, taken)
 
-    if (at !== -1) taken.push([at, at + name.length])
+    if (at !== -1) taken.push([at, at + bareLength(name, telling)])
     where.set(name, at)
   }
 
