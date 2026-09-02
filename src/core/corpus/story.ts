@@ -47,12 +47,14 @@ export type ReadingStory = {
   readonly cast: readonly string[]
 }
 
-// Where a name is said, or -1. A name is looked for without the article it was written with, on a word
-// boundary, and prose may inflect its end: what this refuses is the name buried inside a longer word.
+// The letters a name is said on, or null. A name is looked for without the article it was written
+// with, on a word boundary, and prose may inflect its end: what this refuses is the name buried inside
+// a longer word. The span comes back rather than the index alone, because it is the letters the search
+// matched and not the name as written that the next name must not claim again.
 //
 // `taken` is what other names have already claimed. Names are read longest first, so la main droite
 // claims its own words and la main is not answered by them: one mention answers for one part.
-function saidAt(name: string, told: string, telling: Telling, taken: readonly number[][]): number {
+function saidAt(name: string, told: string, telling: Telling, taken: readonly number[][]): number[] | null {
   const opener = telling.opensWith.find((one) => name.startsWith(one))
   const bare = opener === undefined ? name : name.slice(opener.length)
   const letter = (one: string | undefined) => one !== undefined && telling.letters.includes(one.toLowerCase())
@@ -67,18 +69,10 @@ function saidAt(name: string, told: string, telling: Telling, taken: readonly nu
     if (after > ends && !telling.inflects.includes(told.slice(ends, after))) continue
     if (taken.some(([from, to]) => at < (to as number) && (from as number) < after)) continue
 
-    return at
+    return [at, ends]
   }
 
-  return -1
-}
-
-// A name without the article it was written with, which is what was actually found in the text: the
-// claim it stakes covers those letters and not the article's, or the word after it is claimed too.
-function bareLength(name: string, telling: Telling): number {
-  const opener = telling.opensWith.find((one) => name.startsWith(one))
-
-  return opener === undefined ? name.length : name.length - opener.length
+  return null
 }
 
 // Every name of a story, placed in the text, longest first so a phrase claims its own words before the
@@ -88,10 +82,10 @@ function placed(names: readonly string[], told: string, telling: Telling): Reado
   const where = new Map<string, number>()
 
   for (const name of [...names].sort((one, two) => two.length - one.length)) {
-    const at = saidAt(name, told, telling, taken)
+    const span = saidAt(name, told, telling, taken)
 
-    if (at !== -1) taken.push([at, at + bareLength(name, telling)])
-    where.set(name, at)
+    if (span !== null) taken.push(span)
+    where.set(name, span === null ? -1 : (span[0] as number))
   }
 
   return where

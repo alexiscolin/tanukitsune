@@ -46,6 +46,13 @@ export type Row = {
   readonly corpusVersion: string
 }
 
+// A card is written when it carries the two texts every row must have. The reading story is not one of
+// them: 328 readings have no word bound, so a card whose reading story is empty is a card still waiting
+// for one rather than a card half written.
+export function readyToPublish(told: Told): boolean {
+  return told.meaning.trim() !== '' && told.nuance.trim() !== ''
+}
+
 export function rowsToPublish(
   cards: ReadonlyMap<string, Publishable>,
   written: ReadonlyMap<string, Told>,
@@ -57,7 +64,7 @@ export function rowsToPublish(
     const card = cards.get(character)
 
     if (card === undefined) continue
-    if (told.meaning.trim() === '' || told.nuance.trim() === '') continue
+    if (!readyToPublish(told)) continue
 
     const reads = told.reading.trim() !== '' && card.reading !== null
 
@@ -82,9 +89,6 @@ export function rowsToPublish(
   return rows
 }
 
-// What every kanji card is made of, assembled once. The report judges a story against this and
-// publishing writes it, and two copies of the assembly is a story judged against one list and graded
-// against another.
 // What the locale wrote, which is everything the assembly reads besides the curriculum itself.
 export type Written = {
   readonly names: ComponentNames
@@ -92,6 +96,9 @@ export type Written = {
   readonly bound: ReadonlyMap<string, { readonly anchor: string; readonly phonemes: readonly string[] }>
 }
 
+// What every kanji card is made of, assembled once. The report judges a story against this and
+// publishing writes it, and two copies of the assembly is a story judged against one list and graded
+// against another.
 export function cardsFrom(
   subjects: readonly InventorySubject[],
   walked: readonly Decomposition[],

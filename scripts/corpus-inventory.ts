@@ -11,12 +11,9 @@ import { writeFileSync } from 'node:fs'
 import { INVENTORY_FILE, readInventory } from '../src/data/corpus/inventory.ts'
 import { asOptional } from '../src/data/optional-text.ts'
 import { API } from '../src/data/wanikani/paging.ts'
+import { loadLocalEnv } from './corpus-command.ts'
 
-try {
-  process.loadEnvFile('.env.local')
-} catch {
-  // Absent before the first bootstrap, which is not an error.
-}
+loadLocalEnv()
 
 const token = asOptional(process.env['WANIKANI_TOKEN'])
 if (token === undefined) throw new Error('WANIKANI_TOKEN is not set')

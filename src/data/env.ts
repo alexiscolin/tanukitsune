@@ -2,7 +2,7 @@ import 'server-only'
 
 import { z } from 'zod'
 
-import { asOptional } from './optional-text.ts'
+import { asOptional } from './optional-text'
 
 // An empty value means absent, not invalid: .env.example ships placeholders and
 // bootstrap copies them into .env.local. Without the preprocess, a blank line either

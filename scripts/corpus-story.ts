@@ -17,7 +17,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 
 import { collectBatch, submitBatch } from '../src/ai/corpus/batch.ts'
 import { STORY_VERSION, readStory, storyPrefix, storyRequest } from '../src/ai/corpus/prompts/story.ts'
-import { faultInReadingStory, faultInStory } from '../src/core/corpus/story.ts'
+import { faultInTold } from '../src/data/corpus/story-run.ts'
 import type { Told } from '../src/data/corpus/story-run.ts'
 import {
   readAnchors,
@@ -60,9 +60,11 @@ const decompositions = readDecompositions(readFileSync('corpus/decomposition.jso
 const names = readComponentNames(readFileSync(at('components.json'), 'utf8'))
 const keys = readKeys(readFileSync(at('keys.json'), 'utf8'))
 const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
-const naming = readNaming(readFileSync(at('naming.json'), 'utf8'))
-const telling = readTelling(readFileSync(at('naming.json'), 'utf8'))
-const written = readStories(readFileSync(toldFile, 'utf8'))
+const namingFile = readFileSync(at('naming.json'), 'utf8')
+const naming = readNaming(namingFile)
+const telling = readTelling(namingFile)
+const heldStories = readFileSync(toldFile, 'utf8')
+const written = readStories(heldStories)
 
 const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
 const cards = cardsFrom(subjects, read, { names, keys, bound })
@@ -148,41 +150,22 @@ async function collect(id: string): Promise<void> {
       continue
     }
 
-    const fault = faultInStory({ text: told.meaning, parts: card.parts, key: card.key }, telling)
+    // Asked for only where a word is bound to the reading, so an unbound card keeps no reading story
+    // rather than being refused one: a story resting on no word rests on nothing.
+    const answer = card.reading === null || card.anchor === null ? { ...told, reading: '' } : told
+    const fault = faultInTold(answer, card, telling)
 
     if (fault !== null) {
-      refused.set(character, `meaning: ${fault}`)
+      refused.set(character, fault)
       continue
     }
 
-    // Asked for only where a word is bound to the reading, so an empty one is the answer rather than a
-    // refusal: a story resting on no word rests on nothing.
-    if (card.reading === null || card.anchor === null) {
-      kept.set(character, { meaning: told.meaning, nuance: told.nuance, reading: '' })
-      continue
-    }
-
-    const heard = faultInReadingStory(
-      {
-        text: told.reading,
-        anchor: card.anchor,
-        reading: card.reading,
-        cast: [...card.parts, card.key],
-      },
-      telling,
-    )
-
-    if (heard !== null) {
-      refused.set(character, `reading: ${heard}`)
-      continue
-    }
-
-    kept.set(character, told)
+    kept.set(character, answer)
   }
 
   // Written before the run file is dropped. A write that fails leaves the batch collectable again,
   // where dropping it first would lose answers that are already paid for.
-  writeFileSync(toldFile, storiesFile(readFileSync(toldFile, 'utf8'), kept))
+  writeFileSync(toldFile, storiesFile(heldStories, kept))
   rmSync(runFile)
 
   process.stdout.write(`collected: ${kept.size} written, saved to ${toldFile}\n`)

@@ -18,19 +18,12 @@ import { LOCAL_DATA_DIR } from '../src/data/local-data-dir.ts'
 import { asOptional } from '../src/data/optional-text.ts'
 import { corpusEntry } from '../src/data/schema.ts'
 import { readAnchors, readComponentNames, readDecompositions, readKeys, readStories } from '../src/data/corpus/artifact.ts'
-import { cardsFrom, rowsToPublish } from '../src/data/corpus/publish.ts'
-import type { Told } from '../src/data/corpus/story-run.ts'
+import { cardsFrom, readyToPublish, rowsToPublish } from '../src/data/corpus/publish.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
-import { list } from './corpus-command.ts'
+import { list, loadLocalEnv } from './corpus-command.ts'
 
-// bootstrap writes .env.local and next loads that, so a command outside the application reads it
-// itself or it opens a different database than the one the reader is looking at.
-try {
-  process.loadEnvFile('.env.local')
-} catch {
-  // Absent before the first bootstrap, which is not an error.
-}
+loadLocalEnv()
 
 const locale = process.argv[2] ?? 'fr'
 const at = (file: string) => `corpus/${locale}/${file}`
@@ -40,29 +33,31 @@ if (!existsSync(INVENTORY_FILE)) {
   process.exit(1)
 }
 
-const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
-const names = existsSync(at('components.json')) ? readComponentNames(readFileSync(at('components.json'), 'utf8')) : {}
-const keys = existsSync(at('keys.json')) ? readKeys(readFileSync(at('keys.json'), 'utf8')) : {}
-const bound: ReadonlyMap<string, { anchor: string; phonemes: readonly string[] }> = existsSync(at('anchors.json'))
-  ? readAnchors(readFileSync(at('anchors.json'), 'utf8')).bound
-  : new Map()
-const written: ReadonlyMap<string, Told> = existsSync(at('mnemonics.json'))
-  ? readStories(readFileSync(at('mnemonics.json'), 'utf8'))
-  : new Map()
-const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
-
-const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
-
-const cards = cardsFrom(subjects, read, { names, keys, bound })
-
 // Refused over a dirty tree rather than stamped with a commit that does not contain the text being
 // written: the column exists so an answer can be traced to the files that graded it, and a sha naming
-// files somebody has since edited traces to the wrong ones.
+// files somebody has since edited traces to the wrong ones. Asked before anything is read, since every
+// read after it would be discarded.
 if (execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '') {
   process.stdout.write('the tree carries changes, so no commit describes what would be published\n')
   process.exit(1)
 }
 
+// A run missing one of these publishes a card with a hole in it, and the table says published either
+// way. Refused rather than defaulted, as the sibling refuses.
+for (const needed of ['corpus/decomposition.json', at('components.json'), at('keys.json'), at('anchors.json'), at('mnemonics.json')]) {
+  if (!existsSync(needed)) throw new Error(`${needed} is missing. Run pnpm corpus to write it`)
+}
+
+const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
+const names = readComponentNames(readFileSync(at('components.json'), 'utf8'))
+const keys = readKeys(readFileSync(at('keys.json'), 'utf8'))
+const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
+const written = readStories(readFileSync(at('mnemonics.json'), 'utf8'))
+const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
+
+const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
+
+const cards = cardsFrom(subjects, read, { names, keys, bound })
 const version = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
 const rows = rowsToPublish(cards, written, {
   locale,
@@ -72,7 +67,7 @@ const rows = rowsToPublish(cards, written, {
 })
 
 const short = [...written].flatMap(([character, told]) =>
-  cards.has(character) && (told.meaning.trim() === '' || told.nuance.trim() === '') ? [character] : [],
+  cards.has(character) && !readyToPublish(told) ? [character] : [],
 )
 
 const owing = `written but not ready, missing a story or a nuance: ${list(short)}\n`

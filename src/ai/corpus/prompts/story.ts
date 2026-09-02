@@ -20,7 +20,7 @@ const story = z.strictObject({ meaning: z.string(), nuance: z.string(), reading:
 
 const FORMAT = zodOutputFormat(story)
 
-export type Answer = { readonly meaning: string; readonly nuance: string; readonly reading: string }
+type Answer = z.infer<typeof story>
 
 export function readStory(text: string): Answer | null {
   try {

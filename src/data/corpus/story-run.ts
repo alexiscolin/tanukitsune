@@ -29,6 +29,33 @@ export type Told = {
   readonly reading: string
 }
 
+// What is wrong with one character's texts against its card, or null. A text not written yet is not a
+// fault, since nothing is owed until the generator runs. This is the one judgement: the report names
+// what a locale has committed and the generator decides what it keeps of a batch, and the two reading
+// the same function is what stops a paid story from being written and then named at fault.
+export function faultInTold(told: Told, card: Card, telling: Telling): string | null {
+  if (told.meaning !== '') {
+    const fault = faultInStory({ text: told.meaning, parts: card.parts, key: card.key }, telling)
+
+    if (fault !== null) return `meaning: ${fault}`
+  }
+
+  if (told.reading === '') return null
+  if (card.anchor === null || card.reading === null) return 'reading: no anchor binds this reading yet'
+
+  const heard = faultInReadingStory(
+    {
+      text: told.reading,
+      anchor: card.anchor,
+      reading: card.reading,
+      cast: [...card.parts, card.key],
+    },
+    telling,
+  )
+
+  return heard === null ? null : `reading: ${heard}`
+}
+
 export function faultsInStories(
   written: ReadonlyMap<string, Told>,
   cards: ReadonlyMap<string, Card>,
@@ -44,30 +71,9 @@ export function faultsInStories(
       continue
     }
 
-    if (story.meaning !== '') {
-      const fault = faultInStory({ text: story.meaning, parts: card.parts, key: card.key }, telling)
+    const fault = faultInTold(story, card, telling)
 
-      if (fault !== null) faults.push(`${character} meaning: ${fault}`)
-    }
-
-    if (story.reading === '') continue
-
-    if (card.anchor === null || card.reading === null) {
-      faults.push(`${character} reading: no anchor binds this reading yet`)
-      continue
-    }
-
-    const fault = faultInReadingStory(
-      {
-        text: story.reading,
-        anchor: card.anchor,
-        reading: card.reading,
-        cast: [...card.parts, card.key],
-      },
-      telling,
-    )
-
-    if (fault !== null) faults.push(`${character} reading: ${fault}`)
+    if (fault !== null) faults.push(`${character} ${fault}`)
   }
 
   return faults
