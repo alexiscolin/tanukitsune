@@ -9,7 +9,7 @@ import { SubjectHeadline } from '@/ui/atoms/subject-headline'
 import { SubjectBody } from '@/ui/molecules/subject-body'
 import { useCollapse } from '@/ui/primitives/use-collapse'
 import type { AnswerKind } from '@/core/answer-kind'
-import { markCardPainted } from '@/core/paint-budget'
+import { markCardPainted } from '@/ui/primitives/paint-budget'
 
 import type { Flow, Subject } from '@/core/subject'
 import type { SubjectCopy } from '@/core/site-copy'

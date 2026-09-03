@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { CARD_PAINTED, markCardPainted, markVerdict, PAINT_BUDGET, VERDICT_DECIDED } from './paint-budget'
+import { CARD_PAINTED, PAINT_BUDGET, PAINT_SPAN, VERDICT_DECIDED } from '@/core/paint-budget'
+import { markCardPainted, markVerdict } from './paint-budget'
 
 describe('the paint budget', () => {
   beforeEach(() => {
@@ -8,12 +9,13 @@ describe('the paint budget', () => {
     performance.clearMeasures()
   })
 
-  it('measures from the verdict to the card', () => {
+  it('marks both ends and measures the span between them', () => {
     markVerdict()
     markCardPainted()
 
-    const [measured] = performance.getEntriesByName(CARD_PAINTED, 'measure')
+    const [measured] = performance.getEntriesByName(PAINT_SPAN, 'measure')
 
+    expect(performance.getEntriesByName(CARD_PAINTED, 'mark')).toHaveLength(1)
     expect(measured).toBeDefined()
     expect(measured?.duration).toBeLessThan(PAINT_BUDGET)
   })
@@ -24,18 +26,18 @@ describe('the paint budget', () => {
   it('measures nothing where no verdict was decided', () => {
     markCardPainted()
 
-    expect(performance.getEntriesByName(CARD_PAINTED, 'measure')).toHaveLength(0)
+    expect(performance.getEntriesByName(PAINT_SPAN, 'measure')).toHaveLength(0)
   })
 
-  // One card at a time. A run that kept every mark would measure the newest card against the oldest
-  // verdict, since a measure names its marks rather than the pair the caller meant.
-  it('measures one card against the verdict that opened it', () => {
+  // One card at a time. A run that kept the near mark would measure the newest card against the
+  // oldest verdict, since a measure names its marks rather than the pair the caller meant.
+  it('measures each card against the verdict that opened it', () => {
     markVerdict()
     markCardPainted()
     markVerdict()
     markCardPainted()
 
-    expect(performance.getEntriesByName(CARD_PAINTED, 'measure')).toHaveLength(2)
+    expect(performance.getEntriesByName(PAINT_SPAN, 'measure')).toHaveLength(2)
     expect(performance.getEntriesByName(VERDICT_DECIDED, 'mark')).toHaveLength(0)
   })
 })
