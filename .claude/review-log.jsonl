@@ -1190,3 +1190,4 @@
 {"date":"2026-09-02","branch":"feat/ask-for-the-stories-a-card-shows","reviewer":"code-review","file":"src/data/corpus/publish.ts","line":69,"outcome":"dismissed","reason":"the reading column is gated on the reading story rather than on the reading being taught, which is the same question PR #58 carries: whether the table may say which reading a character is taught under. Unchanged until the reader rules."}
 {"date":"2026-09-02","branch":"feat/ask-for-the-stories-a-card-shows","kind":"pass","base":"3f107a55f39624625a71335e862dfaf6a75af781","head":"01d5d17a06fb58b7925f1d28552e27c3ddcb96be"}
 {"date":"2026-09-03","branch":"feat/ask-for-the-stories-a-card-shows","kind":"pass","base":"4ac9c220","head":"ce03c56b"}
+{"date":"2026-09-03","branch":"feat/ask-for-the-stories-a-card-shows","kind":"pass","base":"4ac9c220","head":"ce03c56a"}
