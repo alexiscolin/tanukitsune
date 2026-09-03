@@ -114,6 +114,19 @@ describe('rowsToPublish', () => {
     })
   })
 
+  // A shape the curriculum draws rather than writes has no character to be found under, so the locale
+  // names it by the identifier the curriculum gives it. Without this the reader meets it in the
+  // source's language, which is the one thing a row exists to prevent.
+  it('writes a drawn shape under the name the locale gave its identifier', () => {
+    const drawn = [subject({ id: 8766, type: 'radical', characters: null })]
+    const wrote = { ...WROTE, names: { ...WROTE.names, 'radical#8766': 'le crochet' } }
+
+    expect(rowsToPublish(drawn, { wrote, cards: CARDS, written: new Map() }, STAMP)[0]).toMatchObject({
+      subjectId: '8766',
+      meaning: 'le crochet',
+    })
+  })
+
   // A subject the locale has no word for cannot be asked in this language at all, so it publishes
   // nothing rather than a row falling back to the source's own.
   it('writes nothing for a subject the locale has no word for', () => {
