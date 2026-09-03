@@ -33,6 +33,7 @@ import { batchFor } from '../src/data/corpus/pipeline.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { add, nextStep, noSpend, readSubmitted, spentLine, submittedFile } from '../src/data/corpus/naming-run.ts'
+import { drawnKey } from '../src/core/corpus/decomposition.ts'
 
 const { locale, most, reach } = asked(process.argv)
 
@@ -65,7 +66,7 @@ function drawnBuilds(): Map<string, string[]> {
       const part = byId.get(id)
       if (part === undefined || part.characters !== null) continue
 
-      const key = `${part.type}#${part.id}`
+      const key = drawnKey(part)
       const carries = built.get(key)
 
       if (carries === undefined) built.set(key, [subject.characters])

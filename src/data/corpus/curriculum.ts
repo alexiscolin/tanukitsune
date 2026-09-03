@@ -1,7 +1,7 @@
 // The extensions on the two value imports are there for the reason inventory.ts states: the corpus
 // commands run this file through Node rather than a bundler, where an extensionless specifier
 // resolves to nothing.
-import { unnamedComponents } from '../../core/corpus/decomposition.ts'
+import { drawnKey, unnamedComponents } from '../../core/corpus/decomposition.ts'
 import type { ComponentNames, Decomposition, Glyph } from '@/core/corpus/decomposition'
 import { partsTaught } from '../../core/corpus/taught.ts'
 import type { InventorySubject } from '@/data/corpus/inventory'
@@ -45,7 +45,7 @@ export function walkCurriculum(
     if (subject.hidden) continue
 
     if (subject.characters === null) {
-      drawn.push(`${subject.type}#${subject.id}`)
+      drawn.push(drawnKey(subject))
       continue
     }
     if (subject.componentIds.length === 0) continue
@@ -61,7 +61,7 @@ export function walkCurriculum(
       // complete with a part missing, and a story written against that teaches a decomposition the
       // curriculum contradicts. The drawing is keyed by character and can say nothing about where it
       // sits, so partsTaught puts it last, unplaced, and the count below names it as such.
-      return [`${component.type}#${component.id}`]
+      return [drawnKey(component)]
     })
 
     const decomposition = partsTaught(subject.characters, components, shapeOf(subject.characters))

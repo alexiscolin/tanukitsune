@@ -7,6 +7,7 @@
 import type { ComponentNames, Decomposition } from '../../core/corpus/decomposition.ts'
 import type { InventorySubject } from './inventory.ts'
 import type { Card, Told } from './story-run.ts'
+import { drawnKey } from '../../core/corpus/decomposition.ts'
 
 // What a card is, in the words the reader meets, plus the identifier the table is keyed by. The
 // reading columns are null together: a component teaches no reading, and a word whose reading is the
@@ -87,7 +88,7 @@ export function wordFor(subject: InventorySubject, wrote: Answers): string | und
   // A shape the curriculum draws rather than writes has no character to be found under, so the locale
   // names it by the identifier the curriculum gives it. The same spelling the naming step wrote.
   if (subject.characters === null) {
-    return subject.type === 'radical' ? wrote.names[`radical#${subject.id}`] : undefined
+    return subject.type === 'radical' ? wrote.names[drawnKey(subject)] : undefined
   }
 
   if (subject.type === 'kanji') return wrote.keys[subject.characters]

@@ -37,6 +37,7 @@ import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { CORPUS_MODEL } from '../src/ai/corpus/request.ts'
 import { list, loadLocalEnv } from './corpus-command.ts'
+import { drawnKey } from '../src/core/corpus/decomposition.ts'
 
 loadLocalEnv()
 
@@ -124,7 +125,7 @@ const rows = rowsToPublish(subjects, { wrote, cards, written }, {
 // subject out of the table. A shape the curriculum draws has no character to print, so it is named
 // here the way the locale names it, or the one case with nothing to show would show nothing.
 const short = dealt.flatMap((subject) =>
-  wordFor(subject, wrote) === undefined ? [subject.characters ?? `${subject.type}#${subject.id}`] : [],
+  wordFor(subject, wrote) === undefined ? [subject.characters ?? drawnKey(subject)] : [],
 )
 
 const owing = `dealt but unanswerable in ${locale}, no word written: ${list(short)}\nheld back, at fault against the rules: ${list(wrong)}\n`
