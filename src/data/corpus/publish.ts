@@ -19,9 +19,11 @@ export type Publishable = Card & {
   readonly anchorPhonemes: readonly string[] | null
 }
 
-// Who wrote the rows and against what. `writtenBy` is the model that produced the text, or a marker
-// saying no model did: the transparency article applies to synthetic text, and a story somebody typed
-// is not that, so the column says which of the two it is rather than naming a model either way.
+// Who wrote the rows and against what. `writtenBy` is the model the run reaches, since no artifact
+// records who wrote one entry of it and the column cannot separate a word a dictionary supplied from
+// one a model wrote. The transparency article exists to stop synthetic text passing as written, so
+// naming a model where a dictionary supplied the word costs the reader nothing and the reverse is the
+// failure. What would let it be exact is provenance per entry, which the artifacts do not carry.
 export type Stamp = {
   readonly locale: string
   readonly writtenBy: string

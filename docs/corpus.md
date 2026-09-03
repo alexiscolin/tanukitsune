@@ -538,11 +538,14 @@ stay beside it. A subject the locale has nothing for keeps the fields the source
 that cannot be reached is the same case: the corpus is what a card shows and not what a card is, so a
 sitting deals without it rather than not at all.
 
-Two things a row records about its own making are decided rather than guessed. `generated_by` says
-which model wrote the text, or that none did: the transparency article applies to synthetic text, and
-a story somebody typed is not that, so a hand-written row says so instead of naming a model.
-`corpus_version` is the commit the repository stood on, so a reader's answer can be traced to the exact
-files that graded it.
+Two things a row records about its own making are decided rather than guessed. `generated_by` names the
+model the run reaches, on every row. It is not exact and it is deliberately not: no artifact records
+who wrote one entry of it, so the column cannot separate a word JMdict supplied from one `corpus:word`
+asked for, nor a name Kanji Alive seeded from one `corpus:name` wrote. The transparency article exists
+to stop synthetic text passing as written, so naming a model where a dictionary supplied the word costs
+the reader nothing and the reverse is the failure. What would make it exact is provenance per entry in
+each artifact, which is a change to every step that writes one. `corpus_version` is the commit the
+repository stood on, so a reader's answer can be traced to the exact files that graded it.
 
 ## The command
 
