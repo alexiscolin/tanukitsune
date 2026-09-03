@@ -37,7 +37,7 @@ const WROTE = {
   bound: new Map(),
 }
 
-const STAMP = { locale: 'fr', writtenBy: 'hand', promptVersion: '', corpusVersion: '9a1c2f0e' }
+const STAMP = { locale: 'fr', writtenBy: 'claude-opus-5', promptVersion: '', corpusVersion: '9a1c2f0e' }
 
 const told = (one: Partial<{ meaning: string; reading: string; nuance: string }>) => ({
   meaning: '',
@@ -66,7 +66,7 @@ describe('rowsToPublish', () => {
         anchor: 'le képi',
         anchorPhonemes: ['k', 'e', 'p', 'i'],
         parts: ['le passant', "l'arbre"],
-        generatedBy: 'hand',
+        generatedBy: 'claude-opus-5',
         promptVersion: '',
         corpusVersion: '9a1c2f0e',
       },
