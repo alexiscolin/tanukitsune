@@ -37,8 +37,13 @@ export function deckFor(
 }
 
 // What one card was written in a locale, which the source knows nothing of: it deals the upstream
-// curriculum and leaves both fields empty.
-export type Written = { readonly nuance: string; readonly mnemonic: string }
+// curriculum in its own language. `nuance` and `mnemonic` are absent for a card whose meaning is
+// written and whose story is not yet, which is most of the curriculum.
+export type Written = {
+  readonly meaning: string
+  readonly nuance: string | null
+  readonly mnemonic: string | null
+}
 
 // The same deck, each subject carrying what the locale wrote for it. Here beside `deckFor` for the
 // same reason: assembling a dealt sitting from its parts is a rule rather than plumbing. A subject
@@ -51,6 +56,20 @@ export function withText(
   return subjects.map((subject) => {
     const text = written.get(subject.id)
 
-    return text === undefined ? subject : { ...subject, nuance: text.nuance, mnemonic: text.mnemonic }
+    if (text === undefined) return subject
+
+    return {
+      ...subject,
+      // The one word the card shows and the one it accepts. What the source calls the meaning is its
+      // own language, and a course asking for it in that language is not the course: the locale's word
+      // takes the place of all three lists the source sends, the words it accepts without showing them
+      // and the words it shows struck through included, since those are the same language again. The
+      // reader's own synonyms are theirs and stay.
+      meanings: [{ text: text.meaning, primary: true, accepted: true }],
+      alsoAccepted: [],
+      refused: [],
+      nuance: text.nuance,
+      mnemonic: text.mnemonic,
+    }
   })
 }

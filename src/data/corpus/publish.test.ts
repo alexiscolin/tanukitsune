@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { rowsToPublish } from './publish'
 import type { Publishable } from './publish'
+import type { InventorySubject } from './inventory'
 
 const REST: Publishable = {
   subjectId: '451',
@@ -13,6 +14,29 @@ const REST: Publishable = {
   anchorPhonemes: ['k', 'e', 'p', 'i'],
 }
 
+// A subject as the curriculum states it. Only the four fields the walk reads are varied by the cases
+// below, so the rest is stated once.
+function subject(one: Partial<InventorySubject>): InventorySubject {
+  return {
+    id: 451,
+    type: 'kanji',
+    level: 2,
+    characters: '休',
+    hidden: false,
+    meanings: [],
+    readings: [],
+    componentIds: [],
+    ...one,
+  }
+}
+
+const WROTE = {
+  names: { 亻: 'le passant' },
+  keys: { 休: 'repos' },
+  words: { 休み: 'le congé' },
+  bound: new Map(),
+}
+
 const STAMP = { locale: 'fr', writtenBy: 'hand', promptVersion: '', corpusVersion: '9a1c2f0e' }
 
 const told = (one: Partial<{ meaning: string; reading: string; nuance: string }>) => ({
@@ -22,11 +46,14 @@ const told = (one: Partial<{ meaning: string; reading: string; nuance: string }>
   ...one,
 })
 
+const KANJI = [subject({})]
+const CARDS = new Map([['休', REST]])
+
 describe('rowsToPublish', () => {
   it('writes what a card shows and what a check reads', () => {
     const written = new Map([['休', told({ meaning: 'une histoire', reading: 'une autre', nuance: 'la pause' })]])
 
-    expect(rowsToPublish(new Map([['休', REST]]), written, STAMP)).toEqual([
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written }, STAMP)).toEqual([
       {
         subjectId: '451',
         locale: 'fr',
@@ -46,18 +73,66 @@ describe('rowsToPublish', () => {
     ])
   })
 
-  // A card the table cannot fill is left out rather than written half: the columns a row must carry
-  // are the ones a reader is shown, and a row with an empty one is a card that shows nothing.
-  it('leaves out a card with no story', () => {
-    const written = new Map([['休', told({ nuance: 'la pause' })]])
-
-    expect(rowsToPublish(new Map([['休', REST]]), written, STAMP)).toEqual([])
+  // A card answered in the reader's language is worth more than no card at all, and most of the
+  // curriculum has a word written and no story yet. The story columns stay empty rather than holding
+  // the row back, and the card shows what it has.
+  it('writes the word where no story is written', () => {
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written: new Map() }, STAMP)[0]).toMatchObject({
+      meaning: 'repos',
+      nuance: '',
+      mnemonic: '',
+    })
   })
 
-  it('leaves out a card with no nuance', () => {
-    const written = new Map([['休', told({ meaning: 'une histoire' })]])
+  it('writes the word where only the nuance is written', () => {
+    const written = new Map([['休', told({ nuance: 'la pause' })]])
 
-    expect(rowsToPublish(new Map([['休', REST]]), written, STAMP)).toEqual([])
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written }, STAMP)[0]).toMatchObject({
+      nuance: 'la pause',
+      mnemonic: '',
+    })
+  })
+
+  // The two kinds nothing writes a story for, and the reason the walk is by subject: a radical and the
+  // kanji it draws share a character, so a map keyed by one holds whichever came last.
+  it('writes a shape under the name the locale gave it', () => {
+    const shape = [subject({ id: 1, type: 'radical', characters: '亻' })]
+
+    expect(rowsToPublish(shape, { wrote: WROTE, cards: CARDS, written: new Map() }, STAMP)[0]).toMatchObject({
+      subjectId: '1',
+      meaning: 'le passant',
+      mnemonic: '',
+    })
+  })
+
+  it('writes a word under the meaning the locale gave it', () => {
+    const word = [subject({ id: 9, type: 'vocabulary', characters: '休み' })]
+
+    expect(rowsToPublish(word, { wrote: WROTE, cards: CARDS, written: new Map() }, STAMP)[0]).toMatchObject({
+      subjectId: '9',
+      meaning: 'le congé',
+    })
+  })
+
+  // A shape the curriculum draws rather than writes has no character to be found under, so the locale
+  // names it by the identifier the curriculum gives it. Without this the reader meets it in the
+  // source's language, which is the one thing a row exists to prevent.
+  it('writes a drawn shape under the name the locale gave its identifier', () => {
+    const drawn = [subject({ id: 8766, type: 'radical', characters: null })]
+    const wrote = { ...WROTE, names: { ...WROTE.names, 'radical#8766': 'le crochet' } }
+
+    expect(rowsToPublish(drawn, { wrote, cards: CARDS, written: new Map() }, STAMP)[0]).toMatchObject({
+      subjectId: '8766',
+      meaning: 'le crochet',
+    })
+  })
+
+  // A subject the locale has no word for cannot be asked in this language at all, so it publishes
+  // nothing rather than a row falling back to the source's own.
+  it('writes nothing for a subject the locale has no word for', () => {
+    const unknown = [subject({ id: 7, characters: '姉' })]
+
+    expect(rowsToPublish(unknown, { wrote: WROTE, cards: CARDS, written: new Map() }, STAMP)).toEqual([])
   })
 
   // A component carries no reading and a word often rests on the one its kanji gave, so the reading
@@ -66,7 +141,7 @@ describe('rowsToPublish', () => {
     const bare = new Map([['休', { ...REST, reading: null, anchor: null, anchorPhonemes: null }]])
     const written = new Map([['休', told({ meaning: 'une histoire', nuance: 'la pause' })]])
 
-    expect(rowsToPublish(bare, written, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: bare, written }, STAMP)[0]).toMatchObject({
       readingMnemonic: null,
       reading: null,
       anchor: null,
@@ -74,11 +149,11 @@ describe('rowsToPublish', () => {
     })
   })
 
-  // A story written for a character no card deals is not a row: the report already names it, and
-  // writing it would put a card in the table nobody can be dealt.
-  it('writes nothing for a story with no card behind it', () => {
+  // A story written for a character no subject deals reaches no row: the walk is over the curriculum,
+  // so a story with nothing to attach to is named by the report rather than written.
+  it('writes nothing for a story with no subject behind it', () => {
     const written = new Map([['姉', told({ meaning: 'une histoire', nuance: 'la soeur' })]])
 
-    expect(rowsToPublish(new Map([['休', REST]]), written, STAMP)).toEqual([])
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written }, STAMP)[0]?.mnemonic).toBe('')
   })
 })

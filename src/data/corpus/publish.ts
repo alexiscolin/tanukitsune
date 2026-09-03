@@ -46,47 +46,109 @@ export type Row = {
   readonly corpusVersion: string
 }
 
-// A card is written when it carries the two texts every row must have. The reading story is not one of
-// them: 328 readings have no word bound, so a card whose reading story is empty is a card still waiting
-// for one rather than a card half written.
-export function readyToPublish(told: Told): boolean {
-  return told.meaning.trim() !== '' && told.nuance.trim() !== ''
+// What a subject is answered with in this locale, by kind. The assembly reads the same two records and
+// a word needs a third, which nothing derives: a word composes its meaning from the characters it is
+// written with.
+export type Answers = Written & { readonly words: Readonly<Record<string, string>> }
+
+// A text somebody wrote, or the empty string the artifact itself uses for one nobody has written yet.
+// The column carries it as written, and what turns an empty text into an absent one is the read: a
+// card shows the block or it does not, and that is not a fact about the table.
+function said(text: string | undefined): string {
+  return text?.trim() ? text : ''
 }
 
-export function rowsToPublish(
-  cards: ReadonlyMap<string, Publishable>,
-  written: ReadonlyMap<string, Told>,
-  stamp: Stamp,
-): readonly Row[] {
-  const rows: Row[] = []
+// The four reading columns, or nothing at all: they stand or fall together, since a story about a
+// sound rests on the word that sound was bound to.
+function soundOf(
+  card: Publishable | undefined,
+  told: Told | undefined,
+): Pick<Row, 'readingMnemonic' | 'reading' | 'anchor' | 'anchorPhonemes'> | null {
+  if (card === undefined || told === undefined) return null
+  if (card.reading === null || told.reading.trim() === '') return null
 
-  for (const [character, told] of written) {
-    const card = cards.get(character)
+  return {
+    readingMnemonic: told.reading,
+    reading: card.reading,
+    anchor: card.anchor,
+    anchorPhonemes: card.anchorPhonemes,
+  }
+}
 
-    if (card === undefined) continue
-    if (!readyToPublish(told)) continue
+// The word a subject is answered with, in this locale, or nothing. A kanji is answered with its key, a
+// shape with the name the locale gave it, a word with its meaning. Nothing else: a subject the locale
+// has no word for cannot be asked in this language at all, so it publishes no row rather than a row
+// falling back to the source's own.
+export function wordFor(subject: InventorySubject, wrote: Answers): string | undefined {
+  if (subject.hidden) return undefined
 
-    const reads = told.reading.trim() !== '' && card.reading !== null
-
-    rows.push({
-      subjectId: card.subjectId,
-      locale: stamp.locale,
-      meaning: card.key,
-      englishKey: card.englishKey,
-      nuance: told.nuance,
-      mnemonic: told.meaning,
-      readingMnemonic: reads ? told.reading : null,
-      reading: reads ? card.reading : null,
-      anchor: reads ? card.anchor : null,
-      anchorPhonemes: reads ? card.anchorPhonemes : null,
-      parts: card.parts,
-      generatedBy: stamp.writtenBy,
-      promptVersion: stamp.promptVersion,
-      corpusVersion: stamp.corpusVersion,
-    })
+  // A shape the curriculum draws rather than writes has no character to be found under, so the locale
+  // names it by the identifier the curriculum gives it. The same spelling the naming step wrote.
+  if (subject.characters === null) {
+    return subject.type === 'radical' ? wrote.names[`radical#${subject.id}`] : undefined
   }
 
-  return rows
+  if (subject.type === 'kanji') return wrote.keys[subject.characters]
+  if (subject.type === 'radical') return wrote.names[subject.characters] ?? wrote.keys[subject.characters]
+
+  return wrote.words[subject.characters]
+}
+
+// Everything a row is built from besides the curriculum and the stamp: the words the locale answers
+// with, the kanji cards, and the stories written against them.
+export type Held = {
+  readonly wrote: Answers
+  readonly cards: ReadonlyMap<string, Publishable>
+  readonly written: ReadonlyMap<string, Told>
+}
+
+// One row per subject the locale can answer, walked by subject rather than by story: a radical and the
+// kanji it draws share a character, so a map keyed by one would hold whichever came last. The stories
+// join in where there are any, which today is the kanji and nothing else.
+export function rowsToPublish(
+  subjects: readonly InventorySubject[],
+  held: Held,
+  stamp: Stamp,
+): readonly Row[] {
+  return subjects.flatMap((subject) => {
+    const row = rowFor(subject, held, stamp)
+
+    return row === null ? [] : [row]
+  })
+}
+
+function rowFor(subject: InventorySubject, held: Held, stamp: Stamp): Row | null {
+  const word = wordFor(subject, held.wrote)
+  if (word === undefined) return null
+
+  // Only a kanji has one, and only a kanji is asked for a reading of its own here. A shape and a word
+  // take the empty columns the schema reserves for a subject that teaches neither, and a shape the
+  // curriculum draws has no character to look one up under at all.
+  const drawn = subject.type === 'kanji' ? subject.characters : null
+  const card = drawn === null ? undefined : held.cards.get(drawn)
+  const told = drawn === null ? undefined : held.written.get(drawn)
+  const heard = soundOf(card, told)
+
+  // The empty columns first and what was written over them: a shape and a word carry no card and no
+  // story, so most rows are the empty half and the three the locale answered with.
+  return {
+    subjectId: String(subject.id),
+    locale: stamp.locale,
+    meaning: word,
+    englishKey: null,
+    parts: [],
+    readingMnemonic: null,
+    reading: null,
+    anchor: null,
+    anchorPhonemes: null,
+    ...(card === undefined ? {} : { englishKey: card.englishKey, parts: card.parts }),
+    ...heard,
+    nuance: said(told?.nuance),
+    mnemonic: said(told?.meaning),
+    generatedBy: stamp.writtenBy,
+    promptVersion: stamp.promptVersion,
+    corpusVersion: stamp.corpusVersion,
+  }
 }
 
 // What the locale wrote, which is everything the assembly reads besides the curriculum itself.
