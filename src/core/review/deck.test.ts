@@ -64,7 +64,7 @@ describe('sessionOf', () => {
 
 describe('withText', () => {
   it('gives a subject the text the locale wrote for it', () => {
-    const [joined] = withText([KANJI], new Map([[KANJI.id, { nuance: 'la pause', mnemonic: 'une histoire' }]]))
+    const [joined] = withText([KANJI], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire' }]]))
 
     expect(joined?.nuance).toBe('la pause')
     expect(joined?.mnemonic).toBe('une histoire')
@@ -73,14 +73,14 @@ describe('withText', () => {
   // A locale that has not written a card yet is the ordinary state of every locale but the first, and
   // the reader still meets the card: the question is asked either way.
   it('leaves a subject the locale wrote nothing for alone', () => {
-    const [, second] = withText([KANJI, VERB], new Map([[KANJI.id, { nuance: 'la pause', mnemonic: 'une histoire' }]]))
+    const [, second] = withText([KANJI, VERB], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire' }]]))
 
     expect(second?.nuance).toBe(VERB.nuance)
     expect(second?.mnemonic).toBe(VERB.mnemonic)
   })
 
   it('keeps the order the deck was dealt in', () => {
-    const joined = withText([VERB, KANJI], new Map([[KANJI.id, { nuance: 'la pause', mnemonic: 'une histoire' }]]))
+    const joined = withText([VERB, KANJI], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire' }]]))
 
     expect(joined.map((one) => one.id)).toEqual([VERB.id, KANJI.id])
   })

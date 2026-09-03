@@ -22,10 +22,11 @@ import {
   readComponentNames,
   readDecompositions,
   readKeys,
+  readMeanings,
   readStories,
   readTelling,
 } from '../src/data/corpus/artifact.ts'
-import { cardsFrom, readyToPublish, rowsToPublish } from '../src/data/corpus/publish.ts'
+import { cardsFrom, rowsToPublish, wordFor } from '../src/data/corpus/publish.ts'
 import { faultInTold } from '../src/data/corpus/story-run.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -59,6 +60,7 @@ for (const needed of [
   at('anchors.json'),
   at('naming.json'),
   at('mnemonics.json'),
+  at('vocabulary.json'),
 ]) {
   if (!existsSync(needed)) throw new Error(`${needed} is missing. Run pnpm corpus to write it`)
 }
@@ -69,6 +71,15 @@ const keys = readKeys(readFileSync(at('keys.json'), 'utf8'))
 const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
 const telling = readTelling(readFileSync(at('naming.json'), 'utf8'))
 const held = readStories(readFileSync(at('mnemonics.json'), 'utf8'))
+// The first gloss, which is the one the run settled on: the file keeps the rest so a later pass can
+// widen what an answer accepts, and the card asks for one word.
+const words = Object.fromEntries(
+  Object.entries(readMeanings(readFileSync(at('vocabulary.json'), 'utf8'))).flatMap(([word, glosses]) => {
+    const first = glosses[0]
+
+    return first === undefined ? [] : [[word, first] as const]
+  }),
+)
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
 
 const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
@@ -91,19 +102,24 @@ const written = new Map(
   }),
 )
 
+const wrote = { names, keys, words, bound }
 const version = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
-const rows = rowsToPublish(cards, written, {
+const rows = rowsToPublish(subjects, { wrote, cards, written }, {
   locale,
   writtenBy: 'hand',
   promptVersion: '',
   corpusVersion: version,
 })
 
-const short = [...written].flatMap(([character, told]) =>
-  cards.has(character) && !readyToPublish(told) ? [character] : [],
+// What the curriculum deals and the locale has no word for, which is the one thing that keeps a
+// subject out of the table entirely.
+const short = subjects.flatMap((subject) =>
+  !subject.hidden && subject.characters !== null && wordFor(subject, wrote) === undefined
+    ? [subject.characters]
+    : [],
 )
 
-const owing = `written but not ready, missing a story or a nuance: ${list(short)}\nheld back, at fault against the rules: ${list(wrong)}\n`
+const owing = `dealt but unanswerable in ${locale}, no word written: ${list(short)}\nheld back, at fault against the rules: ${list(wrong)}\n`
 
 if (rows.length === 0) {
   process.stdout.write(`nothing ready to publish for ${locale}\n`)
