@@ -4,6 +4,7 @@ import { setupServer } from 'msw/node'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
 import { collectBatch, submitBatch } from './batch'
+import { CORPUS_MODEL } from './request'
 
 // A server that answers like theirs, which is what MSW is here for: it mocks third-party HTTP and
 // never our own data layer. What is checked is what only a real request can be wrong about, the
@@ -26,7 +27,7 @@ afterAll(() => {
 const KEY = 'nobody-owns-this'
 
 function asked(prompt: string): MessageCreateParamsNonStreaming {
-  return { model: 'claude-opus-5', max_tokens: 1024, messages: [{ role: 'user', content: prompt }] }
+  return { model: CORPUS_MODEL, max_tokens: 1024, messages: [{ role: 'user', content: prompt }] }
 }
 
 describe('submitBatch', () => {
@@ -162,7 +163,7 @@ describe('collectBatch', () => {
           custom_id: idFor('殺'),
           result: {
             type: 'succeeded',
-            message: { content: [], stop_reason: 'refusal', model: 'claude-opus-5' },
+            message: { content: [], stop_reason: 'refusal', model: CORPUS_MODEL },
           },
         }),
       ]),
@@ -216,7 +217,7 @@ function resultLine(subject: string, text: string, stop = 'end_turn'): string {
       message: {
         content: [{ type: 'text', text }],
         stop_reason: stop,
-        model: 'claude-opus-5',
+        model: CORPUS_MODEL,
         usage: {
           input_tokens: 12,
           output_tokens: 34,
