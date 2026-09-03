@@ -515,18 +515,27 @@ collecting it did.
 not be taken for: neuf is a number here and never new, personne is a human being and never nobody. It
 sits beside the story in `mnemonics.json` and it is a column of its own, since a card shows it.
 
-**Publishing is a step like the others.** `corpus:publish` writes the cards that are ready into
-`corpus_entry` and names what it left out: a card missing a story or a nuance is skipped rather than
-written with an empty column, a card whose story the rules refuse is held back, and the run says which
-of the two each one is. It runs last, after the report, so the hole is seen before the table is
-written.
+**Publishing is a step like the others.** `corpus:publish` walks the curriculum and writes a row for
+every subject the locale has a word for: a kanji under its key, a shape under the name the locale gave
+it, a word under its meaning. Walked by subject rather than by story, because a radical and the kanji it
+draws share a character and a list keyed by one would hold whichever came last. A card whose story the
+rules refuse is held back and the run names it, and so is a subject the locale has no word for at all,
+which is the one thing that keeps a subject out of the table.
+
+**A card is written before its story is.** The story columns carry the empty text the artifact already
+uses for one nobody has written, and the read is what turns that into an absent block: two subjects in
+three have a word and no story, and a card answered in the reader's language is worth more than a card
+in somebody else's. It runs last, after the report, so the hole is seen before the table is written.
 
 **What reads those rows is the deck.** The route that deals a sitting joins the locale's text onto the
 subjects it hands back, once and on the server and beside the request for the subjects themselves, so
 what the device holds carries the French with it. Where that text is held on the device is decided in
-[`framing.md`](framing.md), under the offline stores. A subject the locale has nothing for keeps the
-empty fields the source sent, and a table that cannot be reached is the same case: the corpus is what a
-card shows and not what a card is, so a sitting deals without it rather than not at all.
+[`framing.md`](framing.md), under the offline stores. The word the locale wrote takes the place of the
+one the source sent, along with what the account would also have accepted, since that is the source's
+language again: what a card shows and what it accepts are the locale's, and the reader's own synonyms
+stay beside them. A subject the locale has nothing for keeps the fields the source sent, and a table
+that cannot be reached is the same case: the corpus is what a card shows and not what a card is, so a
+sitting deals without it rather than not at all.
 
 Two things a row records about its own making are decided rather than guessed. `generated_by` says
 which model wrote the text, or that none did: the transparency article applies to synthetic text, and
