@@ -8,8 +8,19 @@
 // really there, in the strokes and in the shape, and nothing can name it: a character holding one is
 // reported rather than generated from as though its parts were known.
 type Part = {
+  // The character the part is, or what `drawnKey` calls a shape the curriculum draws rather than
+  // writes, which has no character to be named by. Null where the source carries a group with nothing
+  // behind it at all.
   readonly component: string | null
   readonly position: string | null
+}
+
+// A shape the curriculum draws rather than writes has no character to be named by, so it is named by
+// what the curriculum calls it. One spelling, because the naming step writes it, the walk reads it and
+// publishing looks a name up under it, and three places deciding it for themselves is three chances to
+// disagree about which name belongs to which shape.
+export function drawnKey(shape: { readonly type: string; readonly id: number }): string {
+  return `${shape.type}#${shape.id}`
 }
 
 export type Decomposition = {
