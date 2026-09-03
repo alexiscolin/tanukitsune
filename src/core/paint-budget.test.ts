@@ -36,6 +36,6 @@ describe('the paint budget', () => {
     markCardPainted()
 
     expect(performance.getEntriesByName(CARD_PAINTED, 'measure')).toHaveLength(2)
-    expect(performance.getEntriesByName(VERDICT_DECIDED, 'mark')).toHaveLength(1)
+    expect(performance.getEntriesByName(VERDICT_DECIDED, 'mark')).toHaveLength(0)
   })
 })

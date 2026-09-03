@@ -16,6 +16,7 @@ import type { CascadeOutcome } from '@/core/grading/cascade'
 import { questionKey } from '@/core/review/question'
 import type { Question } from '@/core/review/question'
 import type { Verdict } from '@/core/grading/judge-port'
+import { markVerdict } from '@/core/paint-budget'
 import type { AnsweredCard } from '@/core/review/answer-record'
 import type { ReviewCopy, SubjectCopy } from '@/core/site-copy'
 
@@ -48,6 +49,16 @@ function spoken(
 type Answer = {
   readonly typed: string | null
   readonly outcome: CascadeOutcome | null
+}
+
+// What the screen is about to show for the card, built here rather than at each caller because
+// building one is the moment a verdict stands: that is the near end of the budget v0.1 sets on the
+// item card, and the tiers deciding are the work before it. Giving up takes it too, since the card
+// opens either way and it is the card the reader is waiting for.
+function answerOf(typed: string | null, outcome: CascadeOutcome | null): Answer {
+  markVerdict()
+
+  return { typed, outcome }
 }
 
 // Undecided is not a verdict. It is the question handed back to the reader, so the card renders
@@ -162,13 +173,13 @@ export function ReviewSession({
   const submit = async (asked: Question, raw: string) => {
     const graded = { kind: asked.kind, answer: raw, accepted: asked.accepted }
 
-    say({ typed: raw, outcome: await runCascade(graded, null) })
+    say(answerOf(raw, await runCascade(graded, null)))
   }
 
   // Pressing the dot is giving up rather than answering, so it opens the card and leaves the
   // verdict to the reader: nothing was typed, and there is nothing for a tier to decide.
   function giveUp() {
-    say({ typed: null, outcome: null })
+    say(answerOf(null, null))
   }
 
   // One gesture grades and moves on, which is what removes the grading bar: right is the
