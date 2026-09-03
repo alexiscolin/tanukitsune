@@ -131,3 +131,29 @@ describe('walkCurriculum', () => {
     expect(walked.unplaced).toEqual(['休:丶'])
   })
 })
+
+describe('walkCurriculum, a part the curriculum draws rather than writes', () => {
+  const DRAWN = subject({ id: 8, type: 'radical', characters: null })
+  const BUILT = subject({ id: 9, type: 'kanji', characters: '写', componentIds: [8, 2] })
+  const names = { '木': "l'arbre", 'radical#8': 'le crochet' }
+
+  // Fifteen shapes of the curriculum have no character, and fifty-nine kanji are built from one. A
+  // walk that drops them leaves the character looking complete with a part missing, and the story
+  // written against it teaches a decomposition the curriculum contradicts.
+  it('names it by the identifier the locale named it under', () => {
+    const { read } = walkCurriculum([DRAWN, RIGHT, BUILT], names, () => [])
+    const parts = read.find((one) => one.character === '写')?.parts.map((part) => part.component)
+
+    expect(parts).toContain('radical#8')
+  })
+
+  // The drawing is keyed by character, so it can say nothing about where a shape it does not carry
+  // sits. It goes last, which is what partsTaught already does with a part the drawing does not place.
+  it('leaves it unplaced rather than guessing where it sits', () => {
+    const { read } = walkCurriculum([DRAWN, RIGHT, BUILT], names, () => [glyph('木', 'right')])
+    const parts = read.find((one) => one.character === '写')?.parts
+
+    expect(parts?.map((part) => part.component)).toEqual(["木", 'radical#8'])
+    expect(parts?.at(-1)?.position).toBeNull()
+  })
+})
