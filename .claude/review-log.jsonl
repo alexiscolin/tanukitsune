@@ -1210,3 +1210,4 @@
 {"date":"2026-09-03","branch":"feat/measure-the-card-paint","reviewer":"architecture-check","file":"src/ui/organisms/review-session.tsx","line":58,"outcome":"fixed"}
 {"date":"2026-09-03","branch":"feat/measure-the-card-paint","reviewer":"requirement-check","file":"src/ui/organisms/review-session.tsx","line":182,"outcome":"dismissed","reason":"giving up marks the near end although no tier decided. The card opens all the same and the card is what the reader waits for, which is what the budget is a budget on, so the span is the right one to record. The comment now says so instead of reading as a contradiction."}
 {"date":"2026-09-03","branch":"feat/measure-the-card-paint","kind":"pass","base":"8acb7a607031bfbf41aa09a656d85abbf412df18","head":"bdb047bfa9555c1657615113663e17cd8443f2b8"}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","kind":"pass","base":"eb0601ad","head":"bdb047bfa9555c1657615113663e17cd8443f2b8"}
