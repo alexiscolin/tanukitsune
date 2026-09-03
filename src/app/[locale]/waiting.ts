@@ -55,7 +55,16 @@ async function dealt(
   // DEFAULT_LOCALE because the route deals one deck for every reader of a deployment and LOCALES
   // holds one entry; a second language is a parameter on this call and not a second table.
   const dealt = deckFor(sitting, subjects)
-  const deck = withText(dealt, await textFor(dealt.map((subject) => subject.id), DEFAULT_LOCALE))
+  // Dealt without the text rather than not dealt at all. The corpus is what a card shows and not what
+  // a card is, so a table that cannot be reached leaves the same empty fields a subject nobody has
+  // written for carries. Raising here would answer five hundred, which the screen reads as a defect
+  // rather than as no answer, and that is the one case where it does not fall back to the device.
+  const written = await textFor(
+    dealt.map((subject) => subject.id),
+    DEFAULT_LOCALE,
+  ).catch(() => new Map())
+
+  const deck = withText(dealt, written)
   // Only what the deck kept. `deckFor` drops an assignment whose subject the source withdrew or
   // never sent, and a cached record naming one would let a later flush advance an item the reader
   // was never asked.
