@@ -157,3 +157,28 @@ describe('walkCurriculum, a part the curriculum draws rather than writes', () =>
     expect(parts?.at(-1)?.position).toBeNull()
   })
 })
+
+describe('walkCurriculum, a shape taught by its own kanji', () => {
+  // 三 is dealt twice: once as the shape the kanji 一 already names, once as the kanji built from it.
+  // Both walks are keyed by the same character, so a reader of the walk keyed by character keeps
+  // whichever came last, and the shape's own walk says only that it is itself.
+  const SHAPE = subject({ id: 20, type: 'radical', characters: '三', componentIds: [20] })
+  const BUILT = subject({ id: 21, type: 'kanji', characters: '三', componentIds: [1, 2] })
+
+  it('walks the character once, for what it is made of', () => {
+    const { read } = walkCurriculum([LEFT, RIGHT, SHAPE, BUILT], { 亻: 'le passant', 木: "l'arbre" }, () => [])
+    const walked = read.filter((one) => one.character === '三')
+
+    expect(walked).toHaveLength(1)
+    expect(walked[0]?.parts.map((part) => part.component)).toEqual(['亻', '木'])
+  })
+
+  // A kanji that is its own only part keeps its walk: it is the one entry there is, and dropping it
+  // would leave the character with no decomposition at all.
+  it('keeps a kanji whose only part is itself', () => {
+    const alone = subject({ id: 30, type: 'kanji', characters: '一', componentIds: [30] })
+    const { read } = walkCurriculum([alone], {}, () => [])
+
+    expect(read.filter((one) => one.character === '一')).toHaveLength(1)
+  })
+})
