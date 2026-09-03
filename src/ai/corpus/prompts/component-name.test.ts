@@ -2,6 +2,7 @@ import type { TextBlockParam } from '@anthropic-ai/sdk/resources/messages'
 import { describe, expect, it } from 'vitest'
 
 import { componentName, componentNamePrefix, componentNameRequest, readComponentName } from './component-name'
+import { CORPUS_MODEL } from '../request'
 
 // A locale that is not French, so a rule leaking back into the prompt shows up here rather than in a
 // run six months from now.
@@ -82,7 +83,7 @@ describe('componentNameRequest', () => {
   })
 
   it('asks for the pinned model and a shape strict enough to refuse an extra key', () => {
-    expect(componentNameRequest(prefix(), { character: '九', composes: ['丸'] }).model).toBe('claude-opus-5')
+    expect(componentNameRequest(prefix(), { character: '九', composes: ['丸'] }).model).toBe(CORPUS_MODEL)
     expect(componentName.safeParse({ name: 'la bouche', why: 'because' }).success).toBe(false)
     expect(componentName.safeParse({ name: 'la bouche' }).success).toBe(true)
   })

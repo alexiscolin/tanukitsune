@@ -6,10 +6,13 @@
 // reader's language is worth more than a card in somebody else's, and the empty story columns are what
 // the read turns into an absent block. What it cannot write, it names.
 //
-// What a row records about its own making is decided rather than guessed. `generated_by` says which
-// model wrote the text, or that none did: the transparency article applies to synthetic text, and a
-// story somebody typed is not that. `corpus_version` is the commit the repository stood on, so a
-// reader's answer can be traced back to the exact files that graded it.
+// What a row records about its own making is decided rather than guessed. `generated_by` names the
+// model the run reaches, on every row: no artifact records who wrote one entry of it, so the column
+// cannot separate a word a dictionary supplied from one a model wrote, and between over-claiming and
+// under-claiming only the second is what the transparency article exists to prevent. Naming a text as
+// generated when a dictionary supplied it costs the reader nothing; the reverse is the failure.
+// `corpus_version` is the commit the repository stood on, so a reader's answer can be traced back to
+// the exact files that graded it.
 
 import { execFileSync } from 'node:child_process'
 import { sql } from 'drizzle-orm'
@@ -32,6 +35,7 @@ import { cardsFrom, rowsToPublish, wordFor } from '../src/data/corpus/publish.ts
 import { faultInTold } from '../src/data/corpus/story-run.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
+import { CORPUS_MODEL } from '../src/ai/corpus/request.ts'
 import { list, loadLocalEnv } from './corpus-command.ts'
 
 loadLocalEnv()
@@ -111,7 +115,7 @@ const dealt = subjects.filter((subject) => !subject.hidden)
 const version = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
 const rows = rowsToPublish(subjects, { wrote, cards, written }, {
   locale,
-  writtenBy: 'hand',
+  writtenBy: CORPUS_MODEL,
   promptVersion: '',
   corpusVersion: version,
 })

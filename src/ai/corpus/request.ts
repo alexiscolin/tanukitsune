@@ -17,6 +17,10 @@ import type { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resource
 //
 // An hour of cache rather than the default five minutes: a batch routinely runs longer than that, and a
 // prefix expiring mid-run is written again and read by nothing.
+// The one model every step of the run reaches, named here so a row can record what wrote it without
+// each command deciding that for itself.
+export const CORPUS_MODEL = 'claude-opus-5'
+
 export function corpusRequest(
   prefix: string,
   format: NonNullable<MessageCreateParamsNonStreaming['output_config']>['format'],
@@ -24,7 +28,7 @@ export function corpusRequest(
   ceiling = 4096,
 ): MessageCreateParamsNonStreaming {
   return {
-    model: 'claude-opus-5',
+    model: CORPUS_MODEL,
     max_tokens: ceiling,
     thinking: { type: 'adaptive' },
     system: [{ type: 'text', text: prefix, cache_control: { type: 'ephemeral', ttl: '1h' } }],
