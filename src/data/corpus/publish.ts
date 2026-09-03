@@ -80,10 +80,18 @@ function soundOf(
 // has no word for cannot be asked in this language at all, so it publishes no row rather than a row
 // falling back to the source's own.
 export function wordFor(subject: InventorySubject, wrote: Answers): string | undefined {
-  if (subject.characters === null || subject.hidden) return undefined
+  if (subject.hidden) return undefined
+
+  // A shape the curriculum draws rather than writes has no character to be found under, so the locale
+  // names it by the identifier the curriculum gives it. The same spelling the naming step wrote.
+  if (subject.characters === null) {
+    return subject.type === 'radical' ? wrote.names[`radical#${subject.id}`] : undefined
+  }
 
   if (subject.type === 'kanji') return wrote.keys[subject.characters]
-  if (subject.type === 'radical') return wrote.names[subject.characters] ?? wrote.keys[subject.characters]
+  if (subject.type === 'radical') {
+    return wrote.names[subject.characters] ?? wrote.names[`radical#${subject.id}`] ?? wrote.keys[subject.characters]
+  }
 
   return wrote.words[subject.characters]
 }
@@ -113,12 +121,14 @@ export function rowsToPublish(
 
 function rowFor(subject: InventorySubject, held: Held, stamp: Stamp): Row | null {
   const word = wordFor(subject, held.wrote)
-  if (word === undefined || subject.characters === null) return null
+  if (word === undefined) return null
 
   // Only a kanji has one, and only a kanji is asked for a reading of its own here. A shape and a word
-  // take the empty columns the schema reserves for a subject that teaches neither.
-  const card = subject.type === 'kanji' ? held.cards.get(subject.characters) : undefined
-  const told = card === undefined ? undefined : held.written.get(subject.characters)
+  // take the empty columns the schema reserves for a subject that teaches neither, and a shape the
+  // curriculum draws has no character to look one up under at all.
+  const drawn = subject.type === 'kanji' ? subject.characters : null
+  const card = drawn === null ? undefined : held.cards.get(drawn)
+  const told = drawn === null ? undefined : held.written.get(drawn)
   const heard = soundOf(card, told)
 
   // The empty columns first and what was written over them: a shape and a word carry no card and no
