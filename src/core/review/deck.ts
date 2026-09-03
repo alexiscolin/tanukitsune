@@ -35,3 +35,22 @@ export function deckFor(
     return [{ ...subject, srsStage: assignment.srsStage }]
   })
 }
+
+// What one card was written in a locale, which the source knows nothing of: it deals the upstream
+// curriculum and leaves both fields empty.
+export type Written = { readonly nuance: string; readonly mnemonic: string }
+
+// The same deck, each subject carrying what the locale wrote for it. Here beside `deckFor` for the
+// same reason: assembling a dealt sitting from its parts is a rule rather than plumbing. A subject
+// the locale has nothing for keeps the empty fields it arrived with, since the question is asked
+// either way.
+export function withText(
+  subjects: readonly Subject[],
+  written: ReadonlyMap<number, Written>,
+): readonly Subject[] {
+  return subjects.map((subject) => {
+    const text = written.get(subject.id)
+
+    return text === undefined ? subject : { ...subject, nuance: text.nuance, mnemonic: text.mnemonic }
+  })
+}

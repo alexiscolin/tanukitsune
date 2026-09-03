@@ -522,11 +522,11 @@ of the two each one is. It runs last, after the report, so the hole is seen befo
 written.
 
 **What reads those rows is the deck.** The route that deals a sitting joins the locale's text onto the
-subjects it hands back, once and on the server, so what the device holds carries the French with it.
-Where that text is held on the device is decided in [`framing.md`](framing.md), under the offline
-stores. A subject the locale has nothing for keeps the empty fields the source sent, and a table that
-cannot be reached is the same case: the corpus is what a card shows and not what a card is, so a
-sitting deals without it rather than not at all.
+subjects it hands back, once and on the server and beside the request for the subjects themselves, so
+what the device holds carries the French with it. Where that text is held on the device is decided in
+[`framing.md`](framing.md), under the offline stores. A subject the locale has nothing for keeps the
+empty fields the source sent, and a table that cannot be reached is the same case: the corpus is what a
+card shows and not what a card is, so a sitting deals without it rather than not at all.
 
 Two things a row records about its own making are decided rather than guessed. `generated_by` says
 which model wrote the text, or that none did: the transparency article applies to synthetic text, and

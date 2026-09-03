@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { KANJI, VERB } from '../demo-deck'
 import type { Assignment } from '../knowledge-source'
-import { deckFor, SESSION_LENGTH, sessionOf } from './deck'
+import { deckFor, SESSION_LENGTH, sessionOf, withText } from './deck'
 
 // The identifier is what a submission names, and nothing here submits: the deck deals cards by
 // subject, so it is derived rather than passed and no case below has to carry one.
@@ -59,5 +59,29 @@ describe('sessionOf', () => {
     const queue = [waiting(11, 1), waiting(22, 2)]
 
     expect(sessionOf(queue).map((entry) => entry.subjectId)).toEqual([11, 22])
+  })
+})
+
+describe('withText', () => {
+  it('gives a subject the text the locale wrote for it', () => {
+    const [joined] = withText([KANJI], new Map([[KANJI.id, { nuance: 'la pause', mnemonic: 'une histoire' }]]))
+
+    expect(joined?.nuance).toBe('la pause')
+    expect(joined?.mnemonic).toBe('une histoire')
+  })
+
+  // A locale that has not written a card yet is the ordinary state of every locale but the first, and
+  // the reader still meets the card: the question is asked either way.
+  it('leaves a subject the locale wrote nothing for alone', () => {
+    const [, second] = withText([KANJI, VERB], new Map([[KANJI.id, { nuance: 'la pause', mnemonic: 'une histoire' }]]))
+
+    expect(second?.nuance).toBe(VERB.nuance)
+    expect(second?.mnemonic).toBe(VERB.mnemonic)
+  })
+
+  it('keeps the order the deck was dealt in', () => {
+    const joined = withText([VERB, KANJI], new Map([[KANJI.id, { nuance: 'la pause', mnemonic: 'une histoire' }]]))
+
+    expect(joined.map((one) => one.id)).toEqual([VERB.id, KANJI.id])
   })
 })
