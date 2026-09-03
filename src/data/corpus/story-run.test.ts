@@ -11,7 +11,7 @@ const TELLING = {
 
 const REST: Card = { parts: ['le passant', "l'arbre"], key: 'repos', anchor: 'le képi', reading: 'キュウ' }
 
-const told = (one: Partial<Told>): Told => ({ meaning: '', reading: '', ...one })
+const told = (one: Partial<Told>): Told => ({ meaning: '', nuance: '', reading: '', ...one })
 
 const cards = new Map([['休', REST]])
 

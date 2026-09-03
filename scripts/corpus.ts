@@ -4,7 +4,7 @@
 // alone, which is how one of them is read by hand; this runs them in the order each reads what the one
 // before it wrote, and resumes rather than restarting.
 //
-// Batch submission is asynchronous, so one command does not mean one minute: four of the steps submit
+// Batch submission is asynchronous, so one command does not mean one minute: six of the steps submit
 // one and end, and this waits for each and asks it to collect rather than handing the wait back. What
 // follows a batch reads what that batch is about to write, so nothing after it runs until it lands.
 // What decides the order, the arguments each step reads and where a re-run picks up is in
@@ -56,7 +56,7 @@ for (const step of left) {
   if (step.batch === null) continue
 
   // A step that submits leaves its batch written down and ends, so the run waits and asks it to
-  // collect rather than handing the wait back to whoever typed the command: four steps submit, and a
+  // collect rather than handing the wait back to whoever typed the command: six steps submit, and a
   // run they each end is a run somebody restarts eight times. The batch file going is what says the
   // step is done with it, and each of them is re-runnable by reflex, so asking again is free.
   for (let asked = 0; existsSync(step.batch); asked += 1) {

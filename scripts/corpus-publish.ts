@@ -15,13 +15,23 @@ import { existsSync, readFileSync } from 'node:fs'
 
 import { connect } from '../src/data/connect.ts'
 import { LOCAL_DATA_DIR } from '../src/data/local-data-dir.ts'
+import { asOptional } from '../src/data/optional-text.ts'
 import { corpusEntry } from '../src/data/schema.ts'
-import { readAnchors, readComponentNames, readDecompositions, readKeys, readStories } from '../src/data/corpus/artifact.ts'
-import { cardsFrom, rowsToPublish } from '../src/data/corpus/publish.ts'
-import type { Told } from '../src/data/corpus/story-run.ts'
+import {
+  readAnchors,
+  readComponentNames,
+  readDecompositions,
+  readKeys,
+  readStories,
+  readTelling,
+} from '../src/data/corpus/artifact.ts'
+import { cardsFrom, readyToPublish, rowsToPublish } from '../src/data/corpus/publish.ts'
+import { faultInTold } from '../src/data/corpus/story-run.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
-import { list } from './corpus-command.ts'
+import { list, loadLocalEnv } from './corpus-command.ts'
+
+loadLocalEnv()
 
 const locale = process.argv[2] ?? 'fr'
 const at = (file: string) => `corpus/${locale}/${file}`
@@ -31,28 +41,55 @@ if (!existsSync(INVENTORY_FILE)) {
   process.exit(1)
 }
 
+// Refused over a dirty tree rather than stamped with a commit that does not contain the text being
+// written: the column exists so an answer can be traced to the files that graded it, and a sha naming
+// files somebody has since edited traces to the wrong ones. Asked before anything is read, since every
+// read after it would be discarded.
+if (execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '') {
+  process.stdout.write('the tree carries changes, so no commit describes what would be published\n')
+  process.exit(1)
+}
+
+// A run missing one of these publishes a card with a hole in it, and the table says published either
+// way. Refused rather than defaulted, as the sibling refuses.
+for (const needed of [
+  'corpus/decomposition.json',
+  at('components.json'),
+  at('keys.json'),
+  at('anchors.json'),
+  at('naming.json'),
+  at('mnemonics.json'),
+]) {
+  if (!existsSync(needed)) throw new Error(`${needed} is missing. Run pnpm corpus to write it`)
+}
+
 const { subjects } = readInventoryFile(readFileSync(INVENTORY_FILE, 'utf8'))
-const names = existsSync(at('components.json')) ? readComponentNames(readFileSync(at('components.json'), 'utf8')) : {}
-const keys = existsSync(at('keys.json')) ? readKeys(readFileSync(at('keys.json'), 'utf8')) : {}
-const bound: ReadonlyMap<string, { anchor: string; phonemes: readonly string[] }> = existsSync(at('anchors.json'))
-  ? readAnchors(readFileSync(at('anchors.json'), 'utf8')).bound
-  : new Map()
-const written: ReadonlyMap<string, Told & { readonly nuance: string }> = existsSync(at('mnemonics.json'))
-  ? readStories(readFileSync(at('mnemonics.json'), 'utf8'))
-  : new Map()
+const names = readComponentNames(readFileSync(at('components.json'), 'utf8'))
+const keys = readKeys(readFileSync(at('keys.json'), 'utf8'))
+const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
+const telling = readTelling(readFileSync(at('naming.json'), 'utf8'))
+const held = readStories(readFileSync(at('mnemonics.json'), 'utf8'))
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
 
 const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
 
 const cards = cardsFrom(subjects, read, { names, keys, bound })
 
-// Refused over a dirty tree rather than stamped with a commit that does not contain the text being
-// written: the column exists so an answer can be traced to the files that graded it, and a sha naming
-// files somebody has since edited traces to the wrong ones.
-if (execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '') {
-  process.stdout.write('the tree carries changes, so no commit describes what would be published\n')
-  process.exit(1)
-}
+// A story at fault is left where it is rather than written: the report is what names it, and a table
+// carrying a story the report refuses grades a reader against text nobody accepted.
+const wrong: string[] = []
+const written = new Map(
+  [...held].filter(([character, told]) => {
+    const card = cards.get(character)
+
+    if (card === undefined) return true
+    if (faultInTold(told, card, telling) === null) return true
+
+    wrong.push(character)
+
+    return false
+  }),
+)
 
 const version = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
 const rows = rowsToPublish(cards, written, {
@@ -63,10 +100,10 @@ const rows = rowsToPublish(cards, written, {
 })
 
 const short = [...written].flatMap(([character, told]) =>
-  cards.has(character) && (told.meaning.trim() === '' || told.nuance.trim() === '') ? [character] : [],
+  cards.has(character) && !readyToPublish(told) ? [character] : [],
 )
 
-const owing = `written but not ready, missing a story or a nuance: ${list(short)}\n`
+const owing = `written but not ready, missing a story or a nuance: ${list(short)}\nheld back, at fault against the rules: ${list(wrong)}\n`
 
 if (rows.length === 0) {
   process.stdout.write(`nothing ready to publish for ${locale}\n`)
@@ -75,8 +112,8 @@ if (rows.length === 0) {
 }
 
 const database = await connect({
-  url: process.env.DATABASE_URL,
-  directory: process.env.TANUKITSUNE_LOCAL_DATABASE ?? LOCAL_DATA_DIR,
+  url: asOptional(process.env['DATABASE_URL']),
+  directory: asOptional(process.env['TANUKITSUNE_LOCAL_DATABASE']) ?? LOCAL_DATA_DIR,
 })
 
 // Written again rather than skipped, so a story corrected in the folder reaches the table on the next

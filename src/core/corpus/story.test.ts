@@ -143,6 +143,18 @@ describe('faultInStory, against the names a locale really wrote', () => {
     expect(faultInStory(told, TELLING)).toBe('names nothing for la main')
   })
 
+  // A name claims the words it was found in, and its article is not one of them: the article belongs
+  // to the name as written, never to the prose, so counting it stretches the claim over the word after.
+  it('lets the next part be the word right after a name written with an article', () => {
+    const told: Story = {
+      text: 'le battement, cinq et la bouche, et tout devient clair: repos',
+      parts: ['le battement', 'cinq', 'la bouche'],
+      key: 'repos',
+    }
+
+    expect(faultInStory(told, TELLING)).toBeNull()
+  })
+
   // The key of 一 is un, and French prose is full of un, une and aucun. Only the first is the key.
   it('does not take an article for a key that is one', () => {
     const told: Story = { text: "une pierre pose l'arbre", parts: ["l'arbre"], key: 'un' }

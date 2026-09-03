@@ -94,12 +94,18 @@ export function askedFor(argv: readonly string[]): { locale: string; most: numbe
   return { locale: argv[2] ?? 'fr', most: bound === undefined ? Infinity : Number(bound) }
 }
 
-export function asked(argv: readonly string[]): { locale: string; most: number; reach: { key: string } } {
+// bootstrap writes .env.local and next loads that, so a command outside the application reads it
+// itself or it reads a different environment than the one the reader is looking at.
+export function loadLocalEnv(): void {
   try {
     process.loadEnvFile('.env.local')
   } catch {
     // Absent before the first bootstrap, which is not an error.
   }
+}
+
+export function asked(argv: readonly string[]): { locale: string; most: number; reach: { key: string } } {
+  loadLocalEnv()
 
   const key = asOptional(process.env['ANTHROPIC_API_KEY'])
   if (key === undefined) throw new Error('ANTHROPIC_API_KEY is not set')

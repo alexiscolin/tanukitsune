@@ -2,10 +2,9 @@ import 'server-only'
 
 import { sql } from 'drizzle-orm'
 
-import { connect } from './connect'
+import { connect, type Database } from './connect'
 import { env } from './env'
 import { LOCAL_DATA_DIR } from './local-data-dir'
-import type { Database } from './connect'
 
 // A server Postgres when the environment names one, the local file-backed
 // database otherwise, which is what lets a fresh clone run with nothing

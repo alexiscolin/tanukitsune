@@ -488,11 +488,28 @@ been compared to the reader's own labels, so the reading arrives with the labell
 comparison possible. Until then, what absorbs a mediocre first run is the budget of three, a coarser
 instrument over a sample.
 
-**A story written by hand is judged by exactly what a bought one will be.** The two stories a card
-shows live in `corpus/<locale>/mnemonics.json`, an empty string being a story nobody has written yet,
+**A story written by hand is judged by exactly what a bought one will be.** The three texts a card
+shows live in `corpus/<locale>/mnemonics.json`, an empty string being a text nobody has written yet,
 and `corpus:report` holds every one of them to the rules above and counts what is still owed. There is
 no second standard for a story somebody typed: the generator arrives to fill that file, not to be
 judged differently from it.
+
+**`corpus:story` asks for the three texts a kanji card shows** and writes what survives into
+`mnemonics.json`. The curriculum owes 23590 of them across its 9389 subjects and this asks for the 2101
+kanji: a component carries a name and a meaning, a word composes its meaning from the characters it is
+written with, and both wait for a step of their own. Three rules stated above wait with them: writing
+by reading cluster so sibling anchors are visible at once, overgenerating and ranking, and the locale's
+own examples travelling with the ask. What comes back is held to the rules above before anything is written: a story naming
+a part it was not given, told out of the order the drawing places them, or ending anywhere but on the
+meaning is refused and asked again by the next run. A card whose reading no word is bound to is asked
+without one, and asked again for that half once a word is bound: 328 readings are still waiting for
+one, so a card written before its word existed is the ordinary case. A card asked again keeps the texts
+it already carried and is sent the meaning story it tells, since a reading story continuing a scene the
+card does not tell is two scenes to remember rather than one.
+
+Bounded like the other paid steps, so a first batch is read by hand before the rest is paid for, and
+resumed rather than waited on: a batch is asynchronous and the run says which of submitting or
+collecting it did.
 
 **A nuance says what the key does not carry**, in one clause, and names the French word the key must
 not be taken for: neuf is a number here and never new, personne is a human being and never nobody. It
@@ -500,8 +517,9 @@ sits beside the story in `mnemonics.json` and it is a column of its own, since a
 
 **Publishing is a step like the others.** `corpus:publish` writes the cards that are ready into
 `corpus_entry` and names what it left out: a card missing a story or a nuance is skipped rather than
-written with an empty column, and the run says which. It runs last, after the report, so the hole is seen
-before the table is written.
+written with an empty column, a card whose story the rules refuse is held back, and the run says which
+of the two each one is. It runs last, after the report, so the hole is seen before the table is
+written.
 
 Two things a row records about its own making are decided rather than guessed. `generated_by` says
 which model wrote the text, or that none did: the transparency article applies to synthetic text, and
@@ -514,7 +532,7 @@ files that graded it.
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
 `corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:anchor-written`, `corpus:anchor`,
 `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:name`, `corpus:vocabulary`,
-`corpus:word`, `corpus:report` and `corpus:publish` are its fourteen steps, each still runnable alone so that one of them can be read by hand,
+`corpus:word`, `corpus:story`, `corpus:report` and `corpus:publish` are its fifteen steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.
@@ -535,7 +553,7 @@ through the batch API, validates, writes by subject as it goes, publishes the ch
 manifest in that order, and ends on the coverage report. A run killed halfway resumes: what is written
 is not regenerated, and the failed set goes into the next batch, which is the same mechanism.
 
-Batch submission is asynchronous, so one command does not mean one minute. Four of the steps submit a
+Batch submission is asynchronous, so one command does not mean one minute. Six of the steps submit a
 batch and end on it, and `pnpm corpus` waits for each and asks it to collect rather than handing the
 wait back: a run each of them ends is a run somebody restarts eight times. It gives up after two hours
 on one batch, which is longer than any has taken and short enough that a batch that will never end does

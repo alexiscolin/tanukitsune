@@ -237,6 +237,37 @@ const storyList = z.object({
   ),
 })
 
-export function readStories(json: string): ReadonlyMap<string, Told & { readonly nuance: string }> {
+export function readStories(json: string): ReadonlyMap<string, Told> {
   return new Map(Object.entries(storyList.parse(JSON.parse(json)).stories))
+}
+
+// One character's three texts after a run answered it. A card is asked again for the text that was
+// empty and the answer carries all three, so a text the file already held stays: that is what makes a
+// run add without taking away, and what lets a story somebody corrected by hand survive one.
+function kept(held: Told | undefined, told: Told): Told {
+  const older = (one: string | undefined, two: string) => (one?.trim() ? one : two)
+
+  return {
+    meaning: older(held?.meaning, told.meaning),
+    nuance: older(held?.nuance, told.nuance),
+    reading: older(held?.reading, told.reading),
+  }
+}
+
+// The file rewritten with what a run added, keeping what it already held and its header, the way
+// componentNamesFile is.
+export function storiesFile(current: string, added: ReadonlyMap<string, Told>): string {
+  const read: unknown = JSON.parse(current)
+  const held = storyList.parse(read).stories
+  const stories = { ...held }
+
+  for (const [character, told] of added) {
+    stories[character] = kept(held[character], told)
+  }
+
+  const lines = Object.entries(stories)
+    .map(([character, told]) => `${JSON.stringify(character)}:${JSON.stringify(told)}`)
+    .join(',\n')
+
+  return `{\n"header":${JSON.stringify(anyFile.parse(read).header)},\n"stories":{\n${lines}\n}\n}\n`
 }

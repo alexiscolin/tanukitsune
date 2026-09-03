@@ -33,6 +33,7 @@ describe('stepsFor', () => {
       'corpus:key-translation',
       'corpus:name',
       'corpus:word',
+      'corpus:story',
     ])
   })
 

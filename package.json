@@ -30,6 +30,7 @@
     "corpus:readings": "node --experimental-strip-types scripts/corpus-readings.ts",
     "corpus:publish": "node --experimental-strip-types scripts/corpus-publish.ts",
     "corpus:report": "node --experimental-strip-types scripts/corpus-report.ts",
+    "corpus:story": "node --experimental-strip-types scripts/corpus-story.ts",
     "corpus:vocabulary": "node --experimental-strip-types scripts/corpus-vocabulary.ts",
     "corpus:word": "node --experimental-strip-types scripts/corpus-word.ts",
     "check:account": "bash scripts/check-account-reach.sh",
