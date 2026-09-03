@@ -2,8 +2,11 @@ import 'server-only'
 
 import { DEMO_DECK, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
 import type { Assignment } from '@/core/knowledge-source'
-import { deckFor, sessionOf } from '@/core/review/deck'
+import { DEFAULT_LOCALE } from '@/core/locales'
+import { deckFor, sessionOf, withText } from '@/core/review/deck'
+import type { Written } from '@/core/review/deck'
 import type { Flow, Subject } from '@/core/subject'
+import { textFor } from '@/data/corpus-text'
 import { env } from '@/data/env'
 import { wanikaniSource } from '@/data/wanikani/source'
 
@@ -45,9 +48,24 @@ async function dealt(
   const source = sourceFor(token)
   const queues = await source.listWaiting()
   const sitting = sessionOf(flow === 'lesson' ? queues.lessons : queues.reviews)
-  const subjects = await source.listSubjects(sitting.map((entry) => entry.subjectId))
+  const asked = sitting.map((entry) => entry.subjectId)
 
-  const deck = deckFor(sitting, subjects)
+  // Beside the subjects rather than after them: the corpus is keyed by the identifiers the queue
+  // already names, so waiting for the source first would serialise a query behind a round trip on
+  // the one request the reader watches a spinner for. It costs the rows of the few subjects the
+  // deck goes on to drop.
+  //
+  // Dealt without the text rather than not dealt at all: a database failure is not the TypeError
+  // the route turns into a refusal, so it would answer five hundred, which the screen reads as a
+  // defect rather than as no answer and is the one case where it does not fall back to the device.
+  // DEFAULT_LOCALE because a deployment deals one deck for every reader of it and LOCALES holds one
+  // entry; a second language is an argument here and not a second table.
+  const [subjects, written] = await Promise.all([
+    source.listSubjects(asked),
+    textFor(asked, DEFAULT_LOCALE).catch(() => new Map<number, Written>()),
+  ])
+
+  const deck = withText(deckFor(sitting, subjects), written)
   // Only what the deck kept. `deckFor` drops an assignment whose subject the source withdrew or
   // never sent, and a cached record naming one would let a later flush advance an item the reader
   // was never asked.
