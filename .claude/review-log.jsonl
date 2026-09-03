@@ -1201,3 +1201,4 @@
 {"date":"2026-09-03","branch":"feat/show-the-french-a-card-carries","reviewer":"requirement-check","file":"src/core/subject.ts","line":106,"outcome":"dismissed","reason":"the provenance criterion stays open: Subject carries no field for generated_by or the reading story and the interface is frozen. Naming it here so the join is not read as that criterion being met."}
 {"date":"2026-09-03","branch":"feat/show-the-french-a-card-carries","kind":"pass","base":"3efcb16adfa20d380179c5f730ea327be0791388","head":"238cc59c734c0c5a69aecb655669589fd8b4100f"}
 {"date":"2026-09-03","branch":"feat/show-the-french-a-card-carries","kind":"pass","base":"72839cdc","head":"238cc59c"}
+{"date":"2026-09-03","branch":"feat/show-the-french-a-card-carries","kind":"pass","base":"76d21c9c8eff63787db2d1bc4a325fb26af72ea3","head":"f30c0b6e94fec6132df77f9f7ff26ef471b28593"}
