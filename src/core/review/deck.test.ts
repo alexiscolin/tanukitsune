@@ -108,6 +108,17 @@ describe('withText, the meaning the card asks for', () => {
     expect(joined?.alsoAccepted).toEqual([])
   })
 
+  // The card shows the source's words as well as accepting them: one line of glosses shown without
+  // being accepted, one of glosses refused outright. Both are the source's language, so a card
+  // answering in the locale's word would otherwise sit above two lines of somebody else's.
+  it('shows none of the words the source sent', () => {
+    const listed = { ...KANJI, refused: ['break'], meanings: [...KANJI.meanings, { text: 'pause', primary: false, accepted: false }] }
+    const [joined] = withText([listed], new Map([[KANJI.id, WRITTEN]]))
+
+    expect(joined?.refused).toEqual([])
+    expect(joined?.meanings.filter((gloss) => !gloss.accepted)).toEqual([])
+  })
+
   it('leaves the source word where the locale wrote nothing', () => {
     const [joined] = withText([KANJI], new Map())
 

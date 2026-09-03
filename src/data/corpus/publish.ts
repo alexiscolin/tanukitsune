@@ -89,9 +89,7 @@ export function wordFor(subject: InventorySubject, wrote: Answers): string | und
   }
 
   if (subject.type === 'kanji') return wrote.keys[subject.characters]
-  if (subject.type === 'radical') {
-    return wrote.names[subject.characters] ?? wrote.names[`radical#${subject.id}`] ?? wrote.keys[subject.characters]
-  }
+  if (subject.type === 'radical') return wrote.names[subject.characters] ?? wrote.keys[subject.characters]
 
   return wrote.words[subject.characters]
 }

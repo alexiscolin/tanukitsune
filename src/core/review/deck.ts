@@ -62,10 +62,12 @@ export function withText(
       ...subject,
       // The one word the card shows and the one it accepts. What the source calls the meaning is its
       // own language, and a course asking for it in that language is not the course: the locale's word
-      // takes its place, and so does what the account would also have accepted, which is the same
-      // language again. The reader's own synonyms are theirs and stay.
+      // takes the place of all three lists the source sends, the words it accepts without showing them
+      // and the words it shows struck through included, since those are the same language again. The
+      // reader's own synonyms are theirs and stay.
       meanings: [{ text: text.meaning, primary: true, accepted: true }],
       alsoAccepted: [],
+      refused: [],
       nuance: text.nuance,
       mnemonic: text.mnemonic,
     }

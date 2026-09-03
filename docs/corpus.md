@@ -530,10 +530,11 @@ in somebody else's. It runs last, after the report, so the hole is seen before t
 **What reads those rows is the deck.** The route that deals a sitting joins the locale's text onto the
 subjects it hands back, once and on the server and beside the request for the subjects themselves, so
 what the device holds carries the French with it. Where that text is held on the device is decided in
-[`framing.md`](framing.md), under the offline stores. The word the locale wrote takes the place of the
-one the source sent, along with what the account would also have accepted, since that is the source's
-language again: what a card shows and what it accepts are the locale's, and the reader's own synonyms
-stay beside them. A subject the locale has nothing for keeps the fields the source sent, and a table
+[`framing.md`](framing.md), under the offline stores. The word the locale wrote takes the place of all
+three lists the source sends: the words it accepts, the words it accepts without showing them, and the
+words it shows struck through. Those are the source's language, and a card answering in the locale's
+word would otherwise sit above two lines of somebody else's. The reader's own synonyms are theirs and
+stay beside it. A subject the locale has nothing for keeps the fields the source sent, and a table
 that cannot be reached is the same case: the corpus is what a card shows and not what a card is, so a
 sitting deals without it rather than not at all.
 
