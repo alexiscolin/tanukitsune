@@ -521,6 +521,11 @@ written with an empty column, a card whose story the rules refuse is held back, 
 of the two each one is. It runs last, after the report, so the hole is seen before the table is
 written.
 
+**What reads those rows is the deck.** The route that deals a sitting joins the locale's text onto the
+subjects it hands back, once and on the server, so the sitting the device caches carries the French with
+it and the item card appears on a wrong answer with no network. A subject the locale has nothing for
+keeps the empty fields the source sent, since the question is asked either way.
+
 Two things a row records about its own making are decided rather than guessed. `generated_by` says
 which model wrote the text, or that none did: the transparency article applies to synthetic text, and
 a story somebody typed is not that, so a hand-written row says so instead of naming a model.
