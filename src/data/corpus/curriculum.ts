@@ -56,12 +56,12 @@ export function walkCurriculum(
       if (component === undefined) return []
       if (component.characters !== null) return [component.characters]
 
-      // A part the curriculum draws rather than writes cannot be named by its character. Dropping it
-      // in silence would leave the character looking complete with one part missing, so the character
-      // is named here as well as the part.
-      unplaced.push(`${subject.characters ?? '?'}:drawn#${component.id}`)
-
-      return []
+      // A part the curriculum draws rather than writes has no character to be named by, so it is named
+      // by the identifier the locale named it under. Dropping it would leave the character looking
+      // complete with a part missing, and a story written against that teaches a decomposition the
+      // curriculum contradicts. The drawing is keyed by character and can say nothing about where it
+      // sits, so partsTaught puts it last, unplaced, and the count below names it as such.
+      return [`${component.type}#${component.id}`]
     })
 
     const decomposition = partsTaught(subject.characters, components, shapeOf(subject.characters))
