@@ -65,6 +65,17 @@ export function walkCurriculum(
     })
 
     const decomposition = partsTaught(subject.characters, components, shapeOf(subject.characters))
+
+    // A word written with one kanji is that kanji, and a shape a kanji already names is that kanji too:
+    // both are dealt under the same character and both decompose into nothing but themselves. A reader
+    // keyed by character keeps whichever came last, so without this the kanji's own parts are lost
+    // behind an entry saying only that the character is itself, and a story is then judged against an
+    // empty list rather than against what the character is made of.
+    //
+    // A kanji in that case keeps its walk. Its one part is the shape it is written with, which the
+    // locale names as a shape and not as the kanji: 一 the kanji is un and the shape it draws is le sol.
+    if (subject.type !== 'kanji' && itselfAlone(decomposition)) continue
+
     read.push(decomposition)
 
     for (const part of decomposition.parts) {
@@ -84,6 +95,11 @@ export function walkCurriculum(
   const unnamed = drawn.filter((one) => names[one] === undefined)
 
   return { read, unplaced, drawn, owed: [...shaped, ...unnamed] }
+}
+
+// A decomposition that names nothing but the character it decomposes.
+function itselfAlone({ character, parts }: Decomposition): boolean {
+  return parts.length === 1 && parts[0]?.component === character
 }
 
 // The shapes a kanji already names. A part that is itself a subject with a key needs no name of its
