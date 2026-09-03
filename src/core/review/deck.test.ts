@@ -85,3 +85,32 @@ describe('withText', () => {
     expect(joined.map((one) => one.id)).toEqual([VERB.id, KANJI.id])
   })
 })
+
+describe('withText, the meaning the card asks for', () => {
+  const WRITTEN = { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire' }
+
+  // The source deals its own curriculum in its own language, so what it calls the meaning is English.
+  // A course that asks for it in English is not the product: the locale's word is the answer, and the
+  // reader's own synonyms stay beside it because those are theirs.
+  it('asks for the locale word rather than the one the source sent', () => {
+    const [joined] = withText([KANJI], new Map([[KANJI.id, WRITTEN]]))
+
+    expect(joined?.meanings.map((gloss) => gloss.text)).toEqual(['le repos'])
+    expect(joined?.meanings[0]?.accepted).toBe(true)
+    expect(joined?.meanings[0]?.primary).toBe(true)
+  })
+
+  // An English gloss the account happens to accept is still English. Dropping it is what stops a
+  // French course from grading an English answer correct.
+  it('drops what the source would also have accepted', () => {
+    const [joined] = withText([{ ...KANJI, alsoAccepted: ['rest'] }], new Map([[KANJI.id, WRITTEN]]))
+
+    expect(joined?.alsoAccepted).toEqual([])
+  })
+
+  it('leaves the source word where the locale wrote nothing', () => {
+    const [joined] = withText([KANJI], new Map())
+
+    expect(joined?.meanings).toEqual(KANJI.meanings)
+  })
+})
