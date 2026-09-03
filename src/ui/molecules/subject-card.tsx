@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 
 import { SubjectGlyphFace } from '@/ui/atoms/subject-glyph-face'
@@ -8,6 +9,7 @@ import { SubjectHeadline } from '@/ui/atoms/subject-headline'
 import { SubjectBody } from '@/ui/molecules/subject-body'
 import { useCollapse } from '@/ui/primitives/use-collapse'
 import type { AnswerKind } from '@/core/answer-kind'
+import { markCardPainted } from '@/ui/primitives/paint-budget'
 
 import type { Flow, Subject } from '@/core/subject'
 import type { SubjectCopy } from '@/core/site-copy'
@@ -61,6 +63,21 @@ export function SubjectCard({
   // make the reader tap before being taught.
   const open = flow === 'lesson' || revealed
   const { gone, follow } = useCollapse()
+
+  // The far end of the budget v0.1 sets on this card, taken after the frame that shows it rather
+  // than in the effect: an effect runs before the browser paints, so a mark laid there would time
+  // the work and not the thing the reader is waiting for.
+  useEffect(() => {
+    if (!open) return
+
+    const frame = requestAnimationFrame(() => {
+      markCardPainted()
+    })
+
+    return () => {
+      cancelAnimationFrame(frame)
+    }
+  }, [open, subject.id])
 
   return (
     <article className="flex h-full flex-col rounded-3xl bg-[var(--color-surface)] px-8 pt-5 pb-8 shadow-card sm:px-10 sm:pb-10">

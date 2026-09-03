@@ -12,7 +12,7 @@ import { OUTBOX_DATABASE, OUTBOX_STORE } from '../src/data/local/database'
 // the queue is written and `sync.spec.ts` whether it empties, and a second spelling of any of the
 // three would let one of them pass against a store or a card the application does not use.
 
-const COPY = copyFor('fr')
+export const COPY = copyFor('fr')
 
 // The backup as Playwright matches it, which is a glob where the application holds a path. Spelled
 // here for the reason routes.ts spells the path itself once: both suites intercept this route, and

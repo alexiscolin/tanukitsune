@@ -1202,3 +1202,12 @@
 {"date":"2026-09-03","branch":"feat/show-the-french-a-card-carries","kind":"pass","base":"3efcb16adfa20d380179c5f730ea327be0791388","head":"238cc59c734c0c5a69aecb655669589fd8b4100f"}
 {"date":"2026-09-03","branch":"feat/show-the-french-a-card-carries","kind":"pass","base":"72839cdc","head":"238cc59c"}
 {"date":"2026-09-03","branch":"feat/show-the-french-a-card-carries","kind":"pass","base":"76d21c9c8eff63787db2d1bc4a325fb26af72ea3","head":"f30c0b6e94fec6132df77f9f7ff26ef471b28593"}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","reviewer":"requirement-check","file":"e2e/paint-budget.spec.ts","line":62,"outcome":"fixed"}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","reviewer":"docs-conformity","file":"e2e/paint-budget.spec.ts","line":32,"outcome":"fixed"}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","reviewer":"requirement-check","file":"src/core/paint-budget.ts","line":154,"outcome":"fixed"}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","reviewer":"architecture-check","file":"src/core/paint-budget.ts","line":139,"outcome":"fixed"}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","reviewer":"regression-check","file":"e2e/paint-budget.spec.ts","line":65,"outcome":"fixed"}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","reviewer":"architecture-check","file":"src/ui/organisms/review-session.tsx","line":58,"outcome":"fixed"}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","reviewer":"requirement-check","file":"src/ui/organisms/review-session.tsx","line":182,"outcome":"dismissed","reason":"giving up marks the near end although no tier decided. The card opens all the same and the card is what the reader waits for, which is what the budget is a budget on, so the span is the right one to record. The comment now says so instead of reading as a contradiction."}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","kind":"pass","base":"8acb7a607031bfbf41aa09a656d85abbf412df18","head":"bdb047bfa9555c1657615113663e17cd8443f2b8"}
+{"date":"2026-09-03","branch":"feat/measure-the-card-paint","kind":"pass","base":"eb0601ad","head":"bdb047bfa9555c1657615113663e17cd8443f2b8"}
