@@ -1,9 +1,12 @@
 import 'server-only'
 
+import { withText } from '@/core/corpus-text'
 import { DEMO_DECK, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
 import type { Assignment } from '@/core/knowledge-source'
+import { DEFAULT_LOCALE } from '@/core/locales'
 import { deckFor, sessionOf } from '@/core/review/deck'
 import type { Flow, Subject } from '@/core/subject'
+import { textFor } from '@/data/corpus-text'
 import { env } from '@/data/env'
 import { wanikaniSource } from '@/data/wanikani/source'
 
@@ -47,7 +50,12 @@ async function dealt(
   const sitting = sessionOf(flow === 'lesson' ? queues.lessons : queues.reviews)
   const subjects = await source.listSubjects(sitting.map((entry) => entry.subjectId))
 
-  const deck = deckFor(sitting, subjects)
+  // The corpus is read once here rather than per card: the sitting the device caches carries the
+  // French with it, which is what makes the item card appear on a wrong answer with no network.
+  // DEFAULT_LOCALE because the route deals one deck for every reader of a deployment and LOCALES
+  // holds one entry; a second language is a parameter on this call and not a second table.
+  const dealt = deckFor(sitting, subjects)
+  const deck = withText(dealt, await textFor(dealt.map((subject) => subject.id), DEFAULT_LOCALE))
   // Only what the deck kept. `deckFor` drops an assignment whose subject the source withdrew or
   // never sent, and a cached record naming one would let a later flush advance an item the reader
   // was never asked.

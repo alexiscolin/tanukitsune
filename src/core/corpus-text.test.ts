@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { withText } from './corpus-text'
-import type { Subject } from '@/core/subject'
+import type { Subject } from './subject'
 
 const REST = { id: 451, nuance: null, mnemonic: null } as unknown as Subject
 const OUT = { id: 599, nuance: null, mnemonic: null } as unknown as Subject
