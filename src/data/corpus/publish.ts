@@ -101,10 +101,13 @@ export function wordCards(
 
       return character === undefined || character === null ? [] : [character]
     })
+    // A part whose word sits inside the word the card asks for is that word said twice: 六日 is taught
+    // as le six and is written with 六, taught as six, so naming it is naming the answer before the
+    // answer. The same rule a kanji card applies to a part carrying its own key, one step wider.
     const parts = written.flatMap((character) => {
       const key = keys[character]
 
-      return key === undefined || key === word ? [] : [key]
+      return key === undefined || word.includes(key) ? [] : [key]
     })
 
     if (written.length === 1 && written[0] === subject.characters) continue

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { rowsToPublish } from './publish'
+import { rowsToPublish, wordCards } from './publish'
 import type { Publishable } from './publish'
 import type { InventorySubject } from './inventory'
 
@@ -234,5 +234,30 @@ describe('rowsToPublish', () => {
     const written = new Map([['姉', told({ meaning: 'une histoire', nuance: 'la soeur' })]])
 
     expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map() }, STAMP)[0]?.mnemonic).toBe('')
+  })
+})
+
+describe('wordCards', () => {
+  const word = (one: Partial<InventorySubject>) =>
+    subject({ id: 9, type: 'vocabulary', characters: '六日', componentIds: [3], ...one })
+
+  // 六日 is taught as le six and is written with 六, taught as six. Naming the part is naming the answer
+  // before the answer, so the card does not ask for it.
+  it('drops a part whose word sits inside the word the card asks for', () => {
+    const six = subject({ id: 3, type: 'kanji', characters: '六' })
+    const cards = wordCards([six, word({})], { ...WROTE, keys: { 六: 'six' }, words: { 六日: 'le six' } })
+
+    expect(cards.get('六日')).toMatchObject({ key: 'le six', parts: [] })
+  })
+
+  it('keeps a part the card asks for something else than', () => {
+    const rest = subject({ id: 3, type: 'kanji', characters: '休' })
+    const cards = wordCards([rest, word({ characters: '休み' })], {
+      ...WROTE,
+      keys: { 休: 'repos' },
+      words: { 休み: 'le congé' },
+    })
+
+    expect(cards.get('休み')).toMatchObject({ key: 'le congé', parts: ['repos'] })
   })
 })
