@@ -54,13 +54,39 @@ export type Row = {
 // written with.
 export type Answers = Written & { readonly words: Readonly<Record<string, string>> }
 
-// What a shape shows: the story written for it, or the one written for the kanji that names it. A shape
-// a kanji already names is taught under one word and is one card twice, so writing it a second story
-// would be the same story said twice.
-function shownFor(subject: InventorySubject, held: Held): Told | undefined {
-  const own = held.shapes.get(subject.characters ?? drawnKey(subject))
+// A shape has no parts: the drawing is what it is, so the story says what the shape looks like and
+// arrives at the word. What judges it is the rule that judges any story, with nothing to name first.
+//
+// Here rather than in the report, for the reason `cardsFrom` is: two copies of the assembly is a story
+// judged against one list and graded against another.
+export function shapeCards(
+  subjects: readonly InventorySubject[],
+  wrote: ComponentNames,
+): ReadonlyMap<string, Card> {
+  const cards = new Map<string, Card>()
 
-  return own ?? (subject.characters === null ? undefined : held.written.get(subject.characters))
+  for (const subject of subjects) {
+    if (subject.type !== 'radical' || subject.hidden) continue
+
+    const key = subject.characters ?? drawnKey(subject)
+    const word = wrote[key]
+
+    if (word !== undefined) cards.set(key, { parts: [], key: word, anchor: null, reading: null })
+  }
+
+  return cards
+}
+
+// What a shape shows: the story written for it where the locale gave it a word of its own, and
+// otherwise the story of the kanji whose word it is taught under, the two being one card twice. Where
+// the locale named the shape itself, no story of the kanji reaches it: they are two cards about two
+// things, and a story explaining a word this card does not carry teaches the wrong one.
+function shownFor(subject: InventorySubject, held: Held): Told | undefined {
+  const key = subject.characters ?? drawnKey(subject)
+
+  if (held.wrote.names[key] !== undefined) return held.shapes.get(key)
+
+  return subject.characters === null ? undefined : held.written.get(subject.characters)
 }
 
 // A text somebody wrote, or the empty string the artifact itself uses for one nobody has written yet.

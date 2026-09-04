@@ -28,12 +28,12 @@ import {
   readDecompositions,
   readKeys,
   readMeanings,
-  readShapes,
   readStories,
   readTelling,
 } from '../src/data/corpus/artifact.ts'
-import { cardsFrom, rowsToPublish, wordFor } from '../src/data/corpus/publish.ts'
+import { cardsFrom, rowsToPublish, shapeCards, wordFor } from '../src/data/corpus/publish.ts'
 import { faultInTold } from '../src/data/corpus/story-run.ts'
+import type { Told } from '../src/data/corpus/story-run.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { CORPUS_MODEL } from '../src/ai/corpus/request.ts'
@@ -80,7 +80,9 @@ const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
 const telling = readTelling(readFileSync(at('naming.json'), 'utf8'))
 const held = readStories(readFileSync(at('mnemonics.json'), 'utf8'))
 // Absent until a locale has written one, which is a state to report rather than to fail on.
-const shapes = existsSync(at('shapes.json')) ? readShapes(readFileSync(at('shapes.json'), 'utf8')) : new Map()
+const heldShapes: ReadonlyMap<string, Told> = existsSync(at('shapes.json'))
+  ? readStories(readFileSync(at('shapes.json'), 'utf8'))
+  : new Map()
 // The first gloss, which is the one the run settled on: the file keeps the rest so a later pass can
 // widen what an answer accepts, and the card asks for one word.
 const words = Object.fromEntries(
@@ -98,6 +100,22 @@ const cards = cardsFrom(subjects, read, { names, keys, bound })
 // A story at fault is left where it is rather than written: the report is what names it, and a table
 // carrying a story the report refuses grades a reader against text nobody accepted.
 const wrong: string[] = []
+
+// Held to the same rule the report holds it to, and against the same assembly: a story the report
+// refuses must not reach the table by a second path.
+const drawnCards = shapeCards(subjects, names)
+const shapes = new Map(
+  [...heldShapes].filter(([key, told]) => {
+    const card = drawnCards.get(key)
+
+    if (card === undefined || faultInTold(told, card, telling) === null) return true
+
+    wrong.push(key)
+
+    return false
+  }),
+)
+
 const written = new Map(
   [...held].filter(([character, told]) => {
     const card = cards.get(character)
