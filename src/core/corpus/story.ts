@@ -91,6 +91,12 @@ function placed(names: readonly string[], told: string, telling: Telling): Reado
   return where
 }
 
+// Whether a text says a name, on the boundaries the language draws: what refuses le sol inside soleil
+// refuses un inside une personne, and it is the same reading either way rather than a second one.
+export function says(told: string, name: string, telling: Telling): boolean {
+  return placed([name], told, telling).get(name) !== -1
+}
+
 export function faultInStory(story: Story, telling: Telling): string | null {
   const { text, parts, key } = story
 

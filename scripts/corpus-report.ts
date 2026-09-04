@@ -27,12 +27,14 @@ import {
   readComponentNames,
   readDecompositions,
   readKeys,
+  readMeanings,
   readStories,
   readTelling,
 } from '../src/data/corpus/artifact.ts'
 import { faultsInStories } from '../src/data/corpus/story-run.ts'
 import type { Told } from '../src/data/corpus/story-run.ts'
-import { cardsFrom, shapeCards } from '../src/data/corpus/publish.ts'
+import { cardsFrom, shapeCards, wordCards } from '../src/data/corpus/publish.ts'
+import type { Answers } from '../src/data/corpus/publish.ts'
 import { shapesNamedByTheirKanji, walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -147,6 +149,30 @@ function reportStories(subjects: readonly InventorySubject[], walked: readonly D
   report('stories at fault', list(faultsInStories(written, cards, telling)))
 
   reportShapes(subjects, telling)
+  reportWords(subjects, { names, keys, words: wordsWritten(), bound }, telling)
+}
+
+// A word composes its meaning from the characters it is written with, so its story names the word each
+// of them is taught under and arrives at what the word means. One written with a single kanji owes
+// none: it is taught under that kanji's word and shows its story.
+function reportWords(subjects: readonly InventorySubject[], wrote: Answers, telling: Telling): void {
+  const file = `corpus/${locale}/words.json`
+  const written = existsSync(file) ? readStories(readFileSync(file, 'utf8')) : new Map<string, Told>()
+  const cards = wordCards(subjects, wrote, telling)
+
+  report(`words ${locale} owes a story`, String(cards.size))
+  report('word stories written', String([...written.values()].filter((one) => one.meaning.trim() !== '').length))
+  report('word stories at fault', list(faultsInStories(written, cards, telling)))
+}
+
+// What the locale wrote for each word, absent before a run has written any.
+function wordsWritten(): Readonly<Record<string, string>> {
+  const file = `corpus/${locale}/vocabulary.json`
+  if (!existsSync(file)) return {}
+
+  return Object.fromEntries(
+    Object.entries(readMeanings(readFileSync(file, 'utf8'))).map(([word, glosses]) => [word, glosses[0] as string]),
+  )
 }
 
 // A shape the locale gave a word of its own owes a story of its own. One a kanji already names does
