@@ -116,7 +116,10 @@ export function wordCards(
       return key === undefined || word.includes(key) ? [] : [key]
     })
 
-    if (written.length === 1 && written[0] === subject.characters) continue
+    // A word written with one kanji owes no card of its own only where it is taught under that kanji's
+    // own word: it is then one card twice and shows its story. Taught under another word, it is a card
+    // of its own and the kanji's story would explain a word this one does not carry.
+    if (written.length === 1 && written[0] === subject.characters && keys[subject.characters] === word) continue
 
     cards.set(subject.characters, { parts, key: word, anchor: null, reading: null })
   }
