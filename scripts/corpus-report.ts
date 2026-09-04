@@ -19,18 +19,21 @@ import {
   unnamedComponents,
   wordlessComponents,
 } from '../src/core/corpus/decomposition.ts'
-import type { Decomposition } from '../src/core/corpus/decomposition.ts'
+import { drawnKey } from '../src/core/corpus/decomposition.ts'
+import type { Telling } from '../src/core/corpus/story.ts'
+import type { ComponentNames, Decomposition } from '../src/core/corpus/decomposition.ts'
 import { list } from './corpus-command.ts'
 import {
   readAnchors,
   readComponentNames,
   readDecompositions,
   readKeys,
+  readShapes,
   readStories,
   readTelling,
 } from '../src/data/corpus/artifact.ts'
 import { faultsInStories } from '../src/data/corpus/story-run.ts'
-import type { Told } from '../src/data/corpus/story-run.ts'
+import type { Card, Told } from '../src/data/corpus/story-run.ts'
 import { cardsFrom } from '../src/data/corpus/publish.ts'
 import { shapesNamedByTheirKanji, walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
@@ -144,6 +147,48 @@ function reportStories(subjects: readonly InventorySubject[], walked: readonly D
   report('meaning stories written', String([...written.values()].filter((one) => has(one.meaning)).length))
   report('reading stories written', String([...written.values()].filter((one) => has(one.reading)).length))
   report('stories at fault', list(faultsInStories(written, cards, telling)))
+
+  reportShapes(subjects, telling)
+}
+
+// A shape the locale gave a word of its own owes a story of its own. One a kanji already names does
+// not: the two are taught under one word and the kanji's story is what the card shows.
+function reportShapes(subjects: readonly InventorySubject[], telling: Telling): void {
+  const file = `corpus/${locale}/shapes.json`
+  const written = existsSync(file) ? readShapes(readFileSync(file, 'utf8')) : new Map<string, Told>()
+  const owes = shapesOwedAStory(subjects, names)
+
+  report(`shapes ${locale} owes a story`, String(owes.size))
+  report('shape stories written', String([...written.values()].filter((one) => one.meaning.trim() !== '').length))
+  report(
+    'shape stories at fault',
+    list(faultsInStories(written, new Map([...owes].map(([key, word]) => [key, shapeCard(word)])), telling)),
+  )
+}
+
+// A shape has no parts: the drawing is what it is, so the story says what the shape looks like and
+// arrives at the word. What judges it is the rule that judges any story, with nothing to name first.
+function shapeCard(word: string): Card {
+  return { parts: [], key: word, anchor: null, reading: null }
+}
+
+// Every shape the locale named itself, by the key it named it under.
+function shapesOwedAStory(
+  subjects: readonly InventorySubject[],
+  wrote: ComponentNames,
+): ReadonlyMap<string, string> {
+  const owes = new Map<string, string>()
+
+  for (const subject of subjects) {
+    if (subject.type !== 'radical' || subject.hidden) continue
+
+    const key = subject.characters ?? drawnKey(subject)
+    const word = wrote[key]
+
+    if (word !== undefined) owes.set(key, word)
+  }
+
+  return owes
 }
 
 // What each reading is bound to, absent until a run has bound anything.

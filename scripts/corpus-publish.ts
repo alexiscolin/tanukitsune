@@ -28,6 +28,7 @@ import {
   readDecompositions,
   readKeys,
   readMeanings,
+  readShapes,
   readStories,
   readTelling,
 } from '../src/data/corpus/artifact.ts'
@@ -78,6 +79,8 @@ const keys = readKeys(readFileSync(at('keys.json'), 'utf8'))
 const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
 const telling = readTelling(readFileSync(at('naming.json'), 'utf8'))
 const held = readStories(readFileSync(at('mnemonics.json'), 'utf8'))
+// Absent until a locale has written one, which is a state to report rather than to fail on.
+const shapes = existsSync(at('shapes.json')) ? readShapes(readFileSync(at('shapes.json'), 'utf8')) : new Map()
 // The first gloss, which is the one the run settled on: the file keeps the rest so a later pass can
 // widen what an answer accepts, and the card asks for one word.
 const words = Object.fromEntries(
@@ -114,7 +117,7 @@ const wrote = { names, keys, words, bound }
 // written: a ratio whose denominator holds cards no session shows is a ratio nothing can reach.
 const dealt = subjects.filter((subject) => !subject.hidden)
 const version = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
-const rows = rowsToPublish(subjects, { wrote, cards, written }, {
+const rows = rowsToPublish(subjects, { wrote, cards, written, shapes }, {
   locale,
   writtenBy: CORPUS_MODEL,
   promptVersion: '',

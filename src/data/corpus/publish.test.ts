@@ -147,7 +147,7 @@ describe('rowsToPublish', () => {
     const drawn = [subject({ id: 8766, type: 'radical', characters: null })]
     const wrote = { ...WROTE, names: { ...WROTE.names, 'radical#8766': 'le crochet' } }
 
-    expect(rowsToPublish(drawn, { wrote, cards: CARDS, written: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(drawn, { wrote, cards: CARDS, written: new Map(), shapes: new Map() }, STAMP)[0]).toMatchObject({
       subjectId: '8766',
       meaning: 'le crochet',
     })

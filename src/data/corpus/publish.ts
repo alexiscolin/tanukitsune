@@ -54,6 +54,15 @@ export type Row = {
 // written with.
 export type Answers = Written & { readonly words: Readonly<Record<string, string>> }
 
+// What a shape shows: the story written for it, or the one written for the kanji that names it. A shape
+// a kanji already names is taught under one word and is one card twice, so writing it a second story
+// would be the same story said twice.
+function shownFor(subject: InventorySubject, held: Held): Told | undefined {
+  const own = held.shapes.get(subject.characters ?? drawnKey(subject))
+
+  return own ?? (subject.characters === null ? undefined : held.written.get(subject.characters))
+}
+
 // A text somebody wrote, or the empty string the artifact itself uses for one nobody has written yet.
 // The column carries it as written, and what turns an empty text into an absent one is the read: a
 // card shows the block or it does not, and that is not a fact about the table.
@@ -103,6 +112,9 @@ export type Held = {
   readonly wrote: Answers
   readonly cards: ReadonlyMap<string, Publishable>
   readonly written: ReadonlyMap<string, Told>
+  // What a shape shows, keyed the way the locale named it: a shape and the kanji drawing it share a
+  // character and are two cards, so one file keyed by character cannot hold both.
+  readonly shapes: ReadonlyMap<string, Told>
 }
 
 // One row per subject the locale can answer, walked by subject rather than by story: a radical and the
@@ -124,12 +136,12 @@ function rowFor(subject: InventorySubject, held: Held, stamp: Stamp): Row | null
   const word = wordFor(subject, held.wrote)
   if (word === undefined) return null
 
-  // Only a kanji has one, and only a kanji is asked for a reading of its own here. A shape and a word
-  // take the empty columns the schema reserves for a subject that teaches neither, and a shape the
-  // curriculum draws has no character to look one up under at all.
+  // Only a kanji has one, and only a kanji is asked for a reading of its own here. A word takes the
+  // empty columns the schema reserves for a subject that teaches neither, and a shape the curriculum
+  // draws has no character to look one up under at all.
   const drawn = subject.type === 'kanji' ? subject.characters : null
   const card = drawn === null ? undefined : held.cards.get(drawn)
-  const told = drawn === null ? undefined : held.written.get(drawn)
+  const told = subject.type === 'radical' ? shownFor(subject, held) : drawn === null ? undefined : held.written.get(drawn)
   const heard = soundOf(card, told)
 
   // The empty columns first and what was written over them: a shape and a word carry no card and no
