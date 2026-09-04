@@ -119,22 +119,9 @@ const kept = (held: ReadonlyMap<string, Told>, cards: ReadonlyMap<string, Card>)
     }),
   )
 
-const shapes = kept(heldShapes, shapeCards(subjects, names))
-
-const written = new Map(
-  [...held].filter(([character, told]) => {
-    const card = cards.get(character)
-
-    if (card === undefined) return true
-    if (faultInTold(told, card, telling) === null) return true
-
-    wrong.push(character)
-
-    return false
-  }),
-)
-
 const wrote = { names, keys, words, bound }
+const written = kept(held, cards)
+const shapes = kept(heldShapes, shapeCards(subjects, names))
 const wordStories = kept(heldWords, wordCards(subjects, wrote))
 
 // Withdrawn content is dealt to nobody, so it is neither owed a row nor counted against the ones

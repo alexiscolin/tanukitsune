@@ -116,15 +116,22 @@ export function wordCards(
       return key === undefined || word.includes(key) ? [] : [key]
     })
 
-    // A word written with one kanji owes no card of its own only where it is taught under that kanji's
-    // own word: it is then one card twice and shows its story. Taught under another word, it is a card
-    // of its own and the kanji's story would explain a word this one does not carry.
-    if (written.length === 1 && written[0] === subject.characters && keys[subject.characters] === word) continue
+    if (sharesItsKanjiWord(subject, { keys, words } as Answers)) continue
 
     cards.set(subject.characters, { parts, key: word, anchor: null, reading: null })
   }
 
   return cards
+}
+
+// Whether a card is taught under the word of the kanji it shares a character with, which makes the two
+// one card twice: the shape a kanji already names, and the word written with that one kanji. Such a
+// card owes no story of its own and shows the kanji's. Taught under another word it is a card of its
+// own, and the kanji's story would explain a word this one does not carry.
+export function sharesItsKanjiWord(subject: InventorySubject, wrote: Answers): boolean {
+  if (subject.characters === null) return false
+
+  return wrote.keys[subject.characters] === wordFor(subject, wrote)
 }
 
 // What a shape or a word shows: the story written for it, and otherwise the story of the kanji it is
@@ -137,11 +144,9 @@ function shownFor(subject: InventorySubject, held: Held): Told | undefined {
   const own = subject.type === 'radical' ? held.shapes.get(key) : held.words.get(key)
 
   if (own !== undefined) return own
-  if (subject.characters === null) return undefined
+  if (!sharesItsKanjiWord(subject, held.wrote) || subject.characters === null) return undefined
 
-  const kanji = held.cards.get(subject.characters)
-
-  return kanji?.key === wordFor(subject, held.wrote) ? held.written.get(subject.characters) : undefined
+  return held.written.get(subject.characters)
 }
 
 // A text somebody wrote, or the empty string the artifact itself uses for one nobody has written yet.

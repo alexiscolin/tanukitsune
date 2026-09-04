@@ -61,11 +61,11 @@ cannot do is material, and a locale is the folder holding it: `naming.json` says
 takes in that language, `components.json` what it calls each component, `phonology.json` the sounds it
 cannot begin a word with, `keys.json` the word each character is taught under, `key-choice.json` the
 order a run settled over a character's glosses, `key-translation.json` the words carried across
-where the release glosses none, `mnemonics.json` the three texts a kanji card shows and `shapes.json`
-the ones a shape card shows, and `.lexicon.json` the words of that language an anchor can be drawn
-from, which the repository ignores. The two story files hold the same shape of text and are two files
-because a shape and the kanji drawing it share a character: one file keyed by character cannot hold
-both. The anchors and the cast land beside them. The first three are written
+where the release glosses none, `mnemonics.json` the three texts a kanji card shows, `shapes.json` the
+ones a shape card shows and `words.json` the ones a word card shows, and `.lexicon.json` the words of
+that language an anchor can be drawn from, which the repository ignores. The three story files hold the
+same shape of text and are three files because a shape, the kanji drawing it and the word written with
+it share a character and are three cards: one file keyed by character could hold only one of them. The anchors and the cast land beside them. The first three are written
 by hand and seed the folder; the last three a command writes, and each says which file it needs when
 it is missing rather than guessing at one. A second language is those files and no code, which is the test to apply to anything
 added here: if German would need a branch, it belongs in the folder rather than in the engine. The
@@ -492,19 +492,26 @@ comparison possible. Until then, what absorbs a mediocre first run is the budget
 instrument over a sample.
 
 **A story written by hand is judged by exactly what a bought one will be.** The three texts a kanji card
-shows live in `corpus/<locale>/mnemonics.json` and the ones a shape card shows in `shapes.json`, an
-empty string being a text nobody has written yet, and `corpus:report` holds every one of them to the
-rules above and counts what is still owed, each file on its own line. There is
+shows live in `corpus/<locale>/mnemonics.json`, the ones a shape card shows in `shapes.json` and the
+ones a word card shows in `words.json`, an empty string being a text nobody has written yet, and
+`corpus:report` holds every one of them to the rules above and counts what is still owed, each file on
+its own line. There is
 no second standard for a story somebody typed: the generator arrives to fill that file, not to be
 judged differently from it.
 
 **`corpus:story` asks for the three texts a kanji card shows** and writes what survives into
 `mnemonics.json`. The curriculum owes 23590 of them across its 9389 subjects and this asks for the 2101
-kanji: a word composes its meaning from the characters it is written with and waits for a step of its
-own. A shape does not wait: it has no parts, so its story says what the drawing looks like and arrives
-at the word, which is the rule that judges any story with nothing to name first. The locale writes
-those by hand into `shapes.json`, and a shape a kanji already names owes none, the two being taught
-under one word and the kanji's story being what the card shows. Three rules stated above wait with them: writing
+kanji, which are the only ones a run buys. The other two the locale writes by hand. A shape has no
+parts, so its story says what the drawing looks like and arrives at the word, which is the rule that
+judges any story with nothing to name first, and it goes into `shapes.json`. A word composes its
+meaning from the characters it is written with, so its story names the word each kanji writing it is
+taught under, in the order they are written, and arrives at what the word means; one written in kana
+alone has no kanji to name and reads like a shape's. Those go into `words.json`.
+
+A card taught under the word of the kanji it shares a character with owes no story of its own and shows
+that kanji's: a shape a kanji already names, and a word written with that one kanji. Taught under
+another word it is a card of its own, since the kanji's story would explain a word this one does not
+carry. Three rules stated above wait with them: writing
 by reading cluster so sibling anchors are visible at once, overgenerating and ranking, and the locale's
 own examples travelling with the ask. What comes back is held to the rules above before anything is written: a story naming
 a part it was not given, told out of the order the drawing places them, or ending anywhere but on the
