@@ -138,7 +138,7 @@ export function wordCards(
 // one card twice: the shape a kanji already names, and the word written with that one kanji. Such a
 // card owes no story of its own and shows the kanji's. Taught under another word it is a card of its
 // own, and the kanji's story would explain a word this one does not carry.
-export function sharesItsKanjiWord(subject: InventorySubject, wrote: Answers): boolean {
+function sharesItsKanjiWord(subject: InventorySubject, wrote: Answers): boolean {
   if (subject.characters === null) return false
 
   return wrote.keys[subject.characters] === wordFor(subject, wrote)
