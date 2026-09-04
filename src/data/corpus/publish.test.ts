@@ -238,6 +238,8 @@ describe('rowsToPublish', () => {
 })
 
 describe('wordCards', () => {
+  const TELLING = { opensWith: ['le ', 'la ', 'les ', "l'", 'un ', 'une '], letters: 'abcdefghijklmnopqrstuvwxyzàâäçéèêëîïòôöùûüÿœæ', inflects: ['s', 'x'] }
+
   const word = (one: Partial<InventorySubject>) =>
     subject({ id: 9, type: 'vocabulary', characters: '六日', componentIds: [3], ...one })
 
@@ -245,7 +247,7 @@ describe('wordCards', () => {
   // before the answer, so the card does not ask for it.
   it('drops a part whose word sits inside the word the card asks for', () => {
     const six = subject({ id: 3, type: 'kanji', characters: '六' })
-    const cards = wordCards([six, word({})], { ...WROTE, keys: { 六: 'six' }, words: { 六日: 'le six' } })
+    const cards = wordCards([six, word({})], { ...WROTE, keys: { 六: 'six' }, words: { 六日: 'le six' } }, TELLING)
 
     expect(cards.get('六日')).toMatchObject({ key: 'le six', parts: [] })
   })
@@ -256,8 +258,21 @@ describe('wordCards', () => {
       ...WROTE,
       keys: { 休: 'repos' },
       words: { 休み: 'le congé' },
-    })
+    }, TELLING)
 
     expect(cards.get('休み')).toMatchObject({ key: 'le congé', parts: ['repos'] })
+  })
+
+  // le sol is not said inside soleil and un is not said inside une personne: what the card asks for
+  // is a word rather than a run of letters, so a part is only dropped where the answer really says it.
+  it('keeps a part whose word only looks like part of the answer', () => {
+    const one = subject({ id: 3, type: 'kanji', characters: '一' })
+    const cards = wordCards([one, word({ characters: '一人', componentIds: [3] })], {
+      ...WROTE,
+      keys: { 一: 'un' },
+      words: { 一人: 'une personne' },
+    }, TELLING)
+
+    expect(cards.get('一人')).toMatchObject({ key: 'une personne', parts: ['un'] })
   })
 })

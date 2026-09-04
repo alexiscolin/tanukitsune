@@ -8,6 +8,8 @@ import type { ComponentNames, Decomposition } from '../../core/corpus/decomposit
 import type { InventorySubject } from './inventory.ts'
 import type { Card, Told } from './story-run.ts'
 import { drawnKey } from '../../core/corpus/decomposition.ts'
+import { says } from '../../core/corpus/story.ts'
+import type { Telling } from '../../core/corpus/story.ts'
 
 // What a card is, in the words the reader meets, plus the identifier the table is keyed by. The
 // reading columns are null together: a component teaches no reading, and a word whose reading is the
@@ -89,8 +91,10 @@ function isWord(type: string): boolean {
 // same word and shows the story written for the kanji.
 export function wordCards(
   subjects: readonly InventorySubject[],
-  { keys, words }: Answers,
+  wrote: Answers,
+  telling: Telling,
 ): ReadonlyMap<string, Card> {
+  const { keys, words } = wrote
   const byId = new Map(subjects.map((subject) => [subject.id, subject]))
   const cards = new Map<string, Card>()
 
@@ -102,21 +106,27 @@ export function wordCards(
     const word = words[subject.characters]
     if (word === undefined) continue
 
-    const written = subject.componentIds.flatMap((id) => {
-      const character = byId.get(id)?.characters
+    // In the order the word is written, which the word itself says: the curriculum lists its components
+    // by identifier, and that is an order about their catalogue rather than about the word.
+    const characters = subject.characters
+    const written = subject.componentIds
+      .flatMap((id) => {
+        const character = byId.get(id)?.characters
 
-      return character === undefined || character === null ? [] : [character]
-    })
-    // A part whose word sits inside the word the card asks for is that word said twice: 六日 is taught
-    // as le six and is written with 六, taught as six, so naming it is naming the answer before the
-    // answer. The same rule a kanji card applies to a part carrying its own key, one step wider.
+        return character === undefined || character === null ? [] : [character]
+      })
+      .sort((one, two) => characters.indexOf(one) - characters.indexOf(two))
+    // A part whose word the card's own answer already says is that answer said twice: 六日 is taught as
+    // le six and is written with 六, taught as six, so naming it is naming the answer before the
+    // answer, which no story can then end on. Said on the boundaries the language draws, or un would
+    // go with it out of une personne.
     const parts = written.flatMap((character) => {
       const key = keys[character]
 
-      return key === undefined || word.includes(key) ? [] : [key]
+      return key === undefined || says(word, key, telling) ? [] : [key]
     })
 
-    if (sharesItsKanjiWord(subject, { keys, words } as Answers)) continue
+    if (sharesItsKanjiWord(subject, wrote)) continue
 
     cards.set(subject.characters, { parts, key: word, anchor: null, reading: null })
   }

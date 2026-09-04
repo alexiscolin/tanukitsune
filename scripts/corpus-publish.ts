@@ -122,7 +122,7 @@ const kept = (held: ReadonlyMap<string, Told>, cards: ReadonlyMap<string, Card>)
 const wrote = { names, keys, words, bound }
 const written = kept(held, cards)
 const shapes = kept(heldShapes, shapeCards(subjects, names))
-const wordStories = kept(heldWords, wordCards(subjects, wrote))
+const wordStories = kept(heldWords, wordCards(subjects, wrote, telling))
 
 // Withdrawn content is dealt to nobody, so it is neither owed a row nor counted against the ones
 // written: a ratio whose denominator holds cards no session shows is a ratio nothing can reach.

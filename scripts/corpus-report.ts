@@ -158,7 +158,7 @@ function reportStories(subjects: readonly InventorySubject[], walked: readonly D
 function reportWords(subjects: readonly InventorySubject[], wrote: Answers, telling: Telling): void {
   const file = `corpus/${locale}/words.json`
   const written = existsSync(file) ? readStories(readFileSync(file, 'utf8')) : new Map<string, Told>()
-  const cards = wordCards(subjects, wrote)
+  const cards = wordCards(subjects, wrote, telling)
 
   report(`words ${locale} owes a story`, String(cards.size))
   report('word stories written', String([...written.values()].filter((one) => one.meaning.trim() !== '').length))
