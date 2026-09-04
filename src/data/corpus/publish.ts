@@ -77,16 +77,59 @@ export function shapeCards(
   return cards
 }
 
-// What a shape shows: the story written for it where the locale gave it a word of its own, and
-// otherwise the story of the kanji whose word it is taught under, the two being one card twice. Where
-// the locale named the shape itself, no story of the kanji reaches it: they are two cards about two
-// things, and a story explaining a word this card does not carry teaches the wrong one.
+// What every word card is made of: the word each kanji writing it is taught under, in the order they
+// are written, and what the word means. A word composes its meaning from its characters, so that is
+// what its story walks, and nothing derives it.
+//
+// A word written with one kanji is that kanji and owes no card of its own here: it is taught under the
+// same word and shows the story written for the kanji.
+export function wordCards(
+  subjects: readonly InventorySubject[],
+  { keys, words }: Answers,
+): ReadonlyMap<string, Card> {
+  const byId = new Map(subjects.map((subject) => [subject.id, subject]))
+  const cards = new Map<string, Card>()
+
+  for (const subject of subjects) {
+    if (subject.type !== 'vocabulary' || subject.characters === null || subject.hidden) continue
+
+    const word = words[subject.characters]
+    if (word === undefined) continue
+
+    const written = subject.componentIds.flatMap((id) => {
+      const character = byId.get(id)?.characters
+
+      return character === undefined || character === null ? [] : [character]
+    })
+    const parts = written.flatMap((character) => {
+      const key = keys[character]
+
+      return key === undefined || key === word ? [] : [key]
+    })
+
+    if (written.length === 1 && written[0] === subject.characters) continue
+
+    cards.set(subject.characters, { parts, key: word, anchor: null, reading: null })
+  }
+
+  return cards
+}
+
+// What a shape or a word shows: the story written for it, and otherwise the story of the kanji it is
+// one card twice with. A shape a kanji names and a word written with that one kanji are both taught
+// under the kanji's own word, so a second story would say the same thing again. Where the locale named
+// the card apart from the kanji, no story crosses: they are two cards about two things, and a story
+// explaining a word this card does not carry teaches the wrong one.
 function shownFor(subject: InventorySubject, held: Held): Told | undefined {
   const key = subject.characters ?? drawnKey(subject)
+  const own = subject.type === 'radical' ? held.shapes.get(key) : held.words.get(key)
 
-  if (held.wrote.names[key] !== undefined) return held.shapes.get(key)
+  if (own !== undefined) return own
+  if (subject.characters === null) return undefined
 
-  return subject.characters === null ? undefined : held.written.get(subject.characters)
+  const kanji = held.cards.get(subject.characters)
+
+  return kanji?.key === wordFor(subject, held.wrote) ? held.written.get(subject.characters) : undefined
 }
 
 // A text somebody wrote, or the empty string the artifact itself uses for one nobody has written yet.
@@ -138,9 +181,11 @@ export type Held = {
   readonly wrote: Answers
   readonly cards: ReadonlyMap<string, Publishable>
   readonly written: ReadonlyMap<string, Told>
-  // What a shape shows, keyed the way the locale named it: a shape and the kanji drawing it share a
-  // character and are two cards, so one file keyed by character cannot hold both.
+  // What a shape shows and what a word shows, each keyed by its own characters. Three lists rather
+  // than one because a shape, the kanji drawing it and the word written with it share a character and
+  // are three cards: one list keyed by character could hold only one of them.
   readonly shapes: ReadonlyMap<string, Told>
+  readonly words: ReadonlyMap<string, Told>
 }
 
 // One row per subject the locale can answer, walked by subject rather than by story: a radical and the
@@ -167,7 +212,7 @@ function rowFor(subject: InventorySubject, held: Held, stamp: Stamp): Row | null
   // draws has no character to look one up under at all.
   const drawn = subject.type === 'kanji' ? subject.characters : null
   const card = drawn === null ? undefined : held.cards.get(drawn)
-  const told = subject.type === 'radical' ? shownFor(subject, held) : drawn === null ? undefined : held.written.get(drawn)
+  const told = drawn === null ? shownFor(subject, held) : held.written.get(drawn)
   const heard = soundOf(card, told)
 
   // The empty columns first and what was written over them: a shape and a word carry no card and no

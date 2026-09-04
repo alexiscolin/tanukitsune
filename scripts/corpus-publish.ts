@@ -31,9 +31,9 @@ import {
   readStories,
   readTelling,
 } from '../src/data/corpus/artifact.ts'
-import { cardsFrom, rowsToPublish, shapeCards, wordFor } from '../src/data/corpus/publish.ts'
+import { cardsFrom, rowsToPublish, shapeCards, wordCards, wordFor } from '../src/data/corpus/publish.ts'
 import { faultInTold } from '../src/data/corpus/story-run.ts'
-import type { Told } from '../src/data/corpus/story-run.ts'
+import type { Card, Told } from '../src/data/corpus/story-run.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
 import { CORPUS_MODEL } from '../src/ai/corpus/request.ts'
@@ -83,6 +83,9 @@ const held = readStories(readFileSync(at('mnemonics.json'), 'utf8'))
 const heldShapes: ReadonlyMap<string, Told> = existsSync(at('shapes.json'))
   ? readStories(readFileSync(at('shapes.json'), 'utf8'))
   : new Map()
+const heldWords: ReadonlyMap<string, Told> = existsSync(at('words.json'))
+  ? readStories(readFileSync(at('words.json'), 'utf8'))
+  : new Map()
 // The first gloss, which is the one the run settled on: the file keeps the rest so a later pass can
 // widen what an answer accepts, and the card asks for one word.
 const words = Object.fromEntries(
@@ -101,20 +104,22 @@ const cards = cardsFrom(subjects, read, { names, keys, bound })
 // carrying a story the report refuses grades a reader against text nobody accepted.
 const wrong: string[] = []
 
-// Held to the same rule the report holds it to, and against the same assembly: a story the report
+// Held to the same rule the report holds them to, and against the same assembly: a story the report
 // refuses must not reach the table by a second path.
-const drawnCards = shapeCards(subjects, names)
-const shapes = new Map(
-  [...heldShapes].filter(([key, told]) => {
-    const card = drawnCards.get(key)
+const kept = (held: ReadonlyMap<string, Told>, cards: ReadonlyMap<string, Card>) =>
+  new Map(
+    [...held].filter(([key, told]) => {
+      const card = cards.get(key)
 
-    if (card === undefined || faultInTold(told, card, telling) === null) return true
+      if (card === undefined || faultInTold(told, card, telling) === null) return true
 
-    wrong.push(key)
+      wrong.push(key)
 
-    return false
-  }),
-)
+      return false
+    }),
+  )
+
+const shapes = kept(heldShapes, shapeCards(subjects, names))
 
 const written = new Map(
   [...held].filter(([character, told]) => {
@@ -130,12 +135,13 @@ const written = new Map(
 )
 
 const wrote = { names, keys, words, bound }
+const wordStories = kept(heldWords, wordCards(subjects, wrote))
 
 // Withdrawn content is dealt to nobody, so it is neither owed a row nor counted against the ones
 // written: a ratio whose denominator holds cards no session shows is a ratio nothing can reach.
 const dealt = subjects.filter((subject) => !subject.hidden)
 const version = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
-const rows = rowsToPublish(subjects, { wrote, cards, written, shapes }, {
+const rows = rowsToPublish(subjects, { wrote, cards, written, shapes, words: wordStories }, {
   locale,
   writtenBy: CORPUS_MODEL,
   promptVersion: '',
