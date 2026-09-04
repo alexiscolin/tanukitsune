@@ -77,6 +77,10 @@ export function shapeCards(
   return cards
 }
 
+function isWord(type: string): boolean {
+  return type === 'vocabulary' || type === 'kana_vocabulary'
+}
+
 // What every word card is made of: the word each kanji writing it is taught under, in the order they
 // are written, and what the word means. A word composes its meaning from its characters, so that is
 // what its story walks, and nothing derives it.
@@ -91,7 +95,9 @@ export function wordCards(
   const cards = new Map<string, Card>()
 
   for (const subject of subjects) {
-    if (subject.type !== 'vocabulary' || subject.characters === null || subject.hidden) continue
+    // A word written in kana alone is a word like any other and owes a story too. It has no kanji to
+    // name, so the story says what the word does and arrives at what it means, the way a shape's does.
+    if (!isWord(subject.type) || subject.characters === null || subject.hidden) continue
 
     const word = words[subject.characters]
     if (word === undefined) continue
