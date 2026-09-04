@@ -237,6 +237,9 @@ const storyList = z.object({
   ),
 })
 
+// Reads mnemonics.json and shapes.json alike: the two hold the same shape of text and are two files
+// because a shape and the kanji drawing it share a character, so one keyed by character cannot hold
+// both.
 export function readStories(json: string): ReadonlyMap<string, Told> {
   return new Map(Object.entries(storyList.parse(JSON.parse(json)).stories))
 }

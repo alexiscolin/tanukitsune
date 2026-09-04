@@ -19,6 +19,7 @@ import {
   unnamedComponents,
   wordlessComponents,
 } from '../src/core/corpus/decomposition.ts'
+import type { Telling } from '../src/core/corpus/story.ts'
 import type { Decomposition } from '../src/core/corpus/decomposition.ts'
 import { list } from './corpus-command.ts'
 import {
@@ -31,7 +32,7 @@ import {
 } from '../src/data/corpus/artifact.ts'
 import { faultsInStories } from '../src/data/corpus/story-run.ts'
 import type { Told } from '../src/data/corpus/story-run.ts'
-import { cardsFrom } from '../src/data/corpus/publish.ts'
+import { cardsFrom, shapeCards } from '../src/data/corpus/publish.ts'
 import { shapesNamedByTheirKanji, walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import type { InventorySubject } from '../src/data/corpus/inventory.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
@@ -144,6 +145,20 @@ function reportStories(subjects: readonly InventorySubject[], walked: readonly D
   report('meaning stories written', String([...written.values()].filter((one) => has(one.meaning)).length))
   report('reading stories written', String([...written.values()].filter((one) => has(one.reading)).length))
   report('stories at fault', list(faultsInStories(written, cards, telling)))
+
+  reportShapes(subjects, telling)
+}
+
+// A shape the locale gave a word of its own owes a story of its own. One a kanji already names does
+// not: the two are taught under one word and the kanji's story is what the card shows.
+function reportShapes(subjects: readonly InventorySubject[], telling: Telling): void {
+  const file = `corpus/${locale}/shapes.json`
+  const written = existsSync(file) ? readStories(readFileSync(file, 'utf8')) : new Map<string, Told>()
+  const cards = shapeCards(subjects, names)
+
+  report(`shapes ${locale} owes a story`, String(cards.size))
+  report('shape stories written', String([...written.values()].filter((one) => one.meaning.trim() !== '').length))
+  report('shape stories at fault', list(faultsInStories(written, cards, telling)))
 }
 
 // What each reading is bound to, absent until a run has bound anything.

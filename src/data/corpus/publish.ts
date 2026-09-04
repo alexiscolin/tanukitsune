@@ -54,6 +54,41 @@ export type Row = {
 // written with.
 export type Answers = Written & { readonly words: Readonly<Record<string, string>> }
 
+// A shape has no parts: the drawing is what it is, so the story says what the shape looks like and
+// arrives at the word. What judges it is the rule that judges any story, with nothing to name first.
+//
+// Here rather than in the report, for the reason `cardsFrom` is: two copies of the assembly is a story
+// judged against one list and graded against another.
+export function shapeCards(
+  subjects: readonly InventorySubject[],
+  wrote: ComponentNames,
+): ReadonlyMap<string, Card> {
+  const cards = new Map<string, Card>()
+
+  for (const subject of subjects) {
+    if (subject.type !== 'radical' || subject.hidden) continue
+
+    const key = subject.characters ?? drawnKey(subject)
+    const word = wrote[key]
+
+    if (word !== undefined) cards.set(key, { parts: [], key: word, anchor: null, reading: null })
+  }
+
+  return cards
+}
+
+// What a shape shows: the story written for it where the locale gave it a word of its own, and
+// otherwise the story of the kanji whose word it is taught under, the two being one card twice. Where
+// the locale named the shape itself, no story of the kanji reaches it: they are two cards about two
+// things, and a story explaining a word this card does not carry teaches the wrong one.
+function shownFor(subject: InventorySubject, held: Held): Told | undefined {
+  const key = subject.characters ?? drawnKey(subject)
+
+  if (held.wrote.names[key] !== undefined) return held.shapes.get(key)
+
+  return subject.characters === null ? undefined : held.written.get(subject.characters)
+}
+
 // A text somebody wrote, or the empty string the artifact itself uses for one nobody has written yet.
 // The column carries it as written, and what turns an empty text into an absent one is the read: a
 // card shows the block or it does not, and that is not a fact about the table.
@@ -103,6 +138,9 @@ export type Held = {
   readonly wrote: Answers
   readonly cards: ReadonlyMap<string, Publishable>
   readonly written: ReadonlyMap<string, Told>
+  // What a shape shows, keyed the way the locale named it: a shape and the kanji drawing it share a
+  // character and are two cards, so one file keyed by character cannot hold both.
+  readonly shapes: ReadonlyMap<string, Told>
 }
 
 // One row per subject the locale can answer, walked by subject rather than by story: a radical and the
@@ -124,12 +162,12 @@ function rowFor(subject: InventorySubject, held: Held, stamp: Stamp): Row | null
   const word = wordFor(subject, held.wrote)
   if (word === undefined) return null
 
-  // Only a kanji has one, and only a kanji is asked for a reading of its own here. A shape and a word
-  // take the empty columns the schema reserves for a subject that teaches neither, and a shape the
-  // curriculum draws has no character to look one up under at all.
+  // Only a kanji has one, and only a kanji is asked for a reading of its own here. A word takes the
+  // empty columns the schema reserves for a subject that teaches neither, and a shape the curriculum
+  // draws has no character to look one up under at all.
   const drawn = subject.type === 'kanji' ? subject.characters : null
   const card = drawn === null ? undefined : held.cards.get(drawn)
-  const told = drawn === null ? undefined : held.written.get(drawn)
+  const told = subject.type === 'radical' ? shownFor(subject, held) : drawn === null ? undefined : held.written.get(drawn)
   const heard = soundOf(card, told)
 
   // The empty columns first and what was written over them: a shape and a word carry no card and no
