@@ -119,7 +119,34 @@ describe('rowsToPublish', () => {
     })
   })
 
-  // The two kinds nothing writes a story for, and the reason the walk is by subject: a radical and the
+  // A shape and the kanji drawing it can be taught under different words, and then they are two cards
+  // about two things. Handing the kanji's story to the shape would explain a word the shape does not
+  // carry, so the shape shows nothing until somebody writes it one.
+  it('leaves a shape named apart from its kanji without a story rather than borrowing one', () => {
+    const apart = [subject({ id: 1, type: 'radical', characters: '休' })]
+    const wrote = { ...WROTE, names: { ...WROTE.names, 休: 'le hamac' } }
+    const written = new Map([['休', told({ meaning: 'une histoire de kanji', nuance: 'la pause' })]])
+
+    expect(rowsToPublish(apart, { wrote, cards: CARDS, written, shapes: new Map() }, STAMP)[0]).toMatchObject({
+      meaning: 'le hamac',
+      mnemonic: '',
+    })
+  })
+
+  // A shape the curriculum draws has no character to be found under, so its story is written under the
+  // identifier the locale named it by. Fifteen shapes are keyed that way.
+  it('gives a drawn shape the story written under its identifier', () => {
+    const drawn = [subject({ id: 8766, type: 'radical', characters: null })]
+    const wrote = { ...WROTE, names: { ...WROTE.names, 'radical#8766': 'le crochet' } }
+    const shapes = new Map([['radical#8766', told({ meaning: 'il pend au mur: le crochet.' })]])
+
+    expect(rowsToPublish(drawn, { wrote, cards: CARDS, written: new Map(), shapes }, STAMP)[0]).toMatchObject({
+      meaning: 'le crochet',
+      mnemonic: 'il pend au mur: le crochet.',
+    })
+  })
+
+  // The kinds nothing writes a story for, and the reason the walk is by subject: a radical and the
   // kanji it draws share a character, so a map keyed by one holds whichever came last.
   it('writes a shape under the name the locale gave it', () => {
     const shape = [subject({ id: 1, type: 'radical', characters: '亻' })]
