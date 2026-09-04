@@ -146,6 +146,32 @@ describe('rowsToPublish', () => {
     })
   })
 
+  // A word composes its meaning from the characters it is written with, so its story names the word
+  // each of them is taught under, in the order they are written, and arrives at what the word means.
+  it('gives a word the story written for it', () => {
+    const word = [subject({ id: 9, type: 'vocabulary', characters: '休み', componentIds: [3] })]
+    const wrote = { ...WROTE, words: { 休み: 'le congé' } }
+    const shapes = new Map([['休み', told({ meaning: 'le repos vous tombe dessus: le congé.' })]])
+
+    expect(rowsToPublish(word, { wrote, cards: CARDS, written: new Map(), shapes }, STAMP)[0]).toMatchObject({
+      meaning: 'le congé',
+      mnemonic: 'le repos vous tombe dessus: le congé.',
+    })
+  })
+
+  // A word written with one kanji is that kanji: it is taught under the same word and is one card
+  // twice, so it shows the story written for the kanji rather than a second one saying the same thing.
+  it('gives a word written with one kanji the story that kanji shows', () => {
+    const word = [subject({ id: 9, type: 'vocabulary', characters: '休', componentIds: [3] })]
+    const wrote = { ...WROTE, words: { 休: 'repos' } }
+    const written = new Map([['休', told({ meaning: 'une histoire de kanji', nuance: 'la pause' })]])
+
+    expect(rowsToPublish(word, { wrote, cards: CARDS, written, shapes: new Map() }, STAMP)[0]).toMatchObject({
+      meaning: 'repos',
+      mnemonic: 'une histoire de kanji',
+    })
+  })
+
   // The kinds nothing writes a story for, and the reason the walk is by subject: a radical and the
   // kanji it draws share a character, so a map keyed by one holds whichever came last.
   it('writes a shape under the name the locale gave it', () => {
