@@ -144,19 +144,17 @@ const short = dealt.flatMap((subject) =>
 
 const owing = `dealt but unanswerable in ${locale}, no word written: ${list(short)}\nheld back, at fault against the rules: ${list(wrong)}\n`
 
-// Refused rather than published short. Holding the story back leaves the row, and a row without its
-// story is written with an empty mnemonic, so the card reaches the reader blank and the run says it
-// succeeded. The whole publish stops instead: the folder is what a run publishes, and a folder holding
-// a story its own rule refuses is not ready to be one.
-if (wrong.length > 0) {
-  process.stdout.write(owing)
-  process.exit(1)
-}
+// A story nobody has written yet is not one at fault, so what is counted here is a story that exists
+// and breaks its own rule. The rows are written either way, because an empty story column is the state
+// a card is meant to pass through and the read turns it into an absent block. What the status carries
+// is that somebody has to go back to the folder: a run reporting success over a story its own rule
+// refuses is a run nobody returns to, and the card stays blank for as long as that holds.
+const refused = wrong.length > 0 ? 1 : 0
 
 if (rows.length === 0) {
   process.stdout.write(`nothing ready to publish for ${locale}\n`)
   process.stdout.write(owing)
-  process.exit(0)
+  process.exit(refused)
 }
 
 const database = await connect({
@@ -204,4 +202,4 @@ process.stdout.write(owing)
 
 // The file-backed driver holds the process open, so a command that has written everything it came to
 // write says so rather than hanging on a connection nobody is waiting for.
-process.exit(0)
+process.exit(refused)

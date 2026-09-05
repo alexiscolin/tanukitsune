@@ -535,7 +535,9 @@ every subject the locale has a word for: a kanji under its key, a shape under th
 it, a word under its meaning. Walked by subject rather than by story, because a radical and the kanji it
 draws share a character and a list keyed by one would hold whichever came last. A card whose story the
 rules refuse is held back and the run names it, and so is a subject the locale has no word for at all,
-which is the one thing that keeps a subject out of the table.
+which is the one thing that keeps a subject out of the table. A story refused ends the run refused as
+well, since a row written without its story reaches the reader blank and a run reporting success over
+one is a run nobody goes back to.
 
 **A card is written before its story is.** The story columns carry the empty text the artifact already
 uses for one nobody has written, and the read is what turns that into an absent block: two subjects in
