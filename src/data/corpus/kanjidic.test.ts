@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { parseGlosses, parseReadings, releaseOf } from './kanjidic'
+import { parseGlosses, parseReadings, releaseOf, withoutAside } from './kanjidic'
 
 // Two entries as the release states them: a meaning carries its language on an attribute, and
 // everything around them is reading data the corpus does not take.
@@ -142,5 +142,31 @@ describe('parseReadings', () => {
 
   it('states nothing for a character the release reads in no Japanese at all', () => {
     expect(parseReadings(XML).get('低')).toEqual([])
+  })
+})
+
+// An aside inside an aside is what the release actually states, and taking the outer one out by its
+// first closing parenthesis leaves the inner tail behind. What survives reaches the card as the answer
+// a learner must type, so a stray bracket there is a word nobody can write.
+describe('withoutAside', () => {
+  it('takes a nested aside out whole', () => {
+    expect(withoutAside("tir à l'arc ((esp.) kyudo)")).toBe("tir à l'arc")
+  })
+
+  it('takes an aside holding an aside out whole', () => {
+    expect(withoutAside('soupe (a (b) c)')).toBe('soupe')
+  })
+
+  it('leaves nothing of a bracket the release never opened', () => {
+    expect(withoutAside('charger)')).toBe('charger')
+  })
+
+  it('takes an aside the release never closed with everything after it', () => {
+    expect(withoutAside('charger (esp.')).toBe('charger')
+  })
+
+  it('keeps a gloss the release states plainly', () => {
+    expect(withoutAside('sushi (plat)')).toBe('sushi')
+    expect(withoutAside('un courant principal')).toBe('un courant principal')
   })
 })

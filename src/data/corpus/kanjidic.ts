@@ -23,8 +23,24 @@ const QUOTES = /"/g
 // A parenthesis qualifies a gloss for somebody reading a dictionary and means nothing on a card, where
 // the word is the whole of what a learner types: a release states "sushi (plat)" and a reader types
 // sushi. Read by jmdict.ts too, the two releases stating their asides the same way.
+//
+// Counted rather than matched, because the release nests one aside inside another: a pattern closing
+// on the first bracket it meets leaves the inner tail behind, and that tail reaches the card as the
+// answer. A bracket the release never opened is dropped for the same reason, and an aside it never
+// closed takes the rest of the gloss with it: what follows an opening bracket is inside the aside
+// until the release says otherwise, and a card carrying half a parenthetical asks for a word nobody
+// can type.
 export function withoutAside(gloss: string): string {
-  return gloss.replace(/\s*\([^)]*\)/g, '')
+  let kept = ''
+  let inside = 0
+
+  for (const character of gloss) {
+    if (character === '(') inside += 1
+    else if (character === ')') inside = Math.max(0, inside - 1)
+    else if (inside === 0) kept += character
+  }
+
+  return kept.replace(/\s+/g, ' ').trim()
 }
 
 // What the release says it is. The address it is served from is one rolling file rather than a
