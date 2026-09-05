@@ -144,6 +144,15 @@ const short = dealt.flatMap((subject) =>
 
 const owing = `dealt but unanswerable in ${locale}, no word written: ${list(short)}\nheld back, at fault against the rules: ${list(wrong)}\n`
 
+// Refused rather than published short. Holding the story back leaves the row, and a row without its
+// story is written with an empty mnemonic, so the card reaches the reader blank and the run says it
+// succeeded. The whole publish stops instead: the folder is what a run publishes, and a folder holding
+// a story its own rule refuses is not ready to be one.
+if (wrong.length > 0) {
+  process.stdout.write(owing)
+  process.exit(1)
+}
+
 if (rows.length === 0) {
   process.stdout.write(`nothing ready to publish for ${locale}\n`)
   process.stdout.write(owing)
