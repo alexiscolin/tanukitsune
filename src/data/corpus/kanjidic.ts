@@ -26,7 +26,10 @@ const QUOTES = /"/g
 //
 // Counted rather than matched, because the release nests one aside inside another: a pattern closing
 // on the first bracket it meets leaves the inner tail behind, and that tail reaches the card as the
-// answer. A bracket the release never opened is dropped for the same reason.
+// answer. A bracket the release never opened is dropped for the same reason, and an aside it never
+// closed takes the rest of the gloss with it: what follows an opening bracket is inside the aside
+// until the release says otherwise, and a card carrying half a parenthetical asks for a word nobody
+// can type.
 export function withoutAside(gloss: string): string {
   let kept = ''
   let inside = 0

@@ -161,6 +161,10 @@ describe('withoutAside', () => {
     expect(withoutAside('charger)')).toBe('charger')
   })
 
+  it('takes an aside the release never closed with everything after it', () => {
+    expect(withoutAside('charger (esp.')).toBe('charger')
+  })
+
   it('keeps a gloss the release states plainly', () => {
     expect(withoutAside('sushi (plat)')).toBe('sushi')
     expect(withoutAside('un courant principal')).toBe('un courant principal')
