@@ -165,6 +165,19 @@ describe('withoutAside', () => {
     expect(withoutAside('charger (esp.')).toBe('charger')
   })
 
+  it('keeps the gloss the aside qualifies where a second one is run onto it', () => {
+    expect(withoutAside('échec (examen)refus')).toBe('échec')
+    expect(withoutAside('aspirer (à)languir')).toBe('aspirer')
+  })
+
+  it('keeps what an aside standing first qualifies', () => {
+    expect(withoutAside('(qch)approcher de')).toBe('approcher de')
+  })
+
+  it('keeps what follows an aside the release separated', () => {
+    expect(withoutAside('archery ((esp.) kyudo) bow')).toBe('archery bow')
+  })
+
   it('keeps a gloss the release states plainly', () => {
     expect(withoutAside('sushi (plat)')).toBe('sushi')
     expect(withoutAside('un courant principal')).toBe('un courant principal')
