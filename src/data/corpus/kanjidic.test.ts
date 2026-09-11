@@ -170,6 +170,10 @@ describe('withoutAside', () => {
     expect(withoutAside('aspirer (à)languir')).toBe('aspirer')
   })
 
+  it('keeps what an aside standing first qualifies', () => {
+    expect(withoutAside('(qch)approcher de')).toBe('approcher de')
+  })
+
   it('keeps what follows an aside the release separated', () => {
     expect(withoutAside('archery ((esp.) kyudo) bow')).toBe('archery bow')
   })

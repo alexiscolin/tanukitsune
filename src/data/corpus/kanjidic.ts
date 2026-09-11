@@ -33,11 +33,24 @@ const QUOTES = /"/g
 export function withoutAside(gloss: string): string {
   let kept = ''
   let inside = 0
+  let closed = false
 
   for (const character of gloss) {
-    if (character === '(') inside += 1
-    else if (character === ')') inside = Math.max(0, inside - 1)
-    else if (inside === 0) kept += character
+    if (character === '(') {
+      inside += 1
+      closed = false
+    } else if (character === ')') {
+      inside = Math.max(0, inside - 1)
+      closed = inside === 0
+    } else {
+      // An aside qualifies what stands before it, so a word run straight onto its closing bracket is a
+      // second gloss the release failed to separate rather than more of the first. Keeping both leaves
+      // two words side by side that no reader can type, and the card is graded on what survives here.
+      // An aside standing first qualifies what follows instead, and there the run-on is the gloss.
+      if (closed && inside === 0 && character.trim() !== '' && kept.trim() !== '') break
+      closed = false
+      if (inside === 0) kept += character
+    }
   }
 
   return kept.replace(/\s+/g, ' ').trim()
