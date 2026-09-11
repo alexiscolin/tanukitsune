@@ -1,5 +1,5 @@
 {
-"header":{"source":"JMdict 2026-09-10","licence":"CC BY-SA 4.0, Electronic Dictionary Research and Development Group","modified":"Only the words the curriculum deals are kept, only the glosses of one language, an aside in parentheses is dropped, a gloss this language cannot write is left out, and the meaning the course teaches leads.","holds":"what each word of the curriculum means here, the shown meaning first and the rest behind it"},
+"header":{"source":"JMdict 2026-09-10","licence":"CC BY-SA 4.0, Electronic Dictionary Research and Development Group","modified":"Only the words the curriculum deals are kept, only the glosses of one language, an aside in parentheses is dropped along with a second gloss run onto it, a word stated twice is kept once, a gloss this language cannot write is left out, and the meaning the course teaches leads.","holds":"what each word of the curriculum means here, the shown meaning first and the rest behind it"},
 "meanings":{
 "六月":["juin"],
 "ビー玉":["bille"],
@@ -2759,7 +2759,7 @@
 "人殺し":["assassinat","meurtre"],
 "指輪":["bague"],
 "輪ゴム":["élastique","ruban élastique"],
-"不合格":["échec refus","élimination","disqualification","inaptitude"],
+"不合格":["échec","élimination","disqualification","inaptitude"],
 "寺":["temple bouddhiste"],
 "比例":["proportion"],
 "解ける":["se dénouer","se résoudre"],
@@ -3955,7 +3955,7 @@
 "居間":["salon"],
 "引退":["retraite"],
 "手渡す":["donner","remettre"],
-"憧れる":["admirer","aspirer languir"],
+"憧れる":["admirer","aspirer"],
 "理屈":["raison","théorie"],
 "従える":["être accompagné de","être suivi de","soumettre","subjuguer"],
 "客観的":["objectif"],
