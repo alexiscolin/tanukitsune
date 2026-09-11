@@ -111,7 +111,9 @@ function headerFor(release: string): Readonly<Record<string, string>> {
     source: `JMdict ${release}`,
     licence: 'CC BY-SA 4.0, Electronic Dictionary Research and Development Group',
     modified:
-      'Only the words the curriculum deals are kept, only the glosses of one language, an aside in parentheses is dropped, a gloss this language cannot write is left out, and the meaning the course teaches leads.',
+      "Only the words the curriculum deals are kept, only the glosses of one language, an aside in parentheses is " +
+      "dropped along with a second gloss run onto it, a word stated twice is kept once, a gloss this language " +
+      "cannot write is left out, and the meaning the course teaches leads.",
     holds: 'what each word of the curriculum means here, the shown meaning first and the rest behind it',
   }
 }
