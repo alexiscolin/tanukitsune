@@ -77,3 +77,21 @@ describe('an aside', () => {
     expect(parseWords(ASIDES, 'fr').has('々')).toBe(false)
   })
 })
+
+// Two senses of one word are often glossed with the same French word, and a list holding a word twice
+// is a list no order over it can satisfy, which would leave the word asked for forever. The sibling
+// reader of the other release drops the repeat for that reason, and this one owes the same.
+describe('a word glossed twice the same way', () => {
+  const TWICE = `<JMdict>
+<entry><k_ele><keb>切る</keb></k_ele>
+<sense><gloss xml:lang="fre">couper</gloss></sense>
+<sense><gloss xml:lang="fre">couper (une corde)</gloss></sense>
+<sense><gloss xml:lang="fre">trancher</gloss></sense>
+</entry>
+</JMdict>`
+
+  it('keeps the word once', () => {
+    expect(parseWords(TWICE, 'fr').get('切る')).toEqual(['couper', 'trancher'])
+  })
+})
+
