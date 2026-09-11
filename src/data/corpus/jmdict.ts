@@ -40,8 +40,10 @@ export function parseWords(xml: string, locale: string): ReadonlyMap<string, rea
     const glosses = [...body.matchAll(glossed)]
       .map(([, gloss = '']) => withoutAside(gloss).trim())
       // A gloss that is nothing but an aside leaves no word behind, and an empty string is not a
-      // meaning a reader can be graded on.
-      .filter((gloss) => gloss !== '')
+      // meaning a reader can be graded on. Two senses glossed the same way are one word once the
+      // asides are gone, and a list holding a word twice is a list no order over it can satisfy,
+      // which would leave the word asked for forever.
+      .filter((gloss, at, all) => gloss !== '' && all.indexOf(gloss) === at)
     if (glosses.length === 0) continue
 
     // The written forms first, since that is how the curriculum spells a word. A word it deals in kana
