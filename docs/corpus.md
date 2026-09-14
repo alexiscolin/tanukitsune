@@ -341,7 +341,7 @@ locale's own material. A word that says the reading is taken before one that mer
 exactly, which is what the paid step was writing by hand and what the table can find for itself: the
 first word says its share sound for sound and the second says the rest and may run on. Phrases are
 offered beside words in every pass, and they take the table from 136 anchors that say their reading to
-250, and from 2204 readings bound to 2267.
+250, and from 2204 readings bound to 2268.
 
 **A word a card will not carry is refused before it is measured.** A word of one letter is the letter
 itself, spelled rather than pictured, and k and q are in every lexicon. A word already naming a shape
@@ -367,10 +367,10 @@ kept: left there, it loses an anchor to a rule meant only to keep two apart whil
 holds a word that keeps them apart and serves them both. The pool is filtered once against the set as
 it stands rather than per reading, which is the same answer for a three hundredth of the reads.
 
-Of the 2559 readings inside that ceiling, 2267 are bound and 292 are not, and 527 of the 557 a
-character teaches have one. 511 of those bound sit on a word under one occurrence per million, which is
-the widened pass and which the prose step is expected to refuse rather than write on. Of the 292 left,
-195 have no word the rules accept and 97 have words the curriculum has already spent. Every one of
+Of the 2559 readings inside that ceiling, 2268 are bound and 291 are not, and 528 of the 557 a
+character teaches have one. 512 of those bound sit on a word under one occurrence per million, which is
+the widened pass and which the prose step is expected to refuse rather than write on. Of the 291 left,
+194 have no word the rules accept and 97 have words the curriculum has already spent. Every one of
 those counts is a line the run prints.
 
 The readings a run could not bind travel in `anchors.json` beside the anchors, under `left`, each with
@@ -516,7 +516,7 @@ by reading cluster so sibling anchors are visible at once, overgenerating and ra
 own examples travelling with the ask. What comes back is held to the rules above before anything is written: a story naming
 a part it was not given, told out of the order the drawing places them, or ending anywhere but on the
 meaning is refused and asked again by the next run. A card whose reading no word is bound to is asked
-without one, and asked again for that half once a word is bound: 292 readings are still waiting for
+without one, and asked again for that half once a word is bound: 291 readings are still waiting for
 one, so a card written before its word existed is the ordinary case. A card asked again keeps the texts
 it already carried and is sent the meaning story it tells, since a reading story continuing a scene the
 card does not tell is two scenes to remember rather than one.
