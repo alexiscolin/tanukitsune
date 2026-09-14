@@ -84,9 +84,13 @@ function isLengthening(mora: string): boolean {
   return mora === 'う' || mora === 'ウ'
 }
 
-// Hepburn onsets to the sounds they stand for. The three that matter most are here for a reason:
-// French has no /h/, no /ts/ and no /ɸ/, so a French anchor claiming one of them is claiming a sound
-// its own language cannot make.
+// Hepburn onsets to the sounds they stand for. /h/ and /ɸ/ are here for a reason: a language that makes
+// neither has an anchor claiming a sound it cannot say, which is what the locale's own list of
+// impossible onsets is read against.
+//
+// ち and つ are a stop released into a fricative, and they are written as the two sounds they are made
+// of. One symbol for the pair is a sound no language holds, so nothing answers it and every reading
+// opening on one is a card that cannot be written: the stop is the half every language does say.
 const ONSETS: Record<string, readonly string[]> = {
   '': [],
   k: ['k'],
@@ -96,8 +100,8 @@ const ONSETS: Record<string, readonly string[]> = {
   z: ['z'],
   j: ['dʑ'],
   t: ['t'],
-  ch: ['tɕ'],
-  ts: ['ts'],
+  ch: ['t', 'ɕ'],
+  ts: ['t', 's'],
   d: ['d'],
   n: ['n'],
   h: ['h'],
