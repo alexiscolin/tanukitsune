@@ -23,6 +23,8 @@ import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.
 const JMDICT = 'http://ftp.edrdg.org/pub/Nihongo/JMdict.gz'
 
 const locale = process.argv[2] ?? 'fr'
+const WRITTEN = 'meaning-written.json'
+const at = (file: string) => `corpus/${locale}/${file}`
 const output = `corpus/${locale}/vocabulary.json`
 
 if (!existsSync(INVENTORY_FILE)) {
@@ -100,7 +102,30 @@ if (existsSync(output)) {
   }
 }
 
-writeFileSync(output, meaningsFile({ header: headerFor(release), meanings: { ...written, ...meanings } }))
+// What this language writes, over what the release states. A release is the truth about what a word
+// means and not about how French spells it: a gloss arriving misspelled or in another language is shown
+// as the answer, so the card teaches it. Applied last so a correction survives the re-run that rewrites
+// everything the dictionary does state.
+const corrected = existsSync(at(WRITTEN)) ? readMeanings(readFileSync(at(WRITTEN), 'utf8')) : {}
+const held_ = Object.keys(corrected).filter((word) => meanings[word] !== undefined || written[word] !== undefined)
+// A correction for a word the curriculum does not deal is a correction nothing will ever apply, and the
+// likeliest way a hand-written file goes wrong is a character typed wrong in its key. Said rather than
+// dropped, since a file nobody can see failing is a file nobody corrects.
+const stray = Object.keys(corrected).filter((word) => !held_.includes(word))
+
+writeFileSync(
+  output,
+  meaningsFile({
+    header: headerFor(release),
+    meanings: { ...written, ...meanings, ...Object.fromEntries(held_.map((word) => [word, corrected[word] as readonly string[]])) },
+  }),
+)
+
+if (stray.length > 0) {
+  process.stdout.write(
+    `corrections no word answers to, in ${at(WRITTEN)}: ${stray.length}\n${stray.map((one) => `  ${one}\n`).join('')}`,
+  )
+}
 
 process.stdout.write(`vocabulary: ${Object.keys(meanings).length + held} of ${words.length} written to ${output}, ${held} of them held from an earlier run\n`)
 process.stdout.write(`taught by the character they write: ${carried}, named by their own reading: ${named}\n`)
