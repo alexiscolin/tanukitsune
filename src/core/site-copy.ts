@@ -55,6 +55,7 @@ export type SubjectCopy = {
   readonly meaning: string
   readonly nuance: string
   readonly mnemonic: string
+  readonly readingMnemonic: string
   readonly components: string
   readonly usedIn: string
   readonly similar: string
@@ -127,6 +128,7 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
       meaning: 'sens',
       nuance: 'à savoir',
       mnemonic: 'moyen de retenir',
+      readingMnemonic: 'moyen de retenir la lecture',
       components: 'composé de',
       usedIn: 'on le retrouve dans',
       similar: 'à ne pas confondre',

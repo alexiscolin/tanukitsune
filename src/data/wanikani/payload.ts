@@ -212,6 +212,7 @@ export function toSubject(
     jlpt: null,
     nuance: null,
     mnemonic: null,
+    readingMnemonic: null,
     patterns: [],
     hidden: entry.data.hidden_at !== null,
     // From the assignment rather than the subject, and joined by whoever holds both.

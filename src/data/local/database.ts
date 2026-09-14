@@ -30,7 +30,10 @@ export type HeldDeck = {
   readonly waiting: readonly Assignment[]
 }
 
-const VERSION = 2
+// Bumped when what a held deck carries changes shape. A deck written by an earlier build holds a
+// Subject without the fields added since, and a screen reading one back finds undefined where it
+// checks for null: the store is replaced rather than read across the change.
+const VERSION = 3
 
 export type LocalSchema = DBSchema & {
   outbox: { key: string; value: AnswerRecord }

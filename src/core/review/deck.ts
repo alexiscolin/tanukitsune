@@ -1,5 +1,5 @@
 import type { Assignment } from '../knowledge-source'
-import type { Subject } from '../subject'
+import type { Component, Subject } from '../subject'
 
 // How much of a queue one sitting takes. The source hands back everything that is due, which is
 // the shape of their API rather than the shape of a day: a queue of hundreds is not a session, it
@@ -43,6 +43,7 @@ export type Written = {
   readonly meaning: string
   readonly nuance: string | null
   readonly mnemonic: string | null
+  readonly readingMnemonic: string | null
 }
 
 // The same deck, each subject carrying what the locale wrote for it. Here beside `deckFor` for the
@@ -53,13 +54,29 @@ export function withText(
   subjects: readonly Subject[],
   written: ReadonlyMap<number, Written>,
 ): readonly Subject[] {
+  // A part is a subject of its own, so what the locale wrote for it is what names it here. Left alone,
+  // the strip under the card names the same pieces the story just named, in the source's language: the
+  // reader reads la bouche in the story and a foreign word for it one line below.
+  const named = (parts: readonly Component[]): readonly Component[] =>
+    parts.map((part) => {
+      const said = written.get(part.id)
+
+      return said === undefined ? part : { ...part, meaning: said.meaning }
+    })
+
   return subjects.map((subject) => {
     const text = written.get(subject.id)
+    const parts = {
+      components: named(subject.components),
+      usedIn: named(subject.usedIn),
+      similar: named(subject.similar),
+    }
 
-    if (text === undefined) return subject
+    if (text === undefined) return { ...subject, ...parts }
 
     return {
       ...subject,
+      ...parts,
       // The one word the card shows and the one it accepts. What the source calls the meaning is its
       // own language, and a course asking for it in that language is not the course: the locale's word
       // takes the place of all three lists the source sends, the words it accepts without showing them
@@ -70,6 +87,7 @@ export function withText(
       refused: [],
       nuance: text.nuance,
       mnemonic: text.mnemonic,
+      readingMnemonic: text.readingMnemonic,
     }
   })
 }

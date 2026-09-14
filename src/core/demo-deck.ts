@@ -65,6 +65,7 @@ export const KANJI: Subject = {
   jlpt: 'N5',
   nuance: "La position, pas le mouvement : descendre se dit avec un verbe, pas avec ce kanji seul.",
   mnemonic: "Un crochet ト accroché sous le sol 一 : ce qui est en dessous.",
+  readingMnemonic: "Le cas où il faut baisser la tête pour passer dessous, cas : か.",
   patterns: [],
   hidden: false,
   srsStage: null,
@@ -104,6 +105,7 @@ export const VERB: Subject = {
   nuance:
     "Intransitif : c'est le sujet qui sort. Faire sortir quelque chose est un autre verbe, 出す.",
   mnemonic: "La sortie 出 suivie de る : l'action de la franchir.",
+  readingMnemonic: null,
   patterns: [
     { pattern: '家を出る', gloss: 'quitter la maison, le lieu quitté avec を' },
     { pattern: '会議に出る', gloss: 'assister à la réunion, la destination avec に' },
@@ -139,6 +141,7 @@ export const LONG: Subject = {
   jlpt: 'N5',
   nuance: 'Une expression figée : の relie le meuble à sa surface, et cet ordre ne change pas.',
   mnemonic: null,
+  readingMnemonic: null,
   patterns: [{ pattern: 'テーブルの上に置く', gloss: 'poser sur la table, le point d’arrivée avec に' }],
   hidden: false,
   srsStage: null,
@@ -178,6 +181,7 @@ export const MANY: Subject = {
   jlpt: 'N5',
   nuance: 'La variété, jamais la quantité : beaucoup de choses se dit autrement.',
   mnemonic: 'La couleur 色 redoublée par 々 : des couleurs et des couleurs, donc de tout.',
+  readingMnemonic: null,
   patterns: [
     { pattern: '色々な人', gloss: 'des gens de toutes sortes, l’adjectif avec な' },
     { pattern: '色々と', gloss: 'de diverses façons, l’adverbe avec と' },
@@ -211,6 +215,7 @@ export const IMAGED: Subject = {
   jlpt: null,
   nuance: "Une brique de découpage, pas une clé traditionnelle : elle sert à lire le caractère et ne se rencontre jamais seule.",
   mnemonic: null,
+  readingMnemonic: null,
   patterns: [],
   hidden: false,
   srsStage: null,
@@ -238,6 +243,7 @@ export const KANA_VOCABULARY: Subject = {
   jlpt: 'N4',
   nuance: 'Familier. La forme polie ajoute ございます, et on ne la coupe pas entre amis.',
   mnemonic: null,
+  readingMnemonic: null,
   patterns: [{ pattern: '〜てくれてありがとう', gloss: 'merci de m’avoir fait telle chose' }],
   hidden: false,
   srsStage: null,
