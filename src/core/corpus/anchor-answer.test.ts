@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { faultInAnchor } from './anchor-answer'
+import { faultInAnchor, faultInAnchorWords } from './anchor-answer'
 import type { Answer } from './anchor-answer'
 
 const BOUNDS = { nearest: 0.5, apart: 0.1, atMostWords: 3, partsOfSpeech: ['NOM'] }
@@ -106,5 +106,42 @@ describe('faultInAnchor', () => {
 
   it('refuses an answer that says nothing', () => {
     expect(faultInAnchor(answer({ proposal: '   ', heard: [], said: ['ʃ', 'i'] }), HELD, BOUNDS)).toBe('no word at all')
+  })
+})
+
+describe('faultInAnchorWords', () => {
+  const REFUSES = new Set(['gitan', 'boche'])
+  const TELLING = { inflects: ['s', 'x'], letters: 'abcdefghijklmnopqrstuvwxyzàâäçéèêëîïòôöùûüÿœæ' }
+
+  it('accepts a phrase of ordinary words', () => {
+    expect(faultInAnchorWords('haut nid', REFUSES, TELLING)).toBe(null)
+  })
+
+  it('refuses a word the locale refuses', () => {
+    expect(faultInAnchorWords('boche', REFUSES, TELLING)).toBe('"boche" is a word the locale refuses')
+  })
+
+  // Read on the lemma alone, every entry walks back in as its plural, which is the same word on the card.
+  it('refuses a form of a word the locale refuses', () => {
+    expect(faultInAnchorWords('gitans', REFUSES, TELLING)).toBe('"gitans" is a word the locale refuses')
+  })
+
+  // A phrase carries the refusal whole: it is what the reader meets, one word of it being enough.
+  it('reads a phrase word by word', () => {
+    expect(faultInAnchorWords('le boche', REFUSES, TELLING)).toBe('"boche" is a word the locale refuses')
+  })
+
+  // A refused word reaches a card behind a hyphen, an apostrophe or a capital as it does behind a space.
+  it('refuses a word a hyphen, an apostrophe or a capital is hiding', () => {
+    expect(faultInAnchorWords('gitan-terreux', REFUSES, TELLING)).toBe('"gitan" is a word the locale refuses')
+    expect(faultInAnchorWords("l'boche", REFUSES, TELLING)).toBe('"boche" is a word the locale refuses')
+    expect(faultInAnchorWords('la Boche', REFUSES, TELLING)).toBe('"boche" is a word the locale refuses')
+    expect(faultInAnchorWords('boche,', REFUSES, TELLING)).toBe('"boche" is a word the locale refuses')
+  })
+
+  it('refuses a word of one letter', () => {
+    expect(faultInAnchorWords('k', REFUSES, TELLING)).toBe(
+      '"k" is one letter, which a reader spells rather than pictures',
+    )
   })
 })
