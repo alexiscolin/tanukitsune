@@ -71,7 +71,7 @@ const cards = cardsFrom(subjects, read, { names, keys, bound })
 
 // A card is owed a run where it carries no meaning story and where it carries no nuance, and also
 // where it carries no reading story
-// while a word is now bound to its reading: 290 readings are still unbound, so a card asked before its
+// while a word is now bound to its reading: 292 readings are still unbound, so a card asked before its
 // word existed is the ordinary case rather than an edge, and one asked once and never again is a card
 // left half written for good.
 //

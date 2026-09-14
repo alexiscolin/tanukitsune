@@ -22,9 +22,10 @@ import { allocate } from '../src/core/corpus/choose.ts'
 import { candidatesBy, phrasesBy, roomyWords, soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
 import {
   readComponentNames,
+  readKeys,
   readKeyOrder,
   readLexicon,
-  readNaming,
+  readTelling,
   readPhonology,
   readReadings,
 } from '../src/data/corpus/artifact.ts'
@@ -47,6 +48,32 @@ const { nearest, apart, sameSound, unrated, hears, writes, refuses, atMostMorae,
   readFileSync(at('phonology.json'), 'utf8'),
 )
 
+// One word answers one question here, and an inflection of it is the same word: naming.json says a
+// story writing les haies names la haie, so an anchor spending the plural spends the name. The table
+// filtered its own pool on the bare form only, which let a plural through, and a written word reached
+// the table filtered on nothing at all.
+const { opensWith, inflects } = readTelling(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
+const answering: readonly string[] = [
+  ...Object.values<string>(readComponentNames(readFileSync(`corpus/${locale}/components.json`, 'utf8'))),
+  ...Object.values<string>(readKeys(readFileSync(`corpus/${locale}/keys.json`, 'utf8'))),
+]
+const named = new Set(
+  answering.flatMap((name) => {
+    const opener = opensWith.find((one) => name.startsWith(one))
+    const bare = opener === undefined ? name : name.slice(opener.length)
+
+    return [bare, ...bare.split(/\s+/)]
+  }),
+)
+const answers = (word: string) =>
+  named.has(word) || inflects.some((one: string) => word.endsWith(one) && named.has(word.slice(0, -one.length)))
+// Held to more than the pool below, which filters on the bare component name alone. A written word is
+// chosen by a person rather than ranked out of the lexicon, so the two doors the table leaves shut by
+// luck are shut here on purpose: a key is an answer exactly as a name is, and an inflection of either is
+// the same word by this locale's own naming rule.
+const spends = (text: string) =>
+  refuses.has(text) || text.replace(/\s/g, '').length <= 1 || text.split(/\s+/).some(answers)
+
 // The words written for the readings the lexicon left without one, read before the table runs rather
 // than instead of it: a reading reaches that file only once the table has been asked and has failed.
 // Their sounds are derived here like any other anchor's, word by word out of the lexicon, a phrase
@@ -56,10 +83,19 @@ const carried: ReadonlyMap<string, readonly string[]> = existsSync(at(WRITTEN))
   : new Map()
 const proposed: Allocated[] = []
 
+const spent: string[] = []
 for (const [reading, words] of carried) {
   const phrase = words[0]
   const sounds = phrase === undefined ? null : soundsOf(phrase, lexicon)
   if (phrase === undefined || sounds === null) continue
+
+  // Held to the pool rule the table holds its own candidates to. A written word reaching the table
+  // unfiltered is a word the table would never have chosen, and the reader meets it as an answer on one
+  // card and as a sound on the next.
+  if (spends(phrase)) {
+    spent.push(`${reading}: ${phrase}`)
+    continue
+  }
 
   proposed.push({ reading, anchor: phrase, phonemes: sounds })
 }
@@ -91,18 +127,16 @@ const wanted = asked.filter((one) => !settled.has(one.value))
 //
 // A word already naming a shape is refused too. One word answers one question here: rideau names the
 // shape 垂 on one card, and an anchor spending it on りく would make the reader meet it as a sound on
-// the next.
-const { opensWith } = readNaming(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
-const named = new Set(
-  Object.values(readComponentNames(readFileSync(`corpus/${locale}/components.json`, 'utf8'))).map((name) => {
+// the next. `spends` above holds a written word to more than this, since a person chose it.
+const shapes = new Set(
+  Object.values<string>(readComponentNames(readFileSync(`corpus/${locale}/components.json`, 'utf8'))).map((name) => {
     const opener = opensWith.find((one) => name.startsWith(one))
 
     return opener === undefined ? name : name.slice(opener.length)
   }),
 )
-
 const carries = (text: string) =>
-  !refuses.has(text) && text.replace(/\s/g, '').length > 1 && !text.split(/\s+/).some((word) => named.has(word))
+  !refuses.has(text) && text.replace(/\s/g, '').length > 1 && !text.split(/\s+/).some((word) => shapes.has(word))
 const keeps = (word: { category: string }) => partsOfSpeech.includes(word.category)
 const allows = (word: Word, text: string) => keeps(word) && word.frequency >= atLeastCommon && carries(text)
 const words = candidatesBy(lexicon, allows)
