@@ -65,7 +65,16 @@ async function dealt(
     textFor(asked, DEFAULT_LOCALE).catch(() => new Map<number, Written>()),
   ])
 
-  const deck = withText(deckFor(sitting, subjects), written)
+  // A part is a subject the sitting did not ask for, so its text is not in the first read. Asked in a
+  // second one rather than folded into the first: which parts a deck shows is not known until the
+  // subjects arrive, and a card naming its pieces in the source's language is the story contradicting
+  // the line under it.
+  const dealt = deckFor(sitting, subjects)
+  const parts = [...new Set(dealt.flatMap((one) => [...one.components, ...one.usedIn, ...one.similar].map((part) => part.id)))]
+  const named = parts.filter((id) => !written.has(id))
+  const alsoWritten = named.length === 0 ? new Map<number, Written>() : await textFor(named, DEFAULT_LOCALE).catch(() => new Map<number, Written>())
+
+  const deck = withText(dealt, new Map([...written, ...alsoWritten]))
   // Only what the deck kept. `deckFor` drops an assignment whose subject the source withdrew or
   // never sent, and a cached record naming one would let a later flush advance an item the reader
   // was never asked.

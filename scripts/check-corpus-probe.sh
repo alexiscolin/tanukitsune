@@ -30,6 +30,7 @@ cat >"$root/xx/naming.json" <<'JSON'
   "letters": "abcdefghijklmnopqrstuvwxyz",
   "joiners": "' -",
   "mostWords": 2,
+  "inflects": ["s"],
   "examples": []
 }
 JSON
@@ -48,7 +49,27 @@ cat >"$root/xx/phonology.json" <<'JSON'
 {
   "cannotStart": [], "nearest": 0.5, "apart": 0.2, "sameSound": 0.25, "unrated": 50,
   "atMostMorae": 4, "atLeastCommon": 1, "partsOfSpeech": ["NOM"], "atMostWords": 3,
-  "hears": {}, "writes": {}, "refuses": []
+  "hears": {}, "writes": {}, "refuses": ["boche"]
+}
+JSON
+mkdir -p "$root/yy"
+cat >"$root/yy/naming.json" <<'JSON'
+{
+  "language": "Probe",
+  "opensWith": ["le ", ""],
+  "letters": "abcdefghijklmnopqrstuvwxyz",
+  "joiners": "' -",
+  "mostWords": 2,
+  "inflects": ["s"],
+  "examples": []
+}
+JSON
+cat >"$root/xx/mnemonics.json" <<'JSON'
+{
+  "stories": {
+    "B": {"meaning": "le sol se decolle et rien ne suit: le mur.", "nuance": "x", "reading": ""},
+    "C": {"meaning": "", "nuance": "x", "reading": ""}
+  }
 }
 JSON
 cat >"$root/xx/anchors.json" <<'JSON'
@@ -57,7 +78,9 @@ cat >"$root/xx/anchors.json" <<'JSON'
     "\u3053": ["le coq", ["k", "o", "k"], 8],
     "\u3053\u3046": ["le coq", ["k", "o", "k"], 8],
     "\u3055": ["la scie", ["s", "i"], 9],
-    "\u3057": ["le site", ["s", "i", "t"], 9]
+    "\u3057": ["le site", ["s", "i", "t"], 9],
+    "\u3070": ["les boches", ["b", "\u0254", "\u0283"], 9],
+    "\u3071": ["k", ["k", "a"], 9]
   },
   "left": {}
 }
@@ -68,7 +91,7 @@ if [ -z "$refused" ]; then
   report 'the check accepted a locale written to be refused'
 fi
 
-for expected in 'not the locale' 'both keyed' 'no article' 'names more than one component' 'states a word twice' 'holds nothing for' 'stands for more than one reading' 'sit nearer than'; do
+for expected in 'not the locale' 'both keyed' 'no article' 'names more than one component' 'states a word twice' 'holds nothing for' 'stands for more than one reading' 'sit nearer than' 'the locale refuses' 'is one letter' 'names nothing for' 'no story at all' 'opens on nothing'; do
   case "$refused" in
     *"$expected"*) ;;
     *) report "the check did not name: $expected" ;;

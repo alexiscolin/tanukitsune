@@ -104,6 +104,10 @@ export type Subject = {
   // covers and what it does not, which is the half a one-word gloss always drops.
   readonly nuance: string | null
   readonly mnemonic: string | null
+  // The reading story, which is the other half of what the corpus writes for a card: the meaning story
+  // says what the character means and this says how its reading sounds. Absent for a subject teaching no
+  // reading, and for one whose story is not written yet.
+  readonly readingMnemonic: string | null
   readonly patterns: readonly Pattern[]
 
   // `hidden_at`, which is content the source has withdrawn. Never rendered and never asked:

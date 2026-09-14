@@ -14,17 +14,19 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
+import { faultInAnchorWords } from '../src/core/corpus/anchor-answer.ts'
 import type { Allocated } from '../src/core/corpus/allocation.ts'
 import { heldApart } from '../src/core/corpus/allocation.ts'
 import type { Candidate, Wanted } from '../src/core/corpus/choose.ts'
 import type { Word } from '../src/data/corpus/lexique.ts'
 import { allocate } from '../src/core/corpus/choose.ts'
-import { candidatesBy, phrasesBy, roomyWords, soundsOf, wantedFrom } from '../src/data/corpus/anchor-run.ts'
+import { candidatesBy, phrasesBy, roomyWords, soundsOf, stillBound, wantedFrom } from '../src/data/corpus/anchor-run.ts'
 import {
+  readAnchors,
   readComponentNames,
   readKeyOrder,
   readLexicon,
-  readNaming,
+  readTelling,
   readPhonology,
   readReadings,
 } from '../src/data/corpus/artifact.ts'
@@ -47,6 +49,35 @@ const { nearest, apart, sameSound, unrated, hears, writes, refuses, atMostMorae,
   readFileSync(at('phonology.json'), 'utf8'),
 )
 
+// One word answers one question here, and an inflection of it is the same word: naming.json says a
+// story writing les broussailles names la broussaille, so an anchor spending the plural spends the name.
+const telling = readTelling(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
+const { opensWith, inflects } = telling
+// The article is how this locale writes a name and not part of what the name says, so a word is
+// matched against what is left once it is off.
+const bare = (name: string) => {
+  const opener = opensWith.find((one) => name.startsWith(one))
+
+  return opener === undefined ? name : name.slice(opener.length)
+}
+const shapeNames = Object.values<string>(readComponentNames(readFileSync(`corpus/${locale}/components.json`, 'utf8')))
+const named = new Set(shapeNames.map(bare))
+// A word and the forms this locale writes it in. naming.json says a story writing les broussailles names
+// la broussaille, and a list read on the lemma alone lets every entry back in as its plural: gitan
+// refused and gitane bound is the same word twice.
+const among = (word: string, set: ReadonlySet<string>) =>
+  set.has(word) || inflects.some((one: string) => word.endsWith(one) && set.has(word.slice(0, -one.length)))
+const answers = (word: string) => among(word, named)
+// What a card will not carry, whatever it sounds like: neither the frequency floor nor the distance
+// catches a word that is ordinary, common and unusable in front of a reader. A word of one letter is
+// the letter itself, which a reader spells rather than pictures, and k and q are in every lexicon.
+// A name is held whole, so la main droite is answered by that phrase and not by droite, while the
+// candidate is read word by word, since a phrase carrying one such word carries the collision whole.
+// An inflection is the same word, since naming.json says a story writing les broussailles names la
+// broussaille.
+const spends = (text: string) =>
+  faultInAnchorWords(text, refuses, telling) !== null || text.split(/\s+/).some(answers)
+
 // The words written for the readings the lexicon left without one, read before the table runs rather
 // than instead of it: a reading reaches that file only once the table has been asked and has failed.
 // Their sounds are derived here like any other anchor's, word by word out of the lexicon, a phrase
@@ -56,13 +87,45 @@ const carried: ReadonlyMap<string, readonly string[]> = existsSync(at(WRITTEN))
   : new Map()
 const proposed: Allocated[] = []
 
+const settledBy = (already: readonly Allocated[], reading: string) => already.some((one) => one.reading === reading)
+
+const spent: string[] = []
 for (const [reading, words] of carried) {
   const phrase = words[0]
   const sounds = phrase === undefined ? null : soundsOf(phrase, lexicon)
   if (phrase === undefined || sounds === null) continue
 
+  // Held to the pool rule the table holds its own candidates to. A written word reaching the table
+  // unfiltered is a word the table would never have chosen, and the reader meets it as an answer on one
+  // card and as a sound on the next.
+  if (spends(phrase)) {
+    spent.push(`${reading}: ${phrase}`)
+    continue
+  }
+
   proposed.push({ reading, anchor: phrase, phonemes: sounds })
 }
+
+// A word a reading already holds is not taken back. The table is a global optimisation, so a reading
+// it could not serve before arrives as one more claimant and the assignment shifts under every reading
+// that was already served: words are scarce and the best answer for the whole is not the best answer
+// for each. A story is written against the word its reading held, so a shift costs a rewrite on a card
+// nobody asked to change, and the reader meets a cue that moved for a reason that has nothing to do
+// with their card. What a hand writes in anchor-written.json still wins, which is how a table entry is
+// taken back on purpose rather than by a re-run.
+const held = existsSync(at('anchors.json'))
+  ? readAnchors(readFileSync(at('anchors.json'), 'utf8')).bound
+  : new Map<string, { readonly anchor: string; readonly phonemes: readonly string[] }>()
+
+const { kept: standing, dropped } = stillBound(held, {
+  settled: (reading) => settledBy(proposed, reading),
+  spends,
+  hears,
+  writes,
+  nearest,
+})
+
+proposed.push(...standing)
 
 const settled = new Set(proposed.map((one) => one.reading))
 // Every reading owed an anchor, before the ones a proposal already answered are taken out of the
@@ -84,25 +147,12 @@ if (existsSync(INVENTORY_FILE)) {
 
 const asked = wantedFrom(readings, atMostMorae, hears).map((one) => ({ ...one, serves: taughtOn.get(one.value) ?? 1 }))
 const wanted = asked.filter((one) => !settled.has(one.value))
-// What a card will not carry, whatever it sounds like: neither the frequency floor nor the distance
-// catches a word that is ordinary, common and unusable in front of a reader.
-// A word of one letter is the letter itself, which a reader spells rather than pictures: k and q are
-// in every lexicon and neither is a thing a story can put on stage.
-//
-// A word already naming a shape is refused too. One word answers one question here: rideau names the
-// shape 垂 on one card, and an anchor spending it on りく would make the reader meet it as a sound on
-// the next.
-const { opensWith } = readNaming(readFileSync(`corpus/${locale}/naming.json`, 'utf8'))
-const named = new Set(
-  Object.values(readComponentNames(readFileSync(`corpus/${locale}/components.json`, 'utf8'))).map((name) => {
-    const opener = opensWith.find((one) => name.startsWith(one))
-
-    return opener === undefined ? name : name.slice(opener.length)
-  }),
-)
-
+// A word already naming a shape is refused for the same reason: one word answers one question here, so
+// rideau names the shape 垂 on one card and an anchor spending it on りく would make the reader meet it
+// as a sound on the next.
+const shapes = new Set(shapeNames.map(bare))
 const carries = (text: string) =>
-  !refuses.has(text) && text.replace(/\s/g, '').length > 1 && !text.split(/\s+/).some((word) => named.has(word))
+  faultInAnchorWords(text, refuses, telling) === null && !text.split(/\s+/).some((word) => shapes.has(word))
 const keeps = (word: { category: string }) => partsOfSpeech.includes(word.category)
 const allows = (word: Word, text: string) => keeps(word) && word.frequency >= atLeastCommon && carries(text)
 const words = candidatesBy(lexicon, allows)
@@ -329,5 +379,20 @@ const narrow = unserved.filter((one) => one.reason === 'none acceptable')
 if (unserved.length > 0) {
   process.stdout.write(
     `readings left without one: ${unserved.length}, ${narrow.length} with no word the rules accept and ${unserved.length - narrow.length} whose words are already anchors\n`,
+  )
+}
+
+// Said here rather than written to anchors.json, because the reading is asked of the table next and
+// usually comes back bound: what is refused is the written word, not the reading, and the file to
+// correct is the one a hand wrote.
+if (dropped.length > 0) {
+  process.stdout.write(
+    `anchors the rules no longer hold, given back to the table: ${dropped.length}\n${dropped.map((one) => `  ${one}\n`).join('')}`,
+  )
+}
+
+if (spent.length > 0) {
+  process.stdout.write(
+    `written anchors refused, the word already answering a card: ${spent.length}\n${spent.map((one) => `  ${one}\n`).join('')}`,
   )
 }

@@ -49,10 +49,13 @@ export function SubjectBody({
       {/* What the character is made of, then how to keep it, in that order and inside the
           well: the pieces are what the mnemonic is built out of, so reading them second means
           reading the story before its words. */}
-      {subject.components.length === 0 && subject.mnemonic === null ? null : (
+      {subject.components.length === 0 && subject.mnemonic === null && (subject.readingMnemonic ?? null) === null ? null : (
         <SubjectWell>
           <SubjectStrip label={copy.components} parts={subject.components} />
           <SubjectProse label={copy.mnemonic} text={subject.mnemonic} />
+          {/* The reading story sits with the meaning story rather than beside the readings: the two are
+              one scene with the same cast, and split across the card they read as two things to keep. */}
+          <SubjectProse label={copy.readingMnemonic} text={subject.readingMnemonic ?? null} />
         </SubjectWell>
       )}
       <SubjectProse label={copy.yourNote} text={subject.meaningNote} />

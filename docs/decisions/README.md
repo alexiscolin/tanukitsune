@@ -33,6 +33,7 @@ is invisible. Naming the condition and the page to check turns it into a schedul
 | [0012](0012-kanjivg-for-the-decomposition.md) | KanjiVG for the decomposition, and component names we write ourselves |
 | [0013](0013-the-curriculum-decides-the-parts.md) | The curriculum decides which parts a mnemonic names |
 | [0014](0014-jmdict-for-the-meanings.md) | JMdict states what a word means, never a model |
+| [0015](0015-the-card-carries-both-stories.md) | A card carries both stories, and `Subject` gained a field to hold the second |
 
 ## Decided, argued in prose
 

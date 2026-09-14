@@ -49,6 +49,39 @@ export type Bounds = {
   readonly partsOfSpeech: readonly string[]
 }
 
+// What no card will carry, whatever the word sounds like: a word the locale refuses, and a word of one
+// letter, which is the letter itself and a thing a reader spells rather than pictures. A phrase is read
+// word by word, since a phrase carrying one such word carries it whole.
+//
+// The refusal is held to the forms this locale writes a word in, the way a name is: read on the lemma
+// alone, every entry walks back in as its plural or its feminine, which is the same word on the card.
+export function faultInAnchorWords(
+  text: string,
+  refuses: ReadonlySet<string>,
+  telling: { readonly inflects: readonly string[]; readonly letters: string },
+): string | null {
+  for (const word of text.split(/\s+/)) {
+    if (word.replace(/[^\p{L}]/gu, '').length <= 1) {
+      return `"${word}" is one letter, which a reader spells rather than pictures`
+    }
+  }
+
+  // Cut on anything the locale does not write words with rather than on spaces alone. A refused word
+  // reaches a card behind a hyphen, an apostrophe or a capital exactly as it does behind a space:
+  // cul-terreux carries cul, l'attardé carries attardé, and la Bite is the same word said louder.
+  const letters = new Set(telling.letters)
+
+  for (const word of [...text.toLowerCase()].map((one) => (letters.has(one) ? one : ' ')).join('').split(/\s+/)) {
+    if (word === '') continue
+
+    const lemma = telling.inflects.find((one) => word.endsWith(one) && refuses.has(word.slice(0, -one.length)))
+
+    if (refuses.has(word) || lemma !== undefined) return `"${word}" is a word the locale refuses`
+  }
+
+  return null
+}
+
 export function faultInAnchor(answer: Answer, held: readonly Held[], bounds: Bounds): string | null {
   const { proposal, heard, words, said, spelledWith, replacing } = answer
 

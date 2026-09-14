@@ -35,9 +35,17 @@ describe('phonemesOf', () => {
 
   // The three French has no onset for, and the reason the impossible-onset table exists at all.
   it('keeps the sounds French cannot start a word with', () => {
-    expect(phonemesOf('つ')).toEqual(['ts', 'u'])
     expect(phonemesOf('ふ')).toEqual(['ɸ', 'u'])
     expect(phonemesOf('は')).toEqual(['h', 'a'])
+  })
+
+  // Read as one sound each, ち and つ are a sound no language holds: nothing answers them, and every
+  // reading opening on one is a card that can never be written. The stop is the half a language does
+  // say, and hiding it inside a single symbol is what put those readings out of reach.
+  it('reads an affricate as the stop and the fricative it is made of', () => {
+    expect(phonemesOf('つ')).toEqual(['t', 's', 'u'])
+    expect(phonemesOf('ち')).toEqual(['t', 'ɕ', 'i'])
+    expect(phonemesOf('ちょう')).toEqual(['t', 'ɕ', 'o', 'o'])
   })
 
   it('reads a palatalised mora as a consonant, a glide and a vowel', () => {

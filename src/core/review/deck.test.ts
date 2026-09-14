@@ -63,8 +63,29 @@ describe('sessionOf', () => {
 })
 
 describe('withText', () => {
+  // A part is a subject of its own. Left with what the source sent, the strip under the card names the
+  // same pieces the story just named, in the source's language.
+  it('names a part with what the locale wrote for that part', () => {
+    const part = { id: 99, characters: '口', meaning: 'mouth' }
+    const [joined] = withText(
+      [{ ...KANJI, components: [part], usedIn: [part], similar: [part] }],
+      new Map([[99, { meaning: 'la bouche', nuance: null, mnemonic: null, readingMnemonic: null }]]),
+    )
+
+    expect(joined?.components[0]?.meaning).toBe('la bouche')
+    expect(joined?.usedIn[0]?.meaning).toBe('la bouche')
+    expect(joined?.similar[0]?.meaning).toBe('la bouche')
+  })
+
+  it('leaves a part the locale wrote nothing for as it arrived', () => {
+    const part = { id: 98, characters: '囗', meaning: 'enclosure' }
+    const [joined] = withText([{ ...KANJI, components: [part] }], new Map())
+
+    expect(joined?.components[0]?.meaning).toBe('enclosure')
+  })
+
   it('gives a subject the text the locale wrote for it', () => {
-    const [joined] = withText([KANJI], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire' }]]))
+    const [joined] = withText([KANJI], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }]]))
 
     expect(joined?.nuance).toBe('la pause')
     expect(joined?.mnemonic).toBe('une histoire')
@@ -73,21 +94,21 @@ describe('withText', () => {
   // A locale that has not written a card yet is the ordinary state of every locale but the first, and
   // the reader still meets the card: the question is asked either way.
   it('leaves a subject the locale wrote nothing for alone', () => {
-    const [, second] = withText([KANJI, VERB], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire' }]]))
+    const [, second] = withText([KANJI, VERB], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }]]))
 
     expect(second?.nuance).toBe(VERB.nuance)
     expect(second?.mnemonic).toBe(VERB.mnemonic)
   })
 
   it('keeps the order the deck was dealt in', () => {
-    const joined = withText([VERB, KANJI], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire' }]]))
+    const joined = withText([VERB, KANJI], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }]]))
 
     expect(joined.map((one) => one.id)).toEqual([VERB.id, KANJI.id])
   })
 })
 
 describe('withText, the meaning the card asks for', () => {
-  const WRITTEN = { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire' }
+  const WRITTEN = { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }
 
   // The source deals its own curriculum in its own language, so what it calls the meaning is English.
   // A course that asks for it in English is not the product: the locale's word is the answer, and the

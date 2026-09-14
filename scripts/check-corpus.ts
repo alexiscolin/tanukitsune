@@ -8,6 +8,9 @@
 //
 // Run with `pnpm check:corpus`. It refuses rather than reports, which is what makes it a gate.
 
+import { faultInAnchorWords } from '../src/core/corpus/anchor-answer.ts'
+import { faultInStory } from '../src/core/corpus/story.ts'
+import type { Telling } from '../src/core/corpus/story.ts'
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 
 import { confusablePairs, notInjective } from '../src/core/corpus/allocation.ts'
@@ -24,6 +27,8 @@ import {
   readKeys,
   readMeanings,
   readNaming,
+  readStories,
+  readTelling,
   readPhonology,
 } from '../src/data/corpus/artifact.ts'
 
@@ -52,6 +57,9 @@ function check(locale: string): void {
   }
 
   const naming = readNaming(readFileSync(at('naming.json'), 'utf8'))
+  const telling = readTelling(readFileSync(at('naming.json'), 'utf8'))
+
+  checkNaming(locale, naming, telling)
 
   if (existsSync(at('keys.json'))) checkKeys(locale, readKeys(readFileSync(at('keys.json'), 'utf8')), naming)
   if (existsSync(at('components.json'))) {
@@ -66,12 +74,38 @@ function check(locale: string): void {
     if (existsSync(at(file))) checkMeanings(locale, file, readMeanings(readFileSync(at(file), 'utf8')), naming)
   }
 
+  // The three files a learner actually reads. What the gate can hold them to from committed material is
+  // that a story exists and that it names the word its card is graded on, which is the fault every other
+  // rule is written around: a story that never says the answer teaches the answer to nobody. What a part
+  // is and where the drawing places it comes from the curriculum, which is not committed, so the order
+  // of the cast stays with `pnpm corpus:report` where the curriculum is.
+  const answering: readonly [string, string, (json: string) => Readonly<Record<string, unknown>>][] = [
+    ['mnemonics.json', 'keys.json', readKeys],
+    ['shapes.json', 'components.json', readComponentNames],
+  ]
+
+  for (const [stories, answers, read] of answering) {
+    if (!existsSync(at(stories)) || !existsSync(at(answers))) continue
+
+    checkStories(locale, stories, readStories(readFileSync(at(stories), 'utf8')), {
+      answers: read(readFileSync(at(answers), 'utf8')),
+      telling,
+    })
+  }
+
+  if (existsSync(at('words.json')) && existsSync(at('vocabulary.json'))) {
+    const said = readMeanings(readFileSync(at('vocabulary.json'), 'utf8'))
+    const first = Object.fromEntries(Object.entries(said).map(([word, meanings]) => [word, meanings[0] ?? '']))
+
+    checkStories(locale, 'words.json', readStories(readFileSync(at('words.json'), 'utf8')), { answers: first, telling })
+  }
+
   if (existsSync(at('anchors.json')) && existsSync(at('phonology.json'))) {
     const { bound } = readAnchors(readFileSync(at('anchors.json'), 'utf8'))
-    const { apart } = readPhonology(readFileSync(at('phonology.json'), 'utf8'))
+    const { apart, refuses, atMostWords } = readPhonology(readFileSync(at('phonology.json'), 'utf8'))
     const allocation = [...bound].map(([reading, one]) => ({ reading, anchor: one.anchor, phonemes: one.phonemes }))
 
-    checkAnchors(locale, allocation, apart)
+    checkAnchors(locale, allocation, { apart, refuses, atMostWords, telling })
   }
 }
 
@@ -79,13 +113,64 @@ function check(locale: string): void {
 // them as the same cue. The commands hold to both while they run, and this holds the committed file to
 // them afterwards: an allocation is written by three passes reading each other, and a word freed by
 // one and taken by another is the shape that survives a run without anybody seeing it.
-function checkAnchors(locale: string, allocation: readonly Allocated[], apart: number): void {
+// The rulebook every other check here is measured against, held to what its own schema cannot state.
+// An empty article opens every name, which turns every check measured against it into a check that
+// passes whatever it is given. A missing article list, an empty letter set and a name of no words are
+// refused by the schema before this runs, so stating them here again would be a clause nothing reaches.
+function checkNaming(locale: string, naming: Shape, telling: Telling): void {
+  for (const opener of naming.opensWith) {
+    if (opener.trim() === '') refuse(`${locale}: naming.json holds an article that opens on nothing, which every name then carries`)
+  }
+
+  if (telling.inflects.length === 0) {
+    refuse(`${locale}: naming.json states no inflection, so a name in the plural is a name nothing matches`)
+  }
+}
+
+function checkStories(
+  locale: string,
+  file: string,
+  stories: ReadonlyMap<string, { readonly meaning: string }>,
+  against: { readonly answers: Readonly<Record<string, unknown>>; readonly telling: Telling },
+): void {
+  for (const [subject, told] of stories) {
+    const key = against.answers[subject]
+    if (typeof key !== 'string' || key === '') continue
+
+    const fault = faultInStory({ text: told.meaning, parts: [], key }, against.telling)
+    if (fault !== null) refuse(`${locale}: ${file} tells ${subject} a story that ${fault}`)
+  }
+}
+
+function checkAnchors(
+  locale: string,
+  allocation: readonly Allocated[],
+  bounds: {
+    readonly apart: number
+    readonly refuses: ReadonlySet<string>
+    readonly atMostWords: number
+    readonly telling: Telling
+  },
+): void {
   for (const anchor of notInjective(allocation)) {
     refuse(`${locale}: "${anchor}" stands for more than one reading, so one cue has two answers`)
   }
 
-  for (const [one, other] of confusablePairs(allocation, apart)) {
-    refuse(`${locale}: the anchors for ${one} and ${other} sit nearer than ${apart}, so they are one cue`)
+  for (const [one, other] of confusablePairs(allocation, bounds.apart)) {
+    refuse(`${locale}: the anchors for ${one} and ${other} sit nearer than ${bounds.apart}, so they are one cue`)
+  }
+
+  // The refusals the writing run applies to every candidate it ranks, applied here to what it committed:
+  // a rule held only while a command runs is a rule the file drifts out of the moment the list behind it
+  // grows. Not the whole pool rule: whether a word already names a component is answered against
+  // components.json, which `corpus:name` writes after this file is read.
+  for (const one of allocation) {
+    const fault = faultInAnchorWords(one.anchor, bounds.refuses, bounds.telling)
+    if (fault !== null) refuse(`${locale}: ${one.reading} is cued by "${one.anchor}", where ${fault}`)
+
+    if (one.anchor.split(/\s+/).length > bounds.atMostWords) {
+      refuse(`${locale}: ${one.reading} is cued by "${one.anchor}", which is more words than a cue carries`)
+    }
   }
 }
 

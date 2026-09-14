@@ -21,14 +21,15 @@ const rows = z.array(
     meaning: z.string(),
     nuance: z.string(),
     mnemonic: z.string(),
+    readingMnemonic: z.string().nullable(),
   }),
 )
 
 // A card shows a block or it does not, and the empty string the artifact uses for a text nobody has
 // written yet is not a block. Turned here rather than in the screen: what a column holds is this
 // layer's business, and above it a text is written or it is absent.
-function told(text: string): string | null {
-  return text.trim() === '' ? null : text
+function told(text: string | null): string | null {
+  return text === null || text.trim() === '' ? null : text
 }
 
 export async function textFor(
@@ -41,6 +42,7 @@ export async function textFor(
       meaning: corpusEntry.meaning,
       nuance: corpusEntry.nuance,
       mnemonic: corpusEntry.mnemonic,
+      readingMnemonic: corpusEntry.readingMnemonic,
     })
     .from(corpusEntry)
     .where(and(eq(corpusEntry.locale, locale), inArray(corpusEntry.subjectId, ids.map(String))))
@@ -48,7 +50,12 @@ export async function textFor(
   return new Map(
     rows.parse(read).map((row) => [
       row.subjectId,
-      { meaning: row.meaning, nuance: told(row.nuance), mnemonic: told(row.mnemonic) },
+      {
+        meaning: row.meaning,
+        nuance: told(row.nuance),
+        mnemonic: told(row.mnemonic),
+        readingMnemonic: told(row.readingMnemonic),
+      },
     ]),
   )
 }

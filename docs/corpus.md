@@ -193,6 +193,13 @@ nobody is taught. Where one of the senses is what the course teaches, that one l
 dropped on the way in, by the rule the keys already follow: it qualifies a gloss for somebody reading a
 dictionary and means nothing where the meaning is the whole of what a learner types.
 
+**The release says what a word means, not how French spells it.** A gloss arrives from a dictionary
+written by many hands, so some of them arrive misspelled and some arrive in another language, and the
+first gloss of a word is the answer the card shows: a misspelling there is a spelling the card teaches.
+`corpus/fr/meaning-written.json` holds what this language writes instead, read by `corpus:vocabulary`
+after the release's own glosses rather than in place of them, so a correction survives the re-run that
+rewrites everything the dictionary does state. It carries 90 words today.
+
 **What a word means is read from a dictionary, never asked of a model.** A meaning is a fact somebody
 wrote down, and one taken from a dictionary can be checked against it where one a model invented can
 only be checked by a person reading six thousand words. `corpus:vocabulary` reads JMdict, which glosses
@@ -312,8 +319,13 @@ substitution moves the reading and never the anchor, so a word still claims only
 language makes. It brings one sound onto another and never two onto one, nor onto a sound a reading
 already carries: hearing ち as the sound of chic would give it し's onset and hearing つ as /s/ would
 give it す's, and a reader handed the word would produce one of the two and be graded on the other.
-Those two keep no substitution, and their readings keep no anchor. What the ear reaches for is in
-`phonology.json`, one line per sound.
+Those two keep no substitution. What the ear reaches for is in `phonology.json`, one line per sound.
+
+**An affricate is a stop and a fricative, and it is written as both.** ち and つ read as one sound each
+are a sound no language holds: nothing answers them, and every reading opening on one is a card that can
+never be written, which was 76 kanji. The stop is the half every language does say, so the two are
+written `t ɕ` and `t s`, and the fricative then meets the substitution the ear already declares. It is
+not a merge: ち stays `t ɕ` against し's `ɕ`, and the t is what tells them apart.
 
 **A sound a language does not say and does write is written rather than heard.** French makes no /h/ and
 spells one on a thousand nouns, so a reading beginning on that sound is compared from the sound that
@@ -340,8 +352,8 @@ locale's own material. A word that says the reading is taken before one that mer
 **Where no word says a reading, two of them do.** French has no word saying kawa and cas oie says it
 exactly, which is what the paid step was writing by hand and what the table can find for itself: the
 first word says its share sound for sound and the second says the rest and may run on. Phrases are
-offered beside words in every pass, and they take the table from 136 anchors that say their reading to
-250, and from 2204 readings bound to 2231.
+offered beside words in every pass, and 110 of the 2473 readings bound hold one: a reading no single
+French word says is served by two rather than left without a card.
 
 **A word a card will not carry is refused before it is measured.** A word of one letter is the letter
 itself, spelled rather than pictured, and k and q are in every lexicon. A word already naming a shape
@@ -357,6 +369,29 @@ set is swept once at the end instead, the earlier pass keeping its anchor: a rea
 already said was worth serving first does not lose its word to a later one. `pnpm check:corpus` holds
 the committed file to the same rule, and to one anchor per reading.
 
+**Whether a word says its reading orders the pool and never closes it.** `carriesTheReading` asks
+whether a word says the reading sound for sound from its first sound, which is what the keyword method
+wants and what a distance cannot answer. Held as a filter it would bind 270 of the 2473 readings that
+hold an anchor today, so it sorts rather than refuses: a cue that says its reading outright is preferred
+to one the distance merely forgives, and a reading whose only candidates are the second kind is served
+rather than left without a card. That is why the gate does not apply it to the committed table.
+
+**What a card refuses to carry is a cue, never a meaning.** The list in `phonology.json` says which
+words an anchor may not spend, and it is read against the anchors alone. A key is not a cue: 拷 means
+torture, 痢 means diarrhoea and 虐殺 means massacre, so the same list read against `keys.json` would
+refuse the curriculum rather than protect it. What guards a key is that it comes from the release's own
+meanings and is held to `faultInKey`.
+
+**What the writing run refuses, the gate refuses again.** A rule held only while a command runs is a
+rule the file drifts out of the moment the list behind it grows, and the list here is `refuses`, which
+grows. `pnpm check:corpus` reads the committed anchors and applies the same three refusals the run
+applies to every candidate it ranks: a word the locale refuses in any of the forms it writes it, a word
+of one letter, and a cue of more words than `atMostWords`. It reads the three files a learner actually
+reads besides, holding each story to naming the word its card is graded on, and it holds `naming.json`
+itself to being a rulebook: an empty article opens every name, which turns every check measured against
+it into a check that passes whatever it is given. What a part is and where the drawing places it comes
+from the curriculum, which is not committed, so the order of the cast stays with `pnpm corpus:report`.
+
 **A word a card will not carry is refused whatever it sounds like.** Neither the frequency floor nor the
 distance catches a word that is ordinary, common and unusable in front of a reader: `shit` is a noun of
 the lexicon and stood for し, one of the readings a learner meets first. The list is in
@@ -367,11 +402,27 @@ kept: left there, it loses an anchor to a rule meant only to keep two apart whil
 holds a word that keeps them apart and serves them both. The pool is filtered once against the set as
 it stands rather than per reading, which is the same answer for a three hundredth of the reads.
 
-Of the 2559 readings inside that ceiling, 2231 are bound and 328 are not, and 493 of the 557 a
-character teaches have one. 462 of those bound sit on a word under one occurrence per million, which is
-the widened pass and which the prose step is expected to refuse rather than write on. Of the 352 left,
-207 have no word the rules accept and 121 have words the curriculum has already spent. Every one of
+Of the 2559 readings inside that ceiling, 2473 are bound and 86 are not, and 556 of the 557 a
+character teaches have one. 709 of those bound sit on a word under one occurrence per million, which is
+the widened pass and which the prose step is expected to refuse rather than write on. Of the 86 left,
+64 have no word the rules accept and 22 have words the curriculum has already spent. Every one of
 those counts is a line the run prints.
+
+**A word a reading already holds is not taken back.** The table is a global optimisation, so a reading
+it could not serve before arrives as one more claimant and the whole assignment shifts under readings
+that were already served. A story is written against the word its reading held, so a shift costs a
+rewrite on a card nobody asked to change. The committed table is therefore read back as an input: a
+reading keeps the word it holds, and what a hand writes in `anchor-written.json` still wins, which is
+how a table entry is taken back on purpose rather than by a re-run.
+
+Kept is not taken on trust. A rule can change under a committed table, so every anchor read back is
+measured again on the terms the pass that bound it used, and one the rules no longer hold is given back
+to the table and named in the run's output.
+
+Reading its own output back means the table grows across runs rather than in one: each run locks what
+it bound, which frees the competition for readings that had lost their word to it, and the next run
+serves some of those. It stops, and the committed table is where it stopped, so a run over it writes
+the same file. A table rebuilt from nothing binds fewer readings than the one committed here.
 
 The readings a run could not bind travel in `anchors.json` beside the anchors, under `left`, each with
 why: a list only a terminal saw is a list the next command cannot act on.
@@ -388,7 +439,10 @@ What a proposal brings that the table cannot is a phrase: the table searches the
 time, and a reading of four morae is rarely one French word. What it may not bring is a pronunciation.
 Every word of what comes back is looked up in the lexicon and the sounds derived, so a word the lexicon
 does not hold is refused rather than trusted, and every rule the table applies is applied again to what
-was proposed. The proposal widens the search and never the rules.
+was proposed, word by word over a phrase as the table applies them to each lexicon word it assembles
+one from. The proposal widens the search and never the rules, with one addition it cannot widen: an
+inflection of a component name is that name, so a proposal spending les haies spends la haie, which a
+lexicon ranking never had the chance to offer.
 
 Lexique writes its own phonemic code rather than the IPA the rules compare against, and two of its
 thirty-seven symbols name sounds French borrows rather than owns. Both are carried: whether a sound can
@@ -516,7 +570,7 @@ by reading cluster so sibling anchors are visible at once, overgenerating and ra
 own examples travelling with the ask. What comes back is held to the rules above before anything is written: a story naming
 a part it was not given, told out of the order the drawing places them, or ending anywhere but on the
 meaning is refused and asked again by the next run. A card whose reading no word is bound to is asked
-without one, and asked again for that half once a word is bound: 328 readings are still waiting for
+without one, and asked again for that half once a word is bound: 86 readings are still waiting for
 one, so a card written before its word existed is the ordinary case. A card asked again keeps the texts
 it already carried and is sent the meaning story it tells, since a reading story continuing a scene the
 card does not tell is two scenes to remember rather than one.
@@ -546,7 +600,14 @@ in somebody else's. It runs last, after the report, so the hole is seen before t
 
 **What reads those rows is the deck.** The route that deals a sitting joins the locale's text onto the
 subjects it hands back, once and on the server and beside the request for the subjects themselves, so
-what the device holds carries the French with it. Where that text is held on the device is decided in
+what the device holds carries the French with it. Both stories travel: the meaning story and the reading
+story sit together under the card's pieces, since the two are one scene with the same cast and split
+across the card they read as two things to keep.
+
+**A part is a subject of its own, and named as one.** The pieces a card lists are subjects the sitting
+did not ask for, so their text is not in the first read and a second one asks for it. Left with what the
+source sent, the strip under the card would name in another language the same pieces the story just
+named in French, one line apart. Where that text is held on the device is decided in
 [`framing.md`](framing.md), under the offline stores. The word the locale wrote takes the place of all
 three lists the source sends: the words it accepts, the words it accepts without showing them, and the
 words it shows struck through. Those are the source's language, and a card answering in the locale's

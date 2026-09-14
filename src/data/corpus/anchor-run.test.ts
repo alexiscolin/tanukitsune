@@ -49,7 +49,7 @@ describe('wantedFrom', () => {
   it('drops a sound the locale reaches for nothing on', () => {
     const heard = wantedFrom(new Map([['はち', { type: 'kunyomi' as const, taught: true, by: ['八'] }]]), 4, new Map([['h', '']]))
 
-    expect(heard[0]?.phonemes).toEqual(['a', 'tɕ', 'i'])
+    expect(heard[0]?.phonemes).toEqual(['a', 't', 'ɕ', 'i'])
   })
 
   // A substitution may not bring two Japanese sounds onto one. し is /ɕi/ and ち is /tɕi/, and hearing

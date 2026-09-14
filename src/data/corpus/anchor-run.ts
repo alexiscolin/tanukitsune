@@ -14,7 +14,7 @@ import type { Named } from './reading-run.ts'
 import type { Word } from './lexique.ts'
 import type { Candidate, Wanted } from '../../core/corpus/choose.ts'
 import type { Allocated } from '../../core/corpus/allocation.ts'
-import { carriesTheReading, distanceBetween } from '../../core/corpus/anchor.ts'
+import { agreesAtTheStart, carriesTheReading, distanceBetween } from '../../core/corpus/anchor.ts'
 import { moraeOf, phonemesOf } from '../../core/corpus/phonetics.ts'
 
 // An anchor is one word standing for one reading, and no word carries eleven morae. Asked for one
@@ -225,4 +225,45 @@ export function phrasesBy(
 
     return [...built].sort((one, other) => other.frequency - one.frequency).slice(0, most)
   }
+}
+
+// A table read back as an input, held to the rules as they stand now. A word a reading already holds is
+// not taken back by a re-run, since a story is written against it and a shift costs a rewrite on a card
+// nobody asked to change. Kept is not taken on trust either: a rule can change under a committed table,
+// and a word re-admitted without being measured again is a cue the run would refuse today and ships
+// anyway. A reading whose first sound this language writes without saying it is compared from the next
+// one, and its anchor has to carry the letter.
+export function stillBound(
+  held: ReadonlyMap<string, { readonly anchor: string; readonly phonemes: readonly string[] }>,
+  rules: {
+    readonly settled: (reading: string) => boolean
+    readonly spends: (anchor: string) => boolean
+    readonly hears: ReadonlyMap<string, string>
+    readonly writes: ReadonlyMap<string, string>
+    readonly nearest: number
+  },
+): { readonly kept: readonly Allocated[]; readonly dropped: readonly string[] } {
+  const kept: Allocated[] = []
+  const dropped: string[] = []
+
+  for (const [reading, one] of held) {
+    if (rules.settled(reading) || rules.spends(one.anchor)) continue
+
+    const raw = phonemesOf(reading)
+    const [first] = raw
+    const letter = first === undefined ? undefined : rules.writes.get(first)
+    const heard = (letter === undefined ? raw : raw.slice(1))
+      .map((sound) => rules.hears.get(sound) ?? sound)
+      .filter((sound) => sound !== '')
+
+    const holds =
+      (letter === undefined || one.anchor.startsWith(letter)) &&
+      agreesAtTheStart(heard, one.phonemes) &&
+      distanceBetween(heard, one.phonemes) <= rules.nearest
+
+    if (holds) kept.push({ reading, anchor: one.anchor, phonemes: one.phonemes })
+    else dropped.push(`${reading}: ${one.anchor}`)
+  }
+
+  return { kept, dropped }
 }
