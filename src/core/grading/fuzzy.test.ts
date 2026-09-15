@@ -36,10 +36,15 @@ describe('fuzzyVerdict', () => {
     expect(fuzzyVerdict(meaning('nourriture', ['pourriture']), claimed)).toBeNull()
   })
 
-  it('refuses an accent difference where both spellings are claimed, which is the pair that matters', () => {
-    const claimed = new Set(['tache'])
+  // The criterion in docs/specs/v0.1.md, both halves of it. Where the item's own answer is the word,
+  // the reader typed it and the accent is not what is being tested. Where a letter differs, the guard
+  // decides, and no accent smuggles another card's word past it.
+  it('accepts an unaccented spelling where the item allows it, claimed or not', () => {
+    expect(fuzzyVerdict(meaning('tache', ['tâche']), new Set(['tache']))).toBe('correct')
+  })
 
-    expect(fuzzyVerdict(meaning('tache', ['tâche']), claimed)).toBeNull()
+  it('refuses a word the course answers another card with, however near this one it sits', () => {
+    expect(fuzzyVerdict(meaning('poison', ['poisson']), new Set(['poison']))).toBeNull()
   })
 
   it('refuses a short reference outright, where one letter is a different word rather than a slip', () => {

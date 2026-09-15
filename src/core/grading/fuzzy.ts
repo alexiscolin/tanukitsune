@@ -73,14 +73,20 @@ export function fuzzyVerdict(
   claimed: ReadonlySet<string>,
 ): 'correct' | null {
   const typed = answerKey(answer)
-  if (typed === '' || claimed.has(typed)) return null
+  if (typed === '') return null
   if (refused.some((word) => answerKey(word) === typed)) return null
 
-  const stands = accepted.some((reference) => {
-    const target = answerKey(reference)
+  const targets = accepted.map(answerKey)
 
-    return target === typed || (target.length >= SHORTEST_TYPO && oneEditApart(typed, target))
-  })
+  // The item's own answer first, and the guard cannot reach it: an accent the reader did not type and
+  // an article they did are this word written two ways, not a second word. docs/specs/v0.1.md asks for
+  // exactly this, an unaccented tache accepted where the item allows it and nowhere else.
+  if (targets.includes(typed)) return 'correct'
 
-  return stands ? 'correct' : null
+  // Only now, where a letter differs and the answer could be another card's word.
+  if (claimed.has(typed)) return null
+
+  return targets.some((target) => target.length >= SHORTEST_TYPO && oneEditApart(typed, target))
+    ? 'correct'
+    : null
 }

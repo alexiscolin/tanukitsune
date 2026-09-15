@@ -32,8 +32,24 @@ describe('runCascade, a meaning', () => {
     expect(outcome.verdict).toBe('correct')
   })
 
-  it('is never wrong when the exact tier cannot place it, because the reader is asked instead', async () => {
-    const outcome = await runCascade({ kind: 'meaning', answer: 'tache', accepted: ['tâche'], refused: [] }, null)
+  // Never an automatic failure: the product rule is that a correct answer is never punished, and the
+  // honest way to hold it with no judge wired is to ask.
+  it('is never wrong when no tier can place it, because the reader is asked instead', async () => {
+    const outcome = await runCascade({ kind: 'meaning', answer: 'liquide', accepted: ['eau'], refused: [] }, null)
+
+    expect(outcome).toEqual({ verdict: 'undecided' })
+  })
+
+  // The unaccented half of the criterion in docs/specs/v0.1.md, run through the whole cascade against
+  // the artifact the guard is built from rather than against a set written for the test.
+  it('accepts an answer typed without its accent where the item allows that word', async () => {
+    const outcome = await runCascade({ kind: 'meaning', answer: 'ecole', accepted: ['école'], refused: [] }, null)
+
+    expect(outcome).toEqual({ verdict: 'correct', decidedBy: 'fuzzy:1' })
+  })
+
+  it('refuses poison where the item wants poisson, which is the pair the criterion names', async () => {
+    const outcome = await runCascade({ kind: 'meaning', answer: 'poison', accepted: ['poisson'], refused: [] }, null)
 
     expect(outcome).toEqual({ verdict: 'undecided' })
   })
