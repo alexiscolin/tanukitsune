@@ -5,21 +5,49 @@ import { normalise } from './normalise.ts'
 // cannot quietly turn が into か on a tier that is never handed a reading.
 const LATIN_MARKS = /[̀-ͯ]/gu
 
-// What French opens a meaning on while carrying none of it. The reflexive pronoun is here for the
-// same reason as the articles: a reader recalls the verb and not the word standing in front of it.
-// Ordered so the longer opener is tried first, an alternation taking the first branch that matches.
-const OPENER = /^(?:de la |des |du |de |les |le |la |un |une |se |l'|d'|s')/u
+// The words French opens a meaning on while carrying none of it: the definite article, and the
+// reflexive pronoun, since a reader recalls the verb and not the word standing in front of it. Nothing
+// that counts or relates, because une fois is not fois and dû à is not à.
+const ARTICLE = /^(?:les |le |la |l')/u
+const PRONOUN = /^(?:se |s')/u
+
+// Letters French writes two ways that no Unicode normalisation merges: the ligatures, and the curly
+// apostrophe a phone or a pasted text puts where a keyboard puts a straight one.
+const SPELLINGS: readonly (readonly [RegExp, string])[] = [
+  [/œ/gu, 'oe'],
+  [/æ/gu, 'ae'],
+  [/[‘’]/gu, "'"],
+]
 
 // Below this, one letter apart is a different word rather than a slip: dix and six, deux and doux,
-// fort and mort. A shorter reference is answered exactly or it is not answered.
+// fort and mort. Measured on the word that slipped, not the phrase around it.
 const SHORTEST_TYPO = 5
 
-// What one answer is compared as, on both sides and in the artifact the guard is built from: the exact
-// tier's folding, then the accents, because a French keyboard is what the reader may not have and the
-// accent is never what is being tested, then the opener. A word compared one way here and another way
-// where the guard is written is a guard that holds nothing.
+function spelled(value: string): string {
+  return SPELLINGS.reduce((text, [from, to]) => text.replace(from, to), normalise(value))
+}
+
+function withoutAccents(value: string): string {
+  return value.normalize('NFD').replace(LATIN_MARKS, '').normalize('NFC')
+}
+
+// The answer as written, less what French opens it on. Two answers equal here are one word written
+// twice, whatever their case, ligature or article.
+function asWritten(value: string): string {
+  return spelled(value).replace(ARTICLE, '').replace(PRONOUN, '')
+}
+
+// What one answer is compared as, on both sides and in the artifact the guard is built from: as written,
+// and then without its accents, because a French keyboard is what the reader may not have. A word
+// compared one way here and another way where the guard is written is a guard that holds nothing.
 export function answerKey(value: string): string {
-  return normalise(value).normalize('NFD').replace(LATIN_MARKS, '').normalize('NFC').replace(OPENER, '')
+  return withoutAccents(asWritten(value))
+}
+
+// The same, keeping the reflexive pronoun: what tells two cards apart when one teaches the verb and the
+// other the verb done to oneself, which the grader forgives and the corpus must not merge.
+export function wordKey(value: string): string {
+  return withoutAccents(spelled(value).replace(ARTICLE, ''))
 }
 
 // One edit or none: a letter replaced, inserted or dropped. Written here rather than taken from the
@@ -55,12 +83,32 @@ function oneEditApart(typed: string, reference: string): boolean {
   return edits + (typed.length - left) + (reference.length - right) <= 1
 }
 
+// A slip of one letter onto a word the course answers with. Only such a word: the source's English and
+// the reader's own words have no neighbours anybody collected, so a slip on one could land on anything
+// and they are matched as written. The letter must fall inside a word long enough to be slipped on, and
+// no other answer may sit as near the slip, since a slip halfway between two answers is a guess.
+function slipsOnto(typed: string, target: string, claimed: ReadonlySet<string>): boolean {
+  if (!claimed.has(target) || !oneEditApart(typed, target)) return false
+
+  const said = typed.split(' ')
+  const meant = target.split(' ')
+  if (said.length !== meant.length) return false
+
+  const at = meant.findIndex((word, index) => word !== said[index])
+  const slip = said[at] ?? ''
+  const word = meant[at] ?? ''
+  if (word.length < SHORTEST_TYPO) return false
+
+  for (const other of claimed) {
+    if (other !== word && oneEditApart(slip, other)) return false
+  }
+
+  return true
+}
+
 // Tier 2, meanings only, and what the reader is owed once the exact tier has missed: the answer they
-// knew, typed the way people type. Nothing here is allowed to make a wrong answer right, which is
-// what `claimed` holds the line on. It carries every word this locale answers some card with, so a
-// near miss landing exactly on another card's answer is refused rather than graded: the exact tier has
-// already tried every reference this item allows, so a typed word the course still teaches belongs to
-// a different item and accepting it would teach that mix-up rather than catch it.
+// knew, typed the way people type. Nothing here is allowed to make a wrong answer right, which is what
+// `claimed` holds the line on: every word this locale answers some card with.
 //
 // Refusing is not failing. The cascade turns a refusal into a question for the reader.
 export function placesNearMiss({ answer, accepted, refused }: GradedAnswer, claimed: ReadonlySet<string>): boolean {
@@ -68,15 +116,16 @@ export function placesNearMiss({ answer, accepted, refused }: GradedAnswer, clai
   if (typed === '') return false
   if (refused.some((word) => answerKey(word) === typed)) return false
 
-  const targets = accepted.map(answerKey)
-
-  // The item's own answer first, and the guard cannot reach it: an accent the reader did not type and
-  // an article they did are this word written two ways, not a second word. docs/specs/v0.1.md asks for
-  // exactly this, an unaccented tache accepted where the item allows it and nowhere else.
-  if (targets.includes(typed)) return true
+  // The item's own answer written another way, which the guard cannot reach. An article or a ligature
+  // is always forgiven. An accent only when the reader typed none: left out is a keyboard, put in is a
+  // spelling, and élève is not élevé. docs/specs/v0.1.md asks for an unaccented tache accepted where
+  // the item allows it and nowhere else.
+  const written = asWritten(answer)
+  if (accepted.some((reference) => asWritten(reference) === written)) return true
+  if (written === typed && accepted.some((reference) => answerKey(reference) === typed)) return true
 
   // Only now, where a letter differs and the answer could be another card's word.
   if (claimed.has(typed)) return false
 
-  return targets.some((target) => target.length >= SHORTEST_TYPO && oneEditApart(typed, target))
+  return accepted.some((reference) => slipsOnto(typed, answerKey(reference), claimed))
 }

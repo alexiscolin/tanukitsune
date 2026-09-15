@@ -3,8 +3,9 @@ import { placesNearMiss } from './fuzzy'
 import type { GradedAnswer, JudgePort, Verdict } from './judge-port'
 import { normalise } from './normalise'
 
-// One version per tier, because the two change for different reasons: a judge prompt
-// must not relabel a row the exact tier decided, and a change to normalise must.
+// One version per tier, because each changes for its own reasons: a judge prompt must not relabel a
+// row another tier decided. A change to normalise moves the exact tier and the fuzzy one, and a change
+// to fuzzy.ts or to the rule corpus/fr/claimed.json is written under moves the fuzzy one.
 const EXACT_TIER = 'exact:2'
 const FUZZY_TIER = 'fuzzy:1'
 const JUDGE_TIER = 'judge:1'

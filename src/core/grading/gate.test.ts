@@ -16,10 +16,17 @@ import set from './answers.json'
 // eval set in docs/ai-engineering.md.
 const FALL_THROUGH_BUDGET = 0.15
 
+// Read rather than coerced, so a row naming a kind that does not exist fails here instead of being
+// graded as a meaning.
+function kindOf(kind: string): 'meaning' | 'reading' {
+  if (kind === 'meaning' || kind === 'reading') return kind
+  throw new Error(`answers.json names a kind nothing grades: ${kind}`)
+}
+
 const graded = async (one: { kind: string; answer: string; accepted: string[]; refused?: string[] }) =>
   runCascade(
     {
-      kind: one.kind === 'reading' ? 'reading' : 'meaning',
+      kind: kindOf(one.kind),
       answer: one.answer,
       accepted: one.accepted as [string, ...string[]],
       refused: one.refused ?? [],
