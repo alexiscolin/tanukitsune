@@ -74,6 +74,15 @@ export function readMeanings(json: string): Readonly<Record<string, readonly str
   return meaningList.parse(JSON.parse(json)).meanings
 }
 
+// The words the judge's fuzzy tier may not place an answer on, written by corpus:claimed. Read back by
+// the corpus check, which recomputes the set from the files it was derived from: a word rewritten in one
+// of them and not rebuilt here leaves the tier free to place an answer on another card's word.
+const claimedList = z.object({ claimed: z.array(z.string()) })
+
+export function readClaimed(json: string): readonly string[] {
+  return claimedList.parse(JSON.parse(json)).claimed
+}
+
 // What a file says about itself, read back so a run rewriting one keeps the provenance the run that
 // wrote it recorded rather than restating it.
 export function headerOf(json: string): unknown {
