@@ -11,6 +11,10 @@ export type GradedAnswer = {
   // string written to a review event is the one the reader can be shown again.
   readonly answer: string
   readonly accepted: AcceptedAnswers
+  // What the item says is not the answer, whatever it looks like. The source sends them as blacklisted
+  // auxiliary meanings and they are the words nearest the right one, so a tier tolerating a slip is
+  // exactly the tier that would reach one. Empty for most items.
+  readonly refused: readonly string[]
 }
 
 // What a tier concludes about an answer. Named beside the port for the reason the tuple
