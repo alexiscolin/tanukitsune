@@ -33,7 +33,7 @@ function ask(subject: Subject, kind: AnswerKind): Question | null {
   const shown = acceptedIn(glosses)
   const [first, ...rest] =
     kind === 'meaning' ? [...shown, ...subject.alsoAccepted, ...subject.synonyms] : shown
-  const refused = kind === 'meaning' ? subject.refused : []
+  const refused = kind === 'meaning' ? [...subject.refused, ...subject.alsoRefused] : []
 
   return first === undefined ? null : { subject, kind, accepted: [first, ...rest], refused }
 }

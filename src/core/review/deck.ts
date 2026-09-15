@@ -87,10 +87,12 @@ export function withText(
       // learnt the character in English knows that word and the card never taught them to hide it.
       //
       // Only the words the source accepts. The ones it shows struck through are the ones it tells the
-      // reader not to answer with, and they join the blacklist rather than the answers.
+      // reader not to answer with, so they join the blacklist, which the grader reads and the card does
+      // not print.
       meanings: [{ text: text.meaning, primary: true, accepted: true }],
       alsoAccepted: [...text.alsoAccepted, ...acceptedIn(subject.meanings), ...subject.alsoAccepted],
-      refused: [...subject.refused, ...refusedIn(subject.meanings)],
+      refused: [],
+      alsoRefused: [...subject.refused, ...refusedIn(subject.meanings)],
       nuance: text.nuance,
       mnemonic: text.mnemonic,
       readingMnemonic: text.readingMnemonic,
