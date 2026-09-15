@@ -8,7 +8,7 @@ const LATIN_MARKS = /[̀-ͯ]/gu
 // What French opens a meaning on while carrying none of it. The reflexive pronoun is here for the
 // same reason as the articles: a reader recalls the verb and not the word standing in front of it.
 // Ordered so the longer opener is tried first, an alternation taking the first branch that matches.
-const OPENER = /^(?:de la |des |du |de |les |le |la |un |une |à |se |l'|d'|s')/u
+const OPENER = /^(?:de la |des |du |de |les |le |la |un |une |se |l'|d'|s')/u
 
 // Below this, one letter apart is a different word rather than a slip: dix and six, deux and doux,
 // fort and mort. A shorter reference is answered exactly or it is not answered.
