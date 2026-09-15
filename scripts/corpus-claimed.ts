@@ -32,7 +32,7 @@ const counted = `${claimed.length} words, from ${new Set(accepted).size} spellin
 const file = {
   header: {
     what: "The words the judge's fuzzy tier may not place a near miss on: every word this locale answers some card with.",
-    how: 'Written by pnpm corpus:claimed from components.json, meanings.json and vocabulary.json, read the way src/core/grading/fuzzy.ts reads an answer: accents folded, case folded, a leading article or reflexive pronoun dropped.',
+    how: 'Written by pnpm corpus:claimed from components.json, keys.json, meanings.json and vocabulary.json, read the way src/core/grading/fuzzy.ts reads an answer: accents folded, case folded, a leading article or reflexive pronoun dropped.',
     counted,
     shape: 'the words, folded the way an answer is read, in order',
   },

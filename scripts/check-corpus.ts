@@ -213,11 +213,11 @@ function checkMeanings(
   }
 }
 
-// The guard the judge reads is derived from the three files above, so a word rewritten in one of them
+// The guard the judge reads is derived from the answer files above, so a word rewritten in one of them
 // and not rebuilt here leaves the fuzzy tier free to place an answer on a word that now answers another
 // card. Recomputed rather than trusted, since a derived file nothing rebuilds is a claim.
 function checkClaimed(locale: string, at: (file: string) => string): void {
-  const files = ['claimed.json', 'components.json', 'meanings.json', 'vocabulary.json']
+  const files = ['claimed.json', 'components.json', 'keys.json', 'meanings.json', 'vocabulary.json']
   // A locale that has written none of them owes no guard yet, which is every locale on its first day.
   if (!files.every((file) => existsSync(at(file)))) return
 

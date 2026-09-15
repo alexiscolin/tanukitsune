@@ -74,12 +74,13 @@ export function readMeanings(json: string): Readonly<Record<string, readonly str
   return meaningList.parse(JSON.parse(json)).meanings
 }
 
-// Every word a locale answers some card with, across the three files that say so: a shape is named, a
-// kanji is taught under its glosses, a word means what the release says it means here. Read by the
+// Every word a locale answers some card with, across the files that say so: a shape is named, a kanji is
+// taught under its key and its glosses, a word means what the release says it means here. Read by the
 // command writing the guard and by the check recomputing it, which must agree on what an answer is.
 export function answersIn(read: (file: string) => string): readonly string[] {
   return [
     ...Object.values(readComponentNames(read('components.json'))),
+    ...Object.values(readKeys(read('keys.json'))),
     ...Object.values(readMeanings(read('meanings.json'))).flat(),
     ...Object.values(readMeanings(read('vocabulary.json'))).flat(),
   ]
