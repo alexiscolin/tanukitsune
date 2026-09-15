@@ -8,6 +8,7 @@
 //
 // Run with `pnpm check:corpus`. It refuses rather than reports, which is what makes it a gate.
 
+import { list } from './corpus-command.ts'
 import { faultInAnchorWords } from '../src/core/corpus/anchor-answer.ts'
 import { faultInStory } from '../src/core/corpus/story.ts'
 import type { Telling } from '../src/core/corpus/story.ts'
@@ -15,6 +16,7 @@ import { readdirSync, readFileSync, existsSync } from 'node:fs'
 
 import { confusablePairs, notInjective } from '../src/core/corpus/allocation.ts'
 import type { Allocated } from '../src/core/corpus/allocation.ts'
+import { claimedWords } from '../src/core/corpus/answers.ts'
 import { collidingNames } from '../src/core/corpus/decomposition.ts'
 import type { ComponentNames } from '../src/core/corpus/decomposition.ts'
 import { faultInKey } from '../src/core/corpus/key.ts'
@@ -26,6 +28,7 @@ import {
   readKeyOrder,
   readKeys,
   readMeanings,
+  readClaimed,
   readNaming,
   readStories,
   readTelling,
@@ -73,6 +76,8 @@ function check(locale: string): void {
   for (const file of ['meanings.json', 'vocabulary.json']) {
     if (existsSync(at(file))) checkMeanings(locale, file, readMeanings(readFileSync(at(file), 'utf8')), naming)
   }
+
+  checkClaimed(locale, at)
 
   // The three files a learner actually reads. What the gate can hold them to from committed material is
   // that a story exists and that it names the word its card is graded on, which is the fault every other
@@ -205,6 +210,30 @@ function checkMeanings(
       if (fault !== null) refuse(`${locale}: ${file} says ${subject} means "${meaning}", which is ${fault}`)
     }
   }
+}
+
+// The guard the judge reads is derived from the three files above, so a word rewritten in one of them
+// and not rebuilt here leaves the fuzzy tier free to place an answer on a word that now answers another
+// card. Recomputed rather than trusted: the file states a count, and a count nothing recomputes is a
+// claim.
+function checkClaimed(locale: string, at: (file: string) => string): void {
+  const files = ['claimed.json', 'components.json', 'meanings.json', 'vocabulary.json']
+  // A locale that has written none of them owes no guard yet, which is every locale on its first day.
+  if (!files.every((file) => existsSync(at(file)))) return
+
+  const answers = [
+    ...Object.values(readComponentNames(readFileSync(at('components.json'), 'utf8'))),
+    ...Object.values(readMeanings(readFileSync(at('meanings.json'), 'utf8'))).flat(),
+    ...Object.values(readMeanings(readFileSync(at('vocabulary.json'), 'utf8'))).flat(),
+  ]
+  const written = readClaimed(readFileSync(at('claimed.json'), 'utf8'))
+  const owed = claimedWords(answers)
+
+  const missing = owed.filter((word) => !written.includes(word))
+  const extra = written.filter((word) => !owed.includes(word))
+
+  if (missing.length > 0) refuse(`${locale}: claimed.json is missing ${list(missing)}, so run pnpm corpus:claimed`)
+  if (extra.length > 0) refuse(`${locale}: claimed.json still holds ${list(extra)}, so run pnpm corpus:claimed`)
 }
 
 function checkNames(locale: string, names: ComponentNames, naming: Shape): void {
