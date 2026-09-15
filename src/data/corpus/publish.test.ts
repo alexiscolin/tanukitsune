@@ -55,22 +55,22 @@ describe('answersFor', () => {
   it('gives a kanji the words the locale wrote for the character it is', () => {
     const answers = answersFor(KANJI, WROTE, GLOSSES)
 
-    expect(answers.get('451')).toEqual({ shown: 'repos', wrote: ['repos', 'repos', 'repos du soir'] })
+    expect(answers.get('451')).toEqual({ shown: 'repos', wrote: ['repos', 'repos du soir'] })
   })
 
   it('gives a word the words the locale wrote for the word, and never the kanji ones', () => {
     const word = [subject({ id: 9, type: 'vocabulary', characters: '休み' })]
 
-    expect(answersFor(word, WROTE, GLOSSES).get('9')?.wrote).toEqual(['le congé', 'le congé', 'la pause'])
+    expect(answersFor(word, WROTE, GLOSSES).get('9')?.wrote).toEqual(['le congé', 'la pause'])
   })
 
   // A shape is named by the kanji drawing it, so it has one word and no other. Reading the kanji's
   // glosses under its character would answer a shape with words nobody wrote for it.
-  it('gives a shape its name alone, and not the glosses of the kanji it shares a character with', () => {
+  it('gives a shape no gloss of the kanji it shares a character with', () => {
     const shape = [subject({ id: 7, type: 'radical', characters: '休' })]
     const wrote = { ...WROTE, names: { 休: 'le repos dessiné' } }
 
-    expect(answersFor(shape, wrote, GLOSSES).get('7')?.wrote).toEqual(['le repos dessiné'])
+    expect(answersFor(shape, wrote, GLOSSES).get('7')?.wrote).toEqual([])
   })
 
   it('leaves out a subject the locale cannot answer at all', () => {

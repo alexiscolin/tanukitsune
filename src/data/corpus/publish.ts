@@ -61,7 +61,7 @@ export type Answers = Written & { readonly words: Readonly<Record<string, string
 
 // What the locale wrote for each subject: the word its card shows, and every word the corpus holds for
 // the same thing. Assembled here, beside the row that publishes the first of them, so the word a card
-// shows and the words it accepts are read from one walk over the curriculum.
+// shows is chosen by the same `wordFor` the row is written with.
 //
 // Read by kind and never by character alone, a radical and the kanji drawing it sharing one: a shape is
 // named by that kanji and has one word, so taking the kanji's glosses would answer it with words nobody
@@ -76,7 +76,7 @@ export function answersFor(
       const shown = wordFor(subject, wrote)
       if (shown === undefined) return []
 
-      return [[String(subject.id), { shown, wrote: [shown, ...writtenFor(subject, glosses)] }] as const]
+      return [[String(subject.id), { shown, wrote: writtenFor(subject, glosses) }] as const]
     }),
   )
 }

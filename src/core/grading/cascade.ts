@@ -1,5 +1,5 @@
 import { CLAIMED } from './claimed'
-import { fuzzyVerdict } from './fuzzy'
+import { placesNearMiss } from './fuzzy'
 import type { GradedAnswer, JudgePort, Verdict } from './judge-port'
 import { normalise } from './normalise'
 
@@ -27,7 +27,7 @@ export type CascadeOutcome =
 export async function runCascade(answer: GradedAnswer, port: JudgePort | null): Promise<CascadeOutcome> {
   if (matchesExactly(answer)) return { verdict: 'correct', decidedBy: EXACT_TIER }
   if (answer.kind === 'reading') return { verdict: 'incorrect', decidedBy: EXACT_TIER }
-  if (fuzzyVerdict(answer, CLAIMED) === 'correct') return { verdict: 'correct', decidedBy: FUZZY_TIER }
+  if (placesNearMiss(answer, CLAIMED)) return { verdict: 'correct', decidedBy: FUZZY_TIER }
   if (port === null) return { verdict: 'undecided' }
 
   const judged = await port.judge(answer)

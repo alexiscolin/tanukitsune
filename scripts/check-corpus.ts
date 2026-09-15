@@ -215,19 +215,18 @@ function checkMeanings(
 
 // The guard the judge reads is derived from the three files above, so a word rewritten in one of them
 // and not rebuilt here leaves the fuzzy tier free to place an answer on a word that now answers another
-// card. Recomputed rather than trusted: the file states a count, and a count nothing recomputes is a
-// claim.
+// card. Recomputed rather than trusted, since a derived file nothing rebuilds is a claim.
 function checkClaimed(locale: string, at: (file: string) => string): void {
   const files = ['claimed.json', 'components.json', 'meanings.json', 'vocabulary.json']
   // A locale that has written none of them owes no guard yet, which is every locale on its first day.
   if (!files.every((file) => existsSync(at(file)))) return
 
   const answers = answersIn((file) => readFileSync(at(file), 'utf8'))
-  const written = readClaimed(readFileSync(at('claimed.json'), 'utf8'))
-  const owed = claimedWords(answers)
+  const written = new Set(readClaimed(readFileSync(at('claimed.json'), 'utf8')))
+  const owed = new Set(claimedWords(answers))
 
-  const missing = owed.filter((word) => !written.includes(word))
-  const extra = written.filter((word) => !owed.includes(word))
+  const missing = [...owed].filter((word) => !written.has(word))
+  const extra = [...written].filter((word) => !owed.has(word))
 
   if (missing.length > 0) refuse(`${locale}: claimed.json is missing ${list(missing)}, so run pnpm corpus:claimed`)
   if (extra.length > 0) refuse(`${locale}: claimed.json still holds ${list(extra)}, so run pnpm corpus:claimed`)

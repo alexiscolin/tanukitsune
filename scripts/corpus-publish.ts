@@ -88,20 +88,14 @@ const heldShapes: ReadonlyMap<string, Told> = existsSync(at('shapes.json'))
 const heldWords: ReadonlyMap<string, Told> = existsSync(at('words.json'))
   ? readStories(readFileSync(at('words.json'), 'utf8'))
   : new Map()
-// The first gloss, which is the one the run settled on and the one word the card shows. The rest are
-// what the card also accepts, read below.
-const words = Object.fromEntries(
-  Object.entries(readMeanings(readFileSync(at('vocabulary.json'), 'utf8'))).map(([word, glosses]) => [
-    word,
-    glosses[0] as string,
-  ]),
-)
-// Every word the locale wrote for a subject, which the card shows one of. Read from the same two files
-// the shown word is read from, so what a card shows and what it accepts cannot say different things.
+// Every word the locale wrote for a subject, which the card shows one of: a word shows its first gloss,
+// the one the run settled on, and accepts the rest. One read of each file, so what a card shows and what
+// it accepts cannot say different things.
 const glosses = {
   kanji: readMeanings(readFileSync(at('meanings.json'), 'utf8')),
   words: readMeanings(readFileSync(at('vocabulary.json'), 'utf8')),
 }
+const words = Object.fromEntries(Object.entries(glosses.words).map(([word, wrote]) => [word, wrote[0] as string]))
 
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
 

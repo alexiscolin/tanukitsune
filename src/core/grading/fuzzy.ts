@@ -14,17 +14,12 @@ const OPENER = /^(?:de la |des |du |de |les |le |la |un |une |se |l'|d'|s')/u
 // fort and mort. A shorter reference is answered exactly or it is not answered.
 const SHORTEST_TYPO = 5
 
-// What this tier compares on: the exact tier's folding, and then the accents, because a French
-// keyboard is what the reader may not have and the accent is never what is being tested.
-function fold(value: string): string {
-  return normalise(value).normalize('NFD').replace(LATIN_MARKS, '').normalize('NFC')
-}
-
 // What one answer is compared as, on both sides and in the artifact the guard is built from: the exact
-// tier's folding, then the accents, then the opener. A word compared one way here and another way where
-// the guard is written is a guard that holds nothing.
+// tier's folding, then the accents, because a French keyboard is what the reader may not have and the
+// accent is never what is being tested, then the opener. A word compared one way here and another way
+// where the guard is written is a guard that holds nothing.
 export function answerKey(value: string): string {
-  return fold(value).replace(OPENER, '')
+  return normalise(value).normalize('NFD').replace(LATIN_MARKS, '').normalize('NFC').replace(OPENER, '')
 }
 
 // One edit or none: a letter replaced, inserted or dropped. Written here rather than taken from the
@@ -68,25 +63,20 @@ function oneEditApart(typed: string, reference: string): boolean {
 // a different item and accepting it would teach that mix-up rather than catch it.
 //
 // Refusing is not failing. The cascade turns a refusal into a question for the reader.
-export function fuzzyVerdict(
-  { answer, accepted, refused }: GradedAnswer,
-  claimed: ReadonlySet<string>,
-): 'correct' | null {
+export function placesNearMiss({ answer, accepted, refused }: GradedAnswer, claimed: ReadonlySet<string>): boolean {
   const typed = answerKey(answer)
-  if (typed === '') return null
-  if (refused.some((word) => answerKey(word) === typed)) return null
+  if (typed === '') return false
+  if (refused.some((word) => answerKey(word) === typed)) return false
 
   const targets = accepted.map(answerKey)
 
   // The item's own answer first, and the guard cannot reach it: an accent the reader did not type and
   // an article they did are this word written two ways, not a second word. docs/specs/v0.1.md asks for
   // exactly this, an unaccented tache accepted where the item allows it and nowhere else.
-  if (targets.includes(typed)) return 'correct'
+  if (targets.includes(typed)) return true
 
   // Only now, where a letter differs and the answer could be another card's word.
-  if (claimed.has(typed)) return null
+  if (claimed.has(typed)) return false
 
   return targets.some((target) => target.length >= SHORTEST_TYPO && oneEditApart(typed, target))
-    ? 'correct'
-    : null
 }
