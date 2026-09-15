@@ -1343,3 +1343,6 @@
 {"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "reviewer": "regression-check", "file": "src/core/corpus/answers.ts", "line": 18, "outcome": "dismissed", "reason": "Le numero un is the word 一番 is shown under and numero 1 is the same answer written in digits, so the rule that a word another card is shown under means that card applies to it as to any other word, and the reader grades it on 第一."}
 {"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "kind": "pass", "base": "5645af00ebdc0a7b261e7452eb4e5081fff58faf", "head": "9296af546f95b3f144470ad6b129a480018d1815"}
 {"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "kind": "pass", "base": "85ebcf92ea40b295ac506b7eae3202e32aa6699a", "head": "849a1f5f567d04ad280a754de97aa4479f3d46aa"}
+{"date": "2026-09-16", "branch": "docs/the-demo-is-served-by-netlify", "reviewer": "docs-conformity", "file": "docs/stack.md", "line": 181, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "docs/the-demo-is-served-by-netlify", "reviewer": "security-check", "file": "netlify.toml", "line": 4, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "docs/the-demo-is-served-by-netlify", "kind": "pass", "base": "153725925e5435bda47e7c6e51e218af21f07afd", "head": "0dda6b81cc8373556b607325ac7f9e5511a1d358"}
