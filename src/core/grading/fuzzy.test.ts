@@ -122,6 +122,22 @@ describe('placesNearMiss', () => {
     expect(placesNearMiss(meaning('a', ['dû à']), taught('du a'))).toBe(false)
   })
 
+  // A number is one answer whether it is written in digits or in words, and the corpus writes both: 十分
+  // is 10 minutes and 十分間 is dix minutes.
+  it('takes a number in digits for the same number in words, and the other way', () => {
+    expect(placesNearMiss(meaning('2', ['deux']), taught('2'))).toBe(true)
+    expect(placesNearMiss(meaning('dix minutes', ['10 minutes']), taught('10 minutes'))).toBe(true)
+    expect(placesNearMiss(meaning('le huit', ['le 8']), taught('8'))).toBe(true)
+    expect(placesNearMiss(meaning('quatre-vingt-dix', ['90']), taught('90'))).toBe(true)
+  })
+
+  // A number is exact. One digit or one letter off is another number, however long it is written.
+  it('places no slip on a number', () => {
+    expect(placesNearMiss(meaning('vingt mille', ['dix mille']), taught('10000'))).toBe(false)
+    expect(placesNearMiss(meaning('10001', ['10000']), taught('10000'))).toBe(false)
+    expect(placesNearMiss(meaning('quatorz', ['quatorze']), taught('14'))).toBe(false)
+  })
+
   it('refuses an empty answer, which is a reader giving up rather than missing a letter', () => {
     expect(placesNearMiss(meaning('', ['eau']), nothing)).toBe(false)
   })

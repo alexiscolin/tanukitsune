@@ -30,6 +30,10 @@
     { "kind": "meaning", "answer": "marche", "accepted": ["marché"], "expect": "correct", "why": "the same criterion where it costs something: marche answers another card, and an accent is still not what the item asks" },
     { "kind": "meaning", "answer": "mercredi", "accepted": ["mercredi"], "expect": "correct", "why": "the reference, typed" },
     { "kind": "meaning", "answer": "cœur", "accepted": ["coeur"], "expect": "correct", "why": "a ligature, which is the same two letters" },
+    { "kind": "meaning", "answer": "2", "accepted": ["deux"], "expect": "correct", "why": "a number in digits for the same number in words" },
+    { "kind": "meaning", "answer": "dix minutes", "accepted": ["10 minutes"], "expect": "correct", "why": "the corpus writes 十分 in digits and 十分間 in words" },
+    { "kind": "meaning", "answer": "le huit", "accepted": ["le 8"], "expect": "correct", "why": "a date written in words where the card writes digits" },
+    { "kind": "meaning", "answer": "trois cents", "accepted": ["300"], "expect": "correct", "why": "a compound number, plural included" },
     { "kind": "meaning", "answer": "l’eau", "accepted": ["l'eau"], "expect": "correct", "why": "a curly apostrophe, which a phone or a paste puts in" },
     { "kind": "meaning", "answer": "adult", "accepted": ["adulte"], "expect": "correct", "why": "a dropped letter" },
     { "kind": "meaning", "answer": "nourriture", "accepted": ["nourriture", "manger"], "expect": "correct", "why": "a claimed word, where the item itself allows it" },
@@ -78,6 +82,9 @@
     { "answer": "au-desous", "accepted": ["au-dessus"], "why": "a slip one letter from both opposites" },
     { "answer": "élève", "accepted": ["élevé"], "why": "an accent put in rather than left out" },
     { "answer": "fois", "accepted": ["une fois"], "why": "a numeral is part of the answer" },
-    { "answer": "a", "accepted": ["dû à"], "why": "a preposition is the answer, not an opener" }
+    { "answer": "a", "accepted": ["dû à"], "why": "a preposition is the answer, not an opener" },
+    { "answer": "vingt mille", "accepted": ["dix mille"], "why": "one digit apart, and another number" },
+    { "answer": "quatorz", "accepted": ["quatorze"], "why": "a number is exact" },
+    { "answer": "deux deux", "accepted": ["quatre"], "why": "a run French never writes is not a number" }
   ]
 }
