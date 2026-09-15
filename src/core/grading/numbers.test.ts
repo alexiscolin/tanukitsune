@@ -52,6 +52,15 @@ describe('numbersAsDigits', () => {
     expect(numbersAsDigits('vingt-un')).toBe('vingt-un')
   })
 
+  // Neuf is nine and it is new: article neuf is a new article. Alone it is left as written, and read as
+  // a number only inside one, where it cannot mean anything else.
+  it('reads neuf as nine only inside a number', () => {
+    expect(numbersAsDigits('neuf')).toBe('neuf')
+    expect(numbersAsDigits('article neuf')).toBe('article neuf')
+    expect(numbersAsDigits('dix-neuf')).toBe('19')
+    expect(numbersAsDigits('neuf cents')).toBe('900')
+  })
+
   it('leaves a word that only starts like a number', () => {
     expect(numbersAsDigits('quarante-deuxième étage')).toBe('quarante-deuxième étage')
     expect(numbersAsDigits('au-dessus')).toBe('au-dessus')

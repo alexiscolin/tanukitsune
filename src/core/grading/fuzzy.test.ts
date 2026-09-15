@@ -138,6 +138,21 @@ describe('placesNearMiss', () => {
     expect(placesNearMiss(meaning('quatorz', ['quatorze']), taught('14'))).toBe(false)
   })
 
+  // Mille is held as 1000, so nothing written in letters sits near milles any more. A slip that is one
+  // letter from a number word is still a number misspelt rather than this word misspelt.
+  it('places no slip that is a number word misspelt', () => {
+    expect(placesNearMiss(meaning('milles', ['villes']), taught('villes', '1000'))).toBe(false)
+    expect(placesNearMiss(meaning('tsente', ['tente']), taught('tente', '30'))).toBe(false)
+  })
+
+  it('still places a slip on a word that only sits near a number word', () => {
+    expect(placesNearMiss(meaning('villle', ['ville']), taught('ville', '1000'))).toBe(true)
+  })
+
+  it('places no slip on an ordinal, which is a number too', () => {
+    expect(placesNearMiss(meaning('sixième', ['dixième']), taught('dixieme'))).toBe(false)
+  })
+
   it('refuses an empty answer, which is a reader giving up rather than missing a letter', () => {
     expect(placesNearMiss(meaning('', ['eau']), nothing)).toBe(false)
   })
