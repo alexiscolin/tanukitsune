@@ -7,6 +7,7 @@ import {
   readStories,
   storiesFile,
   readDecompositions,
+  answersIn,
   readClaimed,
   readMeanings,
   readNaming,
@@ -183,6 +184,18 @@ describe('readMeanings', () => {
 
 // The guard the judge reads, and the corpus check recomputes it from the files it was derived from. A
 // reader that took the file on trust would let a set nobody rebuilt pass as one somebody did.
+describe('answersIn', () => {
+  it('reads every word a shape, a kanji and a word are answered with, every gloss included', () => {
+    const files: Record<string, string> = {
+      'components.json': '{ "names": { "亻": "le passant" } }',
+      'meanings.json': '{ "header": {}, "meanings": { "力": ["force", "puissance"] } }',
+      'vocabulary.json': '{ "header": {}, "meanings": { "水曜日": ["mercredi"] } }',
+    }
+
+    expect(answersIn((file) => files[file] ?? '')).toEqual(['le passant', 'force', 'puissance', 'mercredi'])
+  })
+})
+
 describe('readClaimed', () => {
   it('reads the words in the order they were written', () => {
     expect(readClaimed('{ "header": {}, "claimed": ["nourriture", "pourriture"] }')).toEqual([

@@ -23,6 +23,7 @@ import { faultInKey } from '../src/core/corpus/key.ts'
 import { faultInMeaning, faultInName } from '../src/core/corpus/name.ts'
 import type { Shape } from '../src/core/corpus/name.ts'
 import {
+  answersIn,
   readAnchors,
   readComponentNames,
   readKeyOrder,
@@ -221,11 +222,7 @@ function checkClaimed(locale: string, at: (file: string) => string): void {
   // A locale that has written none of them owes no guard yet, which is every locale on its first day.
   if (!files.every((file) => existsSync(at(file)))) return
 
-  const answers = [
-    ...Object.values(readComponentNames(readFileSync(at('components.json'), 'utf8'))),
-    ...Object.values(readMeanings(readFileSync(at('meanings.json'), 'utf8'))).flat(),
-    ...Object.values(readMeanings(readFileSync(at('vocabulary.json'), 'utf8'))).flat(),
-  ]
+  const answers = answersIn((file) => readFileSync(at(file), 'utf8'))
   const written = readClaimed(readFileSync(at('claimed.json'), 'utf8'))
   const owed = claimedWords(answers)
 

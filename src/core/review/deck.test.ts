@@ -168,7 +168,7 @@ describe('withText, the meaning the card asks for', () => {
   // being accepted, one of glosses refused outright. Both are the source's language, so a card
   // answering in the locale's word would otherwise sit above two lines of somebody else's.
   // A gloss the source shows struck through is a word it tells the reader not to answer with, and the
-  // blacklist is the same instruction without the line. Both are kept now that an English answer counts:
+  // blacklist is the same instruction without the line. Both are kept because an English answer counts:
   // a list that only ever added words could not refuse one.
   it('shows none of the words the source sent, and keeps the ones it refuses', () => {
     const listed = { ...KANJI, refused: ['break'], meanings: [...KANJI.meanings, { text: 'pause', primary: false, accepted: false }] }

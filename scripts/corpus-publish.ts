@@ -87,8 +87,8 @@ const heldShapes: ReadonlyMap<string, Told> = existsSync(at('shapes.json'))
 const heldWords: ReadonlyMap<string, Told> = existsSync(at('words.json'))
   ? readStories(readFileSync(at('words.json'), 'utf8'))
   : new Map()
-// The first gloss, which is the one the run settled on: the file keeps the rest so a later pass can
-// widen what an answer accepts, and the card asks for one word.
+// The first gloss, which is the one the run settled on and the one word the card shows. The rest are
+// what the card also accepts, read below.
 const words = Object.fromEntries(
   Object.entries(readMeanings(readFileSync(at('vocabulary.json'), 'utf8'))).map(([word, glosses]) => [
     word,

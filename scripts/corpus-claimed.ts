@@ -20,19 +20,12 @@ import { readFileSync, writeFileSync } from 'node:fs'
 
 import { claimedWords } from '../src/core/corpus/answers.ts'
 import { SHORTEST_TYPO } from '../src/core/grading/fuzzy.ts'
-import { readComponentNames, readMeanings } from '../src/data/corpus/artifact.ts'
+import { answersIn } from '../src/data/corpus/artifact.ts'
 
 const locale = process.argv[2] ?? 'fr'
 const at = (file: string) => `corpus/${locale}/${file}`
 
-// The three files that say what a card is answered with, one per kind: a shape is named, a kanji is
-// taught under a key, a word means what the release says it means here. Every gloss and not the shown
-// one alone, the rest having become answers of their own.
-const accepted = [
-  ...Object.values(readComponentNames(readFileSync(at('components.json'), 'utf8'))),
-  ...Object.values(readMeanings(readFileSync(at('meanings.json'), 'utf8'))).flat(),
-  ...Object.values(readMeanings(readFileSync(at('vocabulary.json'), 'utf8'))).flat(),
-]
+const accepted = answersIn((file) => readFileSync(at(file), 'utf8'))
 
 const claimed = claimedWords(accepted)
 
