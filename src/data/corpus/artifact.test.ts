@@ -7,6 +7,7 @@ import {
   readStories,
   storiesFile,
   readDecompositions,
+  readClaimed,
   readMeanings,
   readNaming,
   readPhonology,
@@ -177,6 +178,21 @@ describe('readMeanings', () => {
 
   it('refuses a character left with no meaning at all, which is a card that cannot be graded', () => {
     expect(() => readMeanings(meaningsFile({ header: { of: 'test' }, meanings: { 土: [] } }))).toThrow()
+  })
+})
+
+// The guard the judge reads, and the corpus check recomputes it from the files it was derived from. A
+// reader that took the file on trust would let a set nobody rebuilt pass as one somebody did.
+describe('readClaimed', () => {
+  it('reads the words in the order they were written', () => {
+    expect(readClaimed('{ "header": {}, "claimed": ["nourriture", "pourriture"] }')).toEqual([
+      'nourriture',
+      'pourriture',
+    ])
+  })
+
+  it('refuses a file holding no such list, which is a guard that guards nothing', () => {
+    expect(() => readClaimed('{ "header": {} }')).toThrow()
   })
 })
 
