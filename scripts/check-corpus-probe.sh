@@ -54,6 +54,11 @@ cat >"$root/xx/phonology.json" <<'JSON'
 }
 JSON
 mkdir -p "$root/yy"
+# Every answer file and no guard, which a page importing the guard cannot build from.
+printf '%s\n' '{ "names": { "D": "le puits" } }' >"$root/yy/components.json"
+printf '%s\n' '{ "keys": { "A": "puits" } }' >"$root/yy/keys.json"
+printf '%s\n' '{ "header": {}, "meanings": { "A": ["puits"] } }' >"$root/yy/meanings.json"
+printf '%s\n' '{ "header": {}, "meanings": { "B": ["le puits"] } }' >"$root/yy/vocabulary.json"
 cat >"$root/yy/naming.json" <<'JSON'
 {
   "language": "Probe",
@@ -104,7 +109,7 @@ if [ -z "$refused" ]; then
   report 'the check accepted a locale written to be refused'
 fi
 
-for expected in 'not the locale' 'both keyed' 'no article' 'names more than one component' 'states a word twice' 'holds nothing for' 'stands for more than one reading' 'sit nearer than' 'the locale refuses' 'is one letter' 'names nothing for' 'no story at all' 'opens on nothing' 'claimed.json is missing' 'claimed.json still holds'; do
+for expected in 'not the locale' 'both keyed' 'no article' 'names more than one component' 'states a word twice' 'holds nothing for' 'stands for more than one reading' 'sit nearer than' 'the locale refuses' 'is one letter' 'names nothing for' 'no story at all' 'opens on nothing' 'claimed.json is missing' 'claimed.json still holds' 'claimed.json is not written'; do
   case "$refused" in
     *"$expected"*) ;;
     *) report "the check did not name: $expected" ;;

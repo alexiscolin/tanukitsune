@@ -217,9 +217,14 @@ function checkMeanings(
 // and not rebuilt here leaves the fuzzy tier free to place an answer on a word that now answers another
 // card. Recomputed rather than trusted, since a derived file nothing rebuilds is a claim.
 function checkClaimed(locale: string, at: (file: string) => string): void {
-  const files = ['claimed.json', 'components.json', 'keys.json', 'meanings.json', 'vocabulary.json']
-  // A locale that has written none of them owes no guard yet, which is every locale on its first day.
+  const files = ['components.json', 'keys.json', 'meanings.json', 'vocabulary.json']
+  // A locale still missing one of its answer files owes no guard yet, which is every locale on its first
+  // day. One holding all of them owes one, and a page importing a guard nobody wrote cannot build.
   if (!files.every((file) => existsSync(at(file)))) return
+  if (!existsSync(at('claimed.json'))) {
+    refuse(`${locale}: claimed.json is not written, so run pnpm corpus:claimed`)
+    return
+  }
 
   const answers = answersIn((file) => readFileSync(at(file), 'utf8'))
   const written = new Set(readClaimed(readFileSync(at('claimed.json'), 'utf8')))
