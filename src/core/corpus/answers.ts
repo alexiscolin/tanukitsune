@@ -1,4 +1,4 @@
-import { answerKey, oneEditApart, SHORTEST_TYPO } from '../grading/fuzzy.ts'
+import { answerKey } from '../grading/fuzzy.ts'
 
 // What a locale accepts for each card besides the word the card shows, and which of those words the
 // fuzzy tier may never reach for. Both rules read the answers as the grader reads them, through
@@ -33,37 +33,12 @@ export function alsoAcceptedFor(answers: ReadonlyMap<string, Wrote>): ReadonlyMa
   )
 }
 
-// The words the fuzzy tier must not reach for, which is every answer another answer sits within one
-// edit of. Derived rather than curated: the pairs French punishes are the ones the curriculum happens
-// to hold, and a hand-written list goes stale the moment a word is rewritten.
+// The words the fuzzy tier must not reach for, which is every word this locale answers some card with.
+// Derived rather than curated: the pairs French punishes are the ones the curriculum happens to hold,
+// and a hand-written list goes stale the moment a word is rewritten.
 //
-// The whole set is not needed. A near miss only reaches the guard when it sits one edit from the
-// reference, so a word with no neighbour can never be the answer that has to be refused.
+// All of them and not only the ones near each other. A card also accepts the source's own language,
+// and a slip on one of those answers can land on a French word that nothing French sits near.
 export function claimedWords(accepted: Iterable<string>): readonly string[] {
-  const written = new Map<string, Set<string>>()
-
-  for (const word of accepted) {
-    const key = answerKey(word)
-    if (key === '') continue
-
-    written.set(key, (written.get(key) ?? new Set()).add(word))
-  }
-
-  const keys = [...written.keys()]
-  // Two answers the fold reads as one word, which is the pair an accent makes: the exact tier refuses
-  // the unaccented spelling and this is the only thing standing between the reader and the other card.
-  const claimed = new Set(keys.filter((key) => (written.get(key)?.size ?? 0) > 1))
-
-  for (const [index, one] of keys.entries()) {
-    for (const other of keys.slice(index + 1)) {
-      if (!oneEditApart(one, other)) continue
-
-      // Only where a typo could be taken for the other word. Below that length the tier refuses on
-      // length alone, so naming the pair here would grow the artifact without changing a verdict.
-      if (other.length >= SHORTEST_TYPO) claimed.add(one)
-      if (one.length >= SHORTEST_TYPO) claimed.add(other)
-    }
-  }
-
-  return [...claimed].sort()
+  return [...new Set([...accepted].map(answerKey))].filter((key) => key !== '').sort()
 }

@@ -4,8 +4,8 @@
 // import-decomposition.ts states.
 //
 // Tier 2 tolerates a mistyped letter, and French punishes that: nourriture and pourriture are one edit
-// apart and mean opposite things, and the curriculum holds two thousand more such pairs. Every word
-// another answer sits that close to is written here, and the grader refuses to place an answer on one
+// apart and mean opposite things, and the curriculum holds two thousand more such pairs. Every word the
+// locale answers some card with is written here, and the grader refuses to place a near miss on one
 // rather than teaching the reader the other card's word. docs/specs/v0.1.md holds the rule.
 //
 // Derived rather than curated: a list somebody reviewed by hand goes stale the first time a word is
@@ -19,7 +19,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 
 import { claimedWords } from '../src/core/corpus/answers.ts'
-import { SHORTEST_TYPO } from '../src/core/grading/fuzzy.ts'
 import { answersIn } from '../src/data/corpus/artifact.ts'
 
 const locale = process.argv[2] ?? 'fr'
@@ -31,9 +30,9 @@ const claimed = claimedWords(accepted)
 
 const file = {
   header: {
-    what: "The words the judge's fuzzy tier may not place an answer on. Each is a word this locale answers some card with, and each sits within one edit of another such word.",
-    how: `Written by pnpm corpus:claimed from components.json, meanings.json and vocabulary.json, read the way src/core/grading/fuzzy.ts reads an answer: accents folded, case folded, a leading article dropped. A pair shorter than ${SHORTEST_TYPO} letters is left out, the tier refusing it on length alone.`,
-    counted: `${claimed.length} of ${new Set(accepted).size} words the locale answers with`,
+    what: "The words the judge's fuzzy tier may not place a near miss on: every word this locale answers some card with.",
+    how: 'Written by pnpm corpus:claimed from components.json, meanings.json and vocabulary.json, read the way src/core/grading/fuzzy.ts reads an answer: accents folded, case folded, a leading article or reflexive pronoun dropped.',
+    counted: `${claimed.length} words, from ${new Set(accepted).size} spellings`,
     shape: 'the words, folded the way an answer is read, in order',
   },
   claimed,
@@ -41,4 +40,4 @@ const file = {
 
 writeFileSync(at('claimed.json'), `${JSON.stringify(file, null, 2)}\n`)
 
-process.stdout.write(`${claimed.length} words claimed of ${new Set(accepted).size} the locale answers with\n`)
+process.stdout.write(`${claimed.length} words claimed, from ${new Set(accepted).size} spellings\n`)

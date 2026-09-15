@@ -12,7 +12,7 @@ const OPENER = /^(?:de la |des |du |de |les |le |la |un |une |à |se |l'|d'|s')/
 
 // Below this, one letter apart is a different word rather than a slip: dix and six, deux and doux,
 // fort and mort. A shorter reference is answered exactly or it is not answered.
-export const SHORTEST_TYPO = 5
+const SHORTEST_TYPO = 5
 
 // What this tier compares on: the exact tier's folding, and then the accents, because a French
 // keyboard is what the reader may not have and the accent is never what is being tested.
@@ -30,7 +30,7 @@ export function answerKey(value: string): string {
 // One edit or none: a letter replaced, inserted or dropped. Written here rather than taken from the
 // anchor table's distance, which weighs a substitution by how far two sounds sit apart and divides by
 // the longer word. That measures whether a cue can be heard in a reading, which is not this question.
-export function oneEditApart(typed: string, reference: string): boolean {
+function oneEditApart(typed: string, reference: string): boolean {
   if (Math.abs(typed.length - reference.length) > 1) return false
 
   let left = 0
