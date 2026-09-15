@@ -171,7 +171,7 @@ export function ReviewSession({
   }
 
   const submit = async (asked: Question, raw: string) => {
-    const graded = { kind: asked.kind, answer: raw, accepted: asked.accepted }
+    const graded = { kind: asked.kind, answer: raw, accepted: asked.accepted, refused: asked.refused }
 
     say(verdictStands(raw, await runCascade(graded, null)))
   }

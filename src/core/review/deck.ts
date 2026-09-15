@@ -1,4 +1,5 @@
 import type { Assignment } from '../knowledge-source'
+import { acceptedIn, refusedIn } from '../subject'
 import type { Component, Subject } from '../subject'
 
 // How much of a queue one sitting takes. The source hands back everything that is due, which is
@@ -80,14 +81,16 @@ export function withText(
     return {
       ...subject,
       ...parts,
-      // The one word the card shows and the one it accepts. What the source calls the meaning is its
-      // own language, and a course asking for it in that language is not the course: the locale's word
-      // takes the place of all three lists the source sends, the words it accepts without showing them
-      // and the words it shows struck through included, since those are the same language again. The
-      // reader's own synonyms are theirs and stay.
+      // The one word the card shows, which is the locale's: what the source calls the meaning is its own
+      // language, and a course printing it is not the course. What it accepts is wider than what it
+      // shows. The other words the locale wrote come first, then the source's own, because a reader who
+      // learnt the character in English knows that word and the card never taught them to hide it.
+      //
+      // Only the words the source accepts. The ones it shows struck through are the ones it tells the
+      // reader not to answer with, and they join the blacklist rather than the answers.
       meanings: [{ text: text.meaning, primary: true, accepted: true }],
-      alsoAccepted: text.alsoAccepted,
-      refused: [],
+      alsoAccepted: [...text.alsoAccepted, ...acceptedIn(subject.meanings), ...subject.alsoAccepted],
+      refused: [...subject.refused, ...refusedIn(subject.meanings)],
       nuance: text.nuance,
       mnemonic: text.mnemonic,
       readingMnemonic: text.readingMnemonic,
