@@ -30,8 +30,10 @@ https://tanukitsune-demo.netlify.app. It holds no token, no backup secret and no
 deck is part of the bundle, so the demo needs none of them, and a deployment that holds none reaches
 neither the account nor the backup route.
 
-`netlify.toml` names the build. It is built from a checkout carrying no `.env.local`, since a build run
-where the author's token is set is a build that can carry it.
+`netlify.toml` names the build, and blanks the WaniKani token for it the way `verify` and `test:e2e` do:
+the framework reads `.env.local` at build and again from the deployed bundle, so a build run in the
+checkout that reviews a real account would carry that account into the demo. The deployment is made from
+a checkout that holds no `.env.local` besides.
 
 ## Consequences
 

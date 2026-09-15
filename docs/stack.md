@@ -178,10 +178,11 @@ regardless of host. The framework's caching is off, so no adapter has to keep up
 is price and operating comfort, which is a better basis for the decision than a feature nobody would
 have used twice. A deployment reviewing a real account is not hosted yet, for the reason the ADR gives.
 
-What the host must provide either way: a CDN that honours immutable responses, a preview deployment per
+What the host must be able to provide: a CDN that honours immutable responses, a preview deployment per
 pull request with its own database branch, and a free tier whose terms allow a product that will never
 charge, which [ADR 0004](decisions/0004-free-forever.md) guarantees. Nothing beyond that, which is why
-the choice comes down to price.
+the choice comes down to price. The demo takes the first and neither of the other two: it is deployed
+from the command line rather than from the repository, and it opens no database at all.
 
 **The v0.1 topology is single user with a public demo, and those two facts do not sit together by
 default.** The author's token lives in the server environment, and a deployment holding one deals
