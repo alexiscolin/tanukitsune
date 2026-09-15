@@ -1,0 +1,1 @@
+ALTER TABLE "corpus_entry" ADD COLUMN "also_accepted" text[] DEFAULT '{}' NOT NULL;

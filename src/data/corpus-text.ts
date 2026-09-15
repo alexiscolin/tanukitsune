@@ -19,6 +19,7 @@ const rows = z.array(
   z.object({
     subjectId: z.coerce.number().int(),
     meaning: z.string(),
+    alsoAccepted: z.array(z.string()),
     nuance: z.string(),
     mnemonic: z.string(),
     readingMnemonic: z.string().nullable(),
@@ -40,6 +41,7 @@ export async function textFor(
     .select({
       subjectId: corpusEntry.subjectId,
       meaning: corpusEntry.meaning,
+      alsoAccepted: corpusEntry.alsoAccepted,
       nuance: corpusEntry.nuance,
       mnemonic: corpusEntry.mnemonic,
       readingMnemonic: corpusEntry.readingMnemonic,
@@ -52,6 +54,7 @@ export async function textFor(
       row.subjectId,
       {
         meaning: row.meaning,
+        alsoAccepted: row.alsoAccepted,
         nuance: told(row.nuance),
         mnemonic: told(row.mnemonic),
         readingMnemonic: told(row.readingMnemonic),

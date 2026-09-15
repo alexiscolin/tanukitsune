@@ -31,11 +31,12 @@ import {
   readStories,
   readTelling,
 } from '../src/data/corpus/artifact.ts'
-import { cardsFrom, rowsToPublish, shapeCards, wordCards, wordFor } from '../src/data/corpus/publish.ts'
+import { answersFor, cardsFrom, rowsToPublish, shapeCards, wordCards, wordFor } from '../src/data/corpus/publish.ts'
 import { faultInTold } from '../src/data/corpus/story-run.ts'
 import type { Card, Told } from '../src/data/corpus/story-run.ts'
 import { walkCurriculum } from '../src/data/corpus/curriculum.ts'
 import { INVENTORY_FILE, readInventoryFile } from '../src/data/corpus/inventory.ts'
+import { alsoAcceptedFor } from '../src/core/corpus/answers.ts'
 import { CORPUS_MODEL } from '../src/ai/corpus/request.ts'
 import { list, loadLocalEnv } from './corpus-command.ts'
 import { drawnKey } from '../src/core/corpus/decomposition.ts'
@@ -94,6 +95,13 @@ const words = Object.fromEntries(
     glosses[0] as string,
   ]),
 )
+// Every word the locale wrote for a subject, which the card shows one of. Read from the same two files
+// the shown word is read from, so what a card shows and what it accepts cannot say different things.
+const glosses = {
+  kanji: readMeanings(readFileSync(at('meanings.json'), 'utf8')),
+  words: readMeanings(readFileSync(at('vocabulary.json'), 'utf8')),
+}
+
 const decompositions = readDecompositions(readFileSync('corpus/decomposition.json', 'utf8'))
 
 const { read } = walkCurriculum(subjects, names, (character) => decompositions.get(character) ?? [])
@@ -120,6 +128,7 @@ const kept = (held: ReadonlyMap<string, Told>, cards: ReadonlyMap<string, Card>)
   )
 
 const wrote = { names, keys, words, bound }
+const accepts = alsoAcceptedFor(answersFor(subjects, wrote, glosses))
 const written = kept(held, cards)
 const shapes = kept(heldShapes, shapeCards(subjects, names))
 const wordStories = kept(heldWords, wordCards(subjects, wrote, telling))
@@ -128,7 +137,7 @@ const wordStories = kept(heldWords, wordCards(subjects, wrote, telling))
 // written: a ratio whose denominator holds cards no session shows is a ratio nothing can reach.
 const dealt = subjects.filter((subject) => !subject.hidden)
 const version = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
-const rows = rowsToPublish(subjects, { wrote, cards, written, shapes, words: wordStories }, {
+const rows = rowsToPublish(subjects, { wrote, cards, written, shapes, words: wordStories, accepts }, {
   locale,
   writtenBy: CORPUS_MODEL,
   promptVersion: '',
@@ -175,12 +184,18 @@ for (let from = 0; from < rows.length; from += AT_A_TIME) {
     .values(
       rows
         .slice(from, from + AT_A_TIME)
-        .map((row) => ({ ...row, parts: [...row.parts], anchorPhonemes: row.anchorPhonemes ? [...row.anchorPhonemes] : null })),
+        .map((row) => ({
+          ...row,
+          parts: [...row.parts],
+          alsoAccepted: [...row.alsoAccepted],
+          anchorPhonemes: row.anchorPhonemes ? [...row.anchorPhonemes] : null,
+        })),
     )
     .onConflictDoUpdate({
       target: [corpusEntry.subjectId, corpusEntry.locale],
       set: {
         meaning: sql`excluded.meaning`,
+        alsoAccepted: sql`excluded.also_accepted`,
         nuance: sql`excluded.nuance`,
         mnemonic: sql`excluded.mnemonic`,
         readingMnemonic: sql`excluded.reading_mnemonic`,

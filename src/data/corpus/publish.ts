@@ -8,6 +8,7 @@ import type { ComponentNames, Decomposition } from '../../core/corpus/decomposit
 import type { InventorySubject } from './inventory.ts'
 import type { Card, Told } from './story-run.ts'
 import { drawnKey } from '../../core/corpus/decomposition.ts'
+import type { Wrote } from '../../core/corpus/answers.ts'
 import { says } from '../../core/corpus/story.ts'
 import type { Telling } from '../../core/corpus/story.ts'
 
@@ -38,6 +39,8 @@ export type Row = {
   readonly subjectId: string
   readonly locale: string
   readonly meaning: string
+  // Every other word this locale answers the subject with, accepted and never shown.
+  readonly alsoAccepted: readonly string[]
   readonly englishKey: string | null
   readonly nuance: string
   readonly mnemonic: string
@@ -55,6 +58,42 @@ export type Row = {
 // a word needs a third, which nothing derives: a word composes its meaning from the characters it is
 // written with.
 export type Answers = Written & { readonly words: Readonly<Record<string, string>> }
+
+// What the locale wrote for each subject: the word its card shows, and every word the corpus holds for
+// the same thing. Assembled here, beside the row that publishes the first of them, so the set the
+// grader accepts and the set the guard is derived from cannot be assembled two different ways.
+//
+// Read by kind and never by character alone, a radical and the kanji drawing it sharing one: a shape is
+// named by that kanji and has one word, so taking the kanji's glosses would answer it with words nobody
+// wrote for it.
+export function answersFor(
+  subjects: readonly InventorySubject[],
+  wrote: Answers,
+  glosses: Glosses,
+): ReadonlyMap<string, Wrote> {
+  return new Map(
+    subjects.flatMap((subject) => {
+      const shown = wordFor(subject, wrote)
+      if (shown === undefined) return []
+
+      return [[String(subject.id), { shown, wrote: [shown, ...writtenFor(subject, glosses)] }] as const]
+    }),
+  )
+}
+
+// Every word the locale wrote, by the character it was written under. Two records rather than one: a
+// word and the kanji it is written with share a character and are two cards.
+export type Glosses = {
+  readonly kanji: Readonly<Record<string, readonly string[]>>
+  readonly words: Readonly<Record<string, readonly string[]>>
+}
+
+function writtenFor(subject: InventorySubject, glosses: Glosses): readonly string[] {
+  if (subject.characters === null || subject.type === 'radical') return []
+  if (subject.type === 'kanji') return glosses.kanji[subject.characters] ?? []
+
+  return glosses.words[subject.characters] ?? []
+}
 
 // A shape has no parts: the drawing is what it is, so the story says what the shape looks like and
 // arrives at the word. What judges it is the rule that judges any story, with nothing to name first.
@@ -213,6 +252,10 @@ export type Held = {
   // are three cards: one list keyed by character could hold only one of them.
   readonly shapes: ReadonlyMap<string, Told>
   readonly words: ReadonlyMap<string, Told>
+  // What each subject accepts besides the word its card shows, keyed by subject identifier and
+  // written by src/core/corpus/answers.ts. Keyed by identifier and not by character, a radical and the
+  // kanji drawing it sharing one.
+  readonly accepts: ReadonlyMap<string, readonly string[]>
 }
 
 // One row per subject the locale can answer, walked by subject rather than by story: a radical and the
@@ -248,6 +291,7 @@ function rowFor(subject: InventorySubject, held: Held, stamp: Stamp): Row | null
     subjectId: String(subject.id),
     locale: stamp.locale,
     meaning: word,
+    alsoAccepted: held.accepts.get(String(subject.id)) ?? [],
     englishKey: null,
     parts: [],
     readingMnemonic: null,

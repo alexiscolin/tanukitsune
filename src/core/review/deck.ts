@@ -41,6 +41,9 @@ export function deckFor(
 // written and whose story is not yet, which is most of the curriculum.
 export type Written = {
   readonly meaning: string
+  // Every other word this locale answers the same subject with. The corpus holds several for most of
+  // them and a card shows one, so the rest are answers a reader who knows the meaning will type.
+  readonly alsoAccepted: readonly string[]
   readonly nuance: string | null
   readonly mnemonic: string | null
   readonly readingMnemonic: string | null
@@ -83,7 +86,7 @@ export function withText(
       // and the words it shows struck through included, since those are the same language again. The
       // reader's own synonyms are theirs and stay.
       meanings: [{ text: text.meaning, primary: true, accepted: true }],
-      alsoAccepted: [],
+      alsoAccepted: text.alsoAccepted,
       refused: [],
       nuance: text.nuance,
       mnemonic: text.mnemonic,
