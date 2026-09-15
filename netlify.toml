@@ -1,0 +1,8 @@
+# The public demo, which holds no WaniKani token: with none set, the seeded deck is served. Secrets
+# live in the host environment and are read at runtime, never here.
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22.12.0"
