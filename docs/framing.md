@@ -564,8 +564,8 @@ fuzzy matching, then the model.
 
 **French needs specific care in the fuzzy tier**, and Japanese readings need to be kept out of it
 entirely. Edit distance over either accepts semantically opposite answers. The rules and the derived
-minimal-pair list are in [`specs/v0.1.md`](specs/v0.1.md), because they are a shipping contract rather
-than an architectural position.
+set of words the tier may not reach for are in [`specs/v0.1.md`](specs/v0.1.md), because they are a
+shipping contract rather than an architectural position.
 
 **Calibration**, which is what makes this credible rather than a demo: 150 to 250 hand-labelled cases
 oversampling the hard middle; the human labels first, using the rubric the judge will see, so rubric

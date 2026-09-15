@@ -62,7 +62,8 @@ takes in that language, `components.json` what it calls each component, `phonolo
 cannot begin a word with, `keys.json` the word each character is taught under, `key-choice.json` the
 order a run settled over a character's glosses, `key-translation.json` the words carried across
 where the release glosses none, `mnemonics.json` the three texts a kanji card shows, `shapes.json` the
-ones a shape card shows and `words.json` the ones a word card shows, and `.lexicon.json` the words of
+ones a shape card shows and `words.json` the ones a word card shows, `claimed.json` the words the
+judge's fuzzy tier may not place an answer on, and `.lexicon.json` the words of
 that language an anchor can be drawn from, which the repository ignores. The three story files hold the
 same shape of text and are three files because a shape, the kanji drawing it and the word written with
 it share a character and are three cards: one file keyed by character could hold only one of them. The anchors and the cast land beside them. The first three are written
@@ -636,7 +637,7 @@ repository stood on, so a reader's answer can be traced to the exact files that 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
 `corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:anchor-written`, `corpus:anchor`,
 `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:name`, `corpus:vocabulary`,
-`corpus:word`, `corpus:story`, `corpus:report` and `corpus:publish` are its fifteen steps, each still runnable alone so that one of them can be read by hand,
+`corpus:word`, `corpus:story`, `corpus:claimed`, `corpus:report` and `corpus:publish` are its sixteen steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.
