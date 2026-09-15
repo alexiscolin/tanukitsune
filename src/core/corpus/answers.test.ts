@@ -41,6 +41,22 @@ describe('alsoAcceptedFor', () => {
     expect(also.get('1')).toEqual([])
   })
 
+  // Two cards, one teaching the verb and one the verb done to oneself. The pronoun is what tells them
+  // apart, so one card's reflexive word is not the other card's word.
+  it('keeps a reflexive word another card shows without its pronoun', () => {
+    const also = alsoAcceptedFor(
+      new Map([
+        ['1', wrote("s'éteindre", 'mourir', "s'éteindre")],
+        ['2', wrote('éteindre')],
+      ]),
+    )
+
+    expect(also.get('1')).toEqual(['mourir'])
+    expect(alsoAcceptedFor(new Map([['1', wrote('mourir', "s'éteindre")], ['2', wrote('éteindre')]])).get('1')).toEqual([
+      "s'éteindre",
+    ])
+  })
+
   it('writes a word once however often the locale repeated it', () => {
     const also = alsoAcceptedFor(new Map([['1', wrote('la force', 'la puissance', 'la Puissance')]]))
 

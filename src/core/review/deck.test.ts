@@ -144,24 +144,30 @@ describe('withText, the meaning the card asks for', () => {
     expect(joined?.meanings.map((gloss) => gloss.text)).toEqual(['le repos'])
   })
 
-  it('accepts the words the source shows as meanings, which are the answer in its own language', () => {
-    const [joined] = withText([KANJI], new Map([[KANJI.id, WRITTEN]]))
+  // Main is English for a hand and French for the hand 手 is taught under. Accepted on 本 because the
+  // source spells it that way, it would grade another card's French answer correct at the exact tier.
+  it('leaves out a source word spelled like a word the locale teaches', () => {
+    const [joined] = withText([{ ...KANJI, alsoAccepted: ['Main', 'Rest'] }], new Map([[KANJI.id, WRITTEN]]))
 
-    expect(joined?.alsoAccepted).toEqual([
-      ...KANJI.meanings.filter((gloss) => gloss.accepted).map((gloss) => gloss.text),
-      ...KANJI.alsoAccepted,
-    ])
+    expect(joined?.alsoAccepted).not.toContain('Main')
+    expect(joined?.alsoAccepted).toContain('Rest')
+  })
+
+  // The seeded deck is written in French, so a source in its own language is stated here rather than
+  // borrowed from it: the words below are nothing the locale teaches.
+  const SOURCE = { ...KANJI, meanings: [{ text: 'Below', primary: true, accepted: true }], alsoAccepted: ['Underneath'] }
+
+  it('accepts the words the source shows as meanings, which are the answer in its own language', () => {
+    const [joined] = withText([SOURCE], new Map([[KANJI.id, WRITTEN]]))
+
+    expect(joined?.alsoAccepted).toEqual(['Below', 'Underneath'])
   })
 
   it('puts the locale word first, the source word behind it, and neither on the card twice', () => {
     const written = { ...WRITTEN, alsoAccepted: ['la pause'] }
-    const [joined] = withText([{ ...KANJI, alsoAccepted: ['rest'] }], new Map([[KANJI.id, written]]))
+    const [joined] = withText([SOURCE], new Map([[KANJI.id, written]]))
 
-    expect(joined?.alsoAccepted).toEqual([
-      'la pause',
-      ...KANJI.meanings.filter((gloss) => gloss.accepted).map((gloss) => gloss.text),
-      'rest',
-    ])
+    expect(joined?.alsoAccepted).toEqual(['la pause', 'Below', 'Underneath'])
   })
 
   // The card shows the source's words as well as accepting them: one line of glosses shown without
