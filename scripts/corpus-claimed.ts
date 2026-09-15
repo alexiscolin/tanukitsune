@@ -36,7 +36,7 @@ const file = {
     what: "The words the judge's fuzzy tier may not place a near miss on: every word this locale answers some card with.",
     source: 'KANJIDIC2 (https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) and JMdict, Electronic Dictionary Research and Development Group, for the glosses of meanings.json and vocabulary.json; the component names and the words key-translation.json lists are written for this corpus',
     licence: 'CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), for the words derived from those releases',
-    how: 'Written by pnpm corpus:claimed from components.json, keys.json, meanings.json and vocabulary.json, read the way src/core/grading/fuzzy.ts reads an answer: ligatures and the curly apostrophe written out, accents folded, case folded, a leading definite article or reflexive pronoun dropped.',
+    how: 'Written by pnpm corpus:claimed from components.json, keys.json, meanings.json and vocabulary.json, read the way src/core/grading/fuzzy.ts reads an answer: ligatures and the curly apostrophe written out, accents folded, case folded, a leading definite article or reflexive pronoun dropped, numbers written as digits.',
     counted,
     shape: 'the words, folded the way an answer is read, in order',
   },
