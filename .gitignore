@@ -46,3 +46,6 @@ corpus/*/.key-choice-batch.json
 corpus/*/.key-translation-batch.json
 corpus/*/.word-batch.json
 corpus/*/.story-batch.json
+
+# The Netlify CLI links a checkout to its site here.
+.netlify

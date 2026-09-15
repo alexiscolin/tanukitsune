@@ -1,0 +1,12 @@
+# The public demo, which holds no WaniKani token: with none set, the seeded deck is served. Secrets
+# live in the host environment and are read at runtime, never here.
+#
+# The token is blanked for the build, the way `verify` and `test:e2e` blank it: a build run in a checkout
+# that reviews a real account would otherwise carry that account into the deployment, and the demo deals
+# it to whoever opens the URL.
+[build]
+  command = "WANIKANI_TOKEN= pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22.12.0"

@@ -21,7 +21,7 @@ the arguments do not get re-litigated.
 | Models | `@anthropic-ai/sdk`, one and not two, pinned models, batch API for the corpus, cached cascade for grading |
 | Tests | Vitest in two projects, `core/` in Node with no DOM and components in jsdom through Testing Library, Playwright with axe, real Postgres, MSW for third-party HTTP only |
 | Gates | ESLint 10, dependency-cruiser, knip, jscpd, `check:docs`, all in `pnpm verify` and in CI |
-| Hosting | Not decided |
+| Hosting | Netlify, for the public demo only, per [ADR 0016](decisions/0016-netlify-serves-the-demo.md) |
 
 Those are the choices, and most of them were not contested. The ten below were, and the argument is
 recorded so it does not get re-litigated.
@@ -171,17 +171,18 @@ engine, no generation step between the source and the database.
 
 ## Ops
 
-**The host is an owed decision, not a settled one, and nothing technical separates the candidates.**
-Deployment skew protection is a paid feature wherever it exists, so the documentation does not rely on
+**Netlify serves the public demo, per [ADR 0016](decisions/0016-netlify-serves-the-demo.md), and
+nothing technical separated the candidates.** Deployment skew protection is a paid feature wherever it exists, so the documentation does not rely on
 it: the service worker handles a 404 on a hashed asset by purging and reloading, which is the mechanism
 regardless of host. The framework's caching is off, so no adapter has to keep up with it. What is left
 is price and operating comfort, which is a better basis for the decision than a feature nobody would
-have used twice.
+have used twice. A deployment reviewing a real account is not hosted yet, for the reason the ADR gives.
 
-What the host must provide either way: a CDN that honours immutable responses, a preview deployment per
+What the host must be able to provide: a CDN that honours immutable responses, a preview deployment per
 pull request with its own database branch, and a free tier whose terms allow a product that will never
 charge, which [ADR 0004](decisions/0004-free-forever.md) guarantees. Nothing beyond that, which is why
-the choice comes down to price.
+the choice comes down to price. The demo takes the first and neither of the other two: it is deployed
+from the command line rather than from the repository, and it opens no database at all.
 
 **The v0.1 topology is single user with a public demo, and those two facts do not sit together by
 default.** The author's token lives in the server environment, and a deployment holding one deals
