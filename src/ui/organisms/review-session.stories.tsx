@@ -49,8 +49,8 @@ export const VerdictCorrect: Story = {
 
 // A meaning no tier placed, which is undecided by design and hands the card and the gesture
 // to the reader. There is no story for a wrong meaning, because v0.1 has no tier that can
-// declare one: docs/specs/v0.1.md sends anything the exact tier cannot match to self-grade,
-// and only a reading is decided outright. The queue asks every meaning before any reading, so
+// declare one: docs/specs/v0.1.md sends anything the exact and fuzzy tiers cannot place to
+// self-grade, and only a reading is decided outright. The queue asks every meaning before any reading, so
 // that verdict is reachable by playing the deck and not by typing one answer.
 export const SelfGrade: Story = {
   play: async ({ canvasElement }) => {

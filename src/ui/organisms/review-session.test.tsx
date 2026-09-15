@@ -138,8 +138,8 @@ describe('ReviewSession, answering', () => {
     await waitFor(() => expect(screen.queryByLabelText(COPY.review.prompt.meaning)).toBeNull())
   })
 
-  // v0.1 ships no fuzzy tier, so a meaning the exact tier cannot match is undecided rather
-  // than wrong, and the reader is what resolves it.
+  // No judge is wired in v0.1, so a meaning neither the exact tier nor the fuzzy one can place is
+  // undecided rather than wrong, and the reader is what resolves it.
   it('keeps an answer no tier could place, so it can be read again and corrected', async () => {
     const field = session()
 
