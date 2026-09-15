@@ -1,6 +1,6 @@
 import type { GradedAnswer } from './judge-port'
 import { normalise } from './normalise.ts'
-import { numbersAsDigits } from './numbers.ts'
+import { NUMBER_WORDS, numbersAsDigits } from './numbers.ts'
 
 // Latin combining marks alone. Kana carry their dakuten a block higher, so a fold written for French
 // cannot quietly turn が into か on a tier that is never handed a reading.
@@ -25,6 +25,27 @@ const SPELLINGS: readonly (readonly [RegExp, string])[] = [
 const SHORTEST_TYPO = 5
 
 const DIGIT = /\d/u
+const ORDINAL = /^(.+?)u?ieme$/u
+
+// A number is exact: one digit off is another number, however many digits it has, and an ordinal is a
+// number too.
+function isNumber(word: string): boolean {
+  const stem = ORDINAL.exec(word)?.[1]
+
+  return (
+    DIGIT.test(word) ||
+    word === 'premier' ||
+    word === 'premiere' ||
+    (stem !== undefined && NUMBER_WORDS.some((number) => oneEditApart(stem, number)))
+  )
+}
+
+// A slip one letter from a number word is that number misspelt rather than the reference misspelt. Held
+// here because the guard stores numbers as digits, so it has nothing in letters for such a slip to sit
+// near. Asked of the slip alone: ville is not a number for sitting one letter from mille.
+function misspellsNumber(slip: string): boolean {
+  return NUMBER_WORDS.some((number) => oneEditApart(slip, number))
+}
 
 function spelled(value: string): string {
   return SPELLINGS.reduce((text, [from, to]) => text.replace(from, to), normalise(value))
@@ -100,8 +121,7 @@ function slipsOnto(typed: string, target: string, claimed: ReadonlySet<string>):
   const at = meant.findIndex((word, index) => word !== said[index])
   const slip = said[at] ?? ''
   const word = meant[at] ?? ''
-  // A number is exact: one digit off is another number, however many digits it has.
-  if (word.length < SHORTEST_TYPO || DIGIT.test(word) || DIGIT.test(slip)) return false
+  if (word.length < SHORTEST_TYPO || isNumber(word) || isNumber(slip) || misspellsNumber(slip)) return false
 
   for (const other of claimed) {
     if (other !== word && oneEditApart(slip, other)) return false

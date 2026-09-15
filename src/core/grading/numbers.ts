@@ -33,6 +33,10 @@ const WORDS = Object.fromEntries(Object.entries(UNITS).filter(([word]) => word !
 
 const SCALES = new Set(['cent', 'mille', 'million'])
 
+// Every word a French number is written with, plurals included, which is what a slip is held against:
+// a word one letter from one of these is a number misspelt.
+export const NUMBER_WORDS: readonly string[] = [...Object.keys(UNITS), 'zéro', 'vingts', ...SCALES, 'cents', 'millions']
+
 // One word of a number as it is compared: the plural a hundred or a score takes is a spelling rule
 // rather than a different number, and zéro is written with its accent or without.
 function atomOf(word: string): string {
@@ -104,6 +108,8 @@ function sum(atoms: readonly string[]): number {
 
 function asNumber(atoms: readonly string[]): string | null {
   if (atoms[0] === 'et' || atoms.at(-1) === 'et') return null
+  // Neuf is also new, and alone nothing says which.
+  if (atoms.length === 1 && atoms[0] === 'neuf') return null
 
   const value = sum(atoms)
   const written = wordsFor(value)
