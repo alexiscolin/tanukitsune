@@ -609,11 +609,12 @@ across the card they read as two things to keep.
 did not ask for, so their text is not in the first read and a second one asks for it. Left with what the
 source sent, the strip under the card would name in another language the same pieces the story just
 named in French, one line apart. Where that text is held on the device is decided in
-[`framing.md`](framing.md), under the offline stores. The word the locale wrote takes the place of all
-three lists the source sends: the words it accepts, the words it accepts without showing them, and the
-words it shows struck through. Those are the source's language, and a card answering in the locale's
-word would otherwise sit above two lines of somebody else's. The reader's own synonyms are theirs and
-stay beside it. A subject the locale has nothing for keeps the fields the source sent, and a table
+[`framing.md`](framing.md), under the offline stores. The word the locale wrote is the only one a card
+shows: the three lists the source sends, the words it accepts, the words it accepts without showing
+them and the words it shows struck through, are the source's language, and a card answering in the
+locale's word would otherwise sit above two lines of somebody else's. What the card grades is wider than
+what it prints, and the judge section of [`specs/v0.1.md`](specs/v0.1.md) holds that rule. The reader's
+own synonyms are theirs and stay beside it. A subject the locale has nothing for keeps the fields the source sent, and a table
 that cannot be reached is the same case: the corpus is what a card shows and not what a card is, so a
 sitting deals without it rather than not at all.
 
