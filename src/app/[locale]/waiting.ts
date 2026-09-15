@@ -2,6 +2,7 @@ import 'server-only'
 
 import { DEMO_DECK, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
 import type { Assignment } from '@/core/knowledge-source'
+import { CLAIMED } from '@/core/grading/claimed'
 import { DEFAULT_LOCALE } from '@/core/locales'
 import { deckFor, sessionOf, withText } from '@/core/review/deck'
 import type { Written } from '@/core/review/deck'
@@ -74,7 +75,7 @@ async function dealt(
   const named = parts.filter((id) => !written.has(id))
   const alsoWritten = named.length === 0 ? new Map<number, Written>() : await textFor(named, DEFAULT_LOCALE).catch(() => new Map<number, Written>())
 
-  const deck = withText(dealt, new Map([...written, ...alsoWritten]))
+  const deck = withText(dealt, new Map([...written, ...alsoWritten]), CLAIMED)
   // Only what the deck kept. `deckFor` drops an assignment whose subject the source withdrew or
   // never sent, and a cached record naming one would let a later flush advance an item the reader
   // was never asked.

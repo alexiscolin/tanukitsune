@@ -1,5 +1,4 @@
 import type { Assignment } from '../knowledge-source'
-import { CLAIMED } from '../grading/claimed'
 import { answerKey } from '../grading/fuzzy'
 import { acceptedIn, refusedIn } from '../subject'
 import type { Component, Subject } from '../subject'
@@ -59,6 +58,10 @@ export type Written = {
 export function withText(
   subjects: readonly Subject[],
   written: ReadonlyMap<number, Written>,
+  // Every word the locale answers some card with, which a source word spelled like one of them is left
+  // out against. Handed in rather than imported, so the rules for dealing a deck load wherever a deck is
+  // dealt without carrying the guard the grader bundles.
+  claimed: ReadonlySet<string>,
 ): readonly Subject[] {
   // A part is a subject of its own, so what the locale wrote for it is what names it here. Left alone,
   // the strip under the card names the same pieces the story just named, in the source's language: the
@@ -96,7 +99,7 @@ export function withText(
       meanings: [{ text: text.meaning, primary: true, accepted: true }],
       alsoAccepted: [
         ...text.alsoAccepted,
-        ...[...acceptedIn(subject.meanings), ...subject.alsoAccepted].filter((word) => !CLAIMED.has(answerKey(word))),
+        ...[...acceptedIn(subject.meanings), ...subject.alsoAccepted].filter((word) => !claimed.has(answerKey(word))),
       ],
       refused: [],
       alsoRefused: [...subject.refused, ...refusedIn(subject.meanings)],
