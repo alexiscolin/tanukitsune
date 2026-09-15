@@ -1,4 +1,4 @@
-import { answerKey } from '../grading/fuzzy.ts'
+import { answerKey, wordKey } from '../grading/fuzzy.ts'
 
 // What a locale accepts for each card besides the word the card shows, and which of those words the
 // fuzzy tier may never reach for. Both rules read the answers as the grader reads them, through
@@ -15,14 +15,14 @@ export type Wrote = {
 // another subject is shown under means that subject, and accepting it here would grade a mix-up as
 // knowledge.
 export function alsoAcceptedFor(answers: ReadonlyMap<string, Wrote>): ReadonlyMap<string, readonly string[]> {
-  const cards = new Set([...answers.values()].map((one) => answerKey(one.shown)))
+  const cards = new Set([...answers.values()].map((one) => wordKey(one.shown)))
 
   return new Map(
     [...answers].map(([id, { wrote }]) => {
       const kept = new Map<string, string>()
 
       for (const word of wrote) {
-        const key = answerKey(word)
+        const key = wordKey(word)
         if (cards.has(key) || kept.has(key)) continue
 
         kept.set(key, word)

@@ -1,4 +1,6 @@
 import type { Assignment } from '../knowledge-source'
+import { CLAIMED } from '../grading/claimed'
+import { answerKey } from '../grading/fuzzy'
 import { acceptedIn, refusedIn } from '../subject'
 import type { Component, Subject } from '../subject'
 
@@ -88,9 +90,14 @@ export function withText(
       //
       // Only the words the source accepts. The ones it shows struck through are the ones it tells the
       // reader not to answer with, so they join the blacklist, which the grader reads and the card does
-      // not print.
+      // not print. A source word spelled like a word the locale teaches is left out: main is English for
+      // a hand on 本 and French for the hand 手 is taught under, and accepting it would grade that card's
+      // answer here.
       meanings: [{ text: text.meaning, primary: true, accepted: true }],
-      alsoAccepted: [...text.alsoAccepted, ...acceptedIn(subject.meanings), ...subject.alsoAccepted],
+      alsoAccepted: [
+        ...text.alsoAccepted,
+        ...[...acceptedIn(subject.meanings), ...subject.alsoAccepted].filter((word) => !CLAIMED.has(answerKey(word))),
+      ],
       refused: [],
       alsoRefused: [...subject.refused, ...refusedIn(subject.meanings)],
       nuance: text.nuance,
