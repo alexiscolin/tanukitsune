@@ -29,6 +29,8 @@
     { "kind": "meaning", "answer": "tache", "accepted": ["tâche"], "expect": "correct", "why": "the criterion in docs/specs/v0.1.md: unaccented, where the item allows that word" },
     { "kind": "meaning", "answer": "marche", "accepted": ["marché"], "expect": "correct", "why": "the same criterion where it costs something: marche answers another card, and an accent is still not what the item asks" },
     { "kind": "meaning", "answer": "mercredi", "accepted": ["mercredi"], "expect": "correct", "why": "the reference, typed" },
+    { "kind": "meaning", "answer": "cœur", "accepted": ["coeur"], "expect": "correct", "why": "a ligature, which is the same two letters" },
+    { "kind": "meaning", "answer": "l’eau", "accepted": ["l'eau"], "expect": "correct", "why": "a curly apostrophe, which a phone or a paste puts in" },
     { "kind": "meaning", "answer": "adult", "accepted": ["adulte"], "expect": "correct", "why": "a dropped letter" },
     { "kind": "meaning", "answer": "nourriture", "accepted": ["nourriture", "manger"], "expect": "correct", "why": "a claimed word, where the item itself allows it" },
     { "kind": "meaning", "answer": "compteur de jours", "accepted": ["jour", "compteur de jours"], "expect": "correct", "why": "a long phrase, typed exactly" },
@@ -69,6 +71,13 @@
     { "answer": "doux", "accepted": ["deux"], "why": "too short for a slip" },
     { "answer": "mort", "accepted": ["fort"], "why": "too short for a slip" },
     { "answer": "feu", "accepted": ["eau"], "why": "nothing in common with the reference" },
-    { "answer": "bread", "accepted": ["break"], "refused": ["bread"], "why": "a word the account itself says is not the answer" }
+    { "answer": "bread", "accepted": ["break"], "refused": ["bread"], "why": "a word the account itself says is not the answer" },
+    { "answer": "month", "accepted": ["bouche", "mouth"], "why": "a slip on the source's word, landing on another card's" },
+    { "answer": "six minutes", "accepted": ["dix minutes"], "why": "a short word slipped inside a phrase" },
+    { "answer": "au-dessous de la table", "accepted": ["au-dessus de la table"], "why": "an opposite slipped inside a phrase" },
+    { "answer": "au-desous", "accepted": ["au-dessus"], "why": "a slip one letter from both opposites" },
+    { "answer": "élève", "accepted": ["élevé"], "why": "an accent put in rather than left out" },
+    { "answer": "fois", "accepted": ["une fois"], "why": "a numeral is part of the answer" },
+    { "answer": "a", "accepted": ["dû à"], "why": "a preposition is the answer, not an opener" }
   ]
 }
