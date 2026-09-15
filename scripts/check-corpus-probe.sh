@@ -1,7 +1,8 @@
 #!/bin/bash
 # Runs scripts/check-corpus.ts over the committed material, then over a probe locale written to
-# refuse: a key in another script, a key two characters answer to, a name with no article, and a word
-# stated twice in an order. Expects the first to pass and every probe to be named.
+# refuse: a key in another script, a key two characters answer to, a name with no article, a word
+# stated twice in an order, and a claimed set that has not been rebuilt since the words moved. Expects
+# the first to pass and every probe to be named.
 #
 # The probe locale is written under a temporary root rather than into corpus/, so a run killed halfway
 # leaves nothing behind for the next gate to read as material.
@@ -53,6 +54,11 @@ cat >"$root/xx/phonology.json" <<'JSON'
 }
 JSON
 mkdir -p "$root/yy"
+# Every answer file and no guard, which a page importing the guard cannot build from.
+printf '%s\n' '{ "names": { "D": "le puits" } }' >"$root/yy/components.json"
+printf '%s\n' '{ "keys": { "A": "puits" } }' >"$root/yy/keys.json"
+printf '%s\n' '{ "header": {}, "meanings": { "A": ["puits"] } }' >"$root/yy/meanings.json"
+printf '%s\n' '{ "header": {}, "meanings": { "B": ["le puits"] } }' >"$root/yy/vocabulary.json"
 cat >"$root/yy/naming.json" <<'JSON'
 {
   "language": "Probe",
@@ -86,12 +92,24 @@ cat >"$root/xx/anchors.json" <<'JSON'
 }
 JSON
 
+# Two answers one edit apart, and a claimed set naming neither of them while naming a word nothing
+# answers with. Both halves of the rebuild check, in one file.
+cat >"$root/xx/meanings.json" <<'JSON'
+{ "header": {}, "meanings": { "I": ["nourriture"], "J": ["pourriture"] } }
+JSON
+cat >"$root/xx/vocabulary.json" <<'JSON'
+{ "header": {}, "meanings": { "K": ["nourriture"] } }
+JSON
+cat >"$root/xx/claimed.json" <<'JSON'
+{ "claimed": ["jamais ecrit"] }
+JSON
+
 refused=$(check "$root" 2>&1)
 if [ -z "$refused" ]; then
   report 'the check accepted a locale written to be refused'
 fi
 
-for expected in 'not the locale' 'both keyed' 'no article' 'names more than one component' 'states a word twice' 'holds nothing for' 'stands for more than one reading' 'sit nearer than' 'the locale refuses' 'is one letter' 'names nothing for' 'no story at all' 'opens on nothing'; do
+for expected in 'not the locale' 'both keyed' 'no article' 'names more than one component' 'states a word twice' 'holds nothing for' 'stands for more than one reading' 'sit nearer than' 'the locale refuses' 'is one letter' 'names nothing for' 'no story at all' 'opens on nothing' 'claimed.json is missing' 'claimed.json still holds' 'claimed.json is not written'; do
   case "$refused" in
     *"$expected"*) ;;
     *) report "the check did not name: $expected" ;;

@@ -62,7 +62,8 @@ takes in that language, `components.json` what it calls each component, `phonolo
 cannot begin a word with, `keys.json` the word each character is taught under, `key-choice.json` the
 order a run settled over a character's glosses, `key-translation.json` the words carried across
 where the release glosses none, `mnemonics.json` the three texts a kanji card shows, `shapes.json` the
-ones a shape card shows and `words.json` the ones a word card shows, and `.lexicon.json` the words of
+ones a shape card shows and `words.json` the ones a word card shows, `claimed.json` the words the
+judge's fuzzy tier may not place an answer on, and `.lexicon.json` the words of
 that language an anchor can be drawn from, which the repository ignores. The three story files hold the
 same shape of text and are three files because a shape, the kanji drawing it and the word written with
 it share a character and are three cards: one file keyed by character could hold only one of them. The anchors and the cast land beside them. The first three are written
@@ -608,11 +609,12 @@ across the card they read as two things to keep.
 did not ask for, so their text is not in the first read and a second one asks for it. Left with what the
 source sent, the strip under the card would name in another language the same pieces the story just
 named in French, one line apart. Where that text is held on the device is decided in
-[`framing.md`](framing.md), under the offline stores. The word the locale wrote takes the place of all
-three lists the source sends: the words it accepts, the words it accepts without showing them, and the
-words it shows struck through. Those are the source's language, and a card answering in the locale's
-word would otherwise sit above two lines of somebody else's. The reader's own synonyms are theirs and
-stay beside it. A subject the locale has nothing for keeps the fields the source sent, and a table
+[`framing.md`](framing.md), under the offline stores. The word the locale wrote is the only one a card
+shows: the three lists the source sends, the words it accepts, the words it accepts without showing
+them and the words it shows struck through, are the source's language, and a card answering in the
+locale's word would otherwise sit above two lines of somebody else's. What the card grades is wider than
+what it prints, and the judge section of [`specs/v0.1.md`](specs/v0.1.md) holds that rule. The reader's
+own synonyms are theirs and stay beside it. A subject the locale has nothing for keeps the fields the source sent, and a table
 that cannot be reached is the same case: the corpus is what a card shows and not what a card is, so a
 sitting deals without it rather than not at all.
 
@@ -636,7 +638,7 @@ repository stood on, so a reader's answer can be traced to the exact files that 
 One command, the locale as a parameter, re-runnable by reflex. `corpus:decomposition`,
 `corpus:inventory`, `corpus:readings`, `corpus:lexicon`, `corpus:anchor-written`, `corpus:anchor`,
 `corpus:key-choice`, `corpus:key-translation`, `corpus:keys`, `corpus:name`, `corpus:vocabulary`,
-`corpus:word`, `corpus:story`, `corpus:report` and `corpus:publish` are its fifteen steps, each still runnable alone so that one of them can be read by hand,
+`corpus:word`, `corpus:story`, `corpus:claimed`, `corpus:report` and `corpus:publish` are its sixteen steps, each still runnable alone so that one of them can be read by hand,
 and `pnpm corpus` runs them in the order each reads what the one before it wrote. The prose itself is
 the shape the rest of this section describes and the next thing built, so the command runs everything
 that exists rather than everything described.

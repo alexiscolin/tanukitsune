@@ -1,4 +1,6 @@
 import type { Assignment } from '../knowledge-source'
+import { answerKey } from '../grading/fuzzy'
+import { acceptedIn, refusedIn } from '../subject'
 import type { Component, Subject } from '../subject'
 
 // How much of a queue one sitting takes. The source hands back everything that is due, which is
@@ -41,6 +43,9 @@ export function deckFor(
 // written and whose story is not yet, which is most of the curriculum.
 export type Written = {
   readonly meaning: string
+  // Every other word this locale answers the same subject with. The corpus holds several for most of
+  // them and a card shows one, so the rest are answers a reader who knows the meaning will type.
+  readonly alsoAccepted: readonly string[]
   readonly nuance: string | null
   readonly mnemonic: string | null
   readonly readingMnemonic: string | null
@@ -53,6 +58,10 @@ export type Written = {
 export function withText(
   subjects: readonly Subject[],
   written: ReadonlyMap<number, Written>,
+  // Every word the locale answers some card with, which a source word spelled like one of them is left
+  // out against. Handed in rather than imported, so the rules for dealing a deck load wherever a deck is
+  // dealt without carrying the guard the grader bundles.
+  claimed: ReadonlySet<string>,
 ): readonly Subject[] {
   // A part is a subject of its own, so what the locale wrote for it is what names it here. Left alone,
   // the strip under the card names the same pieces the story just named, in the source's language: the
@@ -77,14 +86,23 @@ export function withText(
     return {
       ...subject,
       ...parts,
-      // The one word the card shows and the one it accepts. What the source calls the meaning is its
-      // own language, and a course asking for it in that language is not the course: the locale's word
-      // takes the place of all three lists the source sends, the words it accepts without showing them
-      // and the words it shows struck through included, since those are the same language again. The
-      // reader's own synonyms are theirs and stay.
+      // The one word the card shows, which is the locale's: what the source calls the meaning is its own
+      // language, and a course printing it is not the course. What it accepts is wider than what it
+      // shows. The other words the locale wrote come first, then the source's own, because a reader who
+      // learnt the character in English knows that word and the card never taught them to hide it.
+      //
+      // Only the words the source accepts. The ones it shows struck through are the ones it tells the
+      // reader not to answer with, so they join the blacklist, which the grader reads and the card does
+      // not print. A source word spelled like a word the locale teaches is left out: main is English for
+      // a hand on 本 and French for the hand 手 is taught under, and accepting it would grade that card's
+      // answer here.
       meanings: [{ text: text.meaning, primary: true, accepted: true }],
-      alsoAccepted: [],
+      alsoAccepted: [
+        ...text.alsoAccepted,
+        ...[...acceptedIn(subject.meanings), ...subject.alsoAccepted].filter((word) => !claimed.has(answerKey(word))),
+      ],
       refused: [],
+      alsoRefused: [...subject.refused, ...refusedIn(subject.meanings)],
       nuance: text.nuance,
       mnemonic: text.mnemonic,
       readingMnemonic: text.readingMnemonic,

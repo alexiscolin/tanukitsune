@@ -8,6 +8,9 @@ export type Question = {
   readonly subject: Subject
   readonly kind: AnswerKind
   readonly accepted: AcceptedAnswers
+  // What the item says is not the answer, which is a word for the meaning and so belongs to the
+  // meaning question alone. Empty on a reading, where it would refuse an answer in another script.
+  readonly refused: readonly string[]
 }
 
 // What tells one question from another, and it is the pair rather than the subject: the same
@@ -30,8 +33,9 @@ function ask(subject: Subject, kind: AnswerKind): Question | null {
   const shown = acceptedIn(glosses)
   const [first, ...rest] =
     kind === 'meaning' ? [...shown, ...subject.alsoAccepted, ...subject.synonyms] : shown
+  const refused = kind === 'meaning' ? [...subject.refused, ...subject.alsoRefused] : []
 
-  return first === undefined ? null : { subject, kind, accepted: [first, ...rest] }
+  return first === undefined ? null : { subject, kind, accepted: [first, ...rest], refused }
 }
 
 // Every meaning, then every reading, so a subject's two questions are never adjacent. Asked

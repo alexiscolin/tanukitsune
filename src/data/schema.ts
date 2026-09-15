@@ -8,6 +8,11 @@ export const corpusEntry = pgTable(
     subjectId: text('subject_id').notNull(),
     locale: text('locale').notNull(),
     meaning: text('meaning').notNull(),
+    // Every other word this locale answers the same subject with, accepted and never shown. The corpus
+    // holds several for most subjects and a card shows one, so refusing the rest would teach that the
+    // word shown is the meaning rather than a meaning. A word another subject is shown under is not
+    // here: it means that subject, and src/core/corpus/answers.ts is where it is taken out.
+    alsoAccepted: text('also_accepted').array().notNull().default([]),
     // The English key the French one stands for. It is the release's own English, selected at
     // generation, and never the account's: theirs is theirs, so it stays in the uncommitted inventory
     // and what travels of the check against it is the verdict rather than the text.

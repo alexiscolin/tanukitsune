@@ -14,6 +14,31 @@ describe('questionsFor', () => {
     expect(meaning?.accepted).toContain(KANJI.meanings[0]?.text)
   })
 
+  // The item says what is not the answer as well as what is, and the words it refuses are the ones
+  // nearest the right one. They travel with the question because the tier that tolerates a slip is the
+  // one that would otherwise reach them.
+  it('carries what the item refuses onto the question it is asked with', () => {
+    const [meaning] = questionsFor([{ ...KANJI, refused: ['au-dessus'] }])
+
+    expect(meaning?.refused).toEqual(['au-dessus'])
+  })
+
+  it('refuses the words the card never prints as well as the ones it does', () => {
+    const [meaning] = questionsFor([{ ...KANJI, refused: ['au-dessus'], alsoRefused: ['over'] }])
+
+    expect(meaning?.refused).toEqual(['au-dessus', 'over'])
+  })
+
+  // A refusal is a word for the meaning, so it belongs to the meaning question for the same reason a
+  // synonym does: on a reading it would refuse an answer in the wrong script entirely.
+  it('leaves a reading question nothing to refuse', () => {
+    const reading = questionsFor([{ ...KANJI, refused: ['au-dessus'] }]).find(
+      (question) => question.kind === 'reading',
+    )
+
+    expect(reading?.refused).toEqual([])
+  })
+
   // A synonym is a word for the meaning, and offering it for a reading would accept an answer in
   // the wrong script entirely.
   it('leaves a reading question to the source alone', () => {

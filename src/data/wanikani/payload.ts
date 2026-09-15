@@ -209,6 +209,7 @@ export function toSubject(
     hasAudio: (entry.data.pronunciation_audios ?? []).length > 0,
     refused: auxiliary(entry, 'blacklist'),
     alsoAccepted: auxiliary(entry, 'whitelist'),
+    alsoRefused: [],
     jlpt: null,
     nuance: null,
     mnemonic: null,

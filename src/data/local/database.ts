@@ -33,7 +33,7 @@ export type HeldDeck = {
 // Bumped when what a held deck carries changes shape. A deck written by an earlier build holds a
 // Subject without the fields added since, and a screen reading one back finds undefined where it
 // checks for null: the store is replaced rather than read across the change.
-const VERSION = 3
+const VERSION = 4
 
 export type LocalSchema = DBSchema & {
   outbox: { key: string; value: AnswerRecord }
@@ -85,7 +85,11 @@ export function database(): Promise<IDBPDatabase<LocalSchema>> {
       // collides rather than overwriting the answer already there.
       if (from < 1) db.createObjectStore(OUTBOX_STORE, { keyPath: 'id' })
 
-      if (from < 2) db.createObjectStore(DECK_STORE, { keyPath: 'flow' })
+      // Replaced on every change of version rather than created once, because that is the only reason
+      // this version moves: a held deck is a cache of the account, and one holding the shape an earlier
+      // build wrote is a deck the screen cannot read.
+      if (from >= 2) db.deleteObjectStore(DECK_STORE)
+      db.createObjectStore(DECK_STORE, { keyPath: 'flow' })
     },
     // This connection is what a newer tab is waiting on. Closed rather than held, so the upgrade it
     // asked for can run: a tab that keeps its connection open blocks every other tab in the profile.

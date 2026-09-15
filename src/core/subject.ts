@@ -95,6 +95,10 @@ export type Subject = {
   // one meaning spelled eleven ways. They reach the cascade and never the card.
   readonly refused: readonly string[]
   readonly alsoAccepted: readonly string[]
+  // Refused and never shown, the other half of that pair: what the source refuses once the card is
+  // written in another language, where a line of the source's words under the locale's is a line of
+  // somebody else's. The grader still reads it, since an answer in the source's language counts.
+  readonly alsoRefused: readonly string[]
 
   // Not sent by the source at all. docs/specs/v0.1.md admits the same gap and holds the
   // same condition: shown once a redistributable mapping is named, and absent until then.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { rowsToPublish, wordCards } from './publish'
+import { answersFor, rowsToPublish, wordCards } from './publish'
 import type { Publishable } from './publish'
 import type { InventorySubject } from './inventory'
 
@@ -49,15 +49,66 @@ const told = (one: Partial<{ meaning: string; reading: string; nuance: string }>
 const KANJI = [subject({})]
 const CARDS = new Map([['休', REST]])
 
+describe('answersFor', () => {
+  const GLOSSES = { kanji: { 休: ['repos', 'repos du soir'] }, words: { 休み: ['le congé', 'la pause'] } }
+
+  it('gives a kanji the words the locale wrote for the character it is', () => {
+    const answers = answersFor(KANJI, WROTE, GLOSSES)
+
+    expect(answers.get('451')).toEqual({ shown: 'repos', wrote: ['repos', 'repos du soir'] })
+  })
+
+  it('gives a word the words the locale wrote for the word, and never the kanji ones', () => {
+    const word = [subject({ id: 9, type: 'vocabulary', characters: '休み' })]
+
+    expect(answersFor(word, WROTE, GLOSSES).get('9')?.wrote).toEqual(['le congé', 'la pause'])
+  })
+
+  // A shape is named by the kanji drawing it, so it has one word and no other. Reading the kanji's
+  // glosses under its character would answer a shape with words nobody wrote for it.
+  it('gives a shape no gloss of the kanji it shares a character with', () => {
+    const shape = [subject({ id: 7, type: 'radical', characters: '休' })]
+    const wrote = { ...WROTE, names: { 休: 'le repos dessiné' } }
+
+    expect(answersFor(shape, wrote, GLOSSES).get('7')?.wrote).toEqual([])
+  })
+
+  it('leaves out a subject the locale cannot answer at all', () => {
+    const unknown = [subject({ id: 8, characters: '⺅' })]
+
+    expect(answersFor(unknown, WROTE, GLOSSES).size).toBe(0)
+  })
+})
+
 describe('rowsToPublish', () => {
+  // The corpus writes several words for most subjects and a card shows one. The rest travel in their
+  // own column, so the grader can take an answer the card never printed.
+  it('writes the other words the locale accepts for the same subject', () => {
+    const written = new Map([['休', told({ meaning: 'une histoire', nuance: 'la pause' })]])
+    const accepts = new Map([['451', ['le repos', 'la pause']]])
+
+    const [row] = rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map(), accepts }, STAMP)
+
+    expect(row?.alsoAccepted).toEqual(['le repos', 'la pause'])
+  })
+
+  it('writes no other word for a subject the locale wrote one word for', () => {
+    const written = new Map([['休', told({ meaning: 'une histoire', nuance: 'la pause' })]])
+
+    const [row] = rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)
+
+    expect(row?.alsoAccepted).toEqual([])
+  })
+
   it('writes what a card shows and what a check reads', () => {
     const written = new Map([['休', told({ meaning: 'une histoire', reading: 'une autre', nuance: 'la pause' })]])
 
-    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map() }, STAMP)).toEqual([
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)).toEqual([
       {
         subjectId: '451',
         locale: 'fr',
         meaning: 'repos',
+        alsoAccepted: [],
         englishKey: 'Rest',
         nuance: 'la pause',
         mnemonic: 'une histoire',
@@ -77,7 +128,7 @@ describe('rowsToPublish', () => {
   // curriculum has a word written and no story yet. The story columns stay empty rather than holding
   // the row back, and the card shows what it has.
   it('writes the word where no story is written', () => {
-    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       meaning: 'repos',
       nuance: '',
       mnemonic: '',
@@ -87,7 +138,7 @@ describe('rowsToPublish', () => {
   it('writes the word where only the nuance is written', () => {
     const written = new Map([['休', told({ nuance: 'la pause' })]])
 
-    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       nuance: 'la pause',
       mnemonic: '',
     })
@@ -100,7 +151,7 @@ describe('rowsToPublish', () => {
     const shape = [subject({ id: 1, type: 'radical', characters: '亻' })]
     const shapes = new Map([['亻', told({ meaning: 'une histoire de forme', nuance: 'la nuance' })]])
 
-    expect(rowsToPublish(shape, { wrote: WROTE, cards: CARDS, written: new Map(), shapes, words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(shape, { wrote: WROTE, cards: CARDS, written: new Map(), shapes, words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       meaning: 'le passant',
       mnemonic: 'une histoire de forme',
       nuance: 'la nuance',
@@ -113,7 +164,7 @@ describe('rowsToPublish', () => {
     const shape = [subject({ id: 1, type: 'radical', characters: '休' })]
     const written = new Map([['休', told({ meaning: 'une histoire', nuance: 'la pause' })]])
 
-    expect(rowsToPublish(shape, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(shape, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       meaning: 'repos',
       mnemonic: 'une histoire',
     })
@@ -127,7 +178,7 @@ describe('rowsToPublish', () => {
     const wrote = { ...WROTE, names: { ...WROTE.names, 休: 'le hamac' } }
     const written = new Map([['休', told({ meaning: 'une histoire de kanji', nuance: 'la pause' })]])
 
-    expect(rowsToPublish(apart, { wrote, cards: CARDS, written, shapes: new Map(), words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(apart, { wrote, cards: CARDS, written, shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       meaning: 'le hamac',
       mnemonic: '',
     })
@@ -140,7 +191,7 @@ describe('rowsToPublish', () => {
     const wrote = { ...WROTE, names: { ...WROTE.names, 'radical#8766': 'le crochet' } }
     const shapes = new Map([['radical#8766', told({ meaning: 'il pend au mur: le crochet.' })]])
 
-    expect(rowsToPublish(drawn, { wrote, cards: CARDS, written: new Map(), shapes, words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(drawn, { wrote, cards: CARDS, written: new Map(), shapes, words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       meaning: 'le crochet',
       mnemonic: 'il pend au mur: le crochet.',
     })
@@ -153,7 +204,7 @@ describe('rowsToPublish', () => {
     const wrote = { ...WROTE, words: { 休み: 'le congé' } }
     const words = new Map([['休み', told({ meaning: 'le repos vous tombe dessus: le congé.' })]])
 
-    expect(rowsToPublish(word, { wrote, cards: CARDS, written: new Map(), shapes: new Map(), words }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(word, { wrote, cards: CARDS, written: new Map(), shapes: new Map(), words, accepts: new Map() }, STAMP)[0]).toMatchObject({
       meaning: 'le congé',
       mnemonic: 'le repos vous tombe dessus: le congé.',
     })
@@ -166,7 +217,7 @@ describe('rowsToPublish', () => {
     const wrote = { ...WROTE, words: { 休: 'repos' } }
     const written = new Map([['休', told({ meaning: 'une histoire de kanji', nuance: 'la pause' })]])
 
-    expect(rowsToPublish(word, { wrote, cards: CARDS, written, shapes: new Map(), words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(word, { wrote, cards: CARDS, written, shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       meaning: 'repos',
       mnemonic: 'une histoire de kanji',
     })
@@ -177,7 +228,7 @@ describe('rowsToPublish', () => {
   it('writes a shape under the name the locale gave it', () => {
     const shape = [subject({ id: 1, type: 'radical', characters: '亻' })]
 
-    expect(rowsToPublish(shape, { wrote: WROTE, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(shape, { wrote: WROTE, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       subjectId: '1',
       meaning: 'le passant',
       mnemonic: '',
@@ -187,7 +238,7 @@ describe('rowsToPublish', () => {
   it('writes a word under the meaning the locale gave it', () => {
     const word = [subject({ id: 9, type: 'vocabulary', characters: '休み' })]
 
-    expect(rowsToPublish(word, { wrote: WROTE, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(word, { wrote: WROTE, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       subjectId: '9',
       meaning: 'le congé',
     })
@@ -200,7 +251,7 @@ describe('rowsToPublish', () => {
     const drawn = [subject({ id: 8766, type: 'radical', characters: null })]
     const wrote = { ...WROTE, names: { ...WROTE.names, 'radical#8766': 'le crochet' } }
 
-    expect(rowsToPublish(drawn, { wrote, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(drawn, { wrote, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       subjectId: '8766',
       meaning: 'le crochet',
     })
@@ -211,7 +262,7 @@ describe('rowsToPublish', () => {
   it('writes nothing for a subject the locale has no word for', () => {
     const unknown = [subject({ id: 7, characters: '姉' })]
 
-    expect(rowsToPublish(unknown, { wrote: WROTE, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map() }, STAMP)).toEqual([])
+    expect(rowsToPublish(unknown, { wrote: WROTE, cards: CARDS, written: new Map(), shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)).toEqual([])
   })
 
   // A component carries no reading and a word often rests on the one its kanji gave, so the reading
@@ -220,7 +271,7 @@ describe('rowsToPublish', () => {
     const bare = new Map([['休', { ...REST, reading: null, anchor: null, anchorPhonemes: null }]])
     const written = new Map([['休', told({ meaning: 'une histoire', nuance: 'la pause' })]])
 
-    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: bare, written, shapes: new Map(), words: new Map() }, STAMP)[0]).toMatchObject({
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: bare, written, shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]).toMatchObject({
       readingMnemonic: null,
       reading: null,
       anchor: null,
@@ -233,7 +284,7 @@ describe('rowsToPublish', () => {
   it('writes nothing for a story with no subject behind it', () => {
     const written = new Map([['姉', told({ meaning: 'une histoire', nuance: 'la soeur' })]])
 
-    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map() }, STAMP)[0]?.mnemonic).toBe('')
+    expect(rowsToPublish(KANJI, { wrote: WROTE, cards: CARDS, written, shapes: new Map(), words: new Map(), accepts: new Map() }, STAMP)[0]?.mnemonic).toBe('')
   })
 })
 

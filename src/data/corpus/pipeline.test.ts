@@ -16,6 +16,9 @@ describe('stepsFor', () => {
     expect(at('corpus:decomposition')).toBeLessThan(at('corpus:name'))
     expect(at('corpus:keys')).toBeLessThan(at('corpus:vocabulary'))
     expect(at('corpus:vocabulary')).toBeLessThan(at('corpus:word'))
+    // The guard the judge reads is derived from what the cards accept, so every word is written first.
+    expect(at('corpus:vocabulary')).toBeLessThan(at('corpus:claimed'))
+    expect(at('corpus:name')).toBeLessThan(at('corpus:claimed'))
     // The report says what a locale still owes and publishing writes what is ready, so the reader sees
     // the hole before the table is written rather than after.
     expect(at('corpus:report')).toBe(at('corpus:publish') - 1)

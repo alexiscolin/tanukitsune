@@ -81,6 +81,7 @@ describe('corpus_entry', () => {
     expect(Object.values(columns).map((column) => column.name)).toEqual(
       expect.arrayContaining([
         'meaning',
+        'also_accepted',
         'nuance',
         'mnemonic',
         'reading_mnemonic',

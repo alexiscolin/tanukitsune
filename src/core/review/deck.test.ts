@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { KANJI, VERB } from '../demo-deck'
 import type { Assignment } from '../knowledge-source'
+import { CLAIMED } from '../grading/claimed'
 import { deckFor, SESSION_LENGTH, sessionOf, withText } from './deck'
 
 // The identifier is what a submission names, and nothing here submits: the deck deals cards by
@@ -69,8 +70,7 @@ describe('withText', () => {
     const part = { id: 99, characters: '口', meaning: 'mouth' }
     const [joined] = withText(
       [{ ...KANJI, components: [part], usedIn: [part], similar: [part] }],
-      new Map([[99, { meaning: 'la bouche', nuance: null, mnemonic: null, readingMnemonic: null }]]),
-    )
+      new Map([[99, { meaning: 'la bouche', alsoAccepted: [], nuance: null, mnemonic: null, readingMnemonic: null }]]), CLAIMED)
 
     expect(joined?.components[0]?.meaning).toBe('la bouche')
     expect(joined?.usedIn[0]?.meaning).toBe('la bouche')
@@ -79,69 +79,115 @@ describe('withText', () => {
 
   it('leaves a part the locale wrote nothing for as it arrived', () => {
     const part = { id: 98, characters: '囗', meaning: 'enclosure' }
-    const [joined] = withText([{ ...KANJI, components: [part] }], new Map())
+    const [joined] = withText([{ ...KANJI, components: [part] }], new Map(), CLAIMED)
 
     expect(joined?.components[0]?.meaning).toBe('enclosure')
   })
 
   it('gives a subject the text the locale wrote for it', () => {
-    const [joined] = withText([KANJI], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }]]))
+    const [joined] = withText([KANJI], new Map([[KANJI.id, { meaning: 'le repos', alsoAccepted: [], nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }]]), CLAIMED)
 
     expect(joined?.nuance).toBe('la pause')
     expect(joined?.mnemonic).toBe('une histoire')
   })
 
+  // The corpus holds several words for most subjects and a card shows one of them. The rest are
+  // answers a reader who knows the meaning will type, so refusing them teaches that the one word
+  // shown is the meaning rather than a meaning.
+  it('accepts every other word the locale wrote for a subject, and shows none of them', () => {
+    const [joined] = withText(
+      [KANJI],
+      new Map([[KANJI.id, { meaning: 'la force', alsoAccepted: ['la puissance', "l'effort"], nuance: null, mnemonic: null, readingMnemonic: null }]]), CLAIMED)
+
+    expect(joined?.meanings).toEqual([{ text: 'la force', primary: true, accepted: true }])
+    expect(joined?.alsoAccepted.slice(0, 2)).toEqual(['la puissance', "l'effort"])
+  })
+
   // A locale that has not written a card yet is the ordinary state of every locale but the first, and
   // the reader still meets the card: the question is asked either way.
   it('leaves a subject the locale wrote nothing for alone', () => {
-    const [, second] = withText([KANJI, VERB], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }]]))
+    const [, second] = withText([KANJI, VERB], new Map([[KANJI.id, { meaning: 'le repos', alsoAccepted: [], nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }]]), CLAIMED)
 
     expect(second?.nuance).toBe(VERB.nuance)
     expect(second?.mnemonic).toBe(VERB.mnemonic)
   })
 
   it('keeps the order the deck was dealt in', () => {
-    const joined = withText([VERB, KANJI], new Map([[KANJI.id, { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }]]))
+    const joined = withText([VERB, KANJI], new Map([[KANJI.id, { meaning: 'le repos', alsoAccepted: [], nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }]]), CLAIMED)
 
     expect(joined.map((one) => one.id)).toEqual([VERB.id, KANJI.id])
   })
 })
 
 describe('withText, the meaning the card asks for', () => {
-  const WRITTEN = { meaning: 'le repos', nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }
+  const WRITTEN = { meaning: 'le repos', alsoAccepted: [], nuance: 'la pause', mnemonic: 'une histoire', readingMnemonic: 'un son' }
 
   // The source deals its own curriculum in its own language, so what it calls the meaning is English.
   // A course that asks for it in English is not the product: the locale's word is the answer, and the
   // reader's own synonyms stay beside it because those are theirs.
   it('asks for the locale word rather than the one the source sent', () => {
-    const [joined] = withText([KANJI], new Map([[KANJI.id, WRITTEN]]))
+    const [joined] = withText([KANJI], new Map([[KANJI.id, WRITTEN]]), CLAIMED)
 
     expect(joined?.meanings.map((gloss) => gloss.text)).toEqual(['le repos'])
     expect(joined?.meanings[0]?.accepted).toBe(true)
     expect(joined?.meanings[0]?.primary).toBe(true)
   })
 
-  // An English gloss the account happens to accept is still English. Dropping it is what stops a
-  // French course from grading an English answer correct.
-  it('drops what the source would also have accepted', () => {
-    const [joined] = withText([{ ...KANJI, alsoAccepted: ['rest'] }], new Map([[KANJI.id, WRITTEN]]))
+  // The course teaches in French and the reader may still know the word in the source's English. The
+  // card never prints it, so answering in English is knowledge the reader already had rather than a
+  // second language the course teaches.
+  it('accepts what the source accepts, and shows none of it', () => {
+    const [joined] = withText([{ ...KANJI, alsoAccepted: ['rest'] }], new Map([[KANJI.id, WRITTEN]]), CLAIMED)
 
-    expect(joined?.alsoAccepted).toEqual([])
+    expect(joined?.alsoAccepted).toContain('rest')
+    expect(joined?.meanings.map((gloss) => gloss.text)).toEqual(['le repos'])
+  })
+
+  // Main is English for a hand and French for the hand 手 is taught under. Accepted on 本 because the
+  // source spells it that way, it would grade another card's French answer correct at the exact tier.
+  it('leaves out a source word spelled like a word the locale teaches', () => {
+    const [joined] = withText([{ ...KANJI, alsoAccepted: ['Main', 'Rest'] }], new Map([[KANJI.id, WRITTEN]]), CLAIMED)
+
+    expect(joined?.alsoAccepted).not.toContain('Main')
+    expect(joined?.alsoAccepted).toContain('Rest')
+  })
+
+  // The seeded deck is written in French, so a source in its own language is stated here rather than
+  // borrowed from it: the words below are nothing the locale teaches.
+  const SOURCE = { ...KANJI, meanings: [{ text: 'Below', primary: true, accepted: true }], alsoAccepted: ['Underneath'] }
+
+  it('accepts the words the source shows as meanings, which are the answer in its own language', () => {
+    const [joined] = withText([SOURCE], new Map([[KANJI.id, WRITTEN]]), CLAIMED)
+
+    expect(joined?.alsoAccepted).toEqual(['Below', 'Underneath'])
+  })
+
+  it('puts the locale word first, the source word behind it, and neither on the card twice', () => {
+    const written = { ...WRITTEN, alsoAccepted: ['la pause'] }
+    const [joined] = withText([SOURCE], new Map([[KANJI.id, written]]), CLAIMED)
+
+    expect(joined?.alsoAccepted).toEqual(['la pause', 'Below', 'Underneath'])
   })
 
   // The card shows the source's words as well as accepting them: one line of glosses shown without
   // being accepted, one of glosses refused outright. Both are the source's language, so a card
   // answering in the locale's word would otherwise sit above two lines of somebody else's.
-  it('shows none of the words the source sent', () => {
+  // A gloss the source shows struck through is a word it tells the reader not to answer with, and the
+  // blacklist is the same instruction without the line. The card prints neither, since both are the
+  // source's language, and the grader still refuses both, since an English answer counts and a list
+  // that only ever added words could not refuse one.
+  it('shows none of the words the source sent, and keeps the ones it refuses for the grader alone', () => {
     const listed = { ...KANJI, refused: ['break'], meanings: [...KANJI.meanings, { text: 'pause', primary: false, accepted: false }] }
-    const [joined] = withText([listed], new Map([[KANJI.id, WRITTEN]]))
+    const [joined] = withText([listed], new Map([[KANJI.id, WRITTEN]]), CLAIMED)
 
     expect(joined?.refused).toEqual([])
+    expect(joined?.alsoRefused).toEqual(['break', 'pause'])
     expect(joined?.meanings.filter((gloss) => !gloss.accepted)).toEqual([])
+    expect(joined?.alsoAccepted).not.toContain('pause')
   })
 
   it('leaves the source word where the locale wrote nothing', () => {
-    const [joined] = withText([KANJI], new Map())
+    const [joined] = withText([KANJI], new Map(), CLAIMED)
 
     expect(joined?.meanings).toEqual(KANJI.meanings)
   })
