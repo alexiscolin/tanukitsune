@@ -4,16 +4,21 @@
 
 **Learn kanji in your own language, with a tutor that knows what you already know.**
 
+Try the demo at [tanukitsune-demo.netlify.app](https://tanukitsune-demo.netlify.app): no account, no
+token, nothing to install.
+
 WaniKani teaches the kanji 内 by telling you that "uchi sounds like OUCH". That helps if you think in
 English. If you do not, the memory trick is just one more thing to memorise. Tanukitsune builds that
 layer again in your language. It grades what you meant, not what you typed. And it follows your
 memory instead of a fixed timetable.
 
 > **Where it is today.** The review loop works on a real WaniKani account. With no token it serves a
-> small built-in deck instead. An answer is graded by exact match, saved on your device, backed up to
-> a server, and then sent on to WaniKani if the deployment turns that on. The app installs to a home
-> screen and opens with no network, dealing a session it has held from a previous visit. What is not
-> there yet is the French layer, so cards still show WaniKani's English.
+> small built-in deck instead, which is what the demo deals. An answer is graded without a model: a
+> slip of one letter, a missing accent, an article and a number in digits or in words are forgiven,
+> and anything that could be another card's answer goes back to you. It is saved on your device,
+> backed up to a server, and then sent on to WaniKani if the deployment turns that on. The app
+> installs to a home screen and opens with no network, dealing a session it has held from a previous
+> visit. Cards show the French layer wherever the corpus has written it.
 
 ## What you get
 

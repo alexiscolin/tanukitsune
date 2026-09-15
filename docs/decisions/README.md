@@ -34,6 +34,7 @@ is invisible. Naming the condition and the page to check turns it into a schedul
 | [0013](0013-the-curriculum-decides-the-parts.md) | The curriculum decides which parts a mnemonic names |
 | [0014](0014-jmdict-for-the-meanings.md) | JMdict states what a word means, never a model |
 | [0015](0015-the-card-carries-both-stories.md) | A card carries both stories, and `Subject` gained a field to hold the second |
+| [0016](0016-netlify-serves-the-demo.md) | Netlify serves the public demo, and only the demo |
 
 ## Decided, argued in prose
 
@@ -67,10 +68,7 @@ Each has a consequence that gets expensive once code exists.
    surface is open, while `generated_by` must carry a real identifier for the transparency obligation
    and retirement invalidates both the cache and the calibration. Carries `revisit-when` set to the
    earliest published retirement date and `revisit-where` set to the provider's deprecation page.
-3. **The host.** Skew protection is a paid feature everywhere and the service worker handles deployment
-   skew itself, and the framework's caching is off, so nothing technical separates the candidates any
-   more. It is decided on price and on operating comfort.
-4. **The demo deck's contents**, which fields it carries and where each one comes from, since a fresh
+3. **The demo deck's contents**, which fields it carries and where each one comes from, since a fresh
    clone cannot call the API and nothing WaniKani authored may be committed.
 
 Each is decided in the session that first needs it, not in a batch beforehand, and the record is
