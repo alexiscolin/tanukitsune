@@ -1,5 +1,6 @@
 import type { GradedAnswer } from './judge-port'
 import { normalise } from './normalise.ts'
+import { numbersAsDigits } from './numbers.ts'
 
 // Latin combining marks alone. Kana carry their dakuten a block higher, so a fold written for French
 // cannot quietly turn が into か on a tier that is never handed a reading.
@@ -23,6 +24,8 @@ const SPELLINGS: readonly (readonly [RegExp, string])[] = [
 // fort and mort. Measured on the word that slipped, not the phrase around it.
 const SHORTEST_TYPO = 5
 
+const DIGIT = /\d/u
+
 function spelled(value: string): string {
   return SPELLINGS.reduce((text, [from, to]) => text.replace(from, to), normalise(value))
 }
@@ -31,10 +34,10 @@ function withoutAccents(value: string): string {
   return value.normalize('NFD').replace(LATIN_MARKS, '').normalize('NFC')
 }
 
-// The answer as written, less what French opens it on. Two answers equal here are one word written
-// twice, whatever their case, ligature or article.
+// The answer as written, less what French opens it on, with its numbers in digits. Two answers equal
+// here are one answer written twice, whatever their case, ligature, article or way of writing a number.
 function asWritten(value: string): string {
-  return spelled(value).replace(ARTICLE, '').replace(PRONOUN, '')
+  return numbersAsDigits(spelled(value).replace(ARTICLE, '').replace(PRONOUN, ''))
 }
 
 // What one answer is compared as, on both sides and in the artifact the guard is built from: as written,
@@ -47,7 +50,7 @@ export function answerKey(value: string): string {
 // The same, keeping the reflexive pronoun: what tells two cards apart when one teaches the verb and the
 // other the verb done to oneself, which the grader forgives and the corpus must not merge.
 export function wordKey(value: string): string {
-  return withoutAccents(spelled(value).replace(ARTICLE, ''))
+  return withoutAccents(numbersAsDigits(spelled(value).replace(ARTICLE, '')))
 }
 
 // One edit or none: a letter replaced, inserted or dropped. Written here rather than taken from the
@@ -97,7 +100,8 @@ function slipsOnto(typed: string, target: string, claimed: ReadonlySet<string>):
   const at = meant.findIndex((word, index) => word !== said[index])
   const slip = said[at] ?? ''
   const word = meant[at] ?? ''
-  if (word.length < SHORTEST_TYPO) return false
+  // A number is exact: one digit off is another number, however many digits it has.
+  if (word.length < SHORTEST_TYPO || DIGIT.test(word) || DIGIT.test(slip)) return false
 
   for (const other of claimed) {
     if (other !== word && oneEditApart(slip, other)) return false
