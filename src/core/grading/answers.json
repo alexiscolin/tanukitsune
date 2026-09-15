@@ -49,6 +49,7 @@
   ],
   "pairs": [
     { "answer": "poison", "accepted": ["poisson"], "why": "the pair docs/specs/v0.1.md names" },
+    { "answer": "tache", "accepted": ["vache"], "why": "the other half of the criterion: unaccented tache where the item allows a different word" },
     { "answer": "pourriture", "accepted": ["nourriture"], "why": "one letter apart and opposite" },
     { "answer": "nourriture", "accepted": ["pourriture"], "why": "the same pair, the other way" },
     { "answer": "au-dessous", "accepted": ["au-dessus"], "why": "one letter apart and opposite" },

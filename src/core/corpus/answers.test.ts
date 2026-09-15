@@ -49,19 +49,21 @@ describe('alsoAcceptedFor', () => {
 })
 
 describe('claimedWords', () => {
-  it('holds a word another answer sits one edit from', () => {
-    expect(claimedWords(['nourriture', 'pourriture'])).toEqual(['nourriture', 'pourriture'])
+  it('holds every word the locale answers with, read the way an answer is', () => {
+    expect(claimedWords(['la Pourriture', 'nourriture'])).toEqual(['nourriture', 'pourriture'])
   })
 
-  it('holds a word another answer sits an accent from', () => {
-    expect(claimedWords(['marché', 'marche'])).toEqual(['marche'])
+  // A reference in another language has no French neighbour to be caught by, so a guard holding only
+  // the words near one another would let a slip on an English answer land on a French card's word.
+  it('holds a word nothing else in the locale sits near, since the reference may be in another language', () => {
+    expect(claimedWords(['philosophie', 'tableau noir'])).toEqual(['philosophie', 'tableau noir'])
   })
 
-  it('leaves out a word nothing sits near, which is most of the curriculum', () => {
-    expect(claimedWords(['philosophie', 'tableau noir'])).toEqual([])
+  it('writes a word once however many spellings reach it', () => {
+    expect(claimedWords(['marché', 'marche', 'Marche'])).toEqual(['marche'])
   })
 
-  it('leaves out a pair too short for a slip, which the grader refuses on length alone', () => {
-    expect(claimedWords(['six', 'dix'])).toEqual([])
+  it('holds nothing for a word that folds to nothing', () => {
+    expect(claimedWords(["l'", 'eau'])).toEqual(['eau'])
   })
 })
