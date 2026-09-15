@@ -23,6 +23,12 @@ describe('questionsFor', () => {
     expect(meaning?.refused).toEqual(['au-dessus'])
   })
 
+  it('refuses the words the card never prints as well as the ones it does', () => {
+    const [meaning] = questionsFor([{ ...KANJI, refused: ['au-dessus'], alsoRefused: ['over'] }])
+
+    expect(meaning?.refused).toEqual(['au-dessus', 'over'])
+  })
+
   // A refusal is a word for the meaning, so it belongs to the meaning question for the same reason a
   // synonym does: on a reading it would refuse an answer in the wrong script entirely.
   it('leaves a reading question nothing to refuse', () => {
