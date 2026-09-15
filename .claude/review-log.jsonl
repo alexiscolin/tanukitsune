@@ -1309,3 +1309,11 @@
 {"date": "2026-09-14", "branch": "feat/the-anchors-the-judge-accepts", "reviewer": "docs-conformity", "file": "docs/corpus.md", "line": 350, "outcome": "fixed"}
 {"date": "2026-09-14", "branch": "feat/the-anchors-the-judge-accepts", "reviewer": "docs-conformity", "file": "scripts/corpus-story.ts", "line": 74, "outcome": "fixed"}
 {"date": "2026-09-14", "branch": "feat/the-anchors-the-judge-accepts", "kind": "pass", "base": "975c8b6cd55fb9a0560dde065cae1c9edbbdcf03", "head": "154a4c03ef6d4cc0da3b5f26f3a21d54052cafc6"}
+{"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "reviewer": "regression-check", "file": "src/core/review/deck.ts", "line": 93, "outcome": "fixed"}
+{"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "reviewer": "regression-check", "file": "scripts/corpus-publish.ts", "line": 101, "outcome": "fixed"}
+{"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "reviewer": "requirement-check", "file": "src/core/corpus/answers.ts", "line": 42, "outcome": "fixed"}
+{"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "reviewer": "requirement-check", "file": "src/core/review/deck.ts", "line": 93, "outcome": "dismissed", "reason": "A gloss the source shows struck through is a word it marks as not the answer, so the grader refuses it beside the blacklist; the reader ruled both are refused and neither is shown, and the spec states the words the item says are not the answer."}
+{"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "reviewer": "requirement-check", "file": "src/core/grading/fuzzy.ts", "line": 11, "outcome": "fixed"}
+{"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "reviewer": "requirement-check", "file": "src/core/grading/answers.json", "line": 35, "outcome": "fixed"}
+{"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "reviewer": "docs-conformity", "file": "docs/corpus.md", "line": 612, "outcome": "fixed"}
+{"date": "2026-09-15", "branch": "feat/the-answers-the-judge-can-place", "kind": "pass", "base": "59d38adc6b3d9358893dd46bb6831300672bec72", "head": "5b61d6963353a34480b7bb160c2827d8b552dca8"}
