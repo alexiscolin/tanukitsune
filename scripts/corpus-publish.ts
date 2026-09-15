@@ -66,6 +66,7 @@ for (const needed of [
   'corpus/decomposition.json',
   at('components.json'),
   at('keys.json'),
+  at('meanings.json'),
   at('anchors.json'),
   at('naming.json'),
   at('mnemonics.json'),
