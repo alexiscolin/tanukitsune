@@ -58,7 +58,10 @@ export const corpusEntry = pgTable(
   ],
 )
 
-// One answer, durable. Append-only, never deleted, and backed up here because WaniKani discards
+// One answer, durable. Append-only, and deleted only by the reader who wrote it taking their whole
+// history back, which docs/specs/v0.2.md gives them and docs/decisions/0017-a-key-lives-in-a-cookie.md
+// explains: with no account row and no email, the rows are all the product holds of somebody. Backed up
+// here because WaniKani discards
 // review history: this is the only record of a review that will ever exist, which is what
 // docs/decisions/0005-system-of-record-for-reviews.md decides and why.
 //
@@ -77,9 +80,9 @@ export const reviewEvent = pgTable('review_event', {
   // written before a reader could bring a key is that account's, and so is every row a deployment
   // holding a token writes.
   readerId: text('reader_id').notNull().default(''),
-  // Whether this answer may be sent back to WaniKani. Written when the row is appended rather than read
-  // by the flush afterwards: the table is append-only, and a switch turned off later must not rewrite
-  // what a reader chose while answering.
+  // Whether this answer may be sent back to WaniKani, as the reader had it set while answering. Written
+  // by the device with the answer rather than read when the queue drains, which happens whenever the
+  // network returns: a switch read then is a switch read long after the answer was given.
   submits: boolean('submits').notNull().default(true),
   locale: text('locale').notNull(),
   corpusVersion: text('corpus_version'),

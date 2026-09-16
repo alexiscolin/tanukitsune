@@ -20,10 +20,11 @@ const STAMP: AnswerStamp = {
   id: '5a4d2e5e-52a6-4a7f-8f52-6b4c0a8a2f11',
   locale: 'fr',
   corpusVersion: null,
+  submits: true,
   answeredAt: new Date('2026-08-04T09:15:00.000Z'),
 }
 
-// Every field docs/specs/v0.1.md names on `review_event`. Asserted as a set rather than one
+// Every field docs/specs/v0.1.md and docs/specs/v0.2.md name on `review_event`. Asserted as a set rather than one
 // by one, because what this guards is the one thing an append-only table cannot repair: a
 // column absent the day a row is written is never filled afterwards.
 const FIELDS = [
@@ -32,6 +33,7 @@ const FIELDS = [
   'locale',
   'corpusVersion',
   'answeredAt',
+  'submits',
   'kind',
   'answer',
   'verdict',

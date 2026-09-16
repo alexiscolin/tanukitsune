@@ -21,17 +21,12 @@ import { reviewEvent } from './schema'
 
 // How many rows the table gained, which is not how many the caller sent: every row a batch names
 // is durable when this returns, and a replayed one appends none.
-export async function appendAnswers(
-  records: readonly AnswerRecord[],
-  reader: string,
-  submits: boolean,
-): Promise<number> {
+export async function appendAnswers(records: readonly AnswerRecord[], reader: string): Promise<number> {
   const rows = records.map((record) => ({
     ...record,
     // Stamped here and never taken from the batch: the device says what was answered, and who answered
     // it is what the request proves. A reader could otherwise name somebody else in a payload.
     readerId: reader,
-    submits,
     // Text, because the column joins `corpus_entry` on the same identifier and their numbering is
     // one implementation of what a subject is called rather than the definition of it.
     subjectId: String(record.subjectId),

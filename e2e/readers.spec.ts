@@ -34,7 +34,8 @@ function queued(id: string): unknown {
     id,
     locale: 'fr',
     corpusVersion: null,
-    answeredAt: new Date('2026-09-16T10:00:00.000Z'),
+    submits: true,
+  answeredAt: new Date('2026-09-16T10:00:00.000Z'),
   }
 
   return JSON.parse(JSON.stringify(answerRecord(CARD, stamp)))
