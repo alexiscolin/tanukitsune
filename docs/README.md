@@ -6,7 +6,8 @@ Map of the documentation, how to read it before writing code, and how to operate
 
 | Document | Answers | Audience |
 |---|---|---|
-| [`specs/v0.1.md`](specs/v0.1.md) | The only version specified in detail, with acceptance criteria | both |
+| [`specs/v0.1.md`](specs/v0.1.md) | The version specified in detail, with acceptance criteria | both |
+| [`specs/v0.2.md`](specs/v0.2.md) | Anyone reviews their own account, with their key in a cookie | both |
 | [`framing.md`](framing.md) | What we build and why, the principles, the architecture, the obligations | both |
 | [`stack.md`](stack.md) | The stack, every contested tooling choice, and the argument that settled it | both |
 | [`ai-engineering.md`](ai-engineering.md) | Models, prompts, structured output, evals, caching, observability, error analysis | both |
@@ -44,7 +45,8 @@ section is wrong. The architecture block is not optional reading: offline reconc
 transport, local state and the service worker carry rules an implementer cannot work without, and
 `AGENTS.md` points into them. Styling and locales can wait until the first component.
 
-**2.3 `specs/v0.1.md`, in full.** The only document describing what is being built right now. Read the
+**2.3 `specs/v0.1.md`, in full.** The contract for what shipped, and the one to read first. `specs/v0.2.md`
+describes the version being built on top of it and is read after. Read the
 out-of-scope section and the acceptance criteria most carefully: they are what tell you when you are
 finished, which is the hardest question on a solo project. It is not a decision record and it is not
 append-only. It is the current contract, and it is updated in the same pull request as any change that

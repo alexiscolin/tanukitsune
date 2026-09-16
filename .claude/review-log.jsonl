@@ -1346,3 +1346,8 @@
 {"date": "2026-09-16", "branch": "docs/the-demo-is-served-by-netlify", "reviewer": "docs-conformity", "file": "docs/stack.md", "line": 181, "outcome": "fixed"}
 {"date": "2026-09-16", "branch": "docs/the-demo-is-served-by-netlify", "reviewer": "security-check", "file": "netlify.toml", "line": 4, "outcome": "fixed"}
 {"date": "2026-09-16", "branch": "docs/the-demo-is-served-by-netlify", "kind": "pass", "base": "153725925e5435bda47e7c6e51e218af21f07afd", "head": "0dda6b81cc8373556b607325ac7f9e5511a1d358"}
+{"date": "2026-09-16", "branch": "docs/your-own-key-spec", "reviewer": "docs-conformity", "file": "docs/README.md", "line": 48, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "docs/your-own-key-spec", "reviewer": "docs-conformity", "file": "docs/specs/v0.1.md", "line": 42, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "docs/your-own-key-spec", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 54, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "docs/your-own-key-spec", "reviewer": "docs-conformity", "file": "docs/specs/v0.2.md", "line": 35, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "docs/your-own-key-spec", "kind": "pass", "base": "f49010f4984a5266cc05df69da2e7c16f24d065f", "head": "eab1cec02605aa86935933abb96ab4d4afdb6354"}
