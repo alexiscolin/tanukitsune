@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import type { Advanced, Assignment } from '@/core/knowledge-source'
+import type { Advanced, Assignment, Reader } from '@/core/knowledge-source'
 import type { Component, Reading, Sentence, Subject, SubjectType } from '@/core/subject'
 
 // The wire, parsed at the boundary and never carried past it. A component reading snake_case off
@@ -94,13 +94,31 @@ export function toStudyMaterial(entry: z.infer<typeof studyMaterialEntry>): Stud
   }
 }
 
-// The ceiling and whether it still stands. Both, because a lapsed subscription keeps the number
-// it reached and grants none of it.
+// Who the key belongs to, and the ceiling their subscription sets. Both halves of the ceiling,
+// because a lapsed subscription keeps the number it reached and grants none of it.
 export const userPayload = z.object({
   data: z.object({
+    id: z.string().min(1),
+    username: z.string().min(1),
+    level: z.number(),
     subscription: z.object({ max_level_granted: z.number(), active: z.boolean() }),
   }),
 })
+
+// The account a key names, which is what every row a reader writes is keyed on. Their own identifier
+// rather than one this product invents: a reader who pastes the same key on another device is the same
+// reader, and there is nothing to look up to know it.
+export function toReader(payload: z.infer<typeof userPayload>): Reader {
+  const { id, username, level, subscription } = payload.data
+
+  return {
+    id,
+    username,
+    level,
+    granted: subscription.max_level_granted,
+    subscribed: subscription.active,
+  }
+}
 
 export type SubjectEntry = z.infer<typeof subjectEntry>
 

@@ -1,6 +1,6 @@
 import type { z } from 'zod'
 
-import type { Advanced, KnowledgeSource, Waiting } from '@/core/knowledge-source'
+import type { Advanced, KnowledgeSource, Reader, Waiting } from '@/core/knowledge-source'
 import type { Component, Subject } from '@/core/subject'
 
 import { API, collect, headersFor, read } from './paging'
@@ -17,6 +17,7 @@ import {
   toComponent,
   toStudyMaterial,
   toSubject,
+  toReader,
   userPayload,
 } from './payload'
 import type { StudyMaterial, SubjectEntry } from './payload'
@@ -86,7 +87,11 @@ function subjectsIn(client: Client, ids: readonly number[]): Promise<SubjectEntr
 // grants a free reader nothing at all, and their three levels are exactly what this client owes
 // them.
 async function ceiling(client: Client): Promise<number> {
-  return userPayload.parse(await read(client, '/user')).data.subscription.max_level_granted
+  return (await whoever(client)).granted
+}
+
+async function whoever(client: Client): Promise<Reader> {
+  return toReader(userPayload.parse(await read(client, '/user')))
 }
 
 // What the reader wrote about these subjects, which is a second endpoint because it is theirs
@@ -158,6 +163,7 @@ export function wanikaniSource(token: string, api: string = API): KnowledgeSourc
   const client: Client = { token, api }
 
   return {
+    reader: () => whoever(client),
     listSubjects: (ids) => listSubjects(client, ids),
     listWaiting: () => listWaiting(client),
     submitReview: (submission) => submitReview(client, submission),

@@ -50,7 +50,12 @@ function page(data: unknown[], next: string | null = null) {
 function grants(level: number) {
   return http.get(`${API}/user`, () =>
     HttpResponse.json({
-      data: { subscription: { max_level_granted: level, active: level > 3 } },
+      data: {
+        id: '00000000-0000-4000-8000-00000000beef',
+        username: 'nobody',
+        level: 1,
+        subscription: { max_level_granted: level, active: level > 3 },
+      },
     }),
   )
 }
