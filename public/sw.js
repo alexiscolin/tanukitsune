@@ -64,7 +64,11 @@ async function shell(request) {
   try {
     const answered = await fetch(request)
 
-    if (answered.ok) void (await caches.open(SHELL)).put(request, answered.clone())
+    // A document that says no-store is one carrying something of a reader's, and the shell cache sits on
+    // disk for whoever opens this browser next. Kept only where the answer allows it.
+    const keep = !(answered.headers.get('cache-control') ?? '').includes('no-store')
+
+    if (answered.ok && keep) void (await caches.open(SHELL)).put(request, answered.clone())
 
     return answered
   } catch (unreachable) {

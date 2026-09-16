@@ -10,6 +10,7 @@ import { SessionStart } from '@/ui/organisms/session-start'
 
 import { KeyForm } from '@/ui/molecules/key-form'
 
+import { useAccount } from './account-held'
 import { useWaitingCounts } from './waiting-counts'
 
 // Where a session starts, asking for its own counts. The document is one shell for every reader of
@@ -22,20 +23,20 @@ export function Start({
   locale,
   copy,
   demo,
-  held,
-  submits,
 }: {
   locale: Locale
   copy: SiteCopy
+  // Whether this deployment deals the seeded deck to a reader who hands over no key. Deployment
+  // configuration, so it may travel in the document; what a key changes is asked for below.
   demo: boolean
-  // The account this browser holds a key for, read on the server where the cookie is.
-  held: { id: string; username: string; level: number } | null
-  // Whether this reader's answers advance their WaniKani account.
-  submits: boolean
 }) {
   const router = useRouter()
+  const account = useAccount()
+  // The seeded deck until a key is handed over, and then the account's own. Held back while the account
+  // is still being asked for, a screen that counted the demo first would flash numbers that are nobody's.
+  const seeded = demo && account.held === null
   const counts = useWaitingCounts(
-    demo ? { counted: true, lessons: DEMO_DECK.length, reviews: DEMO_SUBJECTS_ASKED } : null,
+    seeded ? { counted: true, lessons: DEMO_DECK.length, reviews: DEMO_SUBJECTS_ASKED } : null,
   )
 
   // Thrown while rendering, which is the only place the error boundary can see it.
@@ -46,13 +47,13 @@ export function Start({
       title={copy.title}
       tagline={copy.tagline}
       copy={copy.start}
-      demo={demo}
-      pending={!counts.counted}
+      demo={seeded}
+      pending={!counts.counted || !account.asked}
       signIn={
         <KeyForm
           copy={copy.start.key}
-          held={held}
-          submits={submits}
+          held={account.held}
+          submits={account.submits}
           onKey={(key) => handOver(key, router)}
           onForget={() => forget(router)}
           onSubmits={(sends) => choose(sends, router)}

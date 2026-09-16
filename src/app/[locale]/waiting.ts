@@ -102,9 +102,10 @@ export async function dealtFor(flow: Flow): Promise<Sitting> {
   return { subjects: sitting.deck, waiting: sitting.waiting }
 }
 
-// Which of the two decks this reader is dealt. Read per request rather than per deployment, since a key
-// handed over on one visit is what turns the demo into an account: the seeded deck is a constant already
-// in the bundle, so a reader who hands over nothing still opens with no network.
-export async function servesDemo(): Promise<boolean> {
-  return (await keyHeld()) === undefined
+// Which deck this deployment serves a reader who hands over no key. Deployment configuration rather than
+// account data, so it travels in the shell: a document that varied by reader is a document the service
+// worker would keep on disk for whoever opens the browser next. What a key changes is asked for by the
+// screen, the way the waiting counts are.
+export function servesDemo(): boolean {
+  return env.WANIKANI_TOKEN === undefined
 }

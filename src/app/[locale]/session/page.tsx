@@ -6,6 +6,8 @@ import { copyFor } from '@/core/site-copy'
 import { isFlow } from '@/core/subject'
 import { env } from '@/data/env'
 
+import { submitsHeld } from '@/data/reader-key'
+
 import { servesDemo } from '../waiting'
 
 import { BackupDrain } from '../backup-drain'
@@ -44,7 +46,7 @@ export default async function SessionPage({
         copy={copy.review}
         subjectCopy={copy.subject}
         exitTo={start}
-        demo={await servesDemo()}
+        demo={servesDemo()}
       />
     )
 
@@ -61,7 +63,8 @@ export default async function SessionPage({
         copy={copy.review}
         subjectCopy={copy.subject}
         exitTo={start}
-        demo={await servesDemo()}
+        demo={servesDemo()}
+        submits={await submitsHeld()}
       />
     </>
   )
