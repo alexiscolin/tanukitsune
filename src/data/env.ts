@@ -40,6 +40,11 @@ const schema = z.object({
   // stage, and the source offers no sandbox. The end-to-end suite sets it against a source that
   // belongs to nobody, which is the only place it is on.
   TANUKITSUNE_UPSTREAM_WRITE: optionalText,
+  // What signs the account a browser hands back. Its own variable and never the sync secret, which is
+  // handed to every browser that asks for it: a value the client holds cannot sign anything, since the
+  // holder can sign whatever they like with it. Absent, no reader is named and the deployment serves its
+  // own account alone.
+  TANUKITSUNE_READER_SECRET: optionalText,
   TANUKITSUNE_COMMIT: optionalText,
   TANUKITSUNE_BUILT_AT: optionalText,
 })

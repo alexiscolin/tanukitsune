@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { READER_ACCOUNT_COOKIE, READER_KEY_COOKIE, READER_SUBMITS_COOKIE } from '@/core/routes'
 import type { Held } from './key-cookie'
 
+import { decoded } from './cookie'
 import { env } from './env'
 import { unsealed } from './reader-seal'
 
@@ -19,47 +20,42 @@ const account = z.object({ id: z.string().min(1), username: z.string().min(1), l
 // Read per request and never cached: two readers share one server, and a key kept between requests is
 // the one mistake that would deal an account to somebody else.
 export async function keyHeld(): Promise<string | undefined> {
-  return (await cookies()).get(READER_KEY_COOKIE)?.value ?? env.WANIKANI_TOKEN
+  return (await keyHanded()) ?? env.WANIKANI_TOKEN
 }
 
-// Whose key this browser holds, for the screen that says so. Read from the cookie signature where there
-// is one and from the cookie itself where the deployment signs nothing: what a screen names is a name,
-// and a deployment that signs nothing accepts no writes to attribute.
+// The key this browser handed over, and nothing where it handed none: what tells a reader's request
+// from the deployment's own. A request carrying a key names a reader or it names nobody, and the two
+// must be read together, a key belonging to one account and rows to another being the mix-up that would
+// send one reader's history to somebody else.
+export async function keyHanded(): Promise<string | undefined> {
+  return held(READER_KEY_COOKIE)
+}
+
+// Whose key this browser holds, for the screen that says so. Only what the signature carries: an account
+// read off an unsigned cookie is a name a browser chose, and a screen naming it would say somebody is
+// signed in as somebody else.
 export async function accountHeld(): Promise<Held | null> {
-  const written = await held(READER_ACCOUNT_COOKIE)
-  if (written === undefined) return null
-
-  const verified = unsealed(written, env.TANUKITSUNE_SYNC_SECRET)
-
-  return read(verified ?? written)
+  return read(unsealed(await held(READER_ACCOUNT_COOKIE), env.TANUKITSUNE_READER_SECRET))
 }
 
 // Which reader a row is written under, and nothing where the account cannot be believed: an unsigned
 // cookie names nobody, so the row belongs to the deployment's own account the way every row did before
 // keys existed.
 export async function readerHeld(): Promise<string | null> {
-  return read(unsealed(await held(READER_ACCOUNT_COOKIE), env.TANUKITSUNE_SYNC_SECRET))?.id ?? null
+  return read(unsealed(await held(READER_ACCOUNT_COOKIE), env.TANUKITSUNE_READER_SECRET))?.id ?? null
 }
 
-// Whether this reader's answers may be sent on, which is what the append stamps on every row it writes.
-// On unless the reader turned it off: a signature that does not fall out right is read as no choice
-// rather than as off, and no choice is the product doing what it says on the screen.
+// Whether this reader's answers may be sent on. Only a signature that falls out right sends: a cookie
+// nobody can verify is not a reader asking for their account to be advanced, and a submission is
+// irreversible. A deployment rotating its secret stops sending rather than starting.
 export async function submitsHeld(): Promise<boolean> {
-  return unsealed(await held(READER_SUBMITS_COOKIE), env.TANUKITSUNE_SYNC_SECRET) !== 'false'
+  return unsealed(await held(READER_SUBMITS_COOKIE), env.TANUKITSUNE_READER_SECRET) === 'true'
 }
 
-// Percent-decoded, matching how it was written: the framework hands the value back as it sits in the
-// header, and a cookie is written encoded because its value may hold a character a header cannot carry.
+// The framework hands the value back as it sits in the header, and a cookie is written encoded because
+// its value may hold a character a header cannot carry.
 async function held(name: string): Promise<string | undefined> {
-  const written = (await cookies()).get(name)?.value
-  if (written === undefined) return undefined
-
-  try {
-    return decodeURIComponent(written)
-  } catch {
-    // Not something this ever wrote, so it names nobody whatever it is.
-    return undefined
-  }
+  return decoded((await cookies()).get(name)?.value)
 }
 
 function read(written: string | null): Held | null {

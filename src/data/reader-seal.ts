@@ -5,9 +5,9 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 // written under is signed here, and a cookie whose signature does not fall out right is read as no
 // account at all.
 //
-// Signed with the secret the backup route already requires, since a deployment that holds none accepts
-// no writes anyway: there is nothing to attribute where nothing can be written. The secret is handed in
-// rather than read here, which is what lets the rule be tested at all.
+// Signed with a secret of its own, never the one the backup route requires: that one is handed to every
+// browser that asks for it, and a value its holder can read is a value its holder can sign with. The
+// secret is handed in rather than read here, which is what lets the rule be tested at all.
 
 const SEPARATOR = '.'
 
