@@ -44,7 +44,7 @@ export default async function SessionPage({
         copy={copy.review}
         subjectCopy={copy.subject}
         exitTo={start}
-        demo={servesDemo()}
+        demo={await servesDemo()}
       />
     )
 
@@ -61,7 +61,7 @@ export default async function SessionPage({
         copy={copy.review}
         subjectCopy={copy.subject}
         exitTo={start}
-        demo={servesDemo()}
+        demo={await servesDemo()}
       />
     </>
   )
