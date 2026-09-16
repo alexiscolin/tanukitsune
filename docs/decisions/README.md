@@ -35,6 +35,7 @@ is invisible. Naming the condition and the page to check turns it into a schedul
 | [0014](0014-jmdict-for-the-meanings.md) | JMdict states what a word means, never a model |
 | [0015](0015-the-card-carries-both-stories.md) | A card carries both stories, and `Subject` gained a field to hold the second |
 | [0016](0016-netlify-serves-the-demo.md) | Netlify serves the public demo, and only the demo |
+| [0017](0017-a-key-lives-in-a-cookie.md) | A reader's WaniKani key lives in a cookie, and never in the database |
 
 ## Decided, argued in prose
 

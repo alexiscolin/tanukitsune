@@ -6,7 +6,8 @@ Map of the documentation, how to read it before writing code, and how to operate
 
 | Document | Answers | Audience |
 |---|---|---|
-| [`specs/v0.1.md`](specs/v0.1.md) | The only version specified in detail, with acceptance criteria | both |
+| [`specs/v0.1.md`](specs/v0.1.md) | The version specified in detail, with acceptance criteria | both |
+| [`specs/v0.2.md`](specs/v0.2.md) | Anyone reviews their own account, with their key in a cookie | both |
 | [`framing.md`](framing.md) | What we build and why, the principles, the architecture, the obligations | both |
 | [`stack.md`](stack.md) | The stack, every contested tooling choice, and the argument that settled it | both |
 | [`ai-engineering.md`](ai-engineering.md) | Models, prompts, structured output, evals, caching, observability, error analysis | both |
