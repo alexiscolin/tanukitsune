@@ -1351,3 +1351,25 @@
 {"date": "2026-09-16", "branch": "docs/your-own-key-spec", "reviewer": "docs-conformity", "file": "docs/backlog.md", "line": 54, "outcome": "fixed"}
 {"date": "2026-09-16", "branch": "docs/your-own-key-spec", "reviewer": "docs-conformity", "file": "docs/specs/v0.2.md", "line": 35, "outcome": "fixed"}
 {"date": "2026-09-16", "branch": "docs/your-own-key-spec", "kind": "pass", "base": "f49010f4984a5266cc05df69da2e7c16f24d065f", "head": "eab1cec02605aa86935933abb96ab4d4afdb6354"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "security-check", "file": "src/data/reader-seal.ts", "line": 16, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "security-check", "file": "src/app/api/key/route.ts", "line": 24, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "security-check", "file": "src/app/api/flush/route.ts", "line": 65, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "security-check", "file": "src/app/[locale]/start.tsx", "line": 31, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "security-check", "file": "src/data/reader-key.ts", "line": 48, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "security-check", "file": "src/data/reader-key.ts", "line": 34, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "security-check", "file": "src/data/reader-key.ts", "line": 22, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "requirement-check", "file": "src/app/api/flush/route.ts", "line": 66, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "requirement-check", "file": "src/app/api/history/route.ts", "line": 12, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "requirement-check", "file": "docs/specs/v0.2.md", "line": 49, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "requirement-check", "file": "src/data/review-events.ts", "line": 75, "outcome": "dismissed", "reason": "The read paths open a database, which src/data/db.ts declares server-only and no unit test can import, so the scoping is held by the end-to-end suite that drives two readers instead. docs/specs/v0.2.md now asks for that rather than for a unit test nothing could write."}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "requirement-check", "file": "src/app/api/key/route.ts", "line": 40, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "requirement-check", "file": "src/data/key-cookie.ts", "line": 32, "outcome": "dismissed", "reason": "keyOn is the reader of the cookie key-cookie.ts writes, and its test is what holds the two together; the server reads through reader-key.ts because it holds a request rather than a raw one."}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "regression-check", "file": "src/app/[locale]/page.tsx", "line": 28, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "regression-check", "file": "src/app/api/review/route.ts", "line": 27, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "docs-conformity", "file": "src/data/schema.ts", "line": 61, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "docs-conformity", "file": "docs/verification.md", "line": 59, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "docs-conformity", "file": "README.md", "line": 82, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "architecture-check", "file": "src/ui/organisms/session-start.tsx", "line": 38, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "architecture-check", "file": "src/data/reader-key.ts", "line": 53, "outcome": "fixed"}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "reviewer": "architecture-check", "file": "src/data/reader-seal.ts", "line": 20, "outcome": "dismissed", "reason": "The two comparisons take different inputs: one hashes a secret of any length a deployment chose, the other compares two digests of one fixed width. Folding them would hash a digest to compare it, which is work with nothing behind it."}
+{"date": "2026-09-16", "branch": "feat/a-key-names-the-reader", "kind": "pass", "base": "49459e2f92f9f5b0528e9a81bdf4b12079a6097c", "head": "428069036cbaacf5ac00514583139c6a6d928e85"}
