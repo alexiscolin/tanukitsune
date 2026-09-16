@@ -72,6 +72,15 @@ export const reviewEvent = pgTable('review_event', {
   // queued row carries the number the source sent, so the flush writes it as text rather than the
   // column reading one back.
   subjectId: text('subject_id').notNull(),
+  // The account the answer belongs to, as WaniKani names it, written from the signed cookie the key
+  // produced. Empty where no key was handed over, which is the deployment's own account: every row
+  // written before a reader could bring a key is that account's, and so is every row a deployment
+  // holding a token writes.
+  readerId: text('reader_id').notNull().default(''),
+  // Whether this answer may be sent back to WaniKani. Written when the row is appended rather than read
+  // by the flush afterwards: the table is append-only, and a switch turned off later must not rewrite
+  // what a reader chose while answering.
+  submits: boolean('submits').notNull().default(true),
   locale: text('locale').notNull(),
   corpusVersion: text('corpus_version'),
   answeredAt: timestamp('answered_at', { withTimezone: true }).notNull(),

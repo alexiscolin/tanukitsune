@@ -13,6 +13,7 @@ import {
   releaseClaim,
   unsentAnswers,
 } from '@/data/review-events'
+import { keyHeld, readerHeld } from '@/data/reader-key'
 import { holdsSecret } from '@/data/sync-secret'
 import { wanikaniSource } from '@/data/wanikani/source'
 
@@ -59,7 +60,10 @@ function askedOf(
 export async function POST(request: Request): Promise<Response> {
   if (!holdsSecret(request)) return new Response(null, { status: 401 })
 
-  const token = env.WANIKANI_TOKEN
+  // One flush speaks for one account: the key the browser holds, or the deployment's own where it holds
+  // none. What it may send is that account's rows and nothing else.
+  const reader = (await readerHeld()) ?? ''
+  const token = (await keyHeld()) ?? env.WANIKANI_TOKEN
 
   // The switch and the token, both before anything is read. A flush that may not submit must not
   // spend the budget finding out what it would have submitted: with the switch off, no row is ever
@@ -70,7 +74,7 @@ export async function POST(request: Request): Promise<Response> {
   const source = wanikaniSource(token, env.WANIKANI_API)
 
   const owed = async (): Promise<readonly Submission[]> => {
-    const unsent = await unsentAnswers()
+    const unsent = await unsentAnswers(reader)
     if (unsent.length === 0) return []
 
     const waiting = await source.listWaiting()
@@ -107,7 +111,7 @@ export async function POST(request: Request): Promise<Response> {
     // them. Holding keeps the answers, where dropping on a defect of ours discards them for ever.
     // The claim goes back with them, since this walk is the one holding it.
     if (stillWaiting) {
-      await releaseClaim(submission.answers)
+      await releaseClaim(submission.answers, reader)
 
       return 'held'
     }
@@ -135,7 +139,7 @@ export async function POST(request: Request): Promise<Response> {
     // submission is irreversible, so this is where it is made true instead.
     const at = new Date()
 
-    if ((await claimForFlush(submission.answers, at)) !== submission.answers.length)
+    if ((await claimForFlush(submission.answers, at, reader)) !== submission.answers.length)
       return 'held'
 
     let advanced
