@@ -1,10 +1,14 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+
 import { DEMO_DECK, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
 import type { Locale } from '@/core/locales'
-import { sessionPath } from '@/core/routes'
+import { KEY_PATH, sessionPath } from '@/core/routes'
 import type { SiteCopy } from '@/core/site-copy'
 import { SessionStart } from '@/ui/organisms/session-start'
+
+import { KeyForm } from '@/ui/molecules/key-form'
 
 import { useWaitingCounts } from './waiting-counts'
 
@@ -18,11 +22,15 @@ export function Start({
   locale,
   copy,
   demo,
+  held,
 }: {
   locale: Locale
   copy: SiteCopy
   demo: boolean
+  // The account this browser holds a key for, read on the server where the cookie is.
+  held: { username: string; level: number } | null
 }) {
+  const router = useRouter()
   const counts = useWaitingCounts(
     demo ? { counted: true, lessons: DEMO_DECK.length, reviews: DEMO_SUBJECTS_ASKED } : null,
   )
@@ -37,10 +45,44 @@ export function Start({
       copy={copy.start}
       demo={demo}
       pending={!counts.counted}
+      signIn={
+        <KeyForm
+          copy={copy.start.key}
+          held={held}
+          onKey={(key) => handOver(key, router)}
+          onForget={() => forget(router)}
+        />
+      }
       queues={{
         lesson: { count: counts.lessons, href: sessionPath(locale, 'lesson') },
         review: { count: counts.reviews, href: sessionPath(locale, 'review') },
       }}
     />
   )
+}
+
+// The key leaves the field and goes to the route, which is the only place that can set a cookie the
+// server will read. The answer names the account, and the screen is asked for again so the queues it
+// holds are that account's rather than the demo's.
+async function handOver(
+  key: string,
+  router: { refresh: () => void },
+): Promise<{ username: string; level: number } | null> {
+  const answered = await fetch(KEY_PATH, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ key }),
+  }).catch(() => null)
+
+  if (answered === null || !answered.ok) return null
+
+  const held = (await answered.json()) as { username: string; level: number }
+  router.refresh()
+
+  return held
+}
+
+async function forget(router: { refresh: () => void }): Promise<void> {
+  await fetch(KEY_PATH, { method: 'DELETE' }).catch(() => null)
+  router.refresh()
 }

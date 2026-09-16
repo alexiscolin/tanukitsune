@@ -23,6 +23,7 @@ function startScreen(queues = QUEUES, demo = true, pending = false) {
       queues={queues}
       demo={demo}
       pending={pending}
+      signIn={null}
     />,
   )
 }

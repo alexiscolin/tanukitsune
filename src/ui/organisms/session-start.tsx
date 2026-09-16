@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 
 import { FLOWS } from '@/core/subject'
 import type { Flow } from '@/core/subject'
@@ -19,6 +20,7 @@ export function SessionStart({
   queues,
   demo,
   pending,
+  signIn,
 }: {
   title: string
   tagline: string
@@ -33,6 +35,11 @@ export function SessionStart({
   // arrive: zero is a queue the reader has finished, and showing it before anything was counted
   // tells them they are done when nobody has looked.
   pending: boolean
+  // Where a reader hands a key over, or nothing on a screen that asks for none. Passed in rather than
+  // built here: what a key does is the route's business, and this screen only says where it goes.
+  // Where a reader hands a key over, or nothing on a screen that asks for none. Passed in rather than
+  // built here: what a key does is the route's business, and this screen only says where it goes.
+  signIn: ReactNode
 }) {
   return (
     <ScreenShell>
@@ -50,6 +57,8 @@ export function SessionStart({
           ))}
         </ul>
       </nav>
+
+      {signIn}
 
       {demo ? (
         <p className="pb-safe eyebrow py-8 text-[var(--color-ink-muted)]">{copy.demo}</p>
