@@ -1,4 +1,11 @@
-import { accountCookie, clearedAccountCookie, clearedKeyCookie, keyCookie } from '@/data/key-cookie'
+import {
+  accountCookie,
+  clearedAccountCookie,
+  clearedKeyCookie,
+  clearedSubmitsCookie,
+  keyCookie,
+  submitsCookie,
+} from '@/data/key-cookie'
 import { env } from '@/data/env'
 import { wanikaniSource } from '@/data/wanikani/source'
 
@@ -28,16 +35,36 @@ export async function POST(request: Request): Promise<Response> {
 
   if (reader === null) return Response.json({ error: 'refused' }, { status: REFUSED, headers: asked })
 
-  const held = { username: reader.username, level: reader.level }
+  const held = { id: reader.id, username: reader.username, level: reader.level }
   const answer = Response.json(
-    { ...held, granted: reader.granted, subscribed: reader.subscribed },
+    { username: held.username, level: held.level, granted: reader.granted, subscribed: reader.subscribed },
     { headers: asked },
   )
 
   answer.headers.append('set-cookie', keyCookie(key.trim()))
-  answer.headers.append('set-cookie', accountCookie(held))
+  answer.headers.append('set-cookie', accountCookie(held, env.TANUKITSUNE_SYNC_SECRET))
+  answer.headers.append('set-cookie', submitsCookie(true, env.TANUKITSUNE_SYNC_SECRET))
 
   return answer
+}
+
+// The switch, which is the one thing a reader changes after handing a key over. Signed like the account,
+// so a browser cannot turn somebody else's sending on.
+export function PATCH(request: Request): Promise<Response> {
+  return request
+    .json()
+    .catch(() => null)
+    .then((body: unknown) => {
+      const submits = typeof body === 'object' && body !== null && 'submits' in body ? body.submits : null
+      if (typeof submits !== 'boolean') {
+        return Response.json({ error: 'no choice' }, { status: MALFORMED, headers: asked })
+      }
+
+      const answer = Response.json({ submits }, { headers: asked })
+      answer.headers.append('set-cookie', submitsCookie(submits, env.TANUKITSUNE_SYNC_SECRET))
+
+      return answer
+    })
 }
 
 // Signing out. It answers the same whether a key was held or not: what it reports is the state
@@ -47,6 +74,7 @@ export function DELETE(): Response {
 
   answer.headers.append('set-cookie', clearedKeyCookie())
   answer.headers.append('set-cookie', clearedAccountCookie())
+  answer.headers.append('set-cookie', clearedSubmitsCookie())
 
   return answer
 }

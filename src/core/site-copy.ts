@@ -53,6 +53,11 @@ export type StartCopy = {
     // to a client component, and a function cannot cross that boundary.
     readonly signedIn: string
     readonly signOut: string
+    // The two things a reader decides once their key is held: whether answering here advances their
+    // WaniKani account, and whether we keep anything of theirs at all.
+    readonly submits: string
+    readonly forget: string
+    readonly forgotten: string
   }
 }
 
@@ -115,6 +120,9 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
         refused: "WaniKani refuse cette clé. Vérifie que c'est une clé de ton compte.",
         signedIn: 'Compte {username}, niveau {level}.',
         signOut: 'Oublier ma clé',
+        submits: 'Envoyer mes réponses à WaniKani',
+        forget: 'Effacer mon historique',
+        forgotten: '{removed} réponses effacées.',
       },
     },
     review: {

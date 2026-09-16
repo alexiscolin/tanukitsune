@@ -4,7 +4,7 @@ import { isLocale } from '@/core/locales'
 import { copyFor } from '@/core/site-copy'
 
 import { Start } from './start'
-import { accountHeld } from '@/data/reader-key'
+import { accountHeld, submitsHeld } from '@/data/reader-key'
 
 import { servesDemo } from './waiting'
 
@@ -20,5 +20,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params
   if (!isLocale(locale)) notFound()
 
-  return <Start locale={locale} copy={copyFor(locale)} demo={await servesDemo()} held={await accountHeld()} />
+  return (
+    <Start
+      locale={locale}
+      copy={copyFor(locale)}
+      demo={await servesDemo()}
+      held={await accountHeld()}
+      submits={await submitsHeld()}
+    />
+  )
 }

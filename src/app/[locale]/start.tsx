@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 
 import { DEMO_DECK, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
 import type { Locale } from '@/core/locales'
-import { KEY_PATH, sessionPath } from '@/core/routes'
+import { HISTORY_PATH, KEY_PATH, sessionPath } from '@/core/routes'
 import type { SiteCopy } from '@/core/site-copy'
 import { SessionStart } from '@/ui/organisms/session-start'
 
@@ -23,12 +23,15 @@ export function Start({
   copy,
   demo,
   held,
+  submits,
 }: {
   locale: Locale
   copy: SiteCopy
   demo: boolean
   // The account this browser holds a key for, read on the server where the cookie is.
-  held: { username: string; level: number } | null
+  held: { id: string; username: string; level: number } | null
+  // Whether this reader's answers advance their WaniKani account.
+  submits: boolean
 }) {
   const router = useRouter()
   const counts = useWaitingCounts(
@@ -49,8 +52,11 @@ export function Start({
         <KeyForm
           copy={copy.start.key}
           held={held}
+          submits={submits}
           onKey={(key) => handOver(key, router)}
           onForget={() => forget(router)}
+          onSubmits={(sends) => choose(sends, router)}
+          onErase={() => erase(router)}
         />
       }
       queues={{
@@ -76,10 +82,32 @@ async function handOver(
 
   if (answered === null || !answered.ok) return null
 
+  // The identifier is not answered back: it is in the cookie the response set, and the screen only needs
+  // to know a key was taken. What it shows is the name, and the next render reads the rest.
   const held = (await answered.json()) as { username: string; level: number }
   router.refresh()
 
   return held
+}
+
+// The switch and the erasure, both answered by the server: one writes a signed cookie, the other removes
+// every row written under this account and says how many it was.
+async function choose(submits: boolean, router: { refresh: () => void }): Promise<void> {
+  await fetch(KEY_PATH, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ submits }),
+  }).catch(() => null)
+  router.refresh()
+}
+
+async function erase(router: { refresh: () => void }): Promise<number> {
+  const answered = await fetch(HISTORY_PATH, { method: 'DELETE' }).catch(() => null)
+  router.refresh()
+
+  if (answered === null || !answered.ok) return 0
+
+  return ((await answered.json()) as { removed: number }).removed
 }
 
 async function forget(router: { refresh: () => void }): Promise<void> {

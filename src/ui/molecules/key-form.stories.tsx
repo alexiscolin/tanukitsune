@@ -12,8 +12,11 @@ const meta = {
   args: {
     copy,
     held: null,
+    submits: true,
     onKey: () => Promise.resolve(null),
     onForget: () => Promise.resolve(),
+    onSubmits: () => Promise.resolve(),
+    onErase: () => Promise.resolve(0),
   },
 } satisfies Meta<typeof KeyForm>
 
@@ -26,3 +29,8 @@ export const Asking: Story = {}
 
 // A key this browser already holds, where the account answers for it and the only control is leaving.
 export const Held: Story = { args: { held: { username: 'alexis', level: 7 } } }
+
+// The same, with sending turned off: the answers are kept here and the account is left alone.
+export const Kept: Story = {
+  args: { held: { username: 'alexis', level: 7 }, submits: false },
+}

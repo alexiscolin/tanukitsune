@@ -23,28 +23,61 @@ function said(sentence: string, held: Held): string {
 export function KeyForm({
   copy,
   held,
+  submits,
   onKey,
   onForget,
+  onSubmits,
+  onErase,
 }: {
   copy: StartCopy['key']
   // The account this browser holds a key for, or nothing.
   held: Held | null
+  // Whether this reader's answers advance their WaniKani account.
+  submits: boolean
   // Answers the account the key names, or null where the source refused it.
   onKey: (key: string) => Promise<Held | null>
   onForget: () => Promise<void>
+  onSubmits: (submits: boolean) => Promise<void>
+  // Answers how many rows were removed.
+  onErase: () => Promise<number>
 }) {
   const [key, setKey] = useState('')
   const [refused, setRefused] = useState(false)
   const [asking, setAsking] = useState(false)
+  const [erased, setErased] = useState<number | null>(null)
 
   if (held !== null) {
     return (
-      <p className="flex items-center justify-between gap-4 py-8 text-sm">
-        <span>{said(copy.signedIn, held)}</span>
-        <button type="button" className="underline underline-offset-4" onClick={() => void onForget()}>
-          {copy.signOut}
-        </button>
-      </p>
+      <div className="flex flex-col gap-4 py-8 text-sm">
+        <p className="flex items-center justify-between gap-4">
+          <span>{said(copy.signedIn, held)}</span>
+          <button type="button" className="underline underline-offset-4" onClick={() => void onForget()}>
+            {copy.signOut}
+          </button>
+        </p>
+
+        <label className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            checked={submits}
+            onChange={(event) => void onSubmits(event.target.checked)}
+          />
+          <span>{copy.submits}</span>
+        </label>
+
+        <p className="flex items-center justify-between gap-4">
+          <button
+            type="button"
+            className="underline underline-offset-4 text-[var(--color-destructive)]"
+            onClick={() => void onErase().then(setErased)}
+          >
+            {copy.forget}
+          </button>
+          <span role="status" className="text-xs text-[var(--color-ink-muted)]">
+            {erased === null ? '' : copy.forgotten.replace('{removed}', String(erased))}
+          </span>
+        </p>
+      </div>
     )
   }
 
