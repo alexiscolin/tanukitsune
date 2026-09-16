@@ -46,6 +46,11 @@ reader chose beside it does not travel. There is nothing to recover, because the
 **The breach surface is the deployment, not a table.** A database copy carries no credential. What
 remains is the running server, which sees a key for the length of a request.
 
+**It narrows [ADR 0005](0005-system-of-record-for-reviews.md).** That record makes this database the
+only place a review history exists and says the rows are never deleted. They still are, except by the
+reader who wrote them: with no account row and no email, those rows are everything the product holds of
+somebody, and a product holding somebody's data with no way to remove it is not one this project ships.
+
 **Revocation belongs to WaniKani.** A reader who regenerates their key there ends every session here,
 and the product needs no revocation of its own.
 

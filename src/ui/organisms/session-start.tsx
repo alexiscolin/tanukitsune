@@ -37,8 +37,6 @@ export function SessionStart({
   pending: boolean
   // Where a reader hands a key over, or nothing on a screen that asks for none. Passed in rather than
   // built here: what a key does is the route's business, and this screen only says where it goes.
-  // Where a reader hands a key over, or nothing on a screen that asks for none. Passed in rather than
-  // built here: what a key does is the route's business, and this screen only says where it goes.
   signIn: ReactNode
 }) {
   return (

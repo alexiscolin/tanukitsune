@@ -25,7 +25,8 @@ const CATALOGUE_PORT = 6017
 export const catalogueURL = `http://127.0.0.1:${CATALOGUE_PORT}`
 
 // The same application again, on its own port, dealing an account instead of the seeded deck.
-// Two servers rather than one, because which deck is dealt is read from the token alone: a
+// Two servers rather than one, because which deck is dealt is read from the deployment's token where a
+// request carries no key: a
 // single server holding one would take the demo away from every spec that asserts it.
 const ACCOUNT_PORT = 3118
 export const accountURL = `http://127.0.0.1:${ACCOUNT_PORT}`
@@ -84,7 +85,8 @@ export default defineConfig({
       timeout: 30_000,
     },
     // The same build again, dealing the account e2e/fake-account.ts describes. Two servers rather
-    // than one, because which deck is dealt is read from the token alone: a single server holding
+    // than one, because which deck is dealt is read from the deployment's token where a request carries
+    // no key: a single server holding
     // one would take the demo away from every spec that asserts it.
     {
       command: `pnpm start -p ${ACCOUNT_PORT}`,

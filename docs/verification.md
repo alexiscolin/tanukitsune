@@ -56,7 +56,8 @@ the backup makes durable here, plus the flush that carries the last to the sourc
 It builds once, migrates the second database where there is one, and starts four servers. Two are the same build twice: one holding no token, which
 deals the seeded deck every demo spec asserts, and one holding a token spent on `e2e/fake-source.ts`,
 which answers where WaniKani would and deals the account in `e2e/fake-account.ts`. Which deck is
-dealt is read from the token alone, so a single server could serve one of the two and not both. The
+dealt is read from the key a request carries and from the deployment's token where it carries none, so
+a spec asserting the seeded deck is a spec carrying no key. The
 third is the fake source itself and the fourth is the catalogue. The account is written as the wire
 and typed against the parsers in `src/data/wanikani/payload.ts`, so what a session upstream of the
 seeded deck drives is the source's own HTTP rather than a stand-in for it: its URLs, its revision
