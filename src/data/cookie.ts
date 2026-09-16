@@ -1,5 +1,6 @@
-import 'server-only'
-
+// Not server-only, and nothing here reads a secret of ours: it takes a request apart, which is the same
+// work wherever it runs, and a module marked server-only cannot be unit tested at all.
+//
 // What a request is carrying under one name, or nothing. One reader for every cookie this product
 // sets, since a second one written beside it is a second answer to how a value was encoded.
 
