@@ -1,5 +1,6 @@
 import { parseBatch } from '@/data/review-batch'
 import { appendAnswers } from '@/data/review-events'
+import { keyHanded, readerHeld } from '@/data/reader-key'
 import { holdsSecret } from '@/data/sync-secret'
 
 // The backup, which docs/specs/v0.1.md names beside the flush and which this is not: nothing here
@@ -19,8 +20,15 @@ export async function POST(request: Request): Promise<Response> {
   // The body is composed here rather than passed through, so what the table reports and what a
   // caller reads can move apart. A 200 already says every row sent is durable; the count says
   // whether the batch was new, which nothing else can see from outside.
+  // Whose rows these are is what the request proves rather than what it claims. A browser handing over a
+  // key it cannot name an account for is refused: its rows would otherwise land on the deployment's own
+  // account, which is somebody else's history.
+  const handed = await keyHanded()
+  const reader = await readerHeld()
+  if (handed !== undefined && reader === null) return new Response(null, { status: 401 })
+
   return Response.json(
-    { appended: await appendAnswers(batch) },
+    { appended: await appendAnswers(batch, reader ?? '') },
     { headers: { 'cache-control': 'no-store' } },
   )
 }

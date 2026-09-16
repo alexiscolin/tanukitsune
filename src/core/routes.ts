@@ -50,6 +50,25 @@ export const FLUSH_PATH = '/api/flush'
 // out of scope for this version.
 export const BACKUP_SECRET_COOKIE = 'tanukitsune-sync'
 
+// Where a reader hands their WaniKani key over, and gets it cleared again. It carries no locale: what
+// it answers is an account rather than a page, the way the other routes here do.
+export const KEY_PATH = '/api/key'
+
+// What the browser keeps the key in. Read on the server for every request that needs it and written
+// nowhere else, per docs/decisions/0017-a-key-lives-in-a-cookie.md.
+export const READER_KEY_COOKIE = 'tanukitsune-key'
+
+// The account that key names, kept beside it so the screen can say whose it is without asking WaniKani
+// again on every render. It carries no credential: a name and a level the reader already sees.
+export const READER_ACCOUNT_COOKIE = 'tanukitsune-account'
+
+// Whether this reader's answers may reach WaniKani. Signed like the account, since a switch a browser
+// could edit is a switch that decides nothing.
+export const READER_SUBMITS_COOKIE = 'tanukitsune-submits'
+
+// Where a reader takes their history back. Everything written under their account, removed.
+export const HISTORY_PATH = '/api/history'
+
 // How many rows one request may carry, spelled beside the path for the same reason: a sender
 // paging at one number against a boundary refusing at another meets a refusal that resending
 // cannot clear. Postgres binds one parameter per column per row and refuses a statement past

@@ -33,6 +33,9 @@ export type AnswerStamp = {
   // The device clock, the only one available offline. The server stamps its own receipt time
   // beside it, so an implausible interval is detectable rather than fed to FSRS as fact.
   readonly answeredAt: Date
+  // Whether the reader had sending to WaniKani on while they answered. Read here rather than when the
+  // queue drains, which happens whenever the network returns and may be long afterwards.
+  readonly submits: boolean
 }
 
 // The row, in the order docs/specs/v0.1.md names it on `review_event`. Append-only and never
@@ -45,6 +48,10 @@ export type AnswerRecord = {
   readonly locale: Locale
   readonly corpusVersion: string | null
   readonly answeredAt: Date
+  // Whether this answer may be sent back to WaniKani, as the reader had it set while answering. Written
+  // by the device rather than stamped by the server: the queue drains whenever the network returns, so a
+  // switch read at that moment is a switch read long after the answer, and a submission is irreversible.
+  readonly submits: boolean
   readonly kind: AnswerKind
   // As it was submitted, before the normalisation each tier applies for its own comparison. A
   // normalised answer freezes the rule that produced it, and on an append-only table that means
@@ -103,6 +110,7 @@ export function answerRecord(card: AnsweredCard, stamp: AnswerStamp): AnswerReco
     locale: stamp.locale,
     corpusVersion: stamp.corpusVersion,
     answeredAt: stamp.answeredAt,
+    submits: stamp.submits,
     kind: card.kind,
     answer: card.answer,
     verdict: card.verdict,

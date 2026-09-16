@@ -21,6 +21,7 @@ const meta = {
     copy: COPY.start,
     demo: true,
     pending: false,
+    signIn: null,
     queues: {
       lesson: { count: DEMO_DECK.length, href: sessionPath('fr', 'lesson') },
       review: { count: DEMO_SUBJECTS_ASKED, href: sessionPath('fr', 'review') },

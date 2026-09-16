@@ -1,11 +1,16 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+
 import { DEMO_DECK, DEMO_SUBJECTS_ASKED } from '@/core/demo-deck'
 import type { Locale } from '@/core/locales'
-import { sessionPath } from '@/core/routes'
+import { HISTORY_PATH, KEY_PATH, sessionPath } from '@/core/routes'
 import type { SiteCopy } from '@/core/site-copy'
 import { SessionStart } from '@/ui/organisms/session-start'
 
+import { KeyForm } from '@/ui/molecules/key-form'
+
+import { useAccount } from './account-held'
 import { useWaitingCounts } from './waiting-counts'
 
 // Where a session starts, asking for its own counts. The document is one shell for every reader of
@@ -21,10 +26,17 @@ export function Start({
 }: {
   locale: Locale
   copy: SiteCopy
+  // Whether this deployment deals the seeded deck to a reader who hands over no key. Deployment
+  // configuration, so it may travel in the document; what a key changes is asked for below.
   demo: boolean
 }) {
+  const router = useRouter()
+  const account = useAccount()
+  // The seeded deck until a key is handed over, and then the account's own. Held back while the account
+  // is still being asked for, a screen that counted the demo first would flash numbers that are nobody's.
+  const seeded = demo && account.held === null
   const counts = useWaitingCounts(
-    demo ? { counted: true, lessons: DEMO_DECK.length, reviews: DEMO_SUBJECTS_ASKED } : null,
+    seeded ? { counted: true, lessons: DEMO_DECK.length, reviews: DEMO_SUBJECTS_ASKED } : null,
   )
 
   // Thrown while rendering, which is the only place the error boundary can see it.
@@ -35,12 +47,71 @@ export function Start({
       title={copy.title}
       tagline={copy.tagline}
       copy={copy.start}
-      demo={demo}
-      pending={!counts.counted}
+      demo={seeded}
+      pending={!counts.counted || !account.asked}
+      signIn={
+        <KeyForm
+          copy={copy.start.key}
+          held={account.held}
+          submits={account.submits}
+          onKey={(key) => handOver(key, router)}
+          onForget={() => forget(router)}
+          onSubmits={(sends) => choose(sends, router)}
+          onErase={() => erase(router)}
+        />
+      }
       queues={{
         lesson: { count: counts.lessons, href: sessionPath(locale, 'lesson') },
         review: { count: counts.reviews, href: sessionPath(locale, 'review') },
       }}
     />
   )
+}
+
+// The key leaves the field and goes to the route, which is the only place that can set a cookie the
+// server will read. The answer names the account, and the screen is asked for again so the queues it
+// holds are that account's rather than the demo's.
+async function handOver(
+  key: string,
+  router: { refresh: () => void },
+): Promise<{ username: string; level: number } | null> {
+  const answered = await fetch(KEY_PATH, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ key }),
+  }).catch(() => null)
+
+  if (answered === null || !answered.ok) return null
+
+  // The identifier is not answered back: it is in the cookie the response set, and the screen only needs
+  // to know a key was taken. What it shows is the name, and the next render reads the rest.
+  const held = (await answered.json()) as { username: string; level: number }
+  router.refresh()
+
+  return held
+}
+
+// The switch and the erasure, both answered by the server: one writes a signed cookie, the other removes
+// every row written under this account and says how many it was.
+async function choose(submits: boolean, router: { refresh: () => void }): Promise<void> {
+  await fetch(KEY_PATH, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ submits }),
+  }).catch(() => null)
+  router.refresh()
+}
+
+async function erase(router: { refresh: () => void }): Promise<number> {
+  const answered = await fetch(HISTORY_PATH, { method: 'DELETE' }).catch(() => null)
+  router.refresh()
+
+  if (answered === null || !answered.ok) return 0
+
+  return ((await answered.json()) as { removed: number }).removed
+}
+
+async function forget(router: { refresh: () => void }): Promise<void> {
+  await fetch(KEY_PATH, { method: 'DELETE' }).catch(() => null)
+  router.refresh()
 }

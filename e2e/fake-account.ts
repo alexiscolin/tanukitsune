@@ -50,7 +50,12 @@ function said(reading: string) {
 // The whole curriculum, granted and paid for: what the ceiling costs a lapsed subscriber is its
 // own case, and it belongs to the unit tests rather than to a session the suite drives.
 export const FAKE_USER: z.infer<typeof userPayload> = {
-  data: { subscription: { max_level_granted: 60, active: true } },
+  data: {
+    id: 'f4ke0000-0000-4000-8000-000000000001',
+    username: 'nobody',
+    level: 3,
+    subscription: { max_level_granted: 60, active: true },
+  },
 }
 
 // Nothing written on it. The join is exercised where it can be asserted on, which is source.test.ts.

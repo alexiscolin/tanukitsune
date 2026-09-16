@@ -43,8 +43,14 @@ function only(url: URL, parameter: string) {
   return FAKE_SUBJECTS.data.filter((entry) => wanted.has(entry.id))
 }
 
-function bodyFor(url: URL): object | null {
-  if (url.pathname === '/v2/user') return FAKE_USER
+// The account a token names. Derived from the token rather than fixed, which is the whole of what lets
+// the suite drive two readers: they differ by the key they hand over and by nothing else.
+function accountFor(token: string): object {
+  return { data: { ...FAKE_USER.data, id: `fake-${token}` } }
+}
+
+function bodyFor(url: URL, token: string): object | null {
+  if (url.pathname === '/v2/user') return accountFor(token)
   if (url.pathname === '/v2/study_materials') return FAKE_STUDY_MATERIALS
   if (url.pathname === '/v2/subjects') return page(only(url, 'ids'))
   // Which queue is asked for is a bare filter carrying no value, so it is read as present or
@@ -101,6 +107,8 @@ createServer((request, response) => {
   if (request.headers['wanikani-revision'] !== REVISION)
     return answer(400, { error: 'No revision was pinned.' })
 
+  const token = request.headers.authorization.replace('Bearer ', '')
+
   // The one write they take. What was sent is echoed under the review, so a spec can assert the
   // counts the flush aggregated without the fake keeping any state of its own.
   if (request.method === 'POST' && url.pathname === '/v2/reviews') {
@@ -121,7 +129,7 @@ createServer((request, response) => {
     })
   }
 
-  const body = bodyFor(url)
+  const body = bodyFor(url, token)
 
   return body === null
     ? answer(404, { error: `Nothing answers ${url.pathname}.` })

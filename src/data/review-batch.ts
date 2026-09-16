@@ -28,6 +28,9 @@ const row = z.object({
   locale: z.enum(LOCALES),
   corpusVersion: z.string().min(1).nullable(),
   answeredAt: instant,
+  // What the reader had set while answering. Read from the row rather than from the request, the queue
+  // draining whenever the network returns and a submission being irreversible.
+  submits: z.boolean(),
   kind: z.enum(ANSWER_KINDS),
   answer: z.string().nullable(),
   verdict: z.enum(VERDICTS).nullable(),

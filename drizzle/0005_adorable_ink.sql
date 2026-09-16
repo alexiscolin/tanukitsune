@@ -1,0 +1,1 @@
+ALTER TABLE "review_event" ADD COLUMN "reader_id" text DEFAULT '' NOT NULL;

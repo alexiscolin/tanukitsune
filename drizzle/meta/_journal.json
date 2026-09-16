@@ -36,6 +36,20 @@
       "when": 1789437118020,
       "tag": "0004_closed_deathbird",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789530162133,
+      "tag": "0005_adorable_ink",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789530340037,
+      "tag": "0006_tranquil_ghost_rider",
+      "breakpoints": true
     }
   ]
 }

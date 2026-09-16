@@ -18,6 +18,13 @@ const config: NextConfig = {
   headers: () =>
     Promise.resolve([
       {
+        // The session document is dealt from an account, so it is nobody else's to keep: the service
+        // worker holds what a response allows it to hold, and a shared device would otherwise open on
+        // the last reader's cards.
+        source: '/:locale/session',
+        headers: [{ key: 'Cache-Control', value: 'no-store' }],
+      },
+      {
         source: '/:path*',
         headers: [
           { key: 'X-Content-Type-Options', value: 'nosniff' },

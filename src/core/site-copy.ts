@@ -41,6 +41,24 @@ export type StartCopy = {
   // What demo mode is, said on the one screen a reader arrives on. The queue is written to
   // the device and nothing is sent anywhere, and that is a promise rather than a limitation.
   readonly demo: string
+  // Where a reader hands their own key over, which is the whole of signing in. `signedIn` takes the
+  // name and the level, since a screen that says a key worked without saying whose it is has not
+  // answered the only question a reader has at that moment.
+  readonly key: {
+    readonly label: string
+    readonly help: string
+    readonly submit: string
+    readonly refused: string
+    // A sentence with the two words it is about written into it, rather than a function: copy is handed
+    // to a client component, and a function cannot cross that boundary.
+    readonly signedIn: string
+    readonly signOut: string
+    // The two things a reader decides once their key is held: whether answering here advances their
+    // WaniKani account, and whether we keep anything of theirs at all.
+    readonly submits: string
+    readonly forget: string
+    readonly forgotten: string
+  }
 }
 
 // Everything a subject card names about what it is showing. Apart from the review loop
@@ -95,6 +113,17 @@ const SITE_COPY: Record<Locale, SiteCopy> = {
     start: {
       flow: { lesson: 'Leçons', review: 'Révisions' },
       demo: 'Mode démo. Tout reste sur cet appareil.',
+      key: {
+        label: 'Clé API WaniKani',
+        help: 'Colle ta clé pour réviser ton compte. Elle reste dans ce navigateur.',
+        submit: 'Utiliser cette clé',
+        refused: "WaniKani refuse cette clé. Vérifie que c'est une clé de ton compte.",
+        signedIn: 'Compte {username}, niveau {level}.',
+        signOut: 'Oublier ma clé',
+        submits: 'Envoyer mes réponses à WaniKani',
+        forget: 'Effacer mon historique',
+        forgotten: '{removed} réponses effacées.',
+      },
     },
     review: {
       prompt: { meaning: 'Sens', reading: 'Lecture' },

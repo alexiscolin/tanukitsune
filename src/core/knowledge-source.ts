@@ -32,11 +32,25 @@ export type Waiting = {
   readonly reviews: readonly Assignment[]
 }
 
+// Who a key belongs to. The identifier is the source's own, so a reader pasting the same key on another
+// device is the same reader with nothing to look up, and `granted` is what their subscription lets them
+// see whether or not they are still paying.
+export type Reader = {
+  readonly id: string
+  readonly username: string
+  readonly level: number
+  readonly granted: number
+  readonly subscribed: boolean
+}
+
 export type KnowledgeSource = {
   // By identifier, because what a session asks for is what is waiting. The subscription ceiling
   // is held behind this rather than beside it: reads are not filtered upstream, and a caller that
   // has to remember to filter is a caller that will forget. What that ceiling is for is in
   // docs/framing.md, under what WaniKani actually gives us.
+  // Who the key belongs to, which is also what tells a working key from a typo: it is the one call
+  // that needs no identifier of ours and answers for the account itself.
+  readonly reader: () => Promise<Reader>
   readonly listSubjects: (ids: readonly number[]) => Promise<readonly Subject[]>
   readonly listWaiting: () => Promise<Waiting>
   // The write half, and the only one there is: an answer is submitted per assignment with two

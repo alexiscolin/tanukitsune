@@ -2,7 +2,7 @@ import 'server-only'
 
 import type { AnswerRecord } from '@/core/review/answer-record'
 
-import { and, inArray, isNull } from 'drizzle-orm'
+import { and, eq, inArray, isNull } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { ANSWER_KINDS } from '@/core/answer-kind'
@@ -11,15 +11,22 @@ import type { Answered } from '@/core/review/submission'
 import { db } from './db'
 import { reviewEvent } from './schema'
 
+// Who a row belongs to travels as an argument to every call here rather than being read inside: one
+// place decides which account a request speaks for, and a query that forgot to filter is then a type
+// error rather than another reader's history.
+//
 // The durable half of the review queue. WaniKani discards review history, so a row here is the
 // only record of an answer that will ever exist, which is why the append happens inside the
 // request rather than after the response, per docs/framing.md under mutation transport.
 
 // How many rows the table gained, which is not how many the caller sent: every row a batch names
 // is durable when this returns, and a replayed one appends none.
-export async function appendAnswers(records: readonly AnswerRecord[]): Promise<number> {
+export async function appendAnswers(records: readonly AnswerRecord[], reader: string): Promise<number> {
   const rows = records.map((record) => ({
     ...record,
+    // Stamped here and never taken from the batch: the device says what was answered, and who answered
+    // it is what the request proves. A reader could otherwise name somebody else in a payload.
+    readerId: reader,
     // Text, because the column joins `corpus_entry` on the same identifier and their numbering is
     // one implementation of what a subject is called rather than the definition of it.
     subjectId: String(record.subjectId),
@@ -37,11 +44,26 @@ export async function appendAnswers(records: readonly AnswerRecord[]): Promise<n
   return appended.length
 }
 
+// Everything one reader wrote, removed. The only deletion this table has, and it is theirs: the product
+// knows nothing about somebody but the account their key names, so there is nobody else to ask and
+// nothing else to check. The deployment's own rows are not reachable here, an empty reader naming the
+// account that answers when no key was handed over.
+export async function forgetReader(reader: string): Promise<number> {
+  if (reader === '') return 0
+
+  const removed = await (await db())
+    .delete(reviewEvent)
+    .where(eq(reviewEvent.readerId, reader))
+    .returning({ id: reviewEvent.id })
+
+  return removed.length
+}
+
 // The rows the source has not been told about and nothing is currently telling it about, oldest
 // first because scheduling is order dependent. `applied_upstream` is null until an outcome is known,
 // and `synced_at` is stamped the moment a walk takes the row, so the two together say unresolved and
 // unclaimed. A row carrying a claim belongs to a walk in flight and is nobody else's to send.
-export async function unsentAnswers(): Promise<readonly Answered[]> {
+export async function unsentAnswers(reader: string): Promise<readonly Answered[]> {
   const rows = await (await db())
     .select({
       id: reviewEvent.id,
@@ -50,7 +72,14 @@ export async function unsentAnswers(): Promise<readonly Answered[]> {
       correct: reviewEvent.correct,
     })
     .from(reviewEvent)
-    .where(and(isNull(reviewEvent.appliedUpstream), isNull(reviewEvent.syncedAt)))
+    .where(
+      and(
+        eq(reviewEvent.readerId, reader),
+        eq(reviewEvent.submits, true),
+        isNull(reviewEvent.appliedUpstream),
+        isNull(reviewEvent.syncedAt),
+      ),
+    )
     .orderBy(reviewEvent.answeredAt, reviewEvent.id)
 
   // Four columns rather than eighteen, and read through the same enum the writer wrote: the column
@@ -75,12 +104,13 @@ export async function unsentAnswers(): Promise<readonly Answered[]> {
 //
 // What it returns is what the caller owns. Fewer rows than asked for means somebody else owns them,
 // and the answer is to send nothing rather than to send what is left of a subject.
-export async function claimForFlush(ids: readonly string[], at: Date): Promise<number> {
+export async function claimForFlush(ids: readonly string[], at: Date, reader: string): Promise<number> {
   const claimed = await (await db())
     .update(reviewEvent)
     .set({ syncedAt: at })
     .where(
       and(
+        eq(reviewEvent.readerId, reader),
         inArray(reviewEvent.id, [...ids]),
         isNull(reviewEvent.appliedUpstream),
         isNull(reviewEvent.syncedAt),
@@ -93,11 +123,17 @@ export async function claimForFlush(ids: readonly string[], at: Date): Promise<n
 
 // Puts back what a walk took and could not resolve, so the next one may try again. Only a walk
 // holding the claim calls this, which is what keeps it from freeing somebody else's rows.
-export async function releaseClaim(ids: readonly string[]): Promise<number> {
+export async function releaseClaim(ids: readonly string[], reader: string): Promise<number> {
   const freed = await (await db())
     .update(reviewEvent)
     .set({ syncedAt: null })
-    .where(and(inArray(reviewEvent.id, [...ids]), isNull(reviewEvent.appliedUpstream)))
+    .where(
+      and(
+        eq(reviewEvent.readerId, reader),
+        inArray(reviewEvent.id, [...ids]),
+        isNull(reviewEvent.appliedUpstream),
+      ),
+    )
     .returning({ id: reviewEvent.id })
 
   return freed.length

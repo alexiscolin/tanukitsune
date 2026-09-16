@@ -9,6 +9,7 @@ import type { Written } from '@/core/review/deck'
 import type { Flow, Subject } from '@/core/subject'
 import { textFor } from '@/data/corpus-text'
 import { env } from '@/data/env'
+import { keyHeld } from '@/data/reader-key'
 import { wanikaniSource } from '@/data/wanikani/source'
 
 // Where a deck comes from, and the one place that decides. With a token it is the reader's own
@@ -28,7 +29,7 @@ function sourceFor(token: string) {
 export type Due = { readonly lessons: number; readonly reviews: number; readonly demo: boolean }
 
 export async function due(): Promise<Due> {
-  const token = env.WANIKANI_TOKEN
+  const token = await keyHeld()
   if (token === undefined)
     return { lessons: DEMO_DECK.length, reviews: DEMO_SUBJECTS_ASKED, demo: true }
 
@@ -93,7 +94,7 @@ export type Sitting = {
 }
 
 export async function dealtFor(flow: Flow): Promise<Sitting> {
-  const token = env.WANIKANI_TOKEN
+  const token = await keyHeld()
   if (token === undefined) return { subjects: [], waiting: [] }
 
   const sitting = await dealt(token, flow)
@@ -101,9 +102,10 @@ export async function dealtFor(flow: Flow): Promise<Sitting> {
   return { subjects: sitting.deck, waiting: sitting.waiting }
 }
 
-// Which of the two decks this deployment serves. Deployment configuration rather than account data,
-// so it travels in the shell: the seeded deck is a constant already in the bundle, and a demo that
-// needed a request to know it was the demo would be the one deployment that cannot open offline.
+// Which deck this deployment serves a reader who hands over no key. Deployment configuration rather than
+// account data, so it travels in the shell: a document that varied by reader is a document the service
+// worker would keep on disk for whoever opens the browser next. What a key changes is asked for by the
+// screen, the way the waiting counts are.
 export function servesDemo(): boolean {
   return env.WANIKANI_TOKEN === undefined
 }

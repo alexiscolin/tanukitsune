@@ -1,0 +1,1 @@
+ALTER TABLE "review_event" ADD COLUMN "submits" boolean DEFAULT true NOT NULL;

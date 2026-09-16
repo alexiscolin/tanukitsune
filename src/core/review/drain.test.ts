@@ -32,7 +32,8 @@ function newestFirst(count: number): readonly AnswerRecord[] {
       id: `answer-${String(index).padStart(4, '0')}`,
       locale: 'fr',
       corpusVersion: null,
-      answeredAt: new Date(EPOCH + (count - index) * MINUTE),
+      submits: true,
+  answeredAt: new Date(EPOCH + (count - index) * MINUTE),
     }),
   )
 }

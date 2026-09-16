@@ -26,6 +26,7 @@ export function ReviewFlow({
   subjectCopy,
   exitTo,
   demo,
+  submits,
 }: {
   locale: Locale
   copy: ReviewCopy
@@ -36,6 +37,9 @@ export function ReviewFlow({
   // shell rather than over the network: which deck a deployment serves is the same for every reader
   // of it, and a demo that had to ask would be the one deployment that cannot open offline.
   demo: boolean
+  // Whether the reader has sending to WaniKani on. Written onto every answer as it is given, since
+  // the queue drains long afterwards.
+  submits: boolean
 }) {
   const sitting = useSitting('review', !demo)
   const emptied = useRef<Promise<void> | null>(null)
@@ -58,6 +62,7 @@ export function ReviewFlow({
         // reference it was not graded against.
         corpusVersion: null,
         answeredAt: new Date(),
+        submits,
       }),
     )
   }

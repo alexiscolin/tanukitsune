@@ -28,6 +28,7 @@ const STAMP: AnswerStamp = {
   id: '6f1c2e14-0a3f-4a1e-9c5b-2d7f8a0b1c3d',
   locale: 'fr',
   corpusVersion: null,
+  submits: true,
   answeredAt: new Date('2026-08-04T10:00:00.000Z'),
 }
 
