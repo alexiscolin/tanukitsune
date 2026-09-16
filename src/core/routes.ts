@@ -62,6 +62,13 @@ export const READER_KEY_COOKIE = 'tanukitsune-key'
 // again on every render. It carries no credential: a name and a level the reader already sees.
 export const READER_ACCOUNT_COOKIE = 'tanukitsune-account'
 
+// Whether this reader's answers may reach WaniKani. Signed like the account, since a switch a browser
+// could edit is a switch that decides nothing.
+export const READER_SUBMITS_COOKIE = 'tanukitsune-submits'
+
+// Where a reader takes their history back. Everything written under their account, removed.
+export const HISTORY_PATH = '/api/history'
+
 // How many rows one request may carry, spelled beside the path for the same reason: a sender
 // paging at one number against a boundary refusing at another meets a refusal that resending
 // cannot clear. Postgres binds one parameter per column per row and refuses a statement past
