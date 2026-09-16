@@ -45,10 +45,13 @@ export async function readerHeld(): Promise<string | null> {
   return read(unsealed(await held(READER_ACCOUNT_COOKIE), env.TANUKITSUNE_READER_SECRET))?.id ?? null
 }
 
-// Whether this reader's answers may be sent on. Only a signature that falls out right sends: a cookie
-// nobody can verify is not a reader asking for their account to be advanced, and a submission is
-// irreversible. A deployment rotating its secret stops sending rather than starting.
+// Whether these answers may be sent on. A deployment reviewing its own account always sends, which is
+// what it has always done and what no reader chose otherwise. A reader who handed a key over sends only
+// on a signature that falls out right: a cookie nobody can verify is not somebody asking for their
+// account to be advanced, and a submission is irreversible.
 export async function submitsHeld(): Promise<boolean> {
+  if ((await keyHanded()) === undefined) return true
+
   return unsealed(await held(READER_SUBMITS_COOKIE), env.TANUKITSUNE_READER_SECRET) === 'true'
 }
 

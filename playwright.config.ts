@@ -99,6 +99,9 @@ export default defineConfig({
         // Its own file-backed database, for the reason docs/verification.md gives: this is the
         // second server, and that driver is one process over one directory.
         TANUKITSUNE_LOCAL_DATABASE: ACCOUNT_DATABASE,
+        // What signs the account a browser hands back, which is what lets the suite drive two readers
+        // against one server. Never the backup secret: that one is handed to every browser that asks.
+        TANUKITSUNE_READER_SECRET: 'a-suite-signing-secret',
         // The one place the upstream write is on. A submission is irreversible and the source
         // offers no sandbox, so the switch is off everywhere a real token could be held, and on
         // here because what answers is a source that belongs to nobody.

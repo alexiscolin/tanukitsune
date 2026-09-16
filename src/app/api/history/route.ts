@@ -1,3 +1,4 @@
+import { sameOrigin } from '@/data/same-origin'
 import { forgetReader } from '@/data/review-events'
 import { readerHeld } from '@/data/reader-key'
 
@@ -9,8 +10,7 @@ import { readerHeld } from '@/data/reader-key'
 // tell from a failure. There is no second channel to confirm through: the product knows nothing about
 // somebody but the account their key named, so there is nobody to write to.
 export async function DELETE(request: Request): Promise<Response> {
-  const origin = request.headers.get('origin')
-  if (origin === null || origin !== new URL(request.url).origin) return new Response(null, { status: 401 })
+  if (!sameOrigin(request)) return new Response(null, { status: 401 })
 
   // The signature is the authorisation: only this deployment can write one, and it names the account
   // whose rows go. The backup secret is not asked for, since it is handed to every browser and the

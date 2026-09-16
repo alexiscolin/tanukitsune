@@ -7,6 +7,7 @@ import {
   submitsCookie,
 } from '@/data/key-cookie'
 import { env } from '@/data/env'
+import { sameOrigin } from '@/data/same-origin'
 import { accountHeld, submitsHeld } from '@/data/reader-key'
 import { wanikaniSource } from '@/data/wanikani/source'
 
@@ -20,20 +21,10 @@ import { wanikaniSource } from '@/data/wanikani/source'
 const REFUSED = 401
 const MALFORMED = 400
 
-// A key handed over is a sign-in, and a sign-in another site can perform for you is one that hands the
-// reader somebody else's account: every answer afterwards would be written under it and sent there. A
-// cross-site form can post here without a preflight, so the request has to prove it came from this
-// origin, which a form cannot forge and a browser will not lie about.
-function sameOrigin(request: Request): boolean {
-  const origin = request.headers.get('origin')
-
-  return origin !== null && origin === new URL(request.url).origin
-}
-
+// Nothing here is a document and none of it is anybody else's: an account named on one browser must not
+// be handed to the next from a cache.
 const asked = { 'cache-control': 'no-store' }
 
-// What this browser holds, asked for by the screen rather than rendered into the document: a page naming
-// an account is a page the service worker would keep on disk for whoever opens the browser next.
 export async function GET(): Promise<Response> {
   const held = await accountHeld()
 
